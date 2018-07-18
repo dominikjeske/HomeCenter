@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{982ABB4E-A5DC-4C78-87A3-30BF49DD5764}"
-	ProjectSection(SolutionItems) = preProject
-		Core\Documentation.md = Core\Documentation.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wirehome.Model", "Core\Wirehome.Model\Wirehome.Model.csproj", "{B46ACFCE-D828-45AF-AE97-8E471E2B155B}"
 EndProject
