@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Wirehome.Contracts\Wirehome.Contracts.csproj" />
-    <ProjectReference Include="..\..\Core\Wirehome.Model\Wirehome.Model.csproj" />
-    <ProjectReference Include="..\..\ExternalServices\Wirehome.Alexa.Model\Wirehome.Alexa.Model.csproj" />
+    <ProjectReference Include="..\..\Core\Wirehome.Contracts\HomeCenter.Contracts.csproj" />
+    <ProjectReference Include="..\..\Core\Wirehome.Model\HomeCenter.Model.csproj" />
+    <ProjectReference Include="..\..\ExternalServices\Wirehome.Alexa.Model\HomeCenter.Alexa.Model.csproj" />
   </ItemGroup>
 
 </Project>

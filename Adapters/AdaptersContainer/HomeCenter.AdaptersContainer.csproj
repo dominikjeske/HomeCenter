@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Wirehome.Model\Wirehome.Model.csproj" />
+    <ProjectReference Include="..\..\Core\Wirehome.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
 </Project>

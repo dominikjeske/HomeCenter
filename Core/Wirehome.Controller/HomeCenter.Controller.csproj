@@ -144,17 +144,17 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wirehome.Contracts\Wirehome.Contracts.csproj">
+    <ProjectReference Include="..\Wirehome.Contracts\HomeCenter.Contracts.csproj">
       <Project>{7e497f7e-36b1-49f3-93a2-d0cd987f1f56}</Project>
-      <Name>Wirehome.Contracts</Name>
+      <Name>HomeCenter.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wirehome.Model\Wirehome.Model.csproj">
+    <ProjectReference Include="..\Wirehome.Model\HomeCenter.Model.csproj">
       <Project>{b46acfce-d828-45af-ae97-8e471e2b155b}</Project>
-      <Name>Wirehome.Model</Name>
+      <Name>HomeCenter.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wirehome.Services\Wirehome.Services.csproj">
+    <ProjectReference Include="..\Wirehome.Services\HomeCenter.Services.csproj">
       <Project>{e7fc5f80-01bb-49ed-be73-1d1cd2d859f4}</Project>
-      <Name>Wirehome.Services</Name>
+      <Name>HomeCenter.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0' ">

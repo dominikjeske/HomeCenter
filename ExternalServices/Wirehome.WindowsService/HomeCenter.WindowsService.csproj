@@ -56,7 +56,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wirehome.WindowsService.Core\Wirehome.WindowsService.Core.csproj" />
+    <ProjectReference Include="..\Wirehome.WindowsService.Core\HomeCenter.WindowsService.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="nlog.config">

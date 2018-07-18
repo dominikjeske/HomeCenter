@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Wirehome.Alexa.Model\Wirehome.Alexa.Model.csproj" />
+    <ProjectReference Include="..\Wirehome.Alexa.Model\HomeCenter.Alexa.Model.csproj" />
   </ItemGroup>
 
 </Project>

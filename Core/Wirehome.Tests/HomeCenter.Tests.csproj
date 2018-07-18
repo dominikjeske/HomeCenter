@@ -37,8 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Wirehome.Model\Wirehome.Model.csproj" />
-    <ProjectReference Include="..\Wirehome.Services\Wirehome.Services.csproj" />
+    <ProjectReference Include="..\Wirehome.Model\HomeCenter.Model.csproj" />
+    <ProjectReference Include="..\Wirehome.Services\HomeCenter.Services.csproj" />
   </ItemGroup>
 
 </Project>
