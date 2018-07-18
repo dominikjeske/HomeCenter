@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [Guid("E2F5BB11-0570-40CA-ACDD-3AA01277DEE8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IAudioSessionEnumerator

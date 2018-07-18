@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     public struct DisplaySettings
     {

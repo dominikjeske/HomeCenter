@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Wirehome.ComponentModel.Adapters.Pc;
-using Wirehome.WindowsService.Core;
+using HomeCenter.ComponentModel.Adapters.Pc;
+using HomeCenter.WindowsService.Core;
 
-namespace Wirehome.WindowsService.Controllers
+namespace HomeCenter.WindowsService.Controllers
 {
     [Route("api/[controller]")]
     public class MuteController : Controller

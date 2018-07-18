@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Adapters.Kodi;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.ComponentModel.Areas;
-using Wirehome.Core.ComponentModel.Configuration;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Core.Utils;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Adapters.Kodi;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.ComponentModel.Areas;
+using HomeCenter.Core.ComponentModel.Configuration;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Core.Utils;
 
-namespace Wirehome.ComponentModel.Configuration
+namespace HomeCenter.ComponentModel.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {
@@ -34,19 +34,19 @@ namespace Wirehome.ComponentModel.Configuration
             _container = container;
         }
 
-        public WirehomeConfiguration ReadConfiguration(AdapterMode adapterMode)
+        public HomeCenterConfiguration ReadConfiguration(AdapterMode adapterMode)
         {
             var configPath = _resourceLocatorService.GetConfigurationPath();
 
             var rawConfig = File.ReadAllText(configPath);
 
-            var result = JsonConvert.DeserializeObject<WirehomeConfigDTO>(rawConfig);
+            var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
 
-            var adapters = MapAdapters(result.Wirehome.Adapters, adapterMode);
+            var adapters = MapAdapters(result.HomeCenter.Adapters, adapterMode);
             var components = MapComponents(result);
             var areas = MapAreas(result, components);
 
-            var configuration = new WirehomeConfiguration
+            var configuration = new HomeCenterConfiguration
             {
                 Adapters = adapters,
                 Components = components,
@@ -58,7 +58,7 @@ namespace Wirehome.ComponentModel.Configuration
             return configuration;
         }
 
-        private void CheckForDuplicateUid(WirehomeConfiguration configuration)
+        private void CheckForDuplicateUid(HomeCenterConfiguration configuration)
         {
             var allUids = configuration.Adapters.Select(a => a.Uid).ToList();
             allUids.AddRange(configuration.Components.Select(c => c.Uid));
@@ -72,10 +72,10 @@ namespace Wirehome.ComponentModel.Configuration
             }
         }
 
-        private IList<Area> MapAreas(WirehomeConfigDTO result, IList<Component> components)
+        private IList<Area> MapAreas(HomeCenterConfigDTO result, IList<Component> components)
         {
-            var areas = _mapper.Map<IList<AreaDTO>, IList<Area>>(result.Wirehome.Areas);
-            MapComponentsToArea(result.Wirehome.Areas, components, areas);
+            var areas = _mapper.Map<IList<AreaDTO>, IList<Area>>(result.HomeCenter.Areas);
+            MapComponentsToArea(result.HomeCenter.Areas, components, areas);
 
             return areas;
         }
@@ -96,16 +96,16 @@ namespace Wirehome.ComponentModel.Configuration
             }
         }
 
-        private IList<Component> MapComponents(WirehomeConfigDTO result)
+        private IList<Component> MapComponents(HomeCenterConfigDTO result)
         {
-            return _mapper.Map<IList<ComponentDTO>, IList<Component>>(result.Wirehome.Components);
+            return _mapper.Map<IList<ComponentDTO>, IList<Component>>(result.HomeCenter.Components);
         }
 
         private IList<Adapter> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
         {
             var adapters = new List<Adapter>();
 
-            // force to load Wirehome.AdaptersContainer into memory
+            // force to load HomeCenter.AdaptersContainer into memory
             if (adapterMode == AdapterMode.Embedded)
             {
                 var testAdapter = typeof(KodiAdapter);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Wirehome.Core
+namespace HomeCenter.Core
 {
     public static class SystemTime
     {

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.Raspberry
+namespace HomeCenter.Raspberry
 {
     internal class RaspberrySerialDevice : INativeSerialDevice
     {

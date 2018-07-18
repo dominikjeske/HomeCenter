@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public class TriggerJob : IJob
     {

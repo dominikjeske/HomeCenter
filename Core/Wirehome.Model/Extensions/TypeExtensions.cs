@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public static class Extensions
     {

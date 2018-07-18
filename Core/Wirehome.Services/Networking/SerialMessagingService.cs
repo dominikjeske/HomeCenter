@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Wirehome.Core.Interface.Native;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.Interface.Native;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Core.Services
+namespace HomeCenter.Core.Services
 {
     public class SerialMessagingService : ISerialMessagingService
     {

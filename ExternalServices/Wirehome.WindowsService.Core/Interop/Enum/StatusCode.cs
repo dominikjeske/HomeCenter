@@ -1,4 +1,4 @@
-﻿namespace Wirehome.WindowsService.Interop
+﻿namespace HomeCenter.WindowsService.Interop
 {
     /// <summary>
     /// Use this enum so that you don't have to hardcode magic values.

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct LUID

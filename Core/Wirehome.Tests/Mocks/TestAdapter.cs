@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Core.Tests.Mocks
+namespace HomeCenter.Core.Tests.Mocks
 {
     public class TestAdapter : Adapter
     {

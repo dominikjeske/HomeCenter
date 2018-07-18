@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Adapters.Drivers
+﻿namespace HomeCenter.ComponentModel.Adapters.Drivers
 {
     public interface II2CPortExpanderDriver
     {

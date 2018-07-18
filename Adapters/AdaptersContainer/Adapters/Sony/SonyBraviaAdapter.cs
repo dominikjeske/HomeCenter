@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.Extensions;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Adapters.Sony
+namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     // TODO test when power off
     public class SonyBraviaAdapter : Adapter

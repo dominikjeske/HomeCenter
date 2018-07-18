@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using Wirehome.Alexa.Model.Discovery;
+using HomeCenter.Alexa.Model.Discovery;
 
-namespace Wirehome.Alexa.Model.Common
+namespace HomeCenter.Alexa.Model.Common
 {
     public class DirectiveConverter : JsonConverter
     {

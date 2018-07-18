@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public class CommandJob<T>
     {

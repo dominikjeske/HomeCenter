@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.WindowsService.Services
+namespace HomeCenter.WindowsService.Services
 {
     public class ProcessDetails
     {

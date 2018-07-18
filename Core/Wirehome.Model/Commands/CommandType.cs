@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Commands
+﻿namespace HomeCenter.ComponentModel.Commands
 {
     public static class CommandType
     {

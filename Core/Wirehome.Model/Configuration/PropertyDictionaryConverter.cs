@@ -2,10 +2,10 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using Wirehome.ComponentModel;
-using Wirehome.ComponentModel.ValueTypes;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
     public class PropertyDictionaryConverter : JsonConverter
     {

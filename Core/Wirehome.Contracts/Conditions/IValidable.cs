@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Wirehome.Conditions
+namespace HomeCenter.Conditions
 {
     public interface IValidable
     {

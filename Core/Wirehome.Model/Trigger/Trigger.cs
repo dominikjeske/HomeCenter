@@ -1,10 +1,10 @@
-﻿using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Events;
-using Wirehome.Conditions;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Model.Extensions;
+﻿using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.Conditions;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public class Trigger
     {

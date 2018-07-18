@@ -1,5 +1,5 @@
 ﻿
-namespace Wirehome.Core.Services.Logging
+namespace HomeCenter.Core.Services.Logging
 {
     public interface ILogService : IService
     {

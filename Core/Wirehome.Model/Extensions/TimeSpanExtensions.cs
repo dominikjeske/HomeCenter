@@ -1,7 +1,7 @@
 ﻿using Quartz;
 using System;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public static class TimeSpanExtensions
     {

@@ -1,11 +1,11 @@
 ﻿using Quartz;
 using System;
 using System.Threading;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Conditions;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Conditions;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public class TriggerJobDataDTO
     {

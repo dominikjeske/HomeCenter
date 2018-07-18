@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Wirehome.Alexa.Model.Common;
+using HomeCenter.Alexa.Model.Common;
 
-namespace Wirehome.Alexa.Model.Discovery
+namespace HomeCenter.Alexa.Model.Discovery
 {
     public class AlexaDevice
     {

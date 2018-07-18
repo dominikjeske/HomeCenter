@@ -3,7 +3,7 @@ using System;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     public static class AggregateExceptionHelper
     {

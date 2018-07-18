@@ -2,9 +2,9 @@
 using System.Xml.Linq;
 using System.IO;
 using System;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Messaging;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public class DenonMappingMessage : HttpMessage
     {

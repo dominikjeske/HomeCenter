@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Wirehome.Core.Services.Logging
+namespace HomeCenter.Core.Services.Logging
 {
     public sealed class LogEntry
     {

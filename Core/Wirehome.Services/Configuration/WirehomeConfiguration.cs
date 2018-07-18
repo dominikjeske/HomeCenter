@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.ComponentModel.Areas;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.ComponentModel.Areas;
 
-namespace Wirehome.ComponentModel.Configuration
+namespace HomeCenter.ComponentModel.Configuration
 {
-    public class WirehomeConfiguration
+    public class HomeCenterConfiguration
     {
         public IList<Component> Components { get; set; }
         public IList<Adapter> Adapters { get; set; }

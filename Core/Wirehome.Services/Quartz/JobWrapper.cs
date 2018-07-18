@@ -2,9 +2,9 @@
 using System;
 using Quartz;
 using System.Threading.Tasks;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.Core.Services.Quartz
+namespace HomeCenter.Core.Services.Quartz
 {
     internal class JobWrapper : IJob
     {

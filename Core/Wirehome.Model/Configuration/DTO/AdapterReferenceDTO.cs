@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using Wirehome.ComponentModel;
+using HomeCenter.ComponentModel;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
     public class AdapterReferenceDTO
     {

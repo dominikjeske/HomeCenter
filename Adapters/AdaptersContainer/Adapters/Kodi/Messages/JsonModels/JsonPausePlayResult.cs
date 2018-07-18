@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Adapters.Kodi
+﻿namespace HomeCenter.ComponentModel.Adapters.Kodi
 {
     public class JsonPausePlayResult
     {

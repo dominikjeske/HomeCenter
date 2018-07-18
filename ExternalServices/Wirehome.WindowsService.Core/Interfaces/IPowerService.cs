@@ -1,6 +1,6 @@
-﻿using Wirehome.ComponentModel.Adapters.Pc;
+﻿using HomeCenter.ComponentModel.Adapters.Pc;
 
-namespace Wirehome.WindowsService.Services
+namespace HomeCenter.WindowsService.Services
 {
     public interface IPowerService
     {

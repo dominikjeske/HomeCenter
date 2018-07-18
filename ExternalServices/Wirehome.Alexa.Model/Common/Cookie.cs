@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Alexa.Model.Common
+﻿namespace HomeCenter.Alexa.Model.Common
 {
     public class Cookie
     {

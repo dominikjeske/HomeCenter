@@ -9,12 +9,12 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Wirehome.Alexa.Model.Common;
-using Wirehome.Alexa.Model.Discovery;
-using Wirehome.Core.Exceptions;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Alexa.Model.Common;
+using HomeCenter.Alexa.Model.Discovery;
+using HomeCenter.Core.Exceptions;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Extensions
+namespace HomeCenter.Extensions
 {
     public class AlexaDispatcherService : IAlexaDispatcherService, IHttpContextPipelineHandler
     {

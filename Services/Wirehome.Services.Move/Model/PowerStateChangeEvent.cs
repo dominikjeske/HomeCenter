@@ -1,6 +1,6 @@
-﻿using Wirehome.ComponentModel.Capabilities.Constants;
+﻿using HomeCenter.ComponentModel.Capabilities.Constants;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class PowerStateChangeEvent
     {

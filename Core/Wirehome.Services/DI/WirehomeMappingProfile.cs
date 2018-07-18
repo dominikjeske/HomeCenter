@@ -3,19 +3,19 @@ using Quartz.Impl.Calendar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Components;
-using Wirehome.ComponentModel.Events;
-using Wirehome.Conditions;
-using Wirehome.Core.ComponentModel.Areas;
-using Wirehome.Core.ComponentModel.Configuration;
-using Wirehome.Core.Utils;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.Conditions;
+using HomeCenter.Core.ComponentModel.Areas;
+using HomeCenter.Core.ComponentModel.Configuration;
+using HomeCenter.Core.Utils;
 
-namespace Wirehome.Core.Services.DependencyInjection
+namespace HomeCenter.Core.Services.DependencyInjection
 {
-    public class WirehomeMappingProfile : Profile
+    public class HomeCenterMappingProfile : Profile
     {
-        public WirehomeMappingProfile()
+        public HomeCenterMappingProfile()
         {
             ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
 

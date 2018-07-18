@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct PropVariant

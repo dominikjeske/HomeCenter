@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.ComponentModel.Adapters.Pc
+namespace HomeCenter.ComponentModel.Adapters.Pc
 {
     public class VolumePost
     {

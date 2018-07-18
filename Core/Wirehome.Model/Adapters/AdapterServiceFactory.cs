@@ -1,11 +1,11 @@
 ﻿using Quartz;
 using System;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Services;
-using Wirehome.Core.Services.I2C;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Services;
+using HomeCenter.Core.Services.I2C;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public class AdapterServiceFactory : IAdapterServiceFactory
     {

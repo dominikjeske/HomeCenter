@@ -5,15 +5,15 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Wirehome.Contracts.Environment;
-using Wirehome.Core;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Model.Extensions;
-using Wirehome.Motion.Model;
+using HomeCenter.Contracts.Environment;
+using HomeCenter.Core;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Model.Extensions;
+using HomeCenter.Motion.Model;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Motion
 {
     //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
     //TODO Alarm when move in one enter room without move in entering neighbor

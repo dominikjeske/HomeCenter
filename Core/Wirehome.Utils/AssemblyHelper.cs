@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Wirehome.Core.Extensions;
+using HomeCenter.Core.Extensions;
 
-namespace Wirehome.Core.Utils
+namespace HomeCenter.Core.Utils
 {
     public static class AssemblyHelper
     {

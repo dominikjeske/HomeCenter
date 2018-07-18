@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.ComponentModel.Commands
+namespace HomeCenter.ComponentModel.Commands
 {
     public static class CommandProperties
     {

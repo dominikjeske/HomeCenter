@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [ComImport]
     [Guid("F8679F50-850A-41CF-9C72-430F290290C8")]

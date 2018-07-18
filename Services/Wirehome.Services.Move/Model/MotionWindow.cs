@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     // TODO thread safe
     public class MotionWindow

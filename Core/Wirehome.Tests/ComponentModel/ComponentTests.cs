@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.Tests.ComponentModel;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.Tests.ComponentModel;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     [TestClass]
     public class ComponentTests : ReactiveTest

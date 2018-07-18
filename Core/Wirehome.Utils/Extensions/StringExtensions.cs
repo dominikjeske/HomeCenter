@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.Core.Extensions
+namespace HomeCenter.Core.Extensions
 {
     public static class StringExtensions
     {

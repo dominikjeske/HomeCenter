@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Wirehome.Core.Extensions
+namespace HomeCenter.Core.Extensions
 {
     public static class CollectionsExtensions
     {

@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Adapters.Pc
+﻿namespace HomeCenter.ComponentModel.Adapters.Pc
 {
     public enum ComputerPowerState
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Wirehome.ComponentModel.ValueTypes;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.ComponentModel.Events
+namespace HomeCenter.ComponentModel.Events
 {
     public class InfraredEvent : Event
     {

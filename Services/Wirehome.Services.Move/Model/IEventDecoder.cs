@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
-using Wirehome.ComponentModel.Events;
+using HomeCenter.ComponentModel.Events;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public interface IEventDecoder
     {

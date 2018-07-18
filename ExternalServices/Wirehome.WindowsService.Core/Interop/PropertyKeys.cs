@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     public static class PropertyKeys
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Wirehome.Core.Services.I2C;
+using HomeCenter.Core.Services.I2C;
 
-namespace Wirehome.ComponentModel.Adapters.Drivers
+namespace HomeCenter.ComponentModel.Adapters.Drivers
 {
     public sealed class MAX7311Driver : II2CPortExpanderDriver
     {

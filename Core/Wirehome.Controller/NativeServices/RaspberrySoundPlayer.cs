@@ -1,9 +1,9 @@
 ﻿using Windows.Media.Playback;
 using Windows.Media.Core;
 using System;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.Raspberry
+namespace HomeCenter.Raspberry
 {
     internal class RaspberrySoundPlayer : INativeSoundPlayer
     {

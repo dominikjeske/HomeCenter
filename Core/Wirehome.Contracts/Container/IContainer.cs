@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Wirehome.Core.Services.DependencyInjection
+namespace HomeCenter.Core.Services.DependencyInjection
 {
     public interface IContainer
     {

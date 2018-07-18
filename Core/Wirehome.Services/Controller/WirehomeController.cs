@@ -12,25 +12,25 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Components;
-using Wirehome.ComponentModel.Configuration;
-using Wirehome.Core.ComponentModel.Configuration;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Services;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Core.Services.I2C;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Core.Services.Quartz;
-using Wirehome.Core.Services.Roslyn;
-using Wirehome.Core.Utils;
-using Wirehome.Model.Extensions;
-using Wirehome.Services.Networking;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.ComponentModel.Configuration;
+using HomeCenter.Core.ComponentModel.Configuration;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Services;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.I2C;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Core.Services.Quartz;
+using HomeCenter.Core.Services.Roslyn;
+using HomeCenter.Core.Utils;
+using HomeCenter.Model.Extensions;
+using HomeCenter.Services.Networking;
 
-namespace Wirehome.Model.Core
+namespace HomeCenter.Model.Core
 {
-    public class WirehomeController : Actor
+    public class HomeCenterController : Actor
     {
         private readonly IContainer _container;
         private readonly ControllerOptions _options;
@@ -42,11 +42,11 @@ namespace Wirehome.Model.Core
         private ISchedulerFactory _schedulerFactory;
         private IHttpServerService _httpServerService;
 
-        private WirehomeConfiguration _homeConfiguration;
+        private HomeCenterConfiguration _homeConfiguration;
 
-        public WirehomeController(ControllerOptions options)
+        public HomeCenterController(ControllerOptions options)
         {
-            _container = new WirehomeContainer();
+            _container = new HomeCenterContainer();
             _options = options;
         }
 
@@ -140,7 +140,7 @@ namespace Wirehome.Model.Core
 
         private void GetServicesFromContainer()
         {
-            _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(WirehomeController));
+            _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(HomeCenterController));
             _confService = _container.GetInstance<IConfigurationService>();
             _resourceLocator = _container.GetInstance<IResourceLocatorService>();
             _roslynCompilerService = _container.GetInstance<IRoslynCompilerService>();
@@ -188,7 +188,7 @@ namespace Wirehome.Model.Core
         {
             var mce = new MapperConfigurationExpression();
             mce.ConstructServicesUsing(_container.GetInstance);
-            mce.AddProfile(new WirehomeMappingProfile());
+            mce.AddProfile(new HomeCenterMappingProfile());
 
             return new Mapper(new MapperConfiguration(mce), t => _container.GetInstance(t));
         }

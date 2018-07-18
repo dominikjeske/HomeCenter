@@ -12,14 +12,14 @@ using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.Core.ComponentModel.Configuration;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Utils;
-using Wirehome.Model.Core;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.Core.ComponentModel.Configuration;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Utils;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Core.Services.Roslyn
+namespace HomeCenter.Core.Services.Roslyn
 {
     public class RoslynCompilerService : IRoslynCompilerService
     {
@@ -30,7 +30,7 @@ namespace Wirehome.Core.Services.Roslyn
         {
             var assemblies = new List<Result<string>>();
             var modelAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Adapter));
-            var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(WirehomeController));
+            var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(HomeCenterController));
             var references = modelAssemblies.Union(servicesAssemblies).Distinct();
             var result = new List<Result<string>>();
 
@@ -70,7 +70,7 @@ namespace Wirehome.Core.Services.Roslyn
             asmInfo.AppendLine($"[assembly: AssemblyTitle(\"{title}\")]");
             asmInfo.AppendLine($"[assembly: AssemblyVersion(\"{version.Major}.{version.Minor}.{version.Build}.0\")]");
             asmInfo.AppendLine($"[assembly: AssemblyFileVersion(\"{version.Major}.{version.Minor}.{version.Build}.0\")]");
-            asmInfo.AppendLine("[assembly: AssemblyProduct(\"Wirehome\")]");
+            asmInfo.AppendLine("[assembly: AssemblyProduct(\"HomeCenter\")]");
             asmInfo.AppendLine($"[assembly: AssemblyInformationalVersion(\"{version.Major}.{version.Minor}.{version.Build}.0\")]");
 
             return CSharpSyntaxTree.ParseText(asmInfo.ToString(), encoding: Encoding.Default);

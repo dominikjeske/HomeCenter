@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Wirehome.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Capabilities;
 
-namespace Wirehome.ComponentModel.Commands.Responses
+namespace HomeCenter.ComponentModel.Commands.Responses
 {
     public class DiscoveryResponse : BaseObject
     {

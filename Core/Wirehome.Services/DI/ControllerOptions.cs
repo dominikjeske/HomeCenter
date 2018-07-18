@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Core.Services.DependencyInjection
+namespace HomeCenter.Core.Services.DependencyInjection
 {
     public class ControllerOptions
     {

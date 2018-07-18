@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.Interface.Native
+namespace HomeCenter.Core.Interface.Native
 {
     public interface IBinaryReader : IDisposable
     {

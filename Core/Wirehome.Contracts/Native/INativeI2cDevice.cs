@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Core.Interface.Native
+namespace HomeCenter.Core.Interface.Native
 {
     public interface INativeI2cDevice : IDisposable
     {

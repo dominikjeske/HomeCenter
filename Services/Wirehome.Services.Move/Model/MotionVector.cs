@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class MotionVector : ValueObject<MotionVector>, IEquatable<MotionVector>
     {

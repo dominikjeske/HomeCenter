@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.ValueTypes
+﻿namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class NullValue : IValue
     {

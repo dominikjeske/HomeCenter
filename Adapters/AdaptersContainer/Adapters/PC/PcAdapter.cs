@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.Interface.Messaging;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Adapters.Pc
+namespace HomeCenter.ComponentModel.Adapters.Pc
 {
     public class PcAdapter : Adapter
     {

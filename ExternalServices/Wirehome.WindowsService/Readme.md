@@ -1,5 +1,5 @@
 ﻿Run in console:
 
 d:\
-cd d:\Projects\HA4IoT\Extensions\Wirehome.WindowsService\bin\Release\PublishOutput\
-Wirehome.WindowsService.exe --console
+cd d:\Projects\HA4IoT\Extensions\HomeCenter.WindowsService\bin\Release\PublishOutput\
+HomeCenter.WindowsService.exe --console

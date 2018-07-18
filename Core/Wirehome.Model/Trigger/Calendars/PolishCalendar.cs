@@ -1,7 +1,7 @@
 ﻿using Quartz.Impl.Calendar;
 using System;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Motion
 {
     public class PolishCalendar : HolidayCalendar
     {

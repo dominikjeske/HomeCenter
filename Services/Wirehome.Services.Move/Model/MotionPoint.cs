@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using System;
-using Wirehome.Model.Extensions;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     //TODO move to new version
     public class MotionPoint : ValueObject<MotionPoint>, IEquatable<MotionPoint>

@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Newtonsoft.Json;
-using Wirehome.Alexa.Model.Common;
+using HomeCenter.Alexa.Model.Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
-namespace Wirehome.Alexa.Service
+namespace HomeCenter.Alexa.Service
 {
     public class Function
     {

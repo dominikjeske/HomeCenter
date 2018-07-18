@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Wirehome.ComponentModel;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.Core.ComponentModel.Areas
+namespace HomeCenter.Core.ComponentModel.Areas
 {
     public class Area : BaseObject
     {

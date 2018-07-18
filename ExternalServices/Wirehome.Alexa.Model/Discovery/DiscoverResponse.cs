@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Wirehome.Alexa.Model.Common;
+using HomeCenter.Alexa.Model.Common;
 
-namespace Wirehome.Alexa.Model.Discovery
+namespace HomeCenter.Alexa.Model.Discovery
 {
     public class DiscoverResponse
     {
@@ -20,7 +20,7 @@ namespace Wirehome.Alexa.Model.Discovery
                 {
                     EndpointId = device.Uid,
                     FriendlyName = device.FriendlyName,
-                    ManufacturerName = "Wirehome",
+                    ManufacturerName = "HomeCenter",
                     Description = device.Description,
                     DisplayCategories = GetDisplayCategory(device),
                     Cookie = new Cookie { ExtraDetail1 = device.Room },

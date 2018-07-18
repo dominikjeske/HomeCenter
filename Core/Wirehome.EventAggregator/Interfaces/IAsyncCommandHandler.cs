@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public interface IAsyncCommandHandler
     {

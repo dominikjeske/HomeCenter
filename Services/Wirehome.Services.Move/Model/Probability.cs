@@ -1,7 +1,7 @@
 ﻿using System;
 using CSharpFunctionalExtensions;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class Probability : ValueObject<Probability>
     {

@@ -3,15 +3,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Tests.ComponentModel;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Tests.ComponentModel;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     [TestClass]
     public class ComponentIntegrationTests : ReactiveTest

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public class Subscriptions
     {

@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using Wirehome.ComponentModel;
-using Wirehome.ComponentModel.Components;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.Components;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
     public class ComponentDTO
     {

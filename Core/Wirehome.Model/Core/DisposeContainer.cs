@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Wirehome.Core
+namespace HomeCenter.Core
 {
     public class DisposeContainer : IDisposable
     {

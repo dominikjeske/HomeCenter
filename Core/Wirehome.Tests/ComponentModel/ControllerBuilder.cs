@@ -7,20 +7,20 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Configuration;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Interface.Native;
-using Wirehome.Core.Services;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Core.Services.I2C;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Core.Services.Quartz;
-using Wirehome.Core.Services.Roslyn;
-using Wirehome.Model.Core;
-using Wirehome.Services.Networking;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Configuration;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Interface.Native;
+using HomeCenter.Core.Services;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.I2C;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Core.Services.Quartz;
+using HomeCenter.Core.Services.Roslyn;
+using HomeCenter.Model.Core;
+using HomeCenter.Services.Networking;
 
-namespace Wirehome.Core.Tests.ComponentModel
+namespace HomeCenter.Core.Tests.ComponentModel
 {
     public class ControllerBuilder
     {
@@ -51,12 +51,12 @@ namespace Wirehome.Core.Tests.ComponentModel
             return this;
         }
 
-        public WirehomeController Build()
+        public HomeCenterController Build()
         {
-            return new WirehomeController(GetControllerOptions());
+            return new HomeCenterController(GetControllerOptions());
         }
 
-        public async Task<(WirehomeController controller, IContainer container)> BuildAndRun()
+        public async Task<(HomeCenterController controller, IContainer container)> BuildAndRun()
         {
             var controller = Build();
             await controller.Initialize().ConfigureAwait(false);
@@ -126,7 +126,7 @@ namespace Wirehome.Core.Tests.ComponentModel
             var mce = new MapperConfigurationExpression();
             mce.ConstructServicesUsing(_container.GetInstance);
 
-            var profile = new WirehomeMappingProfile();
+            var profile = new HomeCenterMappingProfile();
             mce.AddProfile(profile);
 
             return new Mapper(new MapperConfiguration(mce), t => _container.GetInstance(t));

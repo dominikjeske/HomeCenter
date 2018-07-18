@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Wirehome.Core.Services.DependencyInjection
+namespace HomeCenter.Core.Services.DependencyInjection
 {
-    public class WirehomeContainer : IContainer
+    public class HomeCenterContainer : IContainer
     {
         private readonly Container _container = new Container();
         private readonly Dictionary<Type, int> _serviceInitalizationPriority = new Dictionary<Type, int>();

@@ -2,11 +2,11 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Wirehome.Core.Interface.Messaging;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Extensions;
+using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Extensions;
 
-namespace Wirehome.Core.Services
+namespace HomeCenter.Core.Services
 {
     public class HttpMessagingService : IHttpMessagingService
     {

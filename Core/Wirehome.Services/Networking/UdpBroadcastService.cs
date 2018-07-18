@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Core.Interface.Messaging;
 
-namespace Wirehome.Core.Services
+namespace HomeCenter.Core.Services
 {
     public class UdpBroadcastService : IUdpBroadcastService
     {

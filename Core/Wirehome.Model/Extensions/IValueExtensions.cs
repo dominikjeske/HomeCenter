@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Wirehome.ComponentModel.ValueTypes;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public static class IValueExtensions
     {

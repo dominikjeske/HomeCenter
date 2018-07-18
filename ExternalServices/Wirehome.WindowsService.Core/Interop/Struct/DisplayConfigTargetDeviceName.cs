@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using Wirehome.WindowsService.Interop;
+using HomeCenter.WindowsService.Interop;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack=1)]
 	public struct DisplayConfigTargetDeviceName : IDisplayConfigInfo

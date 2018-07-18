@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core;
+using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core;
 
-namespace Wirehome.ComponentModel.Events
+namespace HomeCenter.ComponentModel.Events
 {
     public class PropertyChangedEvent : Event
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Wirehome.Core.Interface.Messaging;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.Core.Services
+namespace HomeCenter.Core.Services
 {
     public interface ISerialMessagingService : IService
     {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Collections.Generic;
-using Wirehome.Core.Extensions;
+using HomeCenter.Core.Extensions;
 
 // 1. Direct message
 // 2. Publish to all
@@ -12,7 +12,7 @@ using Wirehome.Core.Extensions;
 // 4. Filter key-value
 
 //TODO: Add dynamic handlers - types that are not registred as singleton to makeinstance of that type and invoke on publish
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public sealed class EventAggregator : IEventAggregator, IDisposable
     {

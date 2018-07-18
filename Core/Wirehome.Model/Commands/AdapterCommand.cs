@@ -1,6 +1,6 @@
-﻿using Wirehome.ComponentModel.ValueTypes;
+﻿using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.ComponentModel.Commands
+namespace HomeCenter.ComponentModel.Commands
 {
     public class DeviceCommand : Command
     {

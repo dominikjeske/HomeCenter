@@ -1,4 +1,4 @@
-﻿namespace Wirehome.WindowsService.Services
+﻿namespace HomeCenter.WindowsService.Services
 {
     public interface IProcessService
     {

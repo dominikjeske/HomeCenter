@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Events
+﻿namespace HomeCenter.ComponentModel.Events
 {
     public static class EventProperties
     {

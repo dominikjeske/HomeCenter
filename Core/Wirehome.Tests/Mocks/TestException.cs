@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     public class TestException : Exception
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [Flags]
     public enum ClsCtx

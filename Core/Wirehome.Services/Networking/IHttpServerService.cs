@@ -1,7 +1,7 @@
 ﻿using HTTPnet.Core.Pipeline;
-using Wirehome.Core;
+using HomeCenter.Core;
 
-namespace Wirehome.Services.Networking
+namespace HomeCenter.Services.Networking
 {
     public interface IHttpServerService : IService
     {

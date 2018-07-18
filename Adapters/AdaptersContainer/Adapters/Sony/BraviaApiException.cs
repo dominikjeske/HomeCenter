@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.ComponentModel.Adapters.Sony
+namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     public class BraviaApiException : Exception
     {

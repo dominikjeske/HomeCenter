@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Core.Services.Logging
+namespace HomeCenter.Core.Services.Logging
 {
     public sealed class LogServicePublisher : ILogger
     {

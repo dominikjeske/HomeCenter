@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.Alexa.Model.Common
+namespace HomeCenter.Alexa.Model.Common
 {
     public enum DisplayCategory
     {

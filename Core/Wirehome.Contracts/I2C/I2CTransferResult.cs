@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.Services.I2C
+﻿namespace HomeCenter.Core.Services.I2C
 {
     public struct I2CTransferResult : II2CTransferResult
     {

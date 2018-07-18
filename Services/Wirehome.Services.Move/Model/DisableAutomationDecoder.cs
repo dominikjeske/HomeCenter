@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
-using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.Events;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class DisableAutomationDecoder : IEventDecoder
     {

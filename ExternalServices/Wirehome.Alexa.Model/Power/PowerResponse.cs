@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Wirehome.Alexa.Model.Common;
+using HomeCenter.Alexa.Model.Common;
 
-namespace Wirehome.Alexa.Model.Power
+namespace HomeCenter.Alexa.Model.Power
 {
     public class PowerResponse
     {

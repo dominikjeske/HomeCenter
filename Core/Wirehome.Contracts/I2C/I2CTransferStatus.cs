@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.Services.I2C
+﻿namespace HomeCenter.Core.Services.I2C
 {
     public enum I2CTransferStatus
     {

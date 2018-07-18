@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.Exceptions
+namespace HomeCenter.Core.Exceptions
 {
     public class NotFoundException : Exception
     {

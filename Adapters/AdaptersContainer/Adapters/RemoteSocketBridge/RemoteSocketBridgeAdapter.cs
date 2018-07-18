@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Hardware.RemoteSockets;
-using Wirehome.Core.Interface.Native;
-using Wirehome.Core.Services;
-using Wirehome.Core.Services.I2C;
-using Wirehome.Model.Events;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Hardware.RemoteSockets;
+using HomeCenter.Core.Interface.Native;
+using HomeCenter.Core.Services;
+using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Events;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public class RemoteSocketBridgeAdapter : Adapter
     {

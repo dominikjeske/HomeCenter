@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Wirehome.ComponentModel.Components;
-using Wirehome.ComponentModel.ValueTypes;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.Core.ComponentModel.Converters
+namespace HomeCenter.Core.ComponentModel.Converters
 {
     public class PowerConverter : IValueConverter
     {

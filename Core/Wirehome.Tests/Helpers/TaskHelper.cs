@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Wirehome.Extensions.Tests.Helpers
+namespace HomeCenter.Extensions.Tests.Helpers
 {
     public static class TaskHelper
     {

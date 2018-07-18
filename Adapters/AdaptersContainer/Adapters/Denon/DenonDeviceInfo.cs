@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public class DenonDeviceInfo
     {

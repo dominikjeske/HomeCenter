@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Wirehome.ComponentModel;
+using HomeCenter.ComponentModel;
 
-namespace Wirehome.Conditions
+namespace HomeCenter.Conditions
 {
     public abstract class Condition : BaseObject, IValidable
     {

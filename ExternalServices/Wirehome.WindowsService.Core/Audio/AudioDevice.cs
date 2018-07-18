@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using Wirehome.WindowsService.Interop;
+using HomeCenter.WindowsService.Interop;
 
-namespace Wirehome.WindowsService.Audio
+namespace HomeCenter.WindowsService.Audio
 {
     public class AudioDevice
     {

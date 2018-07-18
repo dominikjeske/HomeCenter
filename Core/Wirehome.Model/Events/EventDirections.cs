@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Model.Events
+﻿namespace HomeCenter.Model.Events
 {
     public static class EventDirections
     {

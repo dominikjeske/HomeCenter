@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace Wirehome.Core.Interface.Messaging
+namespace HomeCenter.Core.Interface.Messaging
 {
     public class WakeOnLanMessage : IUdpBroadcastMessage
     {

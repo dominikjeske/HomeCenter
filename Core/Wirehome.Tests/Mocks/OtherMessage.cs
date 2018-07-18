@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Extensions.Tests
+﻿namespace HomeCenter.Extensions.Tests
 {
     public class OtherMessage
     {

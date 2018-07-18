@@ -1,7 +1,7 @@
 ﻿using System;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public class ManualSchedule
     {

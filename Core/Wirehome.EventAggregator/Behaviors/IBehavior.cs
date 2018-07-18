@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.EventAggregator
+﻿namespace HomeCenter.Core.EventAggregator
 {
     public interface IBehavior : IAsyncCommandHandler
     {

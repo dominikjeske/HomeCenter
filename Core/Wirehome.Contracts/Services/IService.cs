@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core
+namespace HomeCenter.Core
 {
     public interface IService : IDisposable
     {

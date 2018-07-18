@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Capabilities.Constants
+﻿namespace HomeCenter.ComponentModel.Capabilities.Constants
 {
     public static class StateProperties
     {

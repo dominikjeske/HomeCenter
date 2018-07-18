@@ -1,7 +1,7 @@
-﻿using Wirehome.Core;
-using Wirehome.Core.Extensions;
+﻿using HomeCenter.Core;
+using HomeCenter.Core.Extensions;
 
-namespace Wirehome.ComponentModel.Capabilities.Constants
+namespace HomeCenter.ComponentModel.Capabilities.Constants
 {
     public static class PowerStateValue
     {

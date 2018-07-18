@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public class BehaviorChain
     {

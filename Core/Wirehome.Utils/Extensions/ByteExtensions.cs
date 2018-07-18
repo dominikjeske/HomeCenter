@@ -1,6 +1,6 @@
 using System;
 
-namespace Wirehome.Core.Extensions
+namespace HomeCenter.Core.Extensions
 {
     public static class ByteExtensions
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.Extensions
+namespace HomeCenter.Core.Extensions
 {
     public static class TaskExtensions
     {

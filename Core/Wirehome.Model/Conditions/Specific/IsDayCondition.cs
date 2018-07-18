@@ -1,9 +1,9 @@
-﻿using Wirehome.ComponentModel.Commands;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Model.Conditions;
-using Wirehome.Model.Extensions;
+﻿using HomeCenter.ComponentModel.Commands;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Conditions.Specialized
+namespace HomeCenter.Conditions.Specialized
 {
     public class IsDayCondition : TimeRangeCondition
     {

@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.Interface.Native
+﻿namespace HomeCenter.Core.Interface.Native
 {
     //
     // Summary:

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSharpFunctionalExtensions;
 
-namespace Wirehome.ComponentModel.ValueTypes
+namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class BooleanValue : ValueObject, IValue
     {

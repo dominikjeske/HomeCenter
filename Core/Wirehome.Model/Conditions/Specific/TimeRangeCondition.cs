@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core;
-using Wirehome.Model.Conditions;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core;
+using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Conditions.Specialized
+namespace HomeCenter.Conditions.Specialized
 {
     public class TimeRangeCondition : Condition
     {

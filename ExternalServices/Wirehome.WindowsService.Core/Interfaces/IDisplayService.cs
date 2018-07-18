@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     public interface IDisplayService
     {

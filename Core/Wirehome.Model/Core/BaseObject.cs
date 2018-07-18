@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.ComponentModel
+namespace HomeCenter.ComponentModel
 {
     public class BaseObject
     {

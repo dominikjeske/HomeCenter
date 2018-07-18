@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Wirehome.WindowsService.Core;
+using HomeCenter.WindowsService.Core;
 using System.Linq;
 using System.Collections.Generic;
-using Wirehome.ComponentModel.Adapters.Pc;
+using HomeCenter.ComponentModel.Adapters.Pc;
 
-namespace Wirehome.WindowsService.Controllers
+namespace HomeCenter.WindowsService.Controllers
 {
     [Route("api/[controller]")]
     public class InputSourceController : Controller

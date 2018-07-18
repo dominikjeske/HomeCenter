@@ -1,6 +1,6 @@
-﻿using Wirehome.Core;
+﻿using HomeCenter.Core;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public class DenonStatus
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public abstract class BaseCommandHandler
     {

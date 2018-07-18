@@ -1,7 +1,7 @@
 ﻿using Windows.Devices.Gpio;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.Raspberry
+namespace HomeCenter.Raspberry
 {
     internal class RaspberryGpioController : INativeGpioController
     {

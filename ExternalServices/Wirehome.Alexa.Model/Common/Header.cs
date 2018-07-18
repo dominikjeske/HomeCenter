@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Wirehome.Alexa.Model.Common
+namespace HomeCenter.Alexa.Model.Common
 {
     public class Header
     {

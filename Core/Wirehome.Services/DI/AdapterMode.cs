@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Wirehome.Core.Services.DependencyInjection
+namespace HomeCenter.Core.Services.DependencyInjection
 {
 
     public enum AdapterMode

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Wirehome.WindowsService.Core;
+using HomeCenter.WindowsService.Core;
 
-namespace Wirehome.WindowsService.Controllers
+namespace HomeCenter.WindowsService.Controllers
 {
     [Route("api/[controller]")]
     public class DisplayController : Controller

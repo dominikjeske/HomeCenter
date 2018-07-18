@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Wirehome.Core.Interface.Native;
-using Wirehome.Core.Services.I2C;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.Interface.Native;
+using HomeCenter.Core.Services.I2C;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Core.Services
+namespace HomeCenter.Core.Services
 {
     public sealed class I2CBusService : II2CBusService
     {

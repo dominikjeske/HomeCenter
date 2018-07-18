@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Wirehome.ComponentModel.Adapters.Sony
+namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     public partial class SonyRegisterRequest
     {

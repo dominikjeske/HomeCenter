@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Wirehome.Core.Services.Logging
+namespace HomeCenter.Core.Services.Logging
 {
     public sealed class LogService : ILogService
     {

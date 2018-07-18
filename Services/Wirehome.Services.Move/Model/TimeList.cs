@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     //TODO Add thread safe
     public class TimeList<T> : IEnumerable<TimePair<T>>

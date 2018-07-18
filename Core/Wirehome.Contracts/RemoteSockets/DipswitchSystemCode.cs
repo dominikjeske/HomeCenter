@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Core.Hardware.RemoteSockets
+namespace HomeCenter.Core.Hardware.RemoteSockets
 {
     [Flags]
     public enum DipswitchSystemCode

@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using System;
 using System.Collections.Generic;
-using Wirehome.ComponentModel.ValueTypes;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.ComponentModel
+namespace HomeCenter.ComponentModel
 {
     public sealed class Property : ValueObject
     {

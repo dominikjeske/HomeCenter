@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Wirehome.Core.Extensions;
+using HomeCenter.Core.Extensions;
 
-namespace Wirehome.ComponentModel.Events
+namespace HomeCenter.ComponentModel.Events
 {
     public class Event : BaseObject, System.IEquatable<Event>
     {

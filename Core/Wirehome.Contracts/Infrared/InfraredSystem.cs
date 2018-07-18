@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.Hardware.IR
+﻿namespace HomeCenter.Core.Hardware.IR
 {
     public enum IfraredSystem
     {

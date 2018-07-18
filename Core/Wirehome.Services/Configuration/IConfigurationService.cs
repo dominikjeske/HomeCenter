@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.ComponentModel.Configuration
+namespace HomeCenter.ComponentModel.Configuration
 {
     public interface IConfigurationService
     {
-        WirehomeConfiguration ReadConfiguration(AdapterMode adapterMode);
+        HomeCenterConfiguration ReadConfiguration(AdapterMode adapterMode);
     }
 }

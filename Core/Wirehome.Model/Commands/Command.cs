@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Wirehome.ComponentModel.Commands
+namespace HomeCenter.ComponentModel.Commands
 {
     public class Command : BaseObject
     {

@@ -1,6 +1,6 @@
-﻿using Wirehome.ComponentModel.Commands;
+﻿using HomeCenter.ComponentModel.Commands;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public class AdapterReference : BaseObject
     {

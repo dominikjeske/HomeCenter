@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Wirehome.WindowsService.Interop;
+using HomeCenter.WindowsService.Interop;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     //https://stackoverflow.com/questions/6590939/how-to-set-display-settings-to-extend-mode-in-windows-7-using-c
     //https://stackoverflow.com/questions/16790287/programmatically-changing-the-presentation-display-mode

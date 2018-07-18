@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Threading.Tasks;
-using Wirehome.Conditions;
+using HomeCenter.Conditions;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     [TestClass]
     public class ConditionContainerTests : ReactiveTest

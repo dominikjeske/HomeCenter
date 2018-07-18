@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Wirehome.WindowsService
+namespace HomeCenter.WindowsService
 {
     internal class CustomWebHostService : WebHostService
     {

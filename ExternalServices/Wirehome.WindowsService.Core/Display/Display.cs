@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Wirehome.WindowsService.Interop;
+using HomeCenter.WindowsService.Interop;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     public class Display : IDisplay
     {

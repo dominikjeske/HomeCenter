@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Messaging;
 
-namespace Wirehome.ComponentModel.Adapters.Samsung
+namespace HomeCenter.ComponentModel.Adapters.Samsung
 {
     public class SamsungControlMessage : ITcpMessage
     {
@@ -11,7 +11,7 @@ namespace Wirehome.ComponentModel.Adapters.Samsung
         public string Code { get; set; }
         public int Port { get; set; } = 55000;
 
-        private readonly string AppKey = "Wirehome";
+        private readonly string AppKey = "HomeCenter";
         private readonly string NullValue = char.ToString((char)0x00);
         private readonly string AppString = "samsung.remote";
 

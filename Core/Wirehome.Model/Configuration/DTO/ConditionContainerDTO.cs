@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
     public class ConditionContainerDTO
     {

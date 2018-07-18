@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using Windows.ApplicationModel.Background;
-using Wirehome.Core.Interface.Native;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Model.Core;
-using Wirehome.Raspberry;
+using HomeCenter.Core.Interface.Native;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Model.Core;
+using HomeCenter.Raspberry;
 
-namespace Wirehome.Controller
+namespace HomeCenter.Controller
 {
     public sealed class StartupTask : IBackgroundTask
     {
-        private WirehomeController _WirehomeController;
+        private HomeCenterController _HomeCenterController;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -18,8 +18,8 @@ namespace Wirehome.Controller
             taskInstance.Canceled += TaskInstance_Canceled;
             try
             {
-                _WirehomeController = new WirehomeController(GetControllerOptions());
-                await _WirehomeController.Initialize().ConfigureAwait(false);
+                _HomeCenterController = new HomeCenterController(GetControllerOptions());
+                await _HomeCenterController.Initialize().ConfigureAwait(false);
             }
             catch (System.Exception)
             {
@@ -29,7 +29,7 @@ namespace Wirehome.Controller
 
         private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
-            _WirehomeController.Dispose();
+            _HomeCenterController.Dispose();
         }
 
         private ControllerOptions GetControllerOptions() => new ControllerOptions

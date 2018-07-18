@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Wirehome.ComponentModel.ValueTypes
+namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class DateTimeValue : ValueObject, IValue
     {

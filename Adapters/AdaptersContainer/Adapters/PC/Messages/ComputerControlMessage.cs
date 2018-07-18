@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Messaging;
 
 
-namespace Wirehome.ComponentModel.Adapters.Pc
+namespace HomeCenter.ComponentModel.Adapters.Pc
 {
     public class ComputerControlMessage : HttpMessage
     {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Wirehome.ComponentModel;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.Utils;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.Utils;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
     public class ValueConverter : JsonConverter
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public static class DenonSurroundModes
     {

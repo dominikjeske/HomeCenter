@@ -1,7 +1,7 @@
-﻿using Wirehome.Conditions;
-using Wirehome.Contracts.Conditions;
+﻿using HomeCenter.Conditions;
+using HomeCenter.Contracts.Conditions;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class IsEnabledAutomationCondition : Condition
     {

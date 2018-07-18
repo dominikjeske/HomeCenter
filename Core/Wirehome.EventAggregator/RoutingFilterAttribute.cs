@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class RoutingFilterAttribute : Attribute

@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
-    public class WirehomeConfigDTO
+    public class HomeCenterConfigDTO
     {
-        [JsonProperty("Wirehome")]
-        public WirehomeDTO Wirehome { get; set; }
+        [JsonProperty("HomeCenter")]
+        public HomeCenterDTO HomeCenter { get; set; }
     }
 }

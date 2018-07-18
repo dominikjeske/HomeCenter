@@ -1,8 +1,8 @@
 ﻿using System;
 using Windows.Devices.I2c;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.Raspberry
+namespace HomeCenter.Raspberry
 {
     internal class RaspberryI2cDevice : INativeI2cDevice
     {

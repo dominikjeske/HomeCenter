@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Wirehome.Core.ComponentModel.Configuration
+namespace HomeCenter.Core.ComponentModel.Configuration
 {
-    public class WirehomeDTO
+    public class HomeCenterDTO
     {
         [JsonProperty("Components")]
         public IList<ComponentDTO> Components { get; set; }

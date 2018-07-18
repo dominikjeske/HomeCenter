@@ -5,10 +5,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Wirehome.ComponentModel.Adapters.Pc;
-using Wirehome.WindowsService.Services;
+using HomeCenter.ComponentModel.Adapters.Pc;
+using HomeCenter.WindowsService.Services;
 
-namespace Wirehome.WindowsService.Controllers
+namespace HomeCenter.WindowsService.Controllers
 {
     [Route("api/[controller]")]
     public class ProcessController : Controller
@@ -32,7 +32,7 @@ namespace Wirehome.WindowsService.Controllers
 
             var map = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonConfig["Process"].ToString());
 
-            if (!map.ContainsKey(processName)) throw new Exception($"Process {processName} is not registred in Wirehome Winsows Service");
+            if (!map.ContainsKey(processName)) throw new Exception($"Process {processName} is not registred in HomeCenter Winsows Service");
 
             return map[processName];
         }

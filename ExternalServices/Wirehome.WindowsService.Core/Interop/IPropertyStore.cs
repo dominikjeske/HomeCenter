@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     [Guid("886d8eeb-8cf2-4446-8d02-cdba1dbdcf99")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System.ServiceProcess;
 
-namespace Wirehome.WindowsService
+namespace HomeCenter.WindowsService
 {
     public static class WebHostServiceExtensions
     {

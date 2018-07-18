@@ -9,9 +9,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Services.Networking
+namespace HomeCenter.Services.Networking
 {
     public class HttpServerService : IHttpServerService
     {

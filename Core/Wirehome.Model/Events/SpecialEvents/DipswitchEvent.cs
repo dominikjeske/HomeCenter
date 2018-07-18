@@ -1,13 +1,13 @@
 ﻿using System;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core;
-using Wirehome.Core.Hardware.RemoteSockets;
-using Wirehome.Core.Extensions;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core;
+using HomeCenter.Core.Hardware.RemoteSockets;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Wirehome.ComponentModel.Events
+namespace HomeCenter.ComponentModel.Events
 {
     public class DipswitchEvent : Event
     {

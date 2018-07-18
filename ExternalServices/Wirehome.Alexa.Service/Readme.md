@@ -28,18 +28,18 @@ Once you have edited your function you can use the following command lines to bu
 
 Restore dependencies
 ```
-    cd "Wirehome.Alexa.Service"
+    cd "HomeCenter.Alexa.Service"
     dotnet restore
 ```
 
 Execute unit tests
 ```
-    cd "Wirehome.Alexa.Service/test/Wirehome.Alexa.Service.Tests"
+    cd "HomeCenter.Alexa.Service/test/HomeCenter.Alexa.Service.Tests"
     dotnet test
 ```
 
 Deploy function to AWS Lambda
 ```
-    cd "Wirehome.Alexa.Service/src/Wirehome.Alexa.Service"
+    cd "HomeCenter.Alexa.Service/src/HomeCenter.Alexa.Service"
     dotnet lambda deploy-function
 ```

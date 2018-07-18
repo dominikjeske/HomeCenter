@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters.Drivers;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.Services.I2C;
+using HomeCenter.ComponentModel.Adapters.Drivers;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.Services.I2C;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public sealed class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
     {

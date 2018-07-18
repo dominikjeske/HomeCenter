@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Tests.ComponentModel;
-using Wirehome.Core.Tests.Mocks;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Tests.ComponentModel;
+using HomeCenter.Core.Tests.Mocks;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     [TestClass]
     public class AdaptersTests : ReactiveTest

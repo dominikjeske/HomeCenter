@@ -10,10 +10,10 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using NSwag.AspNetCore;
 using System.Reflection;
-using Wirehome.WindowsService.Core;
-using Wirehome.WindowsService.Services;
+using HomeCenter.WindowsService.Core;
+using HomeCenter.WindowsService.Services;
 
-namespace Wirehome.WindowsService
+namespace HomeCenter.WindowsService
 {
     public class Startup
     {

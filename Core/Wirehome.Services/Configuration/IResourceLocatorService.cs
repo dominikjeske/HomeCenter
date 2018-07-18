@@ -1,4 +1,4 @@
-﻿namespace Wirehome.ComponentModel.Configuration
+﻿namespace HomeCenter.ComponentModel.Configuration
 {
     public interface IResourceLocatorService
     {

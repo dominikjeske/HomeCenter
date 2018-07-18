@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public interface IMessageEnvelope<out T>
     {

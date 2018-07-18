@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Motion.Model
+﻿namespace HomeCenter.Motion.Model
 {
     public enum AreaType
     {

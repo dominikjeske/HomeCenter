@@ -6,10 +6,10 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Model.Extensions;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Extensions.Tests
 {
     [TestClass]
     public class EventAggregatorTests : ReactiveTest

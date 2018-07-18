@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Wirehome.Core.Extensions
+namespace HomeCenter.Core.Extensions
 {
     public static class NumericExtensions
     {

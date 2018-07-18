@@ -2,11 +2,11 @@
 using System.Xml.Linq;
 using System.IO;
 using System;
-using Wirehome.Core.Interface.Messaging;
-using Wirehome.Core.Extensions;
-using Wirehome.Core;
+using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core;
 
-namespace Wirehome.ComponentModel.Adapters.Denon
+namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     public class DenonStatusLightMessage : HttpMessage
     {

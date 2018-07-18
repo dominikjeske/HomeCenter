@@ -6,15 +6,15 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Wirehome.ComponentModel.Adapters;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.Core;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.Core;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public abstract class Actor : BaseObject, IService, IActor
     {

@@ -1,4 +1,4 @@
-﻿namespace Wirehome.WindowsService.Core
+﻿namespace HomeCenter.WindowsService.Core
 {
     public interface IDisplay
     {

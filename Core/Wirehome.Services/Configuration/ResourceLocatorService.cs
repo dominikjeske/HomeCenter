@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Wirehome.Core.Interface.Native;
+using HomeCenter.Core.Interface.Native;
 
-namespace Wirehome.ComponentModel.Configuration
+namespace HomeCenter.ComponentModel.Configuration
 {
     public class ResourceLocatorService : IResourceLocatorService
     {
         private const string AdapterRepositoryName = "Adapters";
-        private const string ConfigurationName = "WirehomeConfiguration.json";
+        private const string ConfigurationName = "HomeCenterConfiguration.json";
         private readonly INativeStorage _nativeStorage;
 
         public ResourceLocatorService(INativeStorage nativeStorage)

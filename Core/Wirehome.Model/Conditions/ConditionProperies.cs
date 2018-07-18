@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Model.Conditions
+﻿namespace HomeCenter.Model.Conditions
 {
     public static class ConditionProperies
     {

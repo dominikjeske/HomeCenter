@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace Wirehome.Core.Interface.Messaging
+namespace HomeCenter.Core.Interface.Messaging
 {
     public class HttpMessage : IHttpMessage
     {

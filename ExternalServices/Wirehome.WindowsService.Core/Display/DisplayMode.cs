@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     public enum DisplayMode
     {

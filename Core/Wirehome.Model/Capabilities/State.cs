@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Components;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Model.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 
-namespace Wirehome.ComponentModel.Capabilities
+namespace HomeCenter.ComponentModel.Capabilities
 {
     public class State : BaseObject
     {

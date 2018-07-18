@@ -1,14 +1,14 @@
 ﻿using System;
 using Windows.Foundation.Diagnostics;
-using Wirehome.Core.Services.Logging;
+using HomeCenter.Core.Services.Logging;
 
-namespace Wirehome.Raspberry
+namespace HomeCenter.Raspberry
 {
     internal class RaspberryLoggingService : ILogAdapter
     {
         private readonly LoggingChannel _loggingChannel;
 
-        public RaspberryLoggingService() => _loggingChannel = new LoggingChannel("Wirehome", null, new Guid("4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"));
+        public RaspberryLoggingService() => _loggingChannel = new LoggingChannel("HomeCenter", null, new Guid("4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"));
 
         public void ProcessLogEntry(LogEntry logEntry)
         {

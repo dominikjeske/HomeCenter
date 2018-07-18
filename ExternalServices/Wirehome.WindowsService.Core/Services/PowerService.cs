@@ -1,8 +1,8 @@
-﻿using Wirehome.WindowsService.Interop;
+﻿using HomeCenter.WindowsService.Interop;
 using System.Diagnostics;
-using Wirehome.ComponentModel.Adapters.Pc;
+using HomeCenter.ComponentModel.Adapters.Pc;
 
-namespace Wirehome.WindowsService.Services
+namespace HomeCenter.WindowsService.Services
 {
     public class PowerService : IPowerService
     {

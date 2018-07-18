@@ -1,10 +1,10 @@
 ﻿using System.Reactive.Concurrency;
 using System.Collections.Generic;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Contracts.Environment;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Contracts.Environment;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Motion.Model
 {
     public class RoomInitializer
     {

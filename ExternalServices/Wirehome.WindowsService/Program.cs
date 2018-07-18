@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Diagnostics;
 using NLog.Web;
 
-namespace Wirehome.WindowsService
+namespace HomeCenter.WindowsService
 {
     public class Program
     {

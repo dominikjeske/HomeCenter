@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.Conditions
+namespace HomeCenter.Conditions
 {
     public class ConditionContainer : IValidable
     {

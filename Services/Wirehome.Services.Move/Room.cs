@@ -4,22 +4,22 @@ using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using Wirehome.Motion.Model;
-using Wirehome.Conditions;
-using Wirehome.ComponentModel.Components;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Contracts.Environment;
-using Wirehome.Conditions.Specialized;
-using Wirehome.Core.Extensions;
-using Wirehome.Model.Extensions;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.Contracts.Conditions;
-using Wirehome.Core;
-using Wirehome.ComponentModel.Events;
-using Wirehome.Model.Events;
-using Wirehome.ComponentModel.Capabilities.Constants;
+using HomeCenter.Motion.Model;
+using HomeCenter.Conditions;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Contracts.Environment;
+using HomeCenter.Conditions.Specialized;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Extensions;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.Contracts.Conditions;
+using HomeCenter.Core;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.Model.Events;
+using HomeCenter.ComponentModel.Capabilities.Constants;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Motion
 {
     //TODO Thread safe
     public class Room : IDisposable

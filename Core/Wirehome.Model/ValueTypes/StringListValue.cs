@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using System.Collections.Generic;
 
-namespace Wirehome.ComponentModel.ValueTypes
+namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class StringListValue : ValueObject, IValue
     {

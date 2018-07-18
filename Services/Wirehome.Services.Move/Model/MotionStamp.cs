@@ -1,7 +1,7 @@
 ﻿using Force.DeepCloner;
 using System;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Motion
 {
     public class MotionStamp
     {

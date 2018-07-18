@@ -1,8 +1,8 @@
-﻿using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
+﻿using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.ComponentModel.Capabilities
+namespace HomeCenter.ComponentModel.Capabilities
 {
     public class EventSource : BaseObject
     {

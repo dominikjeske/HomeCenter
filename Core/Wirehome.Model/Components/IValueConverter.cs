@@ -1,6 +1,6 @@
-﻿using Wirehome.ComponentModel.ValueTypes;
+﻿using HomeCenter.ComponentModel.ValueTypes;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public interface IValueConverter
     {

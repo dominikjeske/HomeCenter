@@ -2,7 +2,7 @@
 using System.Net;
 using System;
 
-namespace Wirehome.Core.Interface.Messaging
+namespace HomeCenter.Core.Interface.Messaging
 {
     public interface IHttpMessage 
     {

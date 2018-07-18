@@ -3,7 +3,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Core;
 
-namespace Wirehome.Core.Services.Quartz
+namespace HomeCenter.Core.Services.Quartz
 {
     public class SimpleInjectorSchedulerFactory : StdSchedulerFactory
     {

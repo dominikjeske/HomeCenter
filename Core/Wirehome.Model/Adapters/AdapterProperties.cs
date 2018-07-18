@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public static class AdapterProperties
     {

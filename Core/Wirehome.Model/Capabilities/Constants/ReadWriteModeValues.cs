@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wirehome.Model.ComponentModel.Capabilities.Constants
+namespace HomeCenter.Model.ComponentModel.Capabilities.Constants
 {
     public static class ReadWriteModeValues
     {

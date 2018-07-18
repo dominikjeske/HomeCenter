@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Messaging;
 
-namespace Wirehome.ComponentModel.Adapters.Sony
+namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     public partial class SonyRegisterRequest : HttpMessage
     {
         public string ClientID { get; set; } = "faed787d-8cac-4b67-8c0d-4e291584843b";
-        public string ApplicationID { get; set; } = "Wirehome";
+        public string ApplicationID { get; set; } = "HomeCenter";
         public string PIN { get; set; }
 
         public SonyRegisterRequest()

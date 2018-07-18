@@ -1,5 +1,5 @@
 ﻿
-namespace Wirehome.WindowsService.Interop
+namespace HomeCenter.WindowsService.Interop
 {
     public class PropertyStoreProperty
     {

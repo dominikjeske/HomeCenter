@@ -1,9 +1,9 @@
 ﻿using Quartz;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public class RefreshStateJob : IJob
     {

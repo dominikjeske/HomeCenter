@@ -1,4 +1,4 @@
-﻿namespace Wirehome.Core.Hardware.RemoteSockets
+﻿namespace HomeCenter.Core.Hardware.RemoteSockets
 {
     public enum DipswitchUnitCode
     {

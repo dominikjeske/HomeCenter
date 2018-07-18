@@ -6,14 +6,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.Model.Extensions
+namespace HomeCenter.Model.Extensions
 {
     public static class EventAggregateExtensions
     {

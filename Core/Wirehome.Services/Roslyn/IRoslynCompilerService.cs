@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSharpFunctionalExtensions;
 
-namespace Wirehome.Core.Services.Roslyn
+namespace HomeCenter.Core.Services.Roslyn
 {
     public interface IRoslynCompilerService
     {

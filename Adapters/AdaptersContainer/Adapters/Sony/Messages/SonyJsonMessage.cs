@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
-using Wirehome.Core.Interface.Messaging;
+using HomeCenter.Core.Interface.Messaging;
 
-namespace Wirehome.ComponentModel.Adapters.Sony
+namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     public class SonyJsonMessage : HttpMessage
     {

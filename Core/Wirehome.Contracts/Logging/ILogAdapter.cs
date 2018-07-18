@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Core.Services.Logging
+namespace HomeCenter.Core.Services.Logging
 {
     public interface ILogAdapter : IDisposable
     {

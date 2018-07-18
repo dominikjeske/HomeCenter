@@ -4,19 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Capabilities;
-using Wirehome.ComponentModel.Capabilities.Constants;
-using Wirehome.ComponentModel.Commands;
-using Wirehome.ComponentModel.Commands.Responses;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Extensions;
-using Wirehome.Core.Services.DependencyInjection;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Capabilities.Constants;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Commands.Responses;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Components
+namespace HomeCenter.ComponentModel.Components
 {
     public class Component : Actor
     {

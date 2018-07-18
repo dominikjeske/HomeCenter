@@ -1,7 +1,7 @@
-﻿using Wirehome.WindowsService.Audio;
-using Wirehome.WindowsService.Interop;
+﻿using HomeCenter.WindowsService.Audio;
+using HomeCenter.WindowsService.Interop;
 
-namespace Wirehome.WindowsService.Core
+namespace HomeCenter.WindowsService.Core
 {
     public interface IAudioService
     {

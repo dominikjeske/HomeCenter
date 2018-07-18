@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Wirehome.WindowsService": {
+    "HomeCenter.WindowsService": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

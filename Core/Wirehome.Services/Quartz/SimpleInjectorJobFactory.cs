@@ -1,9 +1,9 @@
 ﻿using Quartz;
 using Quartz.Spi;
 using System;
-using Wirehome.Core.Services.DependencyInjection;
+using HomeCenter.Core.Services.DependencyInjection;
 
-namespace Wirehome.Core.Services.Quartz
+namespace HomeCenter.Core.Services.Quartz
 {
     public class SimpleInjectorJobFactory : IJobFactory
     {

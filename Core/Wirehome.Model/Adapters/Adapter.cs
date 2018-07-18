@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Wirehome.ComponentModel.Components;
-using Wirehome.ComponentModel.Events;
-using Wirehome.ComponentModel.ValueTypes;
-using Wirehome.Core.EventAggregator;
-using Wirehome.Core.Services.Logging;
-using Wirehome.Model.Extensions;
+using HomeCenter.ComponentModel.Components;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.Core.Services.Logging;
+using HomeCenter.Model.Extensions;
 
-namespace Wirehome.ComponentModel.Adapters
+namespace HomeCenter.ComponentModel.Adapters
 {
     public abstract class Adapter : Actor
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Wirehome.Core.Extensions;
+using HomeCenter.Core.Extensions;
 
-namespace Wirehome.Core.EventAggregator
+namespace HomeCenter.Core.EventAggregator
 {
     public class RoutingFilter
     {
