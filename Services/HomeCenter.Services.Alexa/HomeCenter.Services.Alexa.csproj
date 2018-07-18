@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>HomeCenter</Authors>
-    <Company>HomeCenter</Company>
-    <Product>HomeCenter</Product>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\HomeCenter.Contracts\HomeCenter.Contracts.csproj" />
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
+    <ProjectReference Include="..\..\ExternalServices\HomeCenter.Alexa.Model\HomeCenter.Alexa.Model.csproj" />
   </ItemGroup>
 
 </Project>
