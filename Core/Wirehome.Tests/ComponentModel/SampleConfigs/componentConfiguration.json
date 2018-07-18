@@ -1,0 +1,256 @@
+﻿{
+  "Wirehome": {
+    "Areas": [
+      {
+        "Uid": "Backyard",
+        "Areas": [
+          {
+            "Uid": "House",
+            "Areas": [
+              {
+                "Uid": "Kitchen"
+              },
+              {
+                "Uid": "Bedroom"
+              },
+              {
+                "Uid": "Toilet"
+              },
+              {
+                "Uid": "Bathroom"
+              },
+              {
+                "Uid": "Livingroom",
+                "Components": [
+                  {
+                    "Uid": "Lamp1"
+                  },
+                  {
+                    "Uid": "RemoteLamp"
+                  }
+                ]
+              },
+              {
+                "Uid": "Balcony"
+              },
+              {
+                "Uid": "Hallway"
+              }
+
+            ]
+          },
+          {
+            "Uid": "Staircase"
+          }
+        ]
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "Lamp1",
+        "IsEnabled": false,
+        "Properties": {
+          "FriendlyName": "Blue lamp"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "HSRel8_1",
+            "Properties": {
+              "PinNumber": "1"
+            }
+          }
+        ],
+        "Triggers": [
+          {
+            "Event": {
+              "Type": "PropertyChanged",
+              "Properties": {
+                "SourceDeviceUid": "HSPE16InputOnly_1",
+                "PinNumber": "2"
+              }
+            },
+            "Command": {
+              "Type": "SwitchPowerState"
+            }
+          }
+        ],
+        "Converters": {
+          "PowerState": "PowerConverter"
+        },
+        "Tags": {
+          "APP_CAPTION": "MyC",
+          "APP_SORT_VALUE": "2"
+        },
+        "Classes": [
+          "Window",
+          "Lamp"
+        ]
+      },
+      {
+        "Uid": "RemoteLamp",
+        "IsEnabled": true,
+        "Triggers": [
+          {
+            "Schedule": {
+              "CronExpression": "0 0/1 * * * ?", //  https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
+              "Calendar": "PolishCalendar",
+              "WorkingTime": "00:00:05"
+            },
+            "Condition": { //TODO add check in event triggers
+              "Conditions": [
+                {
+                  "Type": "IsNightCondition"
+                }
+              ]
+              // default is AND for all but we can change it: "DefaultOperator": "OR" or build custom expression "Expression": "C1 and C2"
+            },
+            "Command": {
+              "Type": "TurnOnCommand"
+            },
+            "FinishCommand": {
+              "Type": "TurnOffCommand"
+            }
+          }
+        ],
+        "AdapterRefs": [
+          {
+            "Uid": "RemoteSocket",
+            "Properties": {
+              "System": "AllOn", // AllOff, Switch1, Switch2, Switch3, Switch4, Switch5, AllOn
+              "Unit": "A" // A, B, C, D
+            }
+          }
+        ]
+      },
+      {
+        "Uid": "RemoteLamp2",
+        "IsEnabled": false,
+        "Triggers": [
+          {
+            // Add custom c# scheduler
+            "Schedule": {
+              "ManualSchedules": [
+                {
+                  "Start": "22:22:00",
+                  "Finish": "22:23:00"
+                },
+                {
+                  "Start": "22:22:00",
+                  "WorkingTime": "00:00:05"      // Finish: 22:22:05
+                }
+              ]
+            },
+            "Command": {
+              "Type": "TurnOnCommand"
+            },
+            "FinishCommand": {
+              "Type": "TurnOffCommand"
+            }
+          }
+        ],
+        "AdapterRefs": [
+          {
+            "Uid": "RemoteSocket",
+            "Properties": {
+              "System": "AllOn",
+              "Unit": "D"
+            }
+          }
+        ]
+      }
+
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "HSRel8_1",
+        "Type": "HSREL8Adapter",
+        "IsEnabled": false,
+        "Properties": {
+          "I2cAddress": 100,
+          "PoolInterval": 500,
+          "PollDurationWarningThreshold": 2000
+        }
+      },
+      {
+        "Uid": "HSPE16InputOnly_1",
+        "Type": "HSPE16InputOnlyAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "I2cAddress": 101,
+          "PoolInterval": 500,
+          "PollDurationWarningThreshold": 2000
+        }
+      },
+      {
+        "Uid": "Denon",
+        "Type": "DenonAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "Hostname": "192.168.0.101",
+          "PoolInterval": 500,
+          "Zone": 1
+        }
+      },
+      {
+        "Uid": "Kodi",
+        "Type": "KodiAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "Hostname": "192.168.0.102",
+          "Port": 500,
+          "PoolInterval": 500,
+          "UserName": "dnf",
+          "Password": "Kodi123"
+        }
+      },
+      {
+        "Uid": "PC",
+        "Type": "PcAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "Hostname": "192.168.0.102",
+          "Port": 500,
+          "PoolInterval": 500,
+          "MAC": "9C-5C-8E-C2-01-62"
+        }
+      },
+      {
+        "Uid": "Samsung",
+        "Type": "SamsungAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "Hostname": "192.168.0.102"
+        }
+      },
+      {
+        "Uid": "Sony",
+        "Type": "SonyBraviaAdapter",
+        "IsEnabled": false,
+        "Properties": {
+          "Hostname": "192.168.0.102",
+          "AuthKey": "344fb7d28691ba43c9045e9d38fa3c83a0587620fc14a79a958db4ff5d30e0e7"
+        }
+      },
+      {
+        "Uid": "RemoteSocket",
+        "Type": "RemoteSocketBridgeAdapter",
+        "IsEnabled": true,
+        "Properties": {
+          "I2cAddress": 101,
+          "PinNumber": 12
+        }
+      },
+      {
+        "Uid": "RemoteIR",
+        "IsEnabled": false,
+        "Type": "InfraredBridgeAdapter",
+        "Properties": {
+          "I2cAddress": 101,
+          "PinNumber": 13
+        }
+      }
+
+    ]
+  }
+}

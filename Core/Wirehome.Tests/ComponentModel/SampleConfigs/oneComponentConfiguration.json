@@ -1,0 +1,56 @@
+﻿{
+  "Wirehome": {
+    "Areas": [
+      {
+        "Uid": "Backyard"
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "RemoteLamp",
+        "IsEnabled": true,
+        "Triggers": [
+          {
+            "Schedule": {
+              "CronExpression": "0 0/5 * * * ?", // every 5 minutes https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
+              "Calendar": "PolishCalendar"
+            },
+            "Conditions": [
+              {
+                "Type": "IsNightCondition",
+                "Relation": "AND"
+              },
+              {
+                "Type": "IsNightCondition",
+                "Relation": "AND"
+              }
+            ],
+            "Command": {
+              "Type": "SwitchPowerState"
+            }
+          }
+        ],
+        "AdapterRefs": [
+          {
+            "Uid": "RemoteSocket",
+            "Properties": {
+              "System": "AllOn", // AllOff, Switch1, Switch2, Switch3, Switch4, Switch5, AllOn
+              "Unit": "A" // A, B, C, D
+            }
+          }
+        ]
+      }
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "RemoteSocket",
+        "Type": "RemoteSocketBridgeAdapter",
+        "Properties": {
+          "I2cAddress": 101,
+          "PinNumber": 12
+        }
+      }
+    ]
+  }
+}

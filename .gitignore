@@ -1,0 +1,43 @@
+*.suo
+obj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+
+.vs/config/applicationhost.config
+
+__vm/
+HA4IoT.opensdf
+HA4IoT.sdf
+
+*.VC.opendb
+*.VC.db
+
+*.user
+*.pubxml
+
+##########################
+
+# From: https://docs.microsoft.com/en-us/nuget/consume-packages/packages-and-source-control
+# Ignore NuGet Packages
+*.nupkg
+
+App/LocalDeployInfo.dat
+
+# Ignore the packages folder
+**/packages/*
+
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+
+# Uncomment if necessary; generally it will be regenerated when needed
+#!**/packages/repositories.config
+
+# Ignore other intermediate files that NuGet might create
+project.lock.json
+*.nuget.props
+.vs/
+DNF/HA4IoT.Controller.Dnf/AppPackages/
+/DNF/HA4IoT.Firmwares/HA4IoT.Hardware.I2CHardwareBridge.Firmware
+/Controllers/HA4IoT.Controller
+*.dll
