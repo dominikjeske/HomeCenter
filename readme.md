@@ -1,5 +1,6 @@
-﻿
-Snippet
+﻿# Project desctiption
+
+This project is .NET Core 2.1 application for Raspberry Pi 2/3 and Windows IoT and the main goal is to automate all devices in home into one HomeCenter.
 
 # Core elements
 
@@ -77,6 +78,6 @@ Snippet
 
 - **Utils** - for now there is **AssemblyHelper** for getting all assemblies in solution
 
-# Description
+# Application flow
 
 Flow of the application is following: When start all components, areas and adapters are read from config and initialized, additionally all services are initialized. When init components they read capabilities from adapters and can handle commands. Adapters reads initial states and run some pull jobs to query state in intervals (if we can read the state - there are some devices that can be controlled but we cannot read current state like my Samsung TV). Some basic setup is done in tests (`\HomeCenter.Core.Tests\ComponentModel`).
