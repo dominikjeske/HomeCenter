@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.Adapters;
+﻿using HomeCenter.ComponentModel;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HomeCenter.Core.ComponentModel.Configuration
 {
@@ -38,7 +37,9 @@ namespace HomeCenter.Core.ComponentModel.Configuration
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
+
         public override bool CanConvert(Type objectType) => typeof(IDictionary<string, Property>).IsAssignableFrom(objectType);
+
         public override bool CanWrite => false;
     }
 }

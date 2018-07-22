@@ -6,10 +6,10 @@ namespace HomeCenter.ComponentModel.Commands
     {
         public static DeviceCommand GenerateDiscoverCommand(string deviceUid) => new DeviceCommand(CommandType.DiscoverCapabilities, deviceUid);
 
-        public DeviceCommand(string commandType, string deviceUid)
+        public DeviceCommand(string commandType, string uid)
         {
             Type = commandType;
-            this[CommandProperties.DeviceUid] = (StringValue)deviceUid;
+            Uid = uid;
         }
     }
 }

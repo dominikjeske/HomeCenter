@@ -30,7 +30,6 @@ namespace HomeCenter.Raspberry
 
             if (deviceInformation.Count == 0)
             {
-                // TODO: Allow local controller to replace this. Then throw exception again
                 throw new InvalidOperationException("I2C bus not found.");
             }
 

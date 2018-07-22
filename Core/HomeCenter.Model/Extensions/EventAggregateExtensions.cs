@@ -79,7 +79,7 @@ namespace HomeCenter.Model.Extensions
 
         public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, DeviceCommand message) where R : BaseObject
         {
-            return eventAggregator.QueryAsync<DeviceCommand, R>(message, new RoutingFilter(message?[CommandProperties.DeviceUid]?.ToString() ?? string.Empty));
+            return eventAggregator.QueryAsync<DeviceCommand, R>(message, new RoutingFilter(message.Uid));
         }
 
         public static async Task<IValue> QueryForValueType(this IEventAggregator eventAggregator, Command message, string property, IValue defaultValue = null)
@@ -90,7 +90,7 @@ namespace HomeCenter.Model.Extensions
 
         public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, DeviceCommand message, TimeSpan timeOut) where R : BaseObject
         {
-            return eventAggregator.QueryWitTimeoutAsync<DeviceCommand, R>(message, timeOut, new RoutingFilter(message?[CommandProperties.DeviceUid]?.ToString() ?? string.Empty));
+            return eventAggregator.QueryWitTimeoutAsync<DeviceCommand, R>(message, timeOut, new RoutingFilter(message.Uid));
         }
 
         public static IDisposable SubscribeForDeviceQuery<T>(this IEventAggregator eventAggregator, Func<IMessageEnvelope<T>, Task<object>> action, string uid) where T : BaseObject
@@ -106,10 +106,10 @@ namespace HomeCenter.Model.Extensions
             return eventAggregator.SubscribeAsync(action, new RoutingFilter(routingKey, attributes));
         }
 
-        //public static IDisposable SubscribeForDeviceCommnd<T>(this IEventAggregator eventAggregator, T message) where T : Command
-        //{
-        //    return eventAggregator.SubscribeAsync(message, new RoutingFilter(message[CommandProperties.DeviceUid].ToString()));
-        //}
+        public static IDisposable SubscribeForDeviceCommnd<T>(this IEventAggregator eventAggregator, Func<IMessageEnvelope<T>, Task> action, string deviceUid) where T : Command
+        {
+            return eventAggregator.SubscribeAsync(action, new RoutingFilter(deviceUid));
+        }
 
         public static Task PublishDeviceEvent<T>(this IEventAggregator eventAggregator, T message) where T : Event
         {
@@ -134,7 +134,7 @@ namespace HomeCenter.Model.Extensions
 
         public static Task PublishDeviceCommnd<T>(this IEventAggregator eventAggregator, T message) where T : Command
         {
-            return eventAggregator.Publish(message, new RoutingFilter(message[CommandProperties.DeviceUid].ToString()));
+            return eventAggregator.Publish(message, new RoutingFilter(message.Uid));
         }
 
        

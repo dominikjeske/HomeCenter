@@ -1,9 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
@@ -15,6 +10,11 @@ using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Logging;
 using HomeCenter.Model.Extensions;
+using Quartz;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Components
 {
@@ -43,6 +43,7 @@ namespace HomeCenter.ComponentModel.Components
             if (!IsEnabled) return;
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
+            SubscribeForRemoteCommands();
 
             await base.Initialize().ConfigureAwait(false);
         }
@@ -77,7 +78,7 @@ namespace HomeCenter.ComponentModel.Components
                 }
             }
         }
-        
+
         private void InitEventTriggers()
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
@@ -100,17 +101,30 @@ namespace HomeCenter.ComponentModel.Components
             }
         }
 
-        private void BuildCapabilityStates(DiscoveryResponse capabilities) =>
+        private void BuildCapabilityStates(DiscoveryResponse capabilities)
+        {
             _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => ((StringValue)key[StateProperties.StateName]).ToString(), val => val));
+        }
 
-        private void MapCapabilitiesToAdapters(AdapterReference adapter, State[] states) =>
+        private void MapCapabilitiesToAdapters(AdapterReference adapter, State[] states)
+        {
             states.ForEach(state => _adapterStateMap[state[StateProperties.StateName].AsString()] = adapter);
+        }
 
-        private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources) =>
+        private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
+        {
             eventSources.ForEach(es => _eventSources[es[EventProperties.EventType].AsString()] = adapter);
+        }
 
-        private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties) =>
+        private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
+        {
             _disposables.Add(_eventAggregator.SubscribeForDeviceEvent(DeviceEventHandler, GetAdapterRouterAttributes(adapter, requierdProperties)));
+        }
+
+        private void SubscribeForRemoteCommands()
+        {
+            _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
+        }
 
         private Dictionary<string, string> GetAdapterRouterAttributes(AdapterReference adapter, IList<string> requierdProperties)
         {
@@ -220,7 +234,5 @@ namespace HomeCenter.ComponentModel.Components
 
             return Maybe<IValue>.From(value);
         }
-
-        
     }
 }

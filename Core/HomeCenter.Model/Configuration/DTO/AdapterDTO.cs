@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using HomeCenter.ComponentModel;
+using System.ComponentModel;
 
 namespace HomeCenter.Core.ComponentModel.Configuration
 {
@@ -12,7 +13,8 @@ namespace HomeCenter.Core.ComponentModel.Configuration
         [JsonProperty("Type")]
         public string Type { get; set; }
 
-        [JsonProperty("IsEnabled")]
+        [DefaultValue(true)]
+        [JsonProperty("IsEnabled", DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsEnabled { get; set; }
 
         [JsonProperty("Properties")]

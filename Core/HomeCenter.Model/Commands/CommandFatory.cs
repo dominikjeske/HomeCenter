@@ -12,6 +12,6 @@ namespace HomeCenter.ComponentModel.Commands
         public static Command GetSunriseCommand = new Command(CommandType.GetSunriseCommand);
         public static Command GetSunsetCommand = new Command(CommandType.GetSunsetCommand);
 
-        public static Command GetComponentCommand(string uid) => new Command(CommandType.GetComponentCommand, new Property(CommandProperties.DeviceUid, new StringValue(uid)));
+        public static Command GetComponentCommand(string uid) => new Command(CommandType.GetComponentCommand, uid);
     }
 }

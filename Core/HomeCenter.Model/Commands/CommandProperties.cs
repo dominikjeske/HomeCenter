@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeCenter.ComponentModel.Commands
+﻿namespace HomeCenter.ComponentModel.Commands
 {
     public static class CommandProperties
     {
-        public const string DeviceUid = nameof(DeviceUid);
         public const string CommandSource = nameof(CommandSource);
         public const string StateName = nameof(StateName);
         public const string ChangeFactor = nameof(ChangeFactor);

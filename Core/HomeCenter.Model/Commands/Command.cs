@@ -16,6 +16,12 @@ namespace HomeCenter.ComponentModel.Commands
             Type = commandType;
         }
 
+        public Command(string commandType, string uid) : base()
+        {
+            Type = commandType;
+            Uid = uid;
+        }
+
         public Command(string commandType, params Property[] properties) : base(properties)
         {
             Type = commandType;

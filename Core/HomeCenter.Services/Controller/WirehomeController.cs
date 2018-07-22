@@ -41,6 +41,8 @@ namespace HomeCenter.Model.Core
         private IRoslynCompilerService _roslynCompilerService;
         private ISchedulerFactory _schedulerFactory;
         private IHttpServerService _httpServerService;
+        private IEventAggregator _eventAggregator;
+        private IMapper _mapper;
 
         private HomeCenterConfiguration _homeConfiguration;
 
@@ -75,7 +77,7 @@ namespace HomeCenter.Model.Core
 
         private void RegisterRestCommandHanler()
         {
-            _httpServerService.AddRequestHandler(new RestCommandHandler());
+            _httpServerService.AddRequestHandler(new RestCommandHandler(_eventAggregator, _mapper));
 
             if (_options.HttpServerPort.HasValue)
             {
@@ -94,7 +96,7 @@ namespace HomeCenter.Model.Core
             foreach (var calendarType in calendars)
             {
                 var cal = (ICalendar)calendarType.GetConstructors().FirstOrDefault()?.Invoke(null);
-                await scheduler.AddCalendar(calendarType.GetType().Name, cal, false, false).ConfigureAwait(false);
+                await scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
             }
         }
 
@@ -146,6 +148,8 @@ namespace HomeCenter.Model.Core
             _roslynCompilerService = _container.GetInstance<IRoslynCompilerService>();
             _schedulerFactory = _container.GetInstance<ISchedulerFactory>();
             _httpServerService = _container.GetInstance<IHttpServerService>();
+            _eventAggregator = _container.GetInstance<IEventAggregator>();
+            _mapper = _container.GetInstance<IMapper>();
         }
 
         private void RegisterNativeServices()
@@ -247,33 +251,44 @@ namespace HomeCenter.Model.Core
 
         protected Component GetComponentCommandHandler(Command command)
         {
-            var uid = command.GetPropertyValue(CommandProperties.DeviceUid);
-            if (!uid.HasValue) throw new ArgumentException($"Command GetComponentCommand is missing [{CommandProperties.DeviceUid}] property");
+            if (string.IsNullOrWhiteSpace(command.Uid)) throw new ArgumentException($"Command GetComponentCommand is missing destination uid");
 
-            return _homeConfiguration.Components.FirstOrDefault(c => c.Uid == uid.AsString());
+            return _homeConfiguration.Components.FirstOrDefault(c => c.Uid == command.Uid);
         }
     }
 
     public class RestCommandHandler : IHttpContextPipelineHandler
     {
-        public Task ProcessRequestAsync(HttpContextPipelineHandlerContext context)
+        private readonly IEventAggregator _eventAggregator;
+        private readonly IMapper _mapper;
+
+        public RestCommandHandler(IEventAggregator eventAggregator, IMapper mapper)
+        {
+            _eventAggregator = eventAggregator;
+            _mapper = mapper;
+        }
+
+        public async Task ProcessRequestAsync(HttpContextPipelineHandlerContext context)
         {
             if (context.HttpContext.Request.Method.Equals(HttpMethod.Post.Method) && context.HttpContext.Request.Uri.Equals("/api"))
             {
                 using (var reader = new StreamReader(context.HttpContext.Request.Body))
                 {
-                    var rawCommandString = reader.ReadToEnd();
+                    var rawCommandString = await reader.ReadToEndAsync().ConfigureAwait(false);
                     var result = JsonConvert.DeserializeObject<CommandDTO>(rawCommandString);
+
+                    var command = _mapper.Map<Command>(result);
+                    await _eventAggregator.PublishDeviceCommnd(command).ConfigureAwait(false);
                 }
 
                 //context.HttpContext.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(s.ToUpperInvariant()));
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK; // OK is also default
 
                 context.BreakPipeline = true;
-                return Task.FromResult(0);
+                return;
             }
 
-            return Task.FromResult(0);
+            return;
         }
 
         public Task ProcessResponseAsync(HttpContextPipelineHandlerContext context)
