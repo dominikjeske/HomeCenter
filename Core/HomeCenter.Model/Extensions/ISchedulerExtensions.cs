@@ -1,7 +1,9 @@
-﻿using Quartz;
+﻿using HomeCenter.ComponentModel.Commands;
+using Quartz;
 using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,6 +45,60 @@ namespace HomeCenter.Model.Extensions
             {
                 tb.ModifiedByCalendar(calendar);
             }
+
+            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+
+            return job.Key;
+        }
+
+        public static async Task<List<IJobDetail>> GetJobs(this IScheduler scheduler)
+        {
+            var jobs = new List<IJobDetail>();
+
+            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).ConfigureAwait(false))
+            {
+                jobs.Add(await scheduler.GetJobDetail(jobKey).ConfigureAwait(false));
+            }
+
+            return jobs;
+        }
+
+        public static async Task<List<JobKey>> GetJobKeys(this IScheduler scheduler, string searchPattern)
+        {
+            var jobs = new List<JobKey>();
+
+            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).ConfigureAwait(false))
+            {
+                if (jobKey.Name.IndexOf(searchPattern) > -1)
+                {
+                    jobs.Add(jobKey);
+                }
+            }
+
+            return jobs;
+        }
+
+        public static async Task CancelJob(this IScheduler scheduler, string searchPattern)
+        {
+            var current = (await scheduler.GetJobKeys(searchPattern).ConfigureAwait(false)).FirstOrDefault();
+            if (current != null)
+            {
+                await scheduler.DeleteJob(current).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<JobKey> DelayExecution<T>(this IScheduler scheduler, TimeSpan delay, Command command, string uid, bool cancelExisting = true, CancellationToken token = default) where T : IJob
+        {
+            if (cancelExisting) await scheduler.CancelJob(uid).ConfigureAwait(false);
+
+            var job = JobBuilder.Create<T>()
+                                .WithIdentity(GetUniqueName(uid))
+                                .SetJobData(WrapJobData(command))
+                                .Build();
+
+            var tb = TriggerBuilder.Create()
+                                   .WithIdentity(GetUniqueName(uid))
+                                   .WithSimpleSchedule(s => s.WithInterval(delay));
 
             await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
 

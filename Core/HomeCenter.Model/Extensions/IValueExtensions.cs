@@ -9,6 +9,9 @@ namespace HomeCenter.Model.Extensions
         public static double AsDouble(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is DoubleValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(double).Name}");
 
+        public static bool AsBool(this IValue value, BooleanValue defaultValue = null) => (value ?? defaultValue ?? throw new ArgumentNullException(nameof(value))) is BooleanValue val ? val.Value :
+                   throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(double).Name}");
+
         public static string AsString(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is StringValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(string).Name}");
 

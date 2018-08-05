@@ -48,7 +48,7 @@
     "Components": [
       {
         "Uid": "Lamp1",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Blue lamp"
         },
@@ -56,7 +56,7 @@
           {
             "Uid": "HSRel8_1",
             "Properties": {
-              "PinNumber": "1"
+              "PinNumber": 1
             }
           }
         ],
@@ -66,12 +66,26 @@
               "Type": "PropertyChanged",
               "Properties": {
                 "SourceDeviceUid": "HSPE16InputOnly_1",
-                "PinNumber": "2"
+                "PinNumber": 2
               }
             },
-            "Command": {
-              "Type": "SwitchPowerState"
-            }
+            "Commands": [
+              {
+                "Type": "TurnOnCommand"
+              },
+              {
+                "Type": "TurnOffCommand",
+                "Properties": {
+                  "ExecutionDelay": "00:01:00",
+                  "CancelPrevious": true,
+                  "xxx": "27.05.2018",
+                  "yyy": "27.05.2018 16:00:20",
+                  "zzz": [ "test", "test2" ],
+                  "qqq": 6.2
+                }
+              }
+
+            ]
           }
         ],
         "Converters": {
@@ -104,12 +118,17 @@
               ]
               // default is AND for all but we can change it: "DefaultOperator": "OR" or build custom expression "Expression": "C1 and C2"
             },
-            "Command": {
-              "Type": "TurnOnCommand"
-            },
-            "FinishCommand": {
-              "Type": "TurnOffCommand"
-            }
+            "Commands": [
+              {
+                "Type": "TurnOnCommand"
+              },
+              {
+                "Type": "TurnOffCommand",
+                "Properties": {
+                  "IsFinishComand": true
+                }
+              }
+            ]
           }
         ],
         "AdapterRefs": [
@@ -136,16 +155,18 @@
                 },
                 {
                   "Start": "22:22:00",
-                  "WorkingTime": "00:00:05"      // Finish: 22:22:05
+                  "WorkingTime": "00:00:05" // Finish: 22:22:05
                 }
               ]
             },
-            "Command": {
-              "Type": "TurnOnCommand"
-            },
-            "FinishCommand": {
-              "Type": "TurnOffCommand"
-            }
+            "Commands": [
+              {
+                "Type": "TurnOnCommand"
+              },
+              {
+                "Type": "TurnOffCommand"
+              }
+            ]
           }
         ],
         "AdapterRefs": [
@@ -165,7 +186,7 @@
       {
         "Uid": "HSRel8_1",
         "Type": "HSREL8Adapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "I2cAddress": 100,
           "PoolInterval": 500,

@@ -13,6 +13,7 @@ using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Logging;
 using HomeCenter.Core.Utils;
+using SimpleInjector;
 
 namespace HomeCenter.ComponentModel.Configuration
 {
@@ -22,10 +23,10 @@ namespace HomeCenter.ComponentModel.Configuration
         private readonly IAdapterServiceFactory _adapterServiceFactory;
         private readonly ILogger _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
-        private readonly IContainer _container;
+        private readonly Container _container;
 
         public ConfigurationService(IMapper mapper, IAdapterServiceFactory adapterServiceFactory, ILogService logService,
-            IResourceLocatorService resourceLocatorService, IContainer container)
+            IResourceLocatorService resourceLocatorService, Container container)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _adapterServiceFactory = adapterServiceFactory ?? throw new ArgumentNullException(nameof(adapterServiceFactory));

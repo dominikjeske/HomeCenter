@@ -14,7 +14,7 @@ namespace HomeCenter.ComponentModel.Adapters
     public abstract class Adapter : Actor
     {
         protected readonly IEventAggregator _eventAggregator;
-        protected readonly ISchedulerFactory _schedulerFactory;
+        protected readonly IScheduler _scheduler;
         protected readonly ILogger _logger;
         protected readonly List<string> _requierdProperties = new List<string>();
 
@@ -23,7 +23,7 @@ namespace HomeCenter.ComponentModel.Adapters
         protected Adapter(IAdapterServiceFactory adapterServiceFactory)
         {
             _eventAggregator = adapterServiceFactory.GetEventAggregator();
-            _schedulerFactory = adapterServiceFactory.GetSchedulerFactory();
+            _scheduler = adapterServiceFactory.GetScheduler();
             _logger = adapterServiceFactory.GetLogger().CreatePublisher($"Adapter_{Uid}_Logger");
         }
 
@@ -34,11 +34,7 @@ namespace HomeCenter.ComponentModel.Adapters
             return newValue;
         }
 
-        protected async Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob
-        {
-            var scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
-            await scheduler.ScheduleInterval<T, Adapter>(interval, this, Uid, _disposables.Token).ConfigureAwait(false);
-        }
+        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => _scheduler.ScheduleInterval<T, Adapter>(interval, this, Uid, _disposables.Token);
 
         protected override void LogException(Exception ex) => _logger.Error(ex, $"Unhanded adapter {Uid} exception");
     }

@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.Tests.ComponentModel;
+using HomeCenter.Core.EventAggregator;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Extensions;
 
 namespace HomeCenter.Extensions.Tests
 {
@@ -16,12 +20,28 @@ namespace HomeCenter.Extensions.Tests
         [TestMethod]
         public async Task ComponentCommandExecuteShouldGetResult()
         {
+            var dic = new Dictionary<string, string>();
+
             var (controller, container) = await new ControllerBuilder().WithConfiguration("componentConfiguration")
                                                                        .BuildAndRun()
                                                                        .ConfigureAwait(false);
 
 
-            await Task.Delay(TimeSpan.FromHours(1));
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+
+            var ev = new Event
+            {
+                Type = EventType.PropertyChanged
+            };
+            ev.SetPropertyValue(EventProperties.SourceDeviceUid, (StringValue)"HSPE16InputOnly_1");
+            ev.SetPropertyValue("PinNumber", (IntValue)2);
+            ev.SetPropertyValue(EventProperties.EventType, (StringValue)EventType.PropertyChanged);
+
+            var eventAggregator = container.GetInstance<IEventAggregator>();
+            await eventAggregator.PublishDeviceEvent(ev).ConfigureAwait(false);
+
+            await Task.Delay(TimeSpan.FromHours(5));
 
             var component = await controller.ExecuteCommand<Component>(CommandFatory.GetComponentCommand("RemoteLamp")).ConfigureAwait(false);
 

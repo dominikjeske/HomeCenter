@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HomeCenter.ComponentModel;
 using HomeCenter.ComponentModel.Components;
+using System.ComponentModel;
 
 namespace HomeCenter.Core.ComponentModel.Configuration
 {
@@ -33,7 +34,8 @@ namespace HomeCenter.Core.ComponentModel.Configuration
         [JsonConverter(typeof(PropertyDictionaryConverter))]
         public Dictionary<string, Property> Properties { get; set; }
 
-        [JsonProperty("Type")]
+        [DefaultValue("Component")]
+        [JsonProperty("Type", DefaultValueHandling = DefaultValueHandling.Populate)]
         public string Type { get; set; }
     }
 }

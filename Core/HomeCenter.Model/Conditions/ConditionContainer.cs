@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.Core.Services.DependencyInjection;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using HomeCenter.Core.Services.DependencyInjection;
 
 namespace HomeCenter.Conditions
 {
@@ -9,17 +9,11 @@ namespace HomeCenter.Conditions
     {
         private const string CONDITION_NAME = "C";
         private const string DEFAULT_OPERATOR = "AND";
-        public string Expression { get; set; }
 
-        public bool IsInverted { get; set; }
-        public string DefaultOperator { get; set; } = DEFAULT_OPERATOR;
-
-        public IList<IValidable> Conditions { get; set; } = new List<IValidable>();
-
-        public ConditionContainer()
-        {
-
-        }
+        [Map] public string Expression { get; set; } 
+        [Map] public bool IsInverted { get; private set; }
+        [Map] public string DefaultOperator { get; private set; } = DEFAULT_OPERATOR;
+        [Map] public IList<IValidable> Conditions { get; private set; } = new List<IValidable>();
 
         public async Task<bool> Validate()
         {
@@ -43,11 +37,10 @@ namespace HomeCenter.Conditions
         private StringBuilder BuildExpressionIfEmpty()
         {
             int counter = 1;
-            StringBuilder builder = null;
+            StringBuilder builder = new StringBuilder();
 
             if (string.IsNullOrWhiteSpace(Expression))
             {
-                builder = new StringBuilder();
                 foreach (var condition in Conditions)
                 {
                     if (builder.Length > 0)
@@ -60,7 +53,7 @@ namespace HomeCenter.Conditions
             }
             else
             {
-                builder = new StringBuilder(Expression);
+                builder.Append(Expression);
             }
 
             counter = 1;

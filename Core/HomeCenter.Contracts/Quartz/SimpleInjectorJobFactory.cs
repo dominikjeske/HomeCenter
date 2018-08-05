@@ -1,15 +1,15 @@
 ﻿using Quartz;
 using Quartz.Spi;
+using SimpleInjector;
 using System;
-using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.Core.Services.Quartz
+namespace HomeCenter.Core.Quartz
 {
     public class SimpleInjectorJobFactory : IJobFactory
     {
-        private readonly IContainer _container;
+        private readonly Container _container;
 
-        public SimpleInjectorJobFactory(IContainer container)
+        public SimpleInjectorJobFactory(Container container)
         {
             _container = container ?? throw new ArgumentNullException(nameof(container));
         }

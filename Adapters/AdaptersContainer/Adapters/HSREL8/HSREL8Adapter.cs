@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Adapters.Drivers;
+using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
 
@@ -21,6 +22,16 @@ namespace HomeCenter.ComponentModel.Adapters
             await base.Initialize().ConfigureAwait(false);
 
             SetState(new byte[] { 0x00, 255 }, true);
+        }
+
+        public void TurnOnCommandHandler(Command message)
+        {
+            
+        }
+
+        public void TurnOffCommandHandler(Command message)
+        {
+
         }
     }
 }

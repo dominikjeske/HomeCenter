@@ -1,12 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
-using Moq;
-using Quartz;
-using Quartz.Spi;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Configuration;
 using HomeCenter.Core.EventAggregator;
@@ -15,16 +8,22 @@ using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Logging;
-using HomeCenter.Core.Services.Quartz;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Networking;
+using Moq;
+using SimpleInjector;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Tests.ComponentModel
 {
     public class ControllerBuilder
     {
-        private IContainer _container;
+        private Container _container;
         private string _configuration;
         private string _repositoryPath;
 
@@ -56,15 +55,15 @@ namespace HomeCenter.Core.Tests.ComponentModel
             return new HomeCenterController(GetControllerOptions());
         }
 
-        public async Task<(HomeCenterController controller, IContainer container)> BuildAndRun()
+        public async Task<(HomeCenterController controller, Container container)> BuildAndRun()
         {
             var controller = Build();
             await controller.Initialize().ConfigureAwait(false);
-            
+
             return (controller, _container);
         }
 
-        private void RegisterRaspberryServices(IContainer container)
+        private void RegisterRaspberryServices(Container container)
         {
             var transferResult = new NativeI2cTransferResult() { Status = NativeI2cTransferStatus.FullTransfer, BytesTransferred = 0 };
             var i2cBus = Mock.Of<INativeI2cBus>();
@@ -74,14 +73,13 @@ namespace HomeCenter.Core.Tests.ComponentModel
             Mock.Get(i2cNativeDevice).Setup(s => s.ReadPartial(It.IsAny<byte[]>())).Returns(transferResult);
 
             container.RegisterInstance(i2cBus);
-            container.RegisterSingleton(Mock.Of<INativeGpioController>());
-            container.RegisterSingleton(Mock.Of<INativeSerialDevice>());
-            container.RegisterSingleton(Mock.Of<INativeSoundPlayer>());
-            container.RegisterSingleton(Mock.Of<INativeStorage>());
-            container.RegisterSingleton(Mock.Of<INativeTimerSerice>());
+            container.RegisterInstance(Mock.Of<INativeGpioController>());
+            container.RegisterInstance(Mock.Of<INativeSerialDevice>());
+            container.RegisterInstance(Mock.Of<INativeSoundPlayer>());
+            container.RegisterInstance(Mock.Of<INativeStorage>());
         }
 
-        private void RegisterContainerServices(IContainer container)
+        private async Task RegisterContainerServices(Container container)
         {
             _container = container;
 
@@ -95,7 +93,6 @@ namespace HomeCenter.Core.Tests.ComponentModel
             var configFile = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json");
             Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(adaptersRepo);
             Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(configFile);
-            
 
             Mock.Get(logService).Setup(x => x.CreatePublisher(It.IsAny<string>())).Returns(logger);
             Mock.Get(logger).Setup(x => x.Error(It.IsAny<string>())).Callback<string>(message => Debug.WriteLine($"Error: {message}"));
@@ -103,7 +100,7 @@ namespace HomeCenter.Core.Tests.ComponentModel
 
             container.RegisterInstance(logService);
             container.RegisterInstance(resourceLocator);
-            
+
             container.RegisterInstance(Mock.Of<ISerialMessagingService>());
             container.RegisterSingleton<IEventAggregator, EventAggregator.EventAggregator>();
             container.RegisterSingleton<IConfigurationService, ConfigurationService>();
@@ -111,11 +108,10 @@ namespace HomeCenter.Core.Tests.ComponentModel
             container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             container.RegisterSingleton<IHttpMessagingService, HttpMessagingService>();
             container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            container.RegisterService<IHttpServerService, HttpServerService>(100);
+            container.RegisterSingleton<IHttpServerService, HttpServerService>();
 
             //Quartz
-            container.RegisterSingleton<IJobFactory, SimpleInjectorJobFactory>();
-            container.RegisterSingleton<ISchedulerFactory, SimpleInjectorSchedulerFactory>();
+            await container.RegisterQuartz().ConfigureAwait(false);
 
             //Auto mapper
             container.RegisterSingleton(GetMapper);

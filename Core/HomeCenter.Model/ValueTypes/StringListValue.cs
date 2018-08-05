@@ -1,10 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class StringListValue : ValueObject, IValue
     {
+        public StringListValue(IEnumerable<string> list) => Value = list.ToArray();
+
         public StringListValue(params string[] value) => Value = value;
 
         public string[] Value

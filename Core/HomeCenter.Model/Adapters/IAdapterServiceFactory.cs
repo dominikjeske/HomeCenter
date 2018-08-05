@@ -14,7 +14,7 @@ namespace HomeCenter.ComponentModel.Adapters
 
         ILogService GetLogger();
 
-        ISchedulerFactory GetSchedulerFactory();
+        IScheduler GetScheduler();
 
         ISerialMessagingService GetUartService();
     }

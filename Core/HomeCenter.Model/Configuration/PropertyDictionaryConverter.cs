@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.ValueTypes;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.ValueTypes;
 
 namespace HomeCenter.Core.ComponentModel.Configuration
 {
@@ -29,9 +29,37 @@ namespace HomeCenter.Core.ComponentModel.Configuration
                 {
                     value = new IntValue(property.Value.Value<int>());
                 }
+                else if (property.Value.Type == JTokenType.Boolean)
+                {
+                    value = new BooleanValue(property.Value.Value<bool>());
+                }
+                else if (property.Value.Type == JTokenType.Array)
+                {
+                    value = new StringListValue(property.Value.Values<string>());
+                }
+                else if (property.Value.Type == JTokenType.Date)
+                {
+                    value = new DateTimeValue(property.Value.Value<DateTime>());
+                }
+                else if (property.Value.Type == JTokenType.TimeSpan)
+                {
+                    value = new TimeSpanValue(property.Value.Value<TimeSpan>());
+                }
                 else
                 {
-                    value = new StringValue(property.Value.Value<string>());
+                    var stringValue = property.Value.Value<string>();
+                    if (TimeSpan.TryParse(stringValue, out var time))
+                    {
+                        value = new TimeSpanValue(time);
+                    }
+                    else if (DateTime.TryParse(stringValue, out var date))
+                    {
+                        value = new DateTimeValue(date);
+                    }
+                    else
+                    {
+                        value = new StringValue(stringValue);
+                    }
                 }
 
                 var newProperty = new Property

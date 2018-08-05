@@ -1,17 +1,17 @@
-﻿using Quartz.Spi;
+﻿using Quartz;
+using Quartz.Spi;
+using SimpleInjector;
 using System;
-using Quartz;
 using System.Threading.Tasks;
-using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.Core.Services.Quartz
+namespace HomeCenter.Core.Quartz
 {
     internal class JobWrapper : IJob
     {
         private readonly TriggerFiredBundle _bundle;
-        private readonly IContainer _container;
+        private readonly Container _container;
 
-        public JobWrapper(TriggerFiredBundle bundle, IContainer container)
+        public JobWrapper(TriggerFiredBundle bundle, Container container)
         {
             _bundle = bundle;
             _container = container;

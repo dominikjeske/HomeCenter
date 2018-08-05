@@ -5,6 +5,7 @@ using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Contracts.Exceptions;
 using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
@@ -22,7 +23,8 @@ namespace HomeCenter.ComponentModel.Components
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
-        private readonly ISchedulerFactory _schedulerFactory;
+        private readonly IScheduler _scheduler;
+
         private List<string> _tagCache;
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
@@ -31,16 +33,17 @@ namespace HomeCenter.ComponentModel.Components
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
-        public Component(IEventAggregator eventAggregator, ILogService logService, ISchedulerFactory schedulerFactory)
+        public Component(IEventAggregator eventAggregator, ILogService logService, IScheduler scheduler)
         {
             _eventAggregator = eventAggregator;
             _logger = logService.CreatePublisher($"Component_{Uid}_logger");
-            _schedulerFactory = schedulerFactory;
+            _scheduler = scheduler;
         }
 
         public override async Task Initialize()
         {
             if (!IsEnabled) return;
+
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
             SubscribeForRemoteCommands();
@@ -58,18 +61,20 @@ namespace HomeCenter.ComponentModel.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule != null))
             {
-                var scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
+                trigger.Commands.ForEach(c => c[CommandProperties.CommandSource] = (StringValue)Uid);
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    await scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    //TODO DNF
+                    //await scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        //TODO DNF
+                        //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
                 }
                 else
@@ -83,7 +88,28 @@ namespace HomeCenter.ComponentModel.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                _disposables.Add(_eventAggregator.SubscribeForDeviceEvent(DeviceTriggerHandler, trigger.Event.GetPropertiesStrings(), trigger.Event.Type));
+                trigger.Commands.ForEach(c => c[CommandProperties.CommandSource] = (StringValue)Uid);
+                var subscription = _eventAggregator.SubscribeForDeviceEvent(DeviceTriggerHandler, trigger.Event.GetPropertiesStrings(), trigger.Event.Type);
+                _disposables.Add(subscription);
+            }
+        }
+
+        private async Task DeviceTriggerHandler(IMessageEnvelope<Event> deviceEvent)
+        {
+            var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(deviceEvent.Message));
+            if (await (trigger.ValidateCondition()).ConfigureAwait(false))
+            {
+                foreach(var command in trigger.Commands)
+                {
+                    if(command.ContainsProperty(CommandProperties.ExecutionDelay))
+                    {
+                        var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
+                        await _scheduler.DelayExecution<DelayCommandJob>(command[CommandProperties.ExecutionDelay].AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    await ExecuteCommand(command).ConfigureAwait(false);
+                }
             }
         }
 
@@ -92,7 +118,7 @@ namespace HomeCenter.ComponentModel.Components
             foreach (var adapter in _adapters)
             {
                 var capabilities = await _eventAggregator.QueryDeviceAsync<DiscoveryResponse>(new DeviceCommand(CommandType.DiscoverCapabilities, adapter.Uid)).ConfigureAwait(false);
-                if (capabilities == null) throw new Exception($"Failed to initialize adapter {adapter.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapter.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
                 MapCapabilitiesToAdapters(adapter, capabilities.SupportedStates);
                 BuildCapabilityStates(capabilities);
@@ -184,14 +210,7 @@ namespace HomeCenter.ComponentModel.Components
             await _eventAggregator.PublishDeviceEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
 
-        private async Task DeviceTriggerHandler(IMessageEnvelope<Event> deviceEvent)
-        {
-            var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(deviceEvent.Message));
-            if (await (trigger?.Condition?.Validate()).ConfigureAwait(false))
-            {
-                await ExecuteCommand(trigger.Command).ConfigureAwait(false);
-            }
-        }
+       
 
         protected IReadOnlyCollection<string> SupportedCapabilitiesCommandHandler(Command command) => _capabilities.Values
                                                                                                 .Select(cap => cap.GetPropertyValue(StateProperties.StateName))

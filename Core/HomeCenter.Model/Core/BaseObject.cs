@@ -12,6 +12,7 @@ namespace HomeCenter.ComponentModel
 {
     public class BaseObject
     {
+        //TODO do we need this?
         private readonly Subject<Event> _events = new Subject<Event>();
         [Map] private Dictionary<string, Property> _properties { get; set; } = new Dictionary<string, Property>();
         protected bool SupressPropertyChangeEvent { get; set; }
@@ -25,6 +26,9 @@ namespace HomeCenter.ComponentModel
         public BaseObject()
         {
         }
+
+        public override string ToString() => $"Type: [{Type}] | Uid: [{Uid}] | Properties: [{GetPropertiesStrings()?.ToFormatedString()}] | Tags: [{Tags.ToFormatedString()}]";
+        
 
         public BaseObject(params Property[] properties)
         {
@@ -83,5 +87,6 @@ namespace HomeCenter.ComponentModel
         }
 
         public IDictionary<string, string> GetPropertiesStrings() => _properties.Values.ToDictionary(k => k.Key, v => v.Value?.ToString());
+        public IEnumerable<string> GetPropetiesKeys() => _properties.Keys;
     }
 }

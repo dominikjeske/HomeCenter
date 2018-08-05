@@ -46,9 +46,9 @@ namespace HomeCenter.Model.Extensions
             return eventAggregate.QueryAsync<T, R>(message, filter, cancellationToken, chain);
         }
 
-        public static void RegisterHandlers(this IEventAggregator eventAggregator, IContainer container)
+        public static void RegisterHandlers(this IEventAggregator eventAggregator, Container container)
         {
-            foreach (var type in container.GetRegistredTypes().Where(x => x.ServiceType.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IHandler<>))))
+            foreach (var type in container.GetCurrentRegistrations().Where(x => x.ServiceType.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IHandler<>))))
             {
                 foreach (var handlerInterface in type.ServiceType.GetInterfaces()
                                                         .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IHandler<>) && x.GenericTypeArguments.Length == 1))
@@ -114,7 +114,7 @@ namespace HomeCenter.Model.Extensions
         public static Task PublishDeviceEvent<T>(this IEventAggregator eventAggregator, T message) where T : Event
         {
             var routingAttributes = message.RoutingAttributes();
-            if (routingAttributes != null)
+            if (routingAttributes?.Count() > 0)
             {
                 return PublishDeviceEvent(eventAggregator, message, routingAttributes);
             }
@@ -126,8 +126,10 @@ namespace HomeCenter.Model.Extensions
         {
             var routing = routerAttributes.ToDictionary(k => k, v => message[v].ToString());
 
-            routing.Add(EventProperties.SourceDeviceUid, message[EventProperties.SourceDeviceUid].ToString());
-            routing.Add(EventProperties.EventType, message.Type);
+            routing[EventProperties.SourceDeviceUid] = message[EventProperties.SourceDeviceUid].ToString();
+            routing[EventProperties.EventType] = message.Type;
+
+
 
             return eventAggregator.Publish(message, new RoutingFilter(message[EventProperties.SourceDeviceUid].ToString(), routing));
         }

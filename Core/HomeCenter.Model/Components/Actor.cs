@@ -163,15 +163,15 @@ namespace HomeCenter.ComponentModel.Components
         {
             if (_asyncQueryHandlers.ContainsKey(command.Type))
             {
-                return _asyncQueryHandlers?[command.Type]?.Invoke(command);
+                return _asyncQueryHandlers[command.Type].Invoke(command);
             }
             else if (_asyncCommandHandlers.ContainsKey(command.Type))
             {
-                return _asyncCommandHandlers?[command.Type]?.Invoke(command).Cast<object>(VoidResult.Void);
+                return _asyncCommandHandlers[command.Type].Invoke(command).Cast<object>(VoidResult.Void);
             }
             else if (_commandHandlers.ContainsKey(command.Type))
             {
-                _commandHandlers?[command.Type]?.Invoke(command);
+                _commandHandlers[command.Type].Invoke(command);
                 return Task.FromResult<object>(VoidResult.Void);
             }
             else

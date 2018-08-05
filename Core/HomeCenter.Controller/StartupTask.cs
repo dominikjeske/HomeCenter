@@ -5,6 +5,7 @@ using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Logging;
 using HomeCenter.Model.Core;
 using HomeCenter.Raspberry;
+using SimpleInjector;
 
 namespace HomeCenter.Controller
 {
@@ -40,14 +41,13 @@ namespace HomeCenter.Controller
             Loggers = new List<ILogAdapter> { new RaspberryLoggingService() }
         };
 
-        private void RegisterRaspberryServices(IContainer container)
+        private void RegisterRaspberryServices(Container container)
         {
             container.RegisterSingleton<INativeGpioController, RaspberryGpioController>();
             container.RegisterSingleton<INativeI2cBus, RaspberryI2cBus>();
             container.RegisterSingleton<INativeSerialDevice, RaspberrySerialDevice>();
             container.RegisterSingleton<INativeSoundPlayer, RaspberrySoundPlayer>();
             container.RegisterSingleton<INativeStorage, RaspberryStorage>();
-            container.RegisterSingleton<INativeTimerSerice, RaspberryTimerSerice>();
         }
     }
 }

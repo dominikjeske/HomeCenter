@@ -1,17 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using CSharpFunctionalExtensions;
-using HTTPnet.Core.Pipeline;
-using Newtonsoft.Json;
-using Quartz;
-using Quartz.Spi;
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Components;
@@ -22,24 +11,34 @@ using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Logging;
-using HomeCenter.Core.Services.Quartz;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Networking;
+using HTTPnet.Core.Pipeline;
+using Newtonsoft.Json;
+using Quartz;
+using SimpleInjector;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
     public class HomeCenterController : Actor
     {
-        private readonly IContainer _container;
+        private readonly Container _container;
         private readonly ControllerOptions _options;
 
         private ILogger _log;
         private IConfigurationService _confService;
         private IResourceLocatorService _resourceLocator;
         private IRoslynCompilerService _roslynCompilerService;
-        private ISchedulerFactory _schedulerFactory;
+        private IScheduler _scheduler;
         private IHttpServerService _httpServerService;
         private IEventAggregator _eventAggregator;
         private IMapper _mapper;
@@ -48,8 +47,10 @@ namespace HomeCenter.Model.Core
 
         public HomeCenterController(ControllerOptions options)
         {
-            _container = new HomeCenterContainer();
+            _container = new Container();
             _options = options;
+
+            _disposables.Add(_container);
         }
 
         public override async Task Initialize()
@@ -58,7 +59,7 @@ namespace HomeCenter.Model.Core
             {
                 await base.Initialize().ConfigureAwait(false);
 
-                RegisterServices();
+                await RegisterServices().ConfigureAwait(false);
                 RegisterRestCommandHanler();
 
                 LoadDynamicAdapters(_options.AdapterMode);
@@ -91,20 +92,15 @@ namespace HomeCenter.Model.Core
                                  .SelectMany(s => s.GetTypes())
                                  .Where(p => typeof(ICalendar).IsAssignableFrom(p));
 
-            var scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
 
             foreach (var calendarType in calendars)
             {
                 var cal = (ICalendar)calendarType.GetConstructors().FirstOrDefault()?.Invoke(null);
-                await scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
+                await _scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
             }
         }
 
-        private async Task RunScheduler()
-        {
-            var scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
-            await scheduler.Start(_disposables.Token).ConfigureAwait(false);
-        }
+        private Task RunScheduler() => _scheduler.Start(_disposables.Token);
 
         private void LoadDynamicAdapters(AdapterMode adapterMode)
         {
@@ -127,11 +123,11 @@ namespace HomeCenter.Model.Core
             }
         }
 
-        private void RegisterServices()
+        private async Task RegisterServices()
         {
             _container.RegisterSingleton(() => _container);
 
-            RegisterBaseServices();
+            await RegisterBaseServices().ConfigureAwait(false);
 
             RegisterNativeServices();
 
@@ -146,7 +142,7 @@ namespace HomeCenter.Model.Core
             _confService = _container.GetInstance<IConfigurationService>();
             _resourceLocator = _container.GetInstance<IResourceLocatorService>();
             _roslynCompilerService = _container.GetInstance<IRoslynCompilerService>();
-            _schedulerFactory = _container.GetInstance<ISchedulerFactory>();
+            _scheduler = _container.GetInstance<IScheduler>();
             _httpServerService = _container.GetInstance<IHttpServerService>();
             _eventAggregator = _container.GetInstance<IEventAggregator>();
             _mapper = _container.GetInstance<IMapper>();
@@ -159,12 +155,9 @@ namespace HomeCenter.Model.Core
             _options.NativeServicesRegistration?.Invoke(_container);
         }
 
-        private void RegisterBaseServices()
-        {
-            (_options.BaseServicesRegistration ?? RegisterBaseServices).Invoke(_container);
-        }
+        private Task RegisterBaseServices() => (_options.BaseServicesRegistration ?? RegisterBaseServices).Invoke(_container);
 
-        private void RegisterBaseServices(IContainer container)
+        private async Task RegisterBaseServices(Container container)
         {
             container.RegisterCollection(_options.Loggers);
 
@@ -174,15 +167,13 @@ namespace HomeCenter.Model.Core
             container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
 
-            container.RegisterService<ISerialMessagingService, SerialMessagingService>();
-            container.RegisterService<II2CBusService, I2CBusService>();
-            container.RegisterService<ILogService, LogService>();
-            container.RegisterService<IHttpServerService, HttpServerService>(100);
+            container.RegisterSingleton<ISerialMessagingService, SerialMessagingService>();
+            container.RegisterSingleton<II2CBusService, I2CBusService>();
+            container.RegisterSingleton<ILogService, LogService>();
+            container.RegisterSingleton<IHttpServerService, HttpServerService>();
 
             //Quartz
-            container.RegisterSingleton<IJobFactory, SimpleInjectorJobFactory>();
-            container.RegisterSingleton<ISchedulerFactory, SimpleInjectorSchedulerFactory>();
-            container.RegisterSingleton(() => container.GetInstance<ISchedulerFactory>().GetScheduler().Result);
+            await container.RegisterQuartz().ConfigureAwait(false);
 
             //Auto mapper
             container.RegisterSingleton(GetMapper);
@@ -230,11 +221,8 @@ namespace HomeCenter.Model.Core
 
         private async Task InitializeServices()
         {
-            var services = _container.GetSerives();
-
-            while (services.Count > 0)
+            foreach (var service in _container.GetSerives())
             {
-                var service = services.Dequeue();
                 try
                 {
                     await service.Initialize().ConfigureAwait(false);
