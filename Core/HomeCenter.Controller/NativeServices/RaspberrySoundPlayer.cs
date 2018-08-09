@@ -5,7 +5,7 @@ using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Raspberry
 {
-    internal class RaspberrySoundPlayer : INativeSoundPlayer
+    internal class RaspberrySoundPlayer : ISoundPlayer
     {
         private readonly MediaPlayer _player;
         public Action SoundEnd { get; set; }

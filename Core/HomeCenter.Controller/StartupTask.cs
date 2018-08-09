@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.Services.Configuration;
 using Windows.ApplicationModel.Background;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.Logging;
-using HomeCenter.Model.Core;
-using HomeCenter.Raspberry;
-using SimpleInjector;
 
 namespace HomeCenter.Controller
 {
     public sealed class StartupTask : IBackgroundTask
     {
-        private HomeCenterController _HomeCenterController;
+        private Model.Core.Controller _controller;
+        private IBootstrapper _bootstrapper;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -19,8 +14,8 @@ namespace HomeCenter.Controller
             taskInstance.Canceled += TaskInstance_Canceled;
             try
             {
-                _HomeCenterController = new HomeCenterController(GetControllerOptions());
-                await _HomeCenterController.Initialize().ConfigureAwait(false);
+                _bootstrapper = new RaspberryBootstrapper();
+                _controller = await _bootstrapper.BuildController().ConfigureAwait(false);
             }
             catch (System.Exception)
             {
@@ -30,24 +25,8 @@ namespace HomeCenter.Controller
 
         private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
-            _HomeCenterController.Dispose();
-        }
-
-        private ControllerOptions GetControllerOptions() => new ControllerOptions
-        {
-            NativeServicesRegistration = RegisterRaspberryServices,
-            AdapterMode = AdapterMode.Embedded,
-            // TODO change this to dynamic service load like adapters
-            Loggers = new List<ILogAdapter> { new RaspberryLoggingService() }
-        };
-
-        private void RegisterRaspberryServices(Container container)
-        {
-            container.RegisterSingleton<INativeGpioController, RaspberryGpioController>();
-            container.RegisterSingleton<INativeI2cBus, RaspberryI2cBus>();
-            container.RegisterSingleton<INativeSerialDevice, RaspberrySerialDevice>();
-            container.RegisterSingleton<INativeSoundPlayer, RaspberrySoundPlayer>();
-            container.RegisterSingleton<INativeStorage, RaspberryStorage>();
+            _controller.Dispose();
+            _bootstrapper.Dispose();
         }
     }
 }

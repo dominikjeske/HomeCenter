@@ -9,8 +9,8 @@ using HomeCenter.Contracts.Exceptions;
 using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Model.Extensions;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,11 @@ namespace HomeCenter.ComponentModel.Components
     public class Component : Actor
     {
         private readonly IEventAggregator _eventAggregator;
-        private readonly ILogger _logger;
         private readonly IScheduler _scheduler;
 
         private List<string> _tagCache;
+        private readonly ILogger<Component> _logger;
+
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
         private Dictionary<string, AdapterReference> _eventSources { get; } = new Dictionary<string, AdapterReference>();
@@ -33,11 +34,11 @@ namespace HomeCenter.ComponentModel.Components
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
-        public Component(IEventAggregator eventAggregator, ILogService logService, IScheduler scheduler)
+        public Component(IEventAggregator eventAggregator, ILogger<Component> logger, IScheduler scheduler)
         {
             _eventAggregator = eventAggregator;
-            _logger = logService.CreatePublisher($"Component_{Uid}_logger");
             _scheduler = scheduler;
+            _logger = logger;
         }
 
         public override async Task Initialize()
@@ -165,7 +166,7 @@ namespace HomeCenter.ComponentModel.Components
             return routerAttributes;
         }
 
-        protected override void LogException(Exception ex) => _logger.Error(ex, $"Unhanded component {Uid} exception");
+        protected override void LogException(Exception ex) => _logger.LogError(ex, $"Unhanded component {Uid} exception");
 
         /// <summary>
         /// All command not handled by the component directly are routed to adapters

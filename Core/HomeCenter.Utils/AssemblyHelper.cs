@@ -25,7 +25,7 @@ namespace HomeCenter.Core.Utils
             return list;
         }
 
-        public static IEnumerable<Type> GetAllInherited<T>() => GetProjectAssemblies().SelectMany(s => s.GetTypes())
+        public static IEnumerable<Type> GetAllTypes<T>() => GetProjectAssemblies().SelectMany(s => s.GetTypes())
                                                                                       .Where(p => typeof(T).IsAssignableFrom(p) && !p.IsAbstract);
 
         public static IEnumerable<Type> GetAllInherited<T>(Assembly assembly) => assembly.GetTypes().Where(p => typeof(T).IsAssignableFrom(p) && !p.IsAbstract);

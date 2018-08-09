@@ -6,9 +6,9 @@ using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Raspberry
 {
-    internal class RaspberryI2cBus : INativeI2cBus
+    internal class RaspberryI2cBus : II2cBus
     {
-        public INativeI2cDevice CreateDevice(string deviceId, int slaveAddress)
+        public II2cDevice CreateDevice(string deviceId, int slaveAddress)
         {
             var settings = new I2cConnectionSettings(slaveAddress)
             {

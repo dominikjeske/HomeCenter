@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.Core.Interface.Native
 {
-    public enum NativeGpioSharingMode
+    public enum GpioSharingMode
     {
         //
         // Summary:

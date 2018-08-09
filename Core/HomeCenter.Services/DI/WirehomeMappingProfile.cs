@@ -35,9 +35,7 @@ namespace HomeCenter.Core.Services.DependencyInjection
         public IList<IValidable> Resolve(ConditionContainerDTO source, ConditionContainer destination, IList<IValidable> destMember, ResolutionContext context)
         {
             IList<IValidable> list = new List<IValidable>();
-            var types = AssemblyHelper.GetProjectAssemblies()
-                                      .SelectMany(s => s.GetTypes())
-                                      .Where(p => typeof(IValidable).IsAssignableFrom(p));
+            var types = AssemblyHelper.GetAllTypes<IValidable>();
 
             foreach (var condition in source.Conditions)
             {

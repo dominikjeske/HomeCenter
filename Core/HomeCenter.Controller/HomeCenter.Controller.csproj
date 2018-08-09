@@ -105,6 +105,7 @@
     <Compile Include="NativeServices\RaspberrySerialDevice.cs" />
     <Compile Include="NativeServices\RaspberrySoundPlayer.cs" />
     <Compile Include="NativeServices\RaspberryStorage.cs" />
+    <Compile Include="RaspberryBootstrapper.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -143,10 +144,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Contracts\HomeCenter.Contracts.csproj">
-      <Project>{7e497f7e-36b1-49f3-93a2-d0cd987f1f56}</Project>
-      <Name>HomeCenter.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj">
       <Project>{b46acfce-d828-45af-ae97-8e471e2b155b}</Project>
       <Name>HomeCenter.Model</Name>

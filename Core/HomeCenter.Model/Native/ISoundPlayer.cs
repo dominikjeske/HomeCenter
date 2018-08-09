@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Core.Interface.Native
 {
-    public interface INativeSoundPlayer
+    public interface ISoundPlayer
     {
         Action SoundEnd { get; set; }
         void Pause();

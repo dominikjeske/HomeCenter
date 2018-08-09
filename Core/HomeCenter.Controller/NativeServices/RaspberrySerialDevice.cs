@@ -7,7 +7,7 @@ using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Raspberry
 {
-    internal class RaspberrySerialDevice : INativeSerialDevice
+    internal class RaspberrySerialDevice : ISerialDevice
     {
         private SerialDevice _serialDevice;
 

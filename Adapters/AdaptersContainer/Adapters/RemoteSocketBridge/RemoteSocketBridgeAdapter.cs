@@ -78,7 +78,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
 
-            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue((byte)_I2cAddress.Value), package).Status == I2CTransferStatus.FullTransfer)
+            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue((byte)_I2cAddress.Value), package).Status == I2cTransferStatus.FullTransfer)
             {
                 await UpdateState(dipswitchCode).ConfigureAwait(false);
             }
@@ -88,7 +88,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
 
-            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package).Status == I2CTransferStatus.FullTransfer)
+            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package).Status == I2cTransferStatus.FullTransfer)
             {
                 await UpdateState(dipswitchCode).ConfigureAwait(false);
             }

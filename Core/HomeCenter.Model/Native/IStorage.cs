@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.Core.Interface.Native
 {
-    public interface INativeStorage
+    public interface IStorage
     {
         string LocalFolderPath();
     }

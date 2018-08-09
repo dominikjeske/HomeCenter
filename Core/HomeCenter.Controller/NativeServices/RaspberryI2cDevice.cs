@@ -4,7 +4,7 @@ using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Raspberry
 {
-    internal class RaspberryI2cDevice : INativeI2cDevice
+    internal class RaspberryI2cDevice : II2cDevice
     {
         private readonly I2cDevice _i2CDevice;
  
@@ -14,22 +14,22 @@ namespace HomeCenter.Raspberry
         }
         public void Dispose() => _i2CDevice?.Dispose();
 
-        public NativeI2cTransferResult WritePartial(byte[] buffer)
+        public I2cTransferResult WritePartial(byte[] buffer)
         {
             var result = _i2CDevice.WritePartial(buffer);
-            return new NativeI2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (NativeI2cTransferStatus)result.Status };
+            return new Core.Interface.Native.I2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (Core.Interface.Native.I2cTransferStatus)result.Status };
         }
 
-        public NativeI2cTransferResult ReadPartial(byte[] buffer)
+        public I2cTransferResult ReadPartial(byte[] buffer)
         {
             var result = _i2CDevice.ReadPartial(buffer);
-            return new NativeI2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (NativeI2cTransferStatus)result.Status };
+            return new Core.Interface.Native.I2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (Core.Interface.Native.I2cTransferStatus)result.Status };
         }
 
-        public NativeI2cTransferResult WriteReadPartial(byte[] writeBuffer, byte[] readBuffer)
+        public I2cTransferResult WriteReadPartial(byte[] writeBuffer, byte[] readBuffer)
         {
             var result = _i2CDevice.WriteReadPartial(writeBuffer, readBuffer);
-            return new NativeI2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (NativeI2cTransferStatus)result.Status };
+            return new Core.Interface.Native.I2cTransferResult { BytesTransferred = result.BytesTransferred, Status = (Core.Interface.Native.I2cTransferStatus)result.Status };
         }
     }
 }

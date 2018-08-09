@@ -2,21 +2,22 @@
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using HomeCenter.Core.EventAggregator;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Core.Interface.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Core.Services
 {
     public class UdpBroadcastService : IUdpBroadcastService
     {
-        private readonly ILogger _logService;
+        private readonly ILogger<UdpBroadcastService> _logService;
         private readonly IEventAggregator _eventAggregator;
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
+        private readonly ILogger<UdpBroadcastService> _logger;
 
-        public UdpBroadcastService(ILogService logService, IEventAggregator eventAggregator)
+        public UdpBroadcastService(ILogger<UdpBroadcastService> logger, IEventAggregator eventAggregator)
         {
-            _logService = logService.CreatePublisher(nameof(UdpBroadcastService));
             _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
+            _logger = logger;
         }
 
         public void Dispose() => _disposeContainer.Dispose();
@@ -48,7 +49,7 @@ namespace HomeCenter.Core.Services
             }
             catch (Exception ex)
             {
-                _logService.Error(ex, $"Message {message.GetType().Name} failed during send UDP broadcast message");
+                _logService.LogError(ex, $"Message {message.GetType().Name} failed during send UDP broadcast message");
             }
             return null;
         }

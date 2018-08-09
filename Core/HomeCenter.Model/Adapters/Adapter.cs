@@ -1,13 +1,13 @@
-﻿using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Components;
+﻿using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.EventAggregator;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Model.Extensions;
+using Microsoft.Extensions.Logging;
+using Quartz;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -15,7 +15,7 @@ namespace HomeCenter.ComponentModel.Adapters
     {
         protected readonly IEventAggregator _eventAggregator;
         protected readonly IScheduler _scheduler;
-        protected readonly ILogger _logger;
+        protected readonly ILogger<Adapter> _logger;
         protected readonly List<string> _requierdProperties = new List<string>();
 
         public IList<string> RequierdProperties() => _requierdProperties;
@@ -24,7 +24,7 @@ namespace HomeCenter.ComponentModel.Adapters
         {
             _eventAggregator = adapterServiceFactory.GetEventAggregator();
             _scheduler = adapterServiceFactory.GetScheduler();
-            _logger = adapterServiceFactory.GetLogger().CreatePublisher($"Adapter_{Uid}_Logger");
+            _logger = adapterServiceFactory.GetLogger<Adapter>();
         }
 
         protected async Task<T> UpdateState<T>(string stateName, T oldValue, T newValue) where T : IValue
@@ -36,6 +36,6 @@ namespace HomeCenter.ComponentModel.Adapters
 
         protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => _scheduler.ScheduleInterval<T, Adapter>(interval, this, Uid, _disposables.Token);
 
-        protected override void LogException(Exception ex) => _logger.Error(ex, $"Unhanded adapter {Uid} exception");
+        protected override void LogException(Exception ex) => _logger.LogError(ex, $"Unhanded adapter {Uid} exception");
     }
 }

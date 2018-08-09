@@ -1,8 +1,8 @@
-﻿using Quartz;
-using HomeCenter.Core.EventAggregator;
-using HomeCenter.Core.Services.I2C;
-using HomeCenter.Core.Services.Logging;
+﻿using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Services;
+using HomeCenter.Core.Services.I2C;
+using Microsoft.Extensions.Logging;
+using Quartz;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -12,10 +12,10 @@ namespace HomeCenter.ComponentModel.Adapters
 
         II2CBusService GetI2CService();
 
-        ILogService GetLogger();
-
         IScheduler GetScheduler();
 
         ISerialMessagingService GetUartService();
+
+        ILogger<T> GetLogger<T>() where T : class;
     }
 }

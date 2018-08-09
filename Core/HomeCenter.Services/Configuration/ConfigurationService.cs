@@ -11,9 +11,9 @@ using HomeCenter.Core.ComponentModel.Areas;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Core.Utils;
 using SimpleInjector;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.ComponentModel.Configuration
 {
@@ -21,18 +21,18 @@ namespace HomeCenter.ComponentModel.Configuration
     {
         private readonly IMapper _mapper;
         private readonly IAdapterServiceFactory _adapterServiceFactory;
-        private readonly ILogger _logger;
+        private readonly ILogger<ConfigurationService> _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
         private readonly Container _container;
 
-        public ConfigurationService(IMapper mapper, IAdapterServiceFactory adapterServiceFactory, ILogService logService,
+        public ConfigurationService(IMapper mapper, IAdapterServiceFactory adapterServiceFactory, ILogger<ConfigurationService> logger,
             IResourceLocatorService resourceLocatorService, Container container)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _adapterServiceFactory = adapterServiceFactory ?? throw new ArgumentNullException(nameof(adapterServiceFactory));
-            _logger = logService.CreatePublisher(nameof(ConfigurationService));
             _resourceLocatorService = resourceLocatorService;
             _container = container;
+            _logger = logger;
         }
 
         public HomeCenterConfiguration ReadConfiguration(AdapterMode adapterMode)
@@ -112,7 +112,7 @@ namespace HomeCenter.ComponentModel.Configuration
                 var testAdapter = typeof(KodiAdapter);
             }
 
-            var types = new List<Type>(AssemblyHelper.GetAllInherited<Adapter>());
+            var types = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>());
 
             Mapper.Initialize(p =>
             {
@@ -137,7 +137,7 @@ namespace HomeCenter.ComponentModel.Configuration
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Exception {ex.Message} while initializing adapter {adapterConfig.Type}");
+                    _logger.LogError($"Exception {ex.Message} while initializing adapter {adapterConfig.Type}");
                 }
             }
 

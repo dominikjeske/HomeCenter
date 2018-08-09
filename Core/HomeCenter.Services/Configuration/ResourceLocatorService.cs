@@ -7,9 +7,9 @@ namespace HomeCenter.ComponentModel.Configuration
     {
         private const string AdapterRepositoryName = "Adapters";
         private const string ConfigurationName = "HomeCenterConfiguration.json";
-        private readonly INativeStorage _nativeStorage;
+        private readonly IStorage _nativeStorage;
 
-        public ResourceLocatorService(INativeStorage nativeStorage)
+        public ResourceLocatorService(IStorage nativeStorage)
         {
             _nativeStorage = nativeStorage;
         }

@@ -1,15 +1,17 @@
-﻿using System;
+﻿using HomeCenter.Core.Interface.Native;
+using System;
 using Windows.Devices.Gpio;
-using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Raspberry
 {
-    internal class RaspberryGpio : INativeGpio
+    internal class RaspberryGpio : IGpio
     {
         private readonly GpioPin _gpioPin;
+
         public event Action ValueChanged;
+
         public int PinNumber => _gpioPin.PinNumber;
-        
+
         public RaspberryGpio(GpioPin gpioPin)
         {
             _gpioPin = gpioPin ?? throw new ArgumentNullException(nameof(gpioPin));
@@ -18,12 +20,22 @@ namespace HomeCenter.Raspberry
 
         private void GpioPin_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs args) => ValueChanged?.Invoke();
 
-        public void SetDriveMode(NativeGpioPinDriveMode pinMode) => _gpioPin.SetDriveMode((GpioPinDriveMode)pinMode);
+        public void SetDriveMode(Core.Interface.Native.GpioPinDriveMode pinMode) => _gpioPin.SetDriveMode((Windows.Devices.Gpio.GpioPinDriveMode)pinMode);
 
         public void Dispose() => _gpioPin.Dispose();
 
-        public NativeGpioPinValue Read() => (NativeGpioPinValue)_gpioPin.Read();
+        public bool Read() => _gpioPin.Read() == GpioPinValue.High;
 
-        public void Write(NativeGpioPinValue pinValue) => _gpioPin.Write((GpioPinValue)pinValue);
+        public void Write(bool pinValue)
+        {
+            if (pinValue)
+            {
+                _gpioPin.Write(GpioPinValue.High);
+            }
+            else
+            {
+                _gpioPin.Write(GpioPinValue.Low);
+            }
+        }
     }
 }

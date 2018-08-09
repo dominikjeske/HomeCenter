@@ -5,7 +5,7 @@
     //     Describes whether the data transfers that the ReadPartial, WritePartial, or WriteReadPartial
     //     method performed succeeded, or provides the reason that the transfers did not
     //     succeed.
-    public enum NativeI2cTransferStatus
+    public enum I2cTransferStatus
     {
         //
         // Summary:

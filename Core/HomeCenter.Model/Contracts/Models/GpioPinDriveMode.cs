@@ -4,7 +4,7 @@
     // Summary:
     //     Describes whether a general-purpose I/O (GPIO) pin is configured as an input
     //     or an output, and how values are driven onto the pin.
-    public enum NativeGpioPinDriveMode
+    public enum GpioPinDriveMode
     {
         //
         // Summary:
@@ -39,17 +39,5 @@
         // Summary:
         //     Configures the GPIO pin in open collector mode with resistive pull-down mode.
         OutputOpenSourcePullDown = 7
-    }
-
-    public enum NativeGpioPinValue
-    {
-        //
-        // Summary:
-        //     The value of the GPIO pin is low.
-        Low = 0,
-        //
-        // Summary:
-        //     The value of the GPIO pin is high.
-        High = 1
     }
 }

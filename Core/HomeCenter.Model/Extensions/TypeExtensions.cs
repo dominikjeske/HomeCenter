@@ -94,5 +94,12 @@ namespace HomeCenter.Model.Extensions
             result = Expression.Call(typeof(Task), "FromResult", new Type[] { typeof(object) }, Expression.Convert(result, typeof(object)));
             return Expression.Lambda<Func<Command, Task<object>>>(result, commandParameter).Compile();
         }
+
+        public static T CreateInstance<T>(this Type type) where T : class
+        {
+            return type.GetConstructors().FirstOrDefault()?.Invoke(null) as T;
+        }
+
+        
     }
 }

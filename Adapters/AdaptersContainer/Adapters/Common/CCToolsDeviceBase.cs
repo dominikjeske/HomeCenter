@@ -14,8 +14,8 @@ using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Model.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -25,14 +25,14 @@ namespace HomeCenter.ComponentModel.Adapters
         private byte[] _committedState;
         private byte[] _state;
 
-        protected readonly ILogger _log;
+        protected readonly ILogger<CCToolsBaseAdapter> _log;
         protected readonly II2CBusService _i2CBusService;
         protected II2CPortExpanderDriver _portExpanderDriver;
 
         protected CCToolsBaseAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _i2CBusService = adapterServiceFactory.GetI2CService();
-            _log = adapterServiceFactory.GetLogger().CreatePublisher($"{nameof(CCToolsBaseAdapter)}_{Uid}");
+            _log = adapterServiceFactory.GetLogger<CCToolsBaseAdapter>();
 
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
@@ -109,12 +109,12 @@ namespace HomeCenter.ComponentModel.Adapters
 
                 await _eventAggregator.PublishDeviceEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 
-                _log.Info($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
+                _log.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
             {
-                _log.Warning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
+                _log.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
             }
         }
 
@@ -134,7 +134,7 @@ namespace HomeCenter.ComponentModel.Adapters
             _portExpanderDriver.Write(_state);
             Buffer.BlockCopy(_state, 0, _committedState, 0, _state.Length);
 
-            _log.Verbose("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
+            _log.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
         }
 
         private bool GetPortState(int id) => _state.GetBit(id);

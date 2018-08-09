@@ -30,7 +30,7 @@ namespace HomeCenter.Core.Services.Roslyn
         {
             var assemblies = new List<Result<string>>();
             var modelAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Adapter));
-            var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(HomeCenterController));
+            var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Controller));
             var references = modelAssemblies.Union(servicesAssemblies).Distinct();
             var result = new List<Result<string>>();
 

@@ -19,9 +19,7 @@ namespace HomeCenter.Core.ComponentModel.Configuration
         {
             IDictionary<string, IValueConverter> result = new Dictionary<string, IValueConverter>();
 
-            var types = AssemblyHelper.GetProjectAssemblies()
-                                      .SelectMany(s => s.GetTypes())
-                                      .Where(p => typeof(IValueConverter).IsAssignableFrom(p));
+            var types = AssemblyHelper.GetAllTypes<IValueConverter>();
 
             foreach (var property in JObject.Load(reader))
             {

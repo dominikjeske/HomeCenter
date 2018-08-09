@@ -5,7 +5,7 @@
     //     Provides information about whether the data transfers that the ReadPartial, WritePartial,
     //     or WriteReadPartial method performed succeeded, and the actual number of bytes
     //     the method transferred.
-    public struct NativeI2cTransferResult
+    public struct I2cTransferResult
     {
         //
         // Summary:
@@ -13,7 +13,7 @@
         //     the full number of bytes that the method requested, or the reason that the full
         //     transfer did not succeed. For WriteReadPartial, the value indicates whether the
         //     data for both the write and the read operations was entirely transferred.
-        public NativeI2cTransferStatus Status;
+        public I2cTransferStatus Status;
         //
         // Summary:
         //     The actual number of bytes that the operation actually transferred. The following

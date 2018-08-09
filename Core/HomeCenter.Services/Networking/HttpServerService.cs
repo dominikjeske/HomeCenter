@@ -3,13 +3,13 @@ using HTTPnet.Core;
 using HTTPnet.Core.Http;
 using HTTPnet.Core.Pipeline;
 using HTTPnet.Core.Pipeline.Handlers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using HomeCenter.Core.Services.Logging;
 
 namespace HomeCenter.Services.Networking
 {
@@ -18,12 +18,12 @@ namespace HomeCenter.Services.Networking
         private HttpServer _httpServer = null;
         private bool _IsInitialized = false;
         private readonly List<IHttpContextPipelineHandler> _handlers = new List<IHttpContextPipelineHandler>();
-        private readonly ILogger _logger;
+        private readonly ILogger<HttpServerService> _logger;
         private HttpServerOptions _httpServerOptions = HttpServerOptions.Default;
 
-        public HttpServerService(ILogService logService)
+        public HttpServerService(ILogger<HttpServerService> logger)
         {
-            _logger = logService.CreatePublisher(nameof(HttpServerService));
+            _logger = logger;
         }
 
         public void Dispose()
@@ -67,7 +67,7 @@ namespace HomeCenter.Services.Networking
 
                 httpContext.CloseConnection = true;
 
-                _logger.Error(exception, $"Exception in {nameof(HttpServerService)}");
+                _logger.LogError(exception, $"Exception in {nameof(HttpServerService)}");
 
                 return Task.FromResult(0);
             }

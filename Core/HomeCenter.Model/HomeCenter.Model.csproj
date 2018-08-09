@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpFunctionalExtensions" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Quartz" Version="3.0.6" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
@@ -21,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Contracts\HomeCenter.Contracts.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
   </ItemGroup>
 

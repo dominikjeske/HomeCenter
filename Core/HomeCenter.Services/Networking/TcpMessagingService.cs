@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Linq;
 using HomeCenter.Core.EventAggregator;
-using HomeCenter.Core.Services.Logging;
 using HomeCenter.Core.Interface.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Core.Services
 {
     public class TcpMessagingService : ITcpMessagingService
     {
-        private readonly ILogger _logService;
+        private readonly ILogger<TcpMessagingService> _logger;
         private readonly IEventAggregator _eventAggregator;
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
-        public TcpMessagingService(ILogService logService, IEventAggregator eventAggregator)
+        public TcpMessagingService(ILogger<TcpMessagingService> logger, IEventAggregator eventAggregator)
         {
-            _logService = logService.CreatePublisher(nameof(TcpMessagingService));
             _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
+            _logger = logger;
         }
 
         public Task Initialize()
@@ -49,7 +49,7 @@ namespace HomeCenter.Core.Services
             }
             catch (Exception ex)
             {
-                _logService.Error(ex, $"Message {message.GetType().Name} failed during send TCP message");
+                _logger.LogError(ex, $"Message {message.GetType().Name} failed during send TCP message");
             }
             return null;
         }

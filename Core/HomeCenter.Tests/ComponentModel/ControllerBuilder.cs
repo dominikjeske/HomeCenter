@@ -1,42 +1,14 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration;
-using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Configuration;
-using HomeCenter.Core.EventAggregator;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.I2C;
-using HomeCenter.Core.Services.Logging;
-using HomeCenter.Core.Services.Roslyn;
+﻿using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Services.Networking;
-using Moq;
 using SimpleInjector;
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Tests.ComponentModel
 {
     public class ControllerBuilder
     {
-        private Container _container;
         private string _configuration;
         private string _repositoryPath;
-
-        private ControllerOptions GetControllerOptions()
-        {
-            return new ControllerOptions
-            {
-                NativeServicesRegistration = RegisterRaspberryServices,
-                BaseServicesRegistration = RegisterContainerServices,
-                AdapterMode = AdapterMode.Embedded,
-                HttpServerPort = 8080
-            };
-        }
 
         public ControllerBuilder WithConfiguration(string configuration)
         {
@@ -50,82 +22,12 @@ namespace HomeCenter.Core.Tests.ComponentModel
             return this;
         }
 
-        public HomeCenterController Build()
+        public async Task<(Controller controller, Container container)> BuildAndRun()
         {
-            return new HomeCenterController(GetControllerOptions());
+            var bootstrapper = new MockBootstrapper(_repositoryPath, _configuration);
+            var controller = await bootstrapper.BuildController().ConfigureAwait(false);
+            return (controller, bootstrapper.Container);
         }
 
-        public async Task<(HomeCenterController controller, Container container)> BuildAndRun()
-        {
-            var controller = Build();
-            await controller.Initialize().ConfigureAwait(false);
-
-            return (controller, _container);
-        }
-
-        private void RegisterRaspberryServices(Container container)
-        {
-            var transferResult = new NativeI2cTransferResult() { Status = NativeI2cTransferStatus.FullTransfer, BytesTransferred = 0 };
-            var i2cBus = Mock.Of<INativeI2cBus>();
-            var i2cNativeDevice = Mock.Of<INativeI2cDevice>();
-            Mock.Get(i2cBus).Setup(s => s.CreateDevice(It.IsAny<string>(), It.IsAny<int>())).Returns(i2cNativeDevice);
-            Mock.Get(i2cNativeDevice).Setup(s => s.WritePartial(It.IsAny<byte[]>())).Returns(transferResult);
-            Mock.Get(i2cNativeDevice).Setup(s => s.ReadPartial(It.IsAny<byte[]>())).Returns(transferResult);
-
-            container.RegisterInstance(i2cBus);
-            container.RegisterInstance(Mock.Of<INativeGpioController>());
-            container.RegisterInstance(Mock.Of<INativeSerialDevice>());
-            container.RegisterInstance(Mock.Of<INativeSoundPlayer>());
-            container.RegisterInstance(Mock.Of<INativeStorage>());
-        }
-
-        private async Task RegisterContainerServices(Container container)
-        {
-            _container = container;
-
-            var logService = Mock.Of<ILogService>();
-            var logger = Mock.Of<ILogger>();
-            var resourceLocator = Mock.Of<IResourceLocatorService>();
-
-            //@"W:\Projects\HA4IoT\Adapters\AdaptersContainer\bin\Debug\netstandard2.0
-            //var adaptersRepo = Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Adapters\AdaptersContainer\bin\Debug\netstandard2.0");
-            var adaptersRepo = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Adapters\AdaptersContainer\Adapters");
-            var configFile = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json");
-            Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(adaptersRepo);
-            Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(configFile);
-
-            Mock.Get(logService).Setup(x => x.CreatePublisher(It.IsAny<string>())).Returns(logger);
-            Mock.Get(logger).Setup(x => x.Error(It.IsAny<string>())).Callback<string>(message => Debug.WriteLine($"Error: {message}"));
-            Mock.Get(logger).Setup(x => x.Error(It.IsAny<Exception>(), It.IsAny<string>())).Callback<Exception, string>((exception, message) => Debug.WriteLine($"Error: {message} | Details: {exception}"));
-
-            container.RegisterInstance(logService);
-            container.RegisterInstance(resourceLocator);
-
-            container.RegisterInstance(Mock.Of<ISerialMessagingService>());
-            container.RegisterSingleton<IEventAggregator, EventAggregator.EventAggregator>();
-            container.RegisterSingleton<IConfigurationService, ConfigurationService>();
-            container.RegisterSingleton<II2CBusService, I2CBusService>();
-            container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
-            container.RegisterSingleton<IHttpMessagingService, HttpMessagingService>();
-            container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            container.RegisterSingleton<IHttpServerService, HttpServerService>();
-
-            //Quartz
-            await container.RegisterQuartz().ConfigureAwait(false);
-
-            //Auto mapper
-            container.RegisterSingleton(GetMapper);
-        }
-
-        public IMapper GetMapper()
-        {
-            var mce = new MapperConfigurationExpression();
-            mce.ConstructServicesUsing(_container.GetInstance);
-
-            var profile = new HomeCenterMappingProfile();
-            mce.AddProfile(profile);
-
-            return new Mapper(new MapperConfiguration(mce), t => _container.GetInstance(t));
-        }
     }
 }

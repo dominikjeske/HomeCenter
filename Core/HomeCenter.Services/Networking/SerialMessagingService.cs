@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Core.Services
 {
@@ -11,15 +11,16 @@ namespace HomeCenter.Core.Services
     {
         private IBinaryReader _dataReader;
 
-        private readonly ILogger _logService;
-        private readonly INativeSerialDevice _serialDevice;
+        private readonly ILogger<SerialMessagingService> _logService;
+        private readonly ISerialDevice _serialDevice;
         private readonly List<Func<byte, byte, IBinaryReader, Task<bool>>> _messageHandlers = new List<Func<byte, byte, IBinaryReader, Task<bool>>>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
+        private readonly ILogger<SerialMessagingService> _logger;
 
-        public SerialMessagingService(INativeSerialDevice serialDevice, ILogService logService)
+        public SerialMessagingService(ISerialDevice serialDevice, ILogger<SerialMessagingService> logger)
         {
-            _logService = logService.CreatePublisher(nameof(SerialMessagingService));
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
+            _logger = logger;
         }
 
         public async Task Initialize()
@@ -47,7 +48,7 @@ namespace HomeCenter.Core.Services
             }
             catch (Exception ex)
             {
-                _logService.Error(ex.ToString());
+                _logService.LogError(ex.ToString());
             }
         }
 
