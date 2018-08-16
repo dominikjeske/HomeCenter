@@ -5,10 +5,10 @@ using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Configuration;
 using HomeCenter.Core;
 using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Networking;
@@ -166,8 +166,6 @@ namespace HomeCenter.Model.Core
                 }
             }
         }
-
-        protected override void LogException(Exception ex) => _logger.LogError(ex, $"Unhanded controller exception");
 
         protected Component GetComponentCommandHandler(Command command)
         {

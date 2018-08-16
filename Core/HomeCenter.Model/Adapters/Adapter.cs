@@ -35,7 +35,5 @@ namespace HomeCenter.ComponentModel.Adapters
         }
 
         protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => _scheduler.ScheduleInterval<T, Adapter>(interval, this, Uid, _disposables.Token);
-
-        protected override void LogException(Exception ex) => _logger.LogError(ex, $"Unhanded adapter {Uid} exception");
     }
 }

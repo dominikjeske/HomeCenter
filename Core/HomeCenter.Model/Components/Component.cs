@@ -6,14 +6,13 @@ using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Contracts.Exceptions;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,9 +23,7 @@ namespace HomeCenter.ComponentModel.Components
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;
-
         private List<string> _tagCache;
-        private readonly ILogger<Component> _logger;
 
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
@@ -39,7 +36,6 @@ namespace HomeCenter.ComponentModel.Components
         {
             _eventAggregator = eventAggregator;
             _scheduler = scheduler;
-            _logger = logger;
         }
 
         public override async Task Initialize()
@@ -97,9 +93,9 @@ namespace HomeCenter.ComponentModel.Components
             var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(deviceEvent.Message));
             if (await (trigger.ValidateCondition()).ConfigureAwait(false))
             {
-                foreach(var command in trigger.Commands)
+                foreach (var command in trigger.Commands)
                 {
-                    if(command.ContainsProperty(CommandProperties.ExecutionDelay))
+                    if (command.ContainsProperty(CommandProperties.ExecutionDelay))
                     {
                         var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
                         await _scheduler.DelayExecution<DelayCommandJob>(command[CommandProperties.ExecutionDelay].AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
@@ -163,8 +159,6 @@ namespace HomeCenter.ComponentModel.Components
             return routerAttributes;
         }
 
-        protected override void LogException(Exception ex) => _logger.LogError(ex, $"Unhanded component {Uid} exception");
-
         /// <summary>
         /// All command not handled by the component directly are routed to adapters
         /// </summary>
@@ -207,8 +201,6 @@ namespace HomeCenter.ComponentModel.Components
 
             await _eventAggregator.PublishDeviceEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
-
-       
 
         protected IReadOnlyCollection<string> SupportedCapabilitiesCommandHandler(Command command) => _capabilities.Values
                                                                                                 .Select(cap => cap.GetPropertyValue(StateProperties.StateName))

@@ -2,9 +2,9 @@
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.Core;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using System;
@@ -17,7 +17,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace HomeCenter.ComponentModel.Components
 {
-    public abstract class Actor : BaseObject, IService, IActor
+    public abstract class Actor : BaseObject, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
         protected bool _isInitialized;
@@ -49,8 +49,6 @@ namespace HomeCenter.ComponentModel.Components
         public Task<T> ExecuteCommand<T>(Command command) => ExecuteCommand(command).Cast<T>();
 
         protected Actor() => RegisterCommandHandlers();
-
-        protected abstract void LogException(Exception ex);
 
         protected virtual Task<object> UnhandledCommand(Command command)
         {
@@ -148,7 +146,6 @@ namespace HomeCenter.ComponentModel.Components
                 }
                 catch (Exception ex)
                 {
-                    LogException(ex);
                     command.SetException(ex);
                 }
             }
