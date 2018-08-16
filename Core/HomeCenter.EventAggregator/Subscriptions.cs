@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Messaging.Handlers;
-using HomeCenter.Messaging.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

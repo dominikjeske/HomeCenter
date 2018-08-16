@@ -1,11 +1,11 @@
 ﻿using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Configuration;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Roslyn;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Networking;
@@ -42,7 +42,7 @@ namespace HomeCenter.Core.Tests.ComponentModel
 
             _container.RegisterInstance(resourceLocator);
 
-            _container.RegisterSingleton<IEventAggregator, EventAggregator.EventAggregator>();
+            _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
             _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();

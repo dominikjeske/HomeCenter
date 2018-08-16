@@ -1,4 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.ComponentModel;
+using HomeCenter.ComponentModel.Commands;
+using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Messaging;
+using HomeCenter.Messaging.Behaviors;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -6,12 +12,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Messaging;
-using HomeCenter.Core.Services.DependencyInjection;
 
 namespace HomeCenter.Model.Extensions
 {
@@ -129,8 +129,6 @@ namespace HomeCenter.Model.Extensions
             routing[EventProperties.SourceDeviceUid] = message[EventProperties.SourceDeviceUid].ToString();
             routing[EventProperties.EventType] = message.Type;
 
-
-
             return eventAggregator.Publish(message, new RoutingFilter(message[EventProperties.SourceDeviceUid].ToString(), routing));
         }
 
@@ -138,7 +136,5 @@ namespace HomeCenter.Model.Extensions
         {
             return eventAggregator.Publish(message, new RoutingFilter(message.Uid));
         }
-
-       
     }
 }
