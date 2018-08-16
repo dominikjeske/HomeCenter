@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Model.Exceptions;
 
 namespace HomeCenter.ComponentModel.Adapters.Kodi
 {
@@ -45,7 +46,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
         {
             var result = JsonConvert.DeserializeObject<JsonRpcResponse>(responseData);
 
-            if (result.Error != null) throw new Exception(result.Error.ToString());
+            if (result.Error != null) throw new UnsupportedResultException(result.Error.ToString());
 
             return result.Result.ToString();
         }

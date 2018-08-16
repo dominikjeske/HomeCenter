@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging.Behaviors
 {
     public class Behavior : IBehavior
     {

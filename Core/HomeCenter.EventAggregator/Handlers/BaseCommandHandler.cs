@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging.Handlers
 {
     public abstract class BaseCommandHandler
     {

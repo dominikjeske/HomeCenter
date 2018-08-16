@@ -7,7 +7,7 @@ using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Model.Extensions;
 

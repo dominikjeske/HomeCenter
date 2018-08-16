@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Linq;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Interface.Messaging;
 using Microsoft.Extensions.Logging;
 

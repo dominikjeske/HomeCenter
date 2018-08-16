@@ -1,6 +1,6 @@
 ﻿using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Configuration;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.DependencyInjection;

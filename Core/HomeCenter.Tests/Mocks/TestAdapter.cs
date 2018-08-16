@@ -3,7 +3,7 @@ using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Extensions;
 
 namespace HomeCenter.Core.Tests.Mocks

@@ -5,6 +5,7 @@ using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 
 namespace HomeCenter.ComponentModel.Adapters.Samsung
@@ -107,7 +108,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
                 source = "KEY_TV";
             }
 
-            if (source?.Length == 0) throw new Exception($"Input {inputName} was not found on Samsung available device input sources");
+            if (source?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on Samsung available device input sources");
 
             await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
             {

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Interop;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Interop;
 
 namespace HomeCenter.WindowsService.Core
 {
@@ -20,12 +20,15 @@ namespace HomeCenter.WindowsService.Core
                 case DisplayMode.External:
                     proc.StartInfo.Arguments = "/external";
                     break;
+
                 case DisplayMode.Internal:
                     proc.StartInfo.Arguments = "/internal";
                     break;
+
                 case DisplayMode.Extend:
                     proc.StartInfo.Arguments = "/extend";
                     break;
+
                 case DisplayMode.Duplicate:
                     proc.StartInfo.Arguments = "/clone";
                     break;
@@ -52,7 +55,7 @@ namespace HomeCenter.WindowsService.Core
             if (status != StatusCode.Success)
             {
                 var reason = string.Format("GetDisplayConfigBufferSizesFailed() failed. Status: {0}", status);
-                throw new Exception(reason);
+                throw new InvalidOperationException(reason);
             }
 
             var pathInfoArray = new DisplayConfigPathInfo[numPathArrayElements];
@@ -65,7 +68,7 @@ namespace HomeCenter.WindowsService.Core
             if (queryDisplayStatus != StatusCode.Success)
             {
                 var reason = string.Format("QueryDisplayConfig() failed. Status: {0}", queryDisplayStatus);
-                throw new Exception(reason);
+                throw new InvalidOperationException(reason);
             }
 
             var list = new List<DisplayConfigPathWrap>();
@@ -106,8 +109,8 @@ namespace HomeCenter.WindowsService.Core
             var refreshRate = (int)Math.Round((double)path.targetInfo.refreshRate.numerator / path.targetInfo.refreshRate.denominator);
             var rotationOriginal = path.targetInfo.rotation;
             var isPrimary = IsPrimaryDisplay(origin);
-            
-            var displayName = "<unidentified>"; 
+
+            var displayName = "<unidentified>";
             var nameStatus = GetDisplayConfigSourceDeviceName(sourceModeInfo, out DisplayConfigSourceDeviceName displayConfigSourceDeviceName);
             if (nameStatus == StatusCode.Success)
                 displayName = displayConfigSourceDeviceName.viewGdiDeviceName;

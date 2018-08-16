@@ -23,7 +23,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
         {
             if (string.IsNullOrWhiteSpace(Address))
             {
-                throw new Exception("Address cannot be null");
+                throw new ArgumentException("Address cannot be empty");
             }
 
             if (!string.IsNullOrWhiteSpace(PIN))

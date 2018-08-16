@@ -1,4 +1,5 @@
-﻿using HTTPnet;
+﻿using HomeCenter.Model.Exceptions;
+using HTTPnet;
 using HTTPnet.Core;
 using HTTPnet.Core.Http;
 using HTTPnet.Core.Pipeline;
@@ -75,13 +76,13 @@ namespace HomeCenter.Services.Networking
 
         public void AddRequestHandler(IHttpContextPipelineHandler handler)
         {
-            if (_IsInitialized) throw new Exception($"Cannot modify {nameof(HttpServerService)} after initialization");
+            if (_IsInitialized) throw new InitializationException($"Cannot modify {nameof(HttpServerService)} after initialization");
             _handlers.Add(handler);
         }
 
         public void UpdateServerPort(int port)
         {
-            if (_IsInitialized) throw new Exception($"Cannot modify {nameof(HttpServerService)} after initialization");
+            if (_IsInitialized) throw new InitializationException($"Cannot modify {nameof(HttpServerService)} after initialization");
             _httpServerOptions.Port = port;
         }
     }

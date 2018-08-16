@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging.Behaviors
 {
     public static class BehaviorExtensions
     {

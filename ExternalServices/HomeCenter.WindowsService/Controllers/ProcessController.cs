@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using HomeCenter.ComponentModel.Adapters.Pc;
 using HomeCenter.WindowsService.Services;
+using HomeCenter.WindowsService.Exceptions;
 
 namespace HomeCenter.WindowsService.Controllers
 {
@@ -26,13 +27,13 @@ namespace HomeCenter.WindowsService.Controllers
         {
             var configuration = Path.Combine(_hostingEnvironment.ContentRootPath, "configuration.json");
 
-            if (!System.IO.File.Exists(configuration)) throw new Exception("Configuration file was not found");
+            if (!System.IO.File.Exists(configuration)) throw new ConfigurationException("Configuration file was not found");
 
             var jsonConfig = JObject.Parse(System.IO.File.ReadAllText(configuration));
 
             var map = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonConfig["Process"].ToString());
 
-            if (!map.ContainsKey(processName)) throw new Exception($"Process {processName} is not registred in HomeCenter Winsows Service");
+            if (!map.ContainsKey(processName)) throw new ConfigurationException($"Process {processName} is not registred in HomeCenter Winsows Service");
 
             return map[processName];
         }

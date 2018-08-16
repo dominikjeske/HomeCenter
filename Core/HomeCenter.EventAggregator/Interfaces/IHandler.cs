@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Core.EventAggregator
+﻿namespace HomeCenter.Messaging
 {
     public interface IHandler<T>
     {

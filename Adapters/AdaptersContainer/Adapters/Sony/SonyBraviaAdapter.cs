@@ -6,6 +6,7 @@ using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 
 namespace HomeCenter.ComponentModel.Adapters.Sony
@@ -177,7 +178,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
         protected async Task SelectInputCommandHandler(Command message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
-            if (!_inputSourceMap.ContainsKey(inputName)) throw new Exception($"Input {inputName} was not found on available device input sources");
+            if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
             var cmd = _inputSourceMap[inputName];
 

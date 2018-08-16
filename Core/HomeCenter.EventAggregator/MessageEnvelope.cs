@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging
 {
     public class MessageEnvelope<T> : IMessageEnvelope<T>
     {
@@ -12,7 +12,7 @@ namespace HomeCenter.Core.EventAggregator
             ResponseType = responseType;
         }
 
-        public T Message { get;  }
+        public T Message { get; }
         public CancellationToken CancellationToken { get; }
         public Type ResponseType { get; }
     }

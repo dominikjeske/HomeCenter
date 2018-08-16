@@ -11,7 +11,7 @@ using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Extensions;

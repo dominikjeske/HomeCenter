@@ -6,9 +6,10 @@ using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Contracts.Exceptions;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -77,10 +78,6 @@ namespace HomeCenter.ComponentModel.Components
                         //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                         //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    throw new Exception($"Invalid trigger");
                 }
             }
         }
@@ -158,7 +155,7 @@ namespace HomeCenter.ComponentModel.Components
             var routerAttributes = new Dictionary<string, string>();
             foreach (var adapterProperty in requierdProperties)
             {
-                if (!adapter.ContainsProperty(adapterProperty)) throw new Exception($"Adapter {adapter.Uid} in component {Uid} missing configuration property {adapterProperty}");
+                if (!adapter.ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {adapter.Uid} in component {Uid} missing configuration property {adapterProperty}");
                 routerAttributes.Add(adapterProperty, adapter[adapterProperty].ToString());
             }
             routerAttributes.Add(EventProperties.SourceDeviceUid, adapter.Uid);

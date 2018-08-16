@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.Tests.ComponentModel;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Model.Extensions;

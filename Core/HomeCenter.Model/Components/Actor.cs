@@ -2,9 +2,10 @@
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.Core;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,8 @@ namespace HomeCenter.ComponentModel.Components
         //TODO do we need Task<object>
         public Task<object> ExecuteCommand(Command command)
         {
-            if (!IsEnabled) throw new Exception($"Component {Uid} is disabled");
-            if (!_isInitialized) throw new Exception($"Component {Uid} is not initialized");
+            if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
+            if (!_isInitialized) throw new UnsupportedStateException($"Component {Uid} is not initialized");
             return QueueJob(command).Unwrap();
         }
 
@@ -53,7 +54,7 @@ namespace HomeCenter.ComponentModel.Components
 
         protected virtual Task<object> UnhandledCommand(Command command)
         {
-            throw new Exception($"Component [{Uid}] cannot process command because there is no registered handler for [{command.Type}]");
+            throw new MissingHandlerException($"Component [{Uid}] cannot process command because there is no registered handler for [{command.Type}]");
         }
 
         private void RegisterCommandHandlers()
@@ -155,7 +156,7 @@ namespace HomeCenter.ComponentModel.Components
 
         private void AssertForWrappedTask(object result)
         {
-            if (result?.GetType()?.Namespace == "System.Threading.Tasks") throw new Exception("Result from handler wan not unwrapped properly");
+            if (result?.GetType()?.Namespace == "System.Threading.Tasks") throw new UnwrappingResultException("Result from handler wan not unwrapped properly");
         }
 
         private async Task<Task<object>> QueueJob(Command command)

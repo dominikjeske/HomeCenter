@@ -1,8 +1,8 @@
-﻿using System;
+﻿using HomeCenter.Core.Extensions;
+using System;
 using System.Threading.Tasks;
-using HomeCenter.Core.Extensions;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging.Behaviors
 {
     public class TimeoutBehavior : Behavior
     {

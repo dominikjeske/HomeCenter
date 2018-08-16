@@ -1,10 +1,12 @@
-﻿using System;
+﻿using HomeCenter.Messaging.Handlers;
+using HomeCenter.Messaging.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging
 {
     public class Subscriptions
     {
@@ -69,7 +71,7 @@ namespace HomeCenter.Core.EventAggregator
 
             if (action.Method.ReturnType != typeof(void) || parameters.Length != 1 || parameters[0].ParameterType != typeof(IMessageEnvelope<>).MakeGenericType(messageType))
             {
-                throw new Exception($"Delegate should be in this format: void Delegate(IMessageEnvelope<{messageType.Name}> param)");
+                throw new ArgumentException($"Delegate should be in this format: void Delegate(IMessageEnvelope<{messageType.Name}> param)");
             }
         }
 

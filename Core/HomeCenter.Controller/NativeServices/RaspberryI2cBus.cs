@@ -18,7 +18,7 @@ namespace HomeCenter.Raspberry
 
             var device = I2cDevice.FromIdAsync(deviceId, settings).GetAwaiter().GetResult();
 
-            if (device == null) throw new Exception($"Device {deviceId} was not found on I2C bus");
+            if (device == null) throw new InvalidOperationException($"Device {deviceId} was not found on I2C bus");
 
             return new RaspberryI2cDevice(device);
         }

@@ -1,6 +1,7 @@
 ﻿using HomeCenter.ComponentModel;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.Utils;
+using HomeCenter.Model.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -26,7 +27,7 @@ namespace HomeCenter.Core.ComponentModel.Configuration
                 var converter = property.Value.Value<string>();
                 var converterType = types.FirstOrDefault(t => t.Name == converter);
 
-                if (converterType == null) throw new Exception($"Could not find converter {converter}");
+                if (converterType == null) throw new MissingConverterException($"Could not find converter {converter}");
 
                 result.Add(property.Key, (IValueConverter)Activator.CreateInstance(converterType));
             }

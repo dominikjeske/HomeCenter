@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging
 {
     public interface IMessageEnvelope<out T>
     {
-        CancellationToken CancellationToken { get;  }
+        CancellationToken CancellationToken { get; }
         T Message { get; }
         Type ResponseType { get; }
     }

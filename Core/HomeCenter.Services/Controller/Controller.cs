@@ -5,10 +5,11 @@ using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Configuration;
 using HomeCenter.Core;
 using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Networking;
 using HTTPnet.Core.Pipeline;
@@ -106,7 +107,7 @@ namespace HomeCenter.Model.Core
             {
                 var result = _roslynCompilerService.CompileAssemblies(_resourceLocatorService.GetRepositoyLocation());
                 var veryfy = Result.Combine(result.ToArray());
-                if (veryfy.IsFailure) throw new Exception($"Error while compiling adapters: {veryfy.Error}");
+                if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");
 
                 foreach (var adapter in result)
                 {

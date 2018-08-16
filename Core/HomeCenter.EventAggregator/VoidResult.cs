@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging
 {
     public class VoidResult
     {
-        public static VoidResult Void = new VoidResult();
+        public readonly static VoidResult Void = new VoidResult();
     }
 }

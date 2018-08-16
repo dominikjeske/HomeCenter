@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HomeCenter.Core.Extensions;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging
 {
     public class RoutingFilter
     {

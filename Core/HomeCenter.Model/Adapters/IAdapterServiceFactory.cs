@@ -1,4 +1,4 @@
-﻿using HomeCenter.Core.EventAggregator;
+﻿using HomeCenter.Messaging;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
 using Microsoft.Extensions.Logging;

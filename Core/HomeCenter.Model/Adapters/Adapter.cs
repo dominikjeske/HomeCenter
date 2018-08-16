@@ -1,7 +1,7 @@
 ﻿using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Quartz;

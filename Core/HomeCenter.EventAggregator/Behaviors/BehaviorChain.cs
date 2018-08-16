@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HomeCenter.Core.EventAggregator
+namespace HomeCenter.Messaging.Behaviors
 {
     public class BehaviorChain
     {

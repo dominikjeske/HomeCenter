@@ -1,5 +1,5 @@
 ﻿using HomeCenter.ComponentModel.Commands;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Extensions;
 

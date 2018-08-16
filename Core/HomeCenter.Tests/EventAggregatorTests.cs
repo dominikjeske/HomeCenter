@@ -1,4 +1,7 @@
-﻿using Microsoft.Reactive.Testing;
+﻿using HomeCenter.Messaging;
+using HomeCenter.Messaging.Behaviors;
+using HomeCenter.Model.Extensions;
+using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -6,8 +9,6 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.Core.EventAggregator;
-using HomeCenter.Model.Extensions;
 
 namespace HomeCenter.Extensions.Tests
 {

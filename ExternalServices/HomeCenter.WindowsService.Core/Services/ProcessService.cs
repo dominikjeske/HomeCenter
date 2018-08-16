@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using HomeCenter.WindowsService.Core.Exceptions;
 using HomeCenter.WindowsService.Interop;
 
 namespace HomeCenter.WindowsService.Services
@@ -11,7 +12,7 @@ namespace HomeCenter.WindowsService.Services
     {
         public void StartProcess(string path, bool restoreWhenRunning = true)
         {
-            if(!File.Exists(path)) throw new Exception($"Process {path} cannot be found on PC");
+            if(!File.Exists(path)) throw new ProcessNotFoundException($"Process {path} cannot be found on PC");
 
             if(restoreWhenRunning)
             {

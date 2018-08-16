@@ -14,6 +14,7 @@ using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Utils;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
+using HomeCenter.Model.Exceptions;
 
 namespace HomeCenter.ComponentModel.Configuration
 {
@@ -69,7 +70,7 @@ namespace HomeCenter.ComponentModel.Configuration
                                        .Select(group => group.Key);
             if (duplicateKeys?.Count() > 0)
             {
-                throw new Exception($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
+                throw new ConfigurationException($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
             }
         }
 
@@ -130,7 +131,7 @@ namespace HomeCenter.ComponentModel.Configuration
                 try
                 {
                     var adapterType = types.Find(t => t.Name == adapterConfig.Type);
-                    if (adapterType == null) throw new Exception($"Could not find adapter {adapterType}");
+                    if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
                     var adapter = (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType);
 
                     adapters.Add(adapter);

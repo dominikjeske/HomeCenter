@@ -9,7 +9,7 @@ using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Components;
-using HomeCenter.Core.EventAggregator;
+using HomeCenter.Messaging;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Core.Tests.Mocks;
 using HomeCenter.Model.Extensions;

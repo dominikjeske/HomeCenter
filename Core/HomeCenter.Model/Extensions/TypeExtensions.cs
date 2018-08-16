@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HomeCenter.ComponentModel.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Commands;
 
 namespace HomeCenter.Model.Extensions
 {
@@ -56,7 +56,7 @@ namespace HomeCenter.Model.Extensions
                 || handler.GetParameters().FirstOrDefault()?.ParameterType != typeof(Command)
             )
             {
-                throw new Exception($"Input method for {nameof(WrapTaskToGenericTask)} should have following syntax: Task<ReturnType> Method(Command command)");
+                throw new ArgumentException($"Input method for {nameof(WrapTaskToGenericTask)} should have following syntax: Task<ReturnType> Method(Command command)");
             }
 
             var commandParameter = Expression.Parameter(typeof(Command), "commandParameter");
@@ -78,7 +78,7 @@ namespace HomeCenter.Model.Extensions
                || handler.GetParameters().FirstOrDefault()?.ParameterType != typeof(Command)
             )
             {
-                throw new Exception($"Input method for {nameof(WrapSimpleTypeToGenericTask)} should have following syntax: ReturnType Method(Command command)");
+                throw new ArgumentException($"Input method for {nameof(WrapSimpleTypeToGenericTask)} should have following syntax: ReturnType Method(Command command)");
             }
 
             var commandParameter = Expression.Parameter(typeof(Command), "commandParameter");
@@ -99,7 +99,5 @@ namespace HomeCenter.Model.Extensions
         {
             return type.GetConstructors().FirstOrDefault()?.Invoke(null) as T;
         }
-
-        
     }
 }

@@ -3,12 +3,12 @@ using AutoMapper.Configuration;
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Configuration;
 using HomeCenter.Core;
-using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Quartz;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Networking;
@@ -18,7 +18,6 @@ using Quartz.Spi;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration

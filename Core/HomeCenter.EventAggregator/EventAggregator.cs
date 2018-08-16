@@ -1,18 +1,21 @@
-﻿using System;
+﻿using HomeCenter.Core.Extensions;
+using HomeCenter.Messaging.Behaviors;
+using HomeCenter.Messaging.Exceptions;
+using HomeCenter.Messaging.Handlers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reactive.Linq;
-using System.Collections.Generic;
-using HomeCenter.Core.Extensions;
 
 // 1. Direct message
 // 2. Publish to all
 // 3. Filter xxx.yyy.zz
 // 4. Filter key-value
 
-//TODO: Add dynamic handlers - types that are not registred as singleton to makeinstance of that type and invoke on publish
-namespace HomeCenter.Core.EventAggregator
+//TODO: Add dynamic handlers - types that are not registered as singleton to make instance of that type and invoke on publish
+namespace HomeCenter.Messaging
 {
     public sealed class EventAggregator : IEventAggregator, IDisposable
     {
@@ -35,7 +38,7 @@ namespace HomeCenter.Core.EventAggregator
             var localSubscriptions = GetSubscriptors<T>(filter).OfType<IAsyncCommandHandler>();
 
             if (!localSubscriptions.Any()) return default;
-            if (localSubscriptions.Skip(1).Any()) throw new Exception($"Cannot send [{typeof(T).Name}] message with result to more than two subscriptors");
+            if (localSubscriptions.Skip(1).Any()) throw new QueryException($"Cannot send [{typeof(T).Name}] message with result to more than two subscriptors");
 
             var messageEnvelope = new MessageEnvelope<T>(message, cancellationToken, typeof(R));
             var subscriber = localSubscriptions.First();
@@ -46,7 +49,7 @@ namespace HomeCenter.Core.EventAggregator
 
         private IAsyncCommandHandler BuildBehaviorChain(BehaviorChain behaviors, IAsyncCommandHandler subscriber)
         {
-            if(behaviors == null) behaviors = DefaultBehavior();
+            if (behaviors == null) behaviors = DefaultBehavior();
             return behaviors.Build(subscriber);
         }
 
