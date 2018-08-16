@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
-    <PackageReference Include="System.Reactive" Version="4.1.0-preview.330" />
+    <PackageReference Include="System.Reactive" Version="4.1.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 

@@ -1,11 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.Core;
@@ -13,6 +6,13 @@ using HomeCenter.Core.EventAggregator;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Model.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace HomeCenter.ComponentModel.Components
 {
@@ -37,7 +37,24 @@ namespace HomeCenter.ComponentModel.Components
             return Task.CompletedTask;
         }
 
+        //TODO do we need Task<object>
+        public Task<object> ExecuteCommand(Command command)
+        {
+            if (!IsEnabled) throw new Exception($"Component {Uid} is disabled");
+            if (!_isInitialized) throw new Exception($"Component {Uid} is not initialized");
+            return QueueJob(command).Unwrap();
+        }
+
+        public Task<T> ExecuteCommand<T>(Command command) => ExecuteCommand(command).Cast<T>();
+
         protected Actor() => RegisterCommandHandlers();
+
+        protected abstract void LogException(Exception ex);
+
+        protected virtual Task<object> UnhandledCommand(Command command)
+        {
+            throw new Exception($"Component [{Uid}] cannot process command because there is no registered handler for [{command.Type}]");
+        }
 
         private void RegisterCommandHandlers()
         {
@@ -136,21 +153,10 @@ namespace HomeCenter.ComponentModel.Components
             }
         }
 
-        protected abstract void LogException(Exception ex);
-
-        private static void AssertForWrappedTask(object result)
+        private void AssertForWrappedTask(object result)
         {
             if (result?.GetType()?.Namespace == "System.Threading.Tasks") throw new Exception("Result from handler wan not unwrapped properly");
         }
-
-        public Task<object> ExecuteCommand(Command command)
-        {
-            if (!IsEnabled) throw new Exception($"Component {Uid} is disabled");
-            if (!_isInitialized) throw new Exception($"Component {Uid} is not initialized");
-            return QueueJob(command).Unwrap();
-        }
-
-        public Task<T> ExecuteCommand<T>(Command command) => ExecuteCommand(command).Cast<T>();
 
         private async Task<Task<object>> QueueJob(Command command)
         {
@@ -178,11 +184,6 @@ namespace HomeCenter.ComponentModel.Components
             {
                 return UnhandledCommand(command);
             }
-        }
-
-        protected virtual Task<object> UnhandledCommand(Command command)
-        {
-            throw new Exception($"Component [{Uid}] cannot process command because there is no registered handler for [{command.Type}]");
         }
     }
 }
