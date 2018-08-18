@@ -1,15 +1,15 @@
-﻿using Microsoft.Reactive.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Adapters;
+﻿using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Tests.ComponentModel;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Extensions;
+using Microsoft.Reactive.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Extensions.Tests
 {
@@ -56,10 +56,11 @@ namespace HomeCenter.Extensions.Tests
                                                                        .ConfigureAwait(false);
             var eventAggregator = container.GetInstance<IEventAggregator>();
 
+            await controller.ExecuteCommand(CommandFatory.GetComponentCommand("uid"));
 
-            await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
+            //await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
             //TODO
-            //var lamp = config.config.Components.FirstOrDefault(c => c.Uid == "RemoteLamp");
+            //var lamp = config.Components.FirstOrDefault(c => c.Uid == "RemoteLamp");
             //await lamp.ExecuteCommand(Command.TurnOnCommand).ConfigureAwait(false);
         }
     }

@@ -17,7 +17,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace HomeCenter.ComponentModel.Components
 {
-    public abstract class Actor : BaseObject, IActor
+    public abstract class Actor : BaseObject, IDisposable
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
         protected bool _isInitialized;
@@ -38,17 +38,26 @@ namespace HomeCenter.ComponentModel.Components
             return Task.CompletedTask;
         }
 
-        //TODO do we need Task<object>
-        public Task<object> ExecuteCommand(Command command)
+        public virtual Task ExecuteCommand(Command command)
         {
-            if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
-            if (!_isInitialized) throw new UnsupportedStateException($"Component {Uid} is not initialized");
+            AssertActorState();
             return QueueJob(command).Unwrap();
         }
 
-        public Task<T> ExecuteCommand<T>(Command command) => ExecuteCommand(command).Cast<T>();
+        public virtual Task<T> ExecuteQuery<T>(Command command)
+        {
+            AssertActorState();
+            var result = QueueJob(command).Unwrap();
+            return result.Cast<T>();
+        }
 
         protected Actor() => RegisterCommandHandlers();
+
+        private void AssertActorState()
+        {
+            if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
+            if (!_isInitialized) throw new UnsupportedStateException($"Component {Uid} is not initialized");
+        }
 
         protected virtual Task<object> UnhandledCommand(Command command)
         {

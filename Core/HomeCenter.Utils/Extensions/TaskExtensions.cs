@@ -102,11 +102,17 @@ namespace HomeCenter.Core.Extensions
             task.ContinueWith(t =>
             {
                 if (t.IsFaulted)
+                {
                     tcs.TrySetException(t.Exception.InnerExceptions);
+                }
                 else if (t.IsCanceled)
+                {
                     tcs.TrySetCanceled();
+                }
                 else
+                {
                     tcs.TrySetResult((T)t.Result);
+                }
             }, TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
@@ -117,15 +123,21 @@ namespace HomeCenter.Core.Extensions
             task.ContinueWith(t =>
             {
                 if (t.IsFaulted)
+                {
                     tcs.TrySetException(t.Exception.InnerExceptions);
+                }
                 else if (t.IsCanceled)
+                {
                     tcs.TrySetCanceled();
+                }
                 else
+                {
                     tcs.TrySetResult(defaultValue);
+                }
             }, TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
 
-        public static Task<object> ToGenericTaskResult<TResult>(Task<TResult> source) => source.ContinueWith(t => (object)t.Result);
+        public static Task<object> ToGenericTaskResult<TResult>(this Task<TResult> source) => source.ContinueWith(t => (object)t.Result);
     }
 }

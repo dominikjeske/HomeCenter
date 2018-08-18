@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Adapters.Drivers;
+﻿using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -48,12 +48,13 @@ namespace HomeCenter.ComponentModel.Adapters
 
             await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
 
-            _disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
+            //TODO
+            //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
 
             await base.Initialize().ConfigureAwait(false);
         }
 
-        private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
+        private Task DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
         {
             return ExecuteCommand(messageEnvelope.Message);
         }

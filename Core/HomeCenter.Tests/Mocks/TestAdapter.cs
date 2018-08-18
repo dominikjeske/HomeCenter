@@ -1,16 +1,14 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Adapters;
+﻿using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.Messaging;
-using HomeCenter.Model.Extensions;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Tests.Mocks
 {
     public class TestAdapter : Adapter
     {
-        private object locki = new object();
+        private readonly object locki = new object();
         public int Counter { get; private set; }
 
         public DiscoveryResponse DiscoveryResponse { get; set; }
@@ -23,15 +21,17 @@ namespace HomeCenter.Core.Tests.Mocks
 
         public override Task Initialize()
         {
-            _disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
+            //TODO
+            //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
 
             return base.Initialize();
         }
 
-        private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
-        {
-            return ExecuteCommand(messageEnvelope.Message);
-        }
+        //TODO
+        //private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
+        //{
+        //    return ExecuteCommand(messageEnvelope.Message);
+        //}
 
         protected async Task RefreshCommandHandler(Command messageEnvelope)
         {

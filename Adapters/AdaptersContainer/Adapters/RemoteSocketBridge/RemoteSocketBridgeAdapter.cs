@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Hardware.RemoteSockets;
 using HomeCenter.Core.Interface.Native;
@@ -15,6 +11,9 @@ using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
@@ -46,7 +45,8 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
 
             _serialMessagingService.RegisterMessageHandler(SerialHandler);
 
-            _disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
+            //TODO
+            //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
         }
 
         public async Task<bool> SerialHandler(byte messageType, byte messageSize, IBinaryReader reader)
@@ -69,10 +69,11 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             return false;
         }
 
-        private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
-        {
-            return ExecuteCommand(messageEnvelope.Message);
-        }
+        //TODO
+        //private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
+        //{
+        //    return ExecuteCommand(messageEnvelope.Message);
+        //}
 
         protected async Task TurnOnCommandHandler(Command message)
         {
