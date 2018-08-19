@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using Quartz.Impl.Calendar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Events;
@@ -10,6 +6,8 @@ using HomeCenter.Conditions;
 using HomeCenter.Core.ComponentModel.Areas;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Utils;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HomeCenter.Core.Services.DependencyInjection
 {

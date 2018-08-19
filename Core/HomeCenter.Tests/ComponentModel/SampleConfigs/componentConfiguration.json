@@ -77,11 +77,7 @@
                 "Type": "TurnOffCommand",
                 "Properties": {
                   "ExecutionDelay": "00:01:00",
-                  "CancelPrevious": true,
-                  "xxx": "27.05.2018",
-                  "yyy": "27.05.2018 16:00:20",
-                  "zzz": [ "test", "test2" ],
-                  "qqq": 6.2
+                  "CancelPrevious": true
                 }
               }
 

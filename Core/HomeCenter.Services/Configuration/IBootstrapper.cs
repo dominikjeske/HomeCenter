@@ -1,7 +1,6 @@
-﻿using System;
+﻿using HomeCenter.Model.Core;
+using System;
 using System.Threading.Tasks;
-using HomeCenter.Model.Core;
-using SimpleInjector;
 
 namespace HomeCenter.Services.Configuration
 {
