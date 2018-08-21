@@ -1,9 +1,8 @@
-﻿using System;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Messaging;
+﻿using HomeCenter.Messaging;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
 
 namespace HomeCenter.Conditions.Specialized
 {
@@ -13,12 +12,12 @@ namespace HomeCenter.Conditions.Specialized
         {
             WithStart(async () =>
             {
-                var result = await eventAggregator.QueryForValueType(CommandFatory.GetSunsetCommand, ConditionProperies.EndTime).ConfigureAwait(false);
+                var result = await eventAggregator.QueryForValueType(SunsetQuery.Default, ConditionProperies.EndTime).ConfigureAwait(false);
                 return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
             });
             WithEnd(async () =>
             {
-                var result = await eventAggregator.QueryForValueType(CommandFatory.GetSunriseCommand, ConditionProperies.EndTime).ConfigureAwait(false);
+                var result = await eventAggregator.QueryForValueType(SunriseQuery.Default, ConditionProperies.EndTime).ConfigureAwait(false);
                 return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
             });
         }

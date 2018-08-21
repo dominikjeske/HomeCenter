@@ -1,10 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Kodi
 {
@@ -44,13 +46,13 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
-        protected Task RefreshCommandHandler(Command message)
+        protected Task Refresh(RefreshCommand message)
         {
             //TODO pool state
             return Task.CompletedTask;
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
@@ -59,7 +61,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
                                           );
         }
 
-        protected async Task TurnOnCommandHandler(Command message)
+        protected async Task TurnOn(TurnOnCommand message)
         {
             //await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
             //{
@@ -71,7 +73,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOff(TurnOffCommand message)
         {
             var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
             {
@@ -84,7 +86,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUpCommandHandler(Command command)
+        protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
@@ -101,7 +103,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeDownCommandHandler(Command command)
+        protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
@@ -118,7 +120,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeSetCommandHandler(Command command)
+        protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
             var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
@@ -134,7 +136,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task MuteCommandHandler(Command message)
+        protected async Task Mute(MuteCommand message)
         {
             var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
             {
@@ -149,7 +151,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task UnmuteCommandHandler(Command message)
+        protected async Task Unmute(UnmuteCommand message)
         {
             var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
             {
@@ -164,7 +166,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task PlayCommandHandler(Command message)
+        protected async Task Play(PlayCommand message)
         {
             if (_speed != 0) return;
 
@@ -182,7 +184,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
             _speed = await UpdateState(PlaybackState.StateName, _speed, new DoubleValue(1.0)).ConfigureAwait(false);
         }
 
-        protected async Task StopCommandHandler(Command message)
+        protected async Task Stop(StopCommand message)
         {
             if (_speed != 0) return;
 

@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
@@ -52,7 +52,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             return false;
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse DeviceDiscoveryQuery(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteModeValues.Read));
         }

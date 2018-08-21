@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Adapters.Drivers;
-using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Commands.Specialized;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -25,7 +25,7 @@ namespace HomeCenter.ComponentModel.Adapters
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
             _i2CBusService.Write(i2cAddress, setupAsInputs);
 
-            await ExecuteCommand(new Command(CommandType.RefreshCommand)).ConfigureAwait(false);
+            await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
 
         //public HSPE16InputOnlyAdapter(string id, I2CSlaveAddress address, II2CBusService i2CBusService, ILogger log)

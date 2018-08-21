@@ -1,6 +1,6 @@
 ﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Commands.Specialized;
 
 namespace HomeCenter.ComponentModel.Capabilities
 {
@@ -14,7 +14,7 @@ namespace HomeCenter.ComponentModel.Capabilities
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.PowerController);
             this[StateProperties.Value] = new StringValue();
             this[StateProperties.ValueList] = new StringListValue(PowerStateValue.ON, PowerStateValue.OFF);
-            this[StateProperties.SupportedCommands] = new StringListValue(CommandType.TurnOnCommand, CommandType.TurnOffCommand);
+            this[StateProperties.SupportedCommands] = new StringListValue(nameof(TurnOnCommand), nameof(TurnOffCommand));
         }
     }
 }

@@ -44,11 +44,18 @@ namespace HomeCenter.ComponentModel.Components
             return QueueJob(command).Unwrap();
         }
 
-        public virtual Task<T> ExecuteQuery<T>(Command command)
+        public virtual Task<T> ExecuteQuery<T>(Query command)
         {
             AssertActorState();
             var result = QueueJob(command).Unwrap();
             return result.Cast<T>();
+        }
+
+        private async Task<Task<object>> QueueJob(Command command)
+        {
+            var commandJob = new CommandJob<object>(command);
+            var sendResult = await _commandQueue.SendAsync(commandJob).ConfigureAwait(false);
+            return commandJob.Result;
         }
 
         protected Actor() => RegisterCommandHandlers();
@@ -163,13 +170,6 @@ namespace HomeCenter.ComponentModel.Components
         private void AssertForWrappedTask(object result)
         {
             if (result?.GetType()?.Namespace == "System.Threading.Tasks") throw new UnwrappingResultException("Result from handler wan not unwrapped properly");
-        }
-
-        private async Task<Task<object>> QueueJob(Command command)
-        {
-            var commandJob = new CommandJob<object>(command);
-            var sendResult = await _commandQueue.SendAsync(commandJob).ConfigureAwait(false);
-            return commandJob.Result;
         }
 
         private Task<object> ProcessCommand(Command command)

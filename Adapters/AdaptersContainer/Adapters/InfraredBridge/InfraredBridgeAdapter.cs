@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
@@ -9,8 +6,13 @@ using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
@@ -57,7 +59,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             return false;
         }
 
-        protected Task SendCodeCommandHandler(Command message)
+        protected Task SendCode(SendCodeCommand message)
         {
             //TODO uint?
             var commandCode = message[CommandProperties.Code].AsInt();
@@ -80,7 +82,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             return Task.CompletedTask;
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.InfraredCode, EventDirections.Recieving),
                                                                  new EventSource(EventType.InfraredCode, EventDirections.Sending)}, new PowerState());

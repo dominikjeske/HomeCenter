@@ -1,14 +1,14 @@
 ﻿using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Messaging;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
@@ -54,30 +54,39 @@ namespace HomeCenter.ComponentModel.Adapters
             await base.Initialize().ConfigureAwait(false);
         }
 
-        private Task DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
-        {
-            return ExecuteCommand(messageEnvelope.Message);
-        }
+        //private Task DeviceCommandHandler(IMessageEnvelope<Query> messageEnvelope)
+        //{
+        //    return ExecuteCommand(messageEnvelope.Message);
+        //}
 
-        protected Task RefreshCommandHandler(Command message) => FetchState();
+        protected Task Refresh(RefreshCommand message) => FetchState();
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
-        {
-            return new DiscoveryResponse(RequierdProperties(), new PowerState());
-        }
-
-        protected void UpdateCommandHandler(Command message)
+        protected void UpdateState(UpdateStateCommand message)
         {
             var state = message[PowerState.StateName] as StringValue;
             var pinNumber = message[AdapterProperties.PinNumber] as IntValue;
             SetPortState(pinNumber.Value, PowerStateValue.ToBinaryState(state), true);
         }
 
-        protected bool QueryCommandHandler(Command message)
+        protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)
+        {
+            return new DiscoveryResponse(RequierdProperties(), new PowerState());
+        }
+
+        protected bool QueryState(StateQuery message)
         {
             var state = message[PowerState.StateName] as StringValue;
             var pinNumber = message[AdapterProperties.PinNumber] as IntValue;
             return GetPortState(pinNumber);
+        }
+
+        protected void SetState(byte[] state, bool commit)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            Buffer.BlockCopy(state, 0, _state, 0, state.Length);
+
+            if (commit) CommitChanges();
         }
 
         private async Task FetchState()
@@ -117,15 +126,6 @@ namespace HomeCenter.ComponentModel.Adapters
             {
                 _log.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
             }
-        }
-
-        protected void SetState(byte[] state, bool commit)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-
-            Buffer.BlockCopy(state, 0, _state, 0, state.Length);
-
-            if (commit) CommitChanges();
         }
 
         private void CommitChanges(bool force = false)

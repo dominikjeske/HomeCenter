@@ -4,9 +4,9 @@ namespace HomeCenter.ComponentModel.Components
 {
     public class AdapterReference : BaseObject
     {
-        public DeviceCommand GetDeviceCommand(Command baseCommand)
+        public Command GetDeviceCommand(Command baseCommand)
         {
-            var command = new DeviceCommand(baseCommand.Type, Uid);
+            var command = new Command(baseCommand.Type, Uid);
 
             // copy properties from base command
             foreach (var prop in baseCommand.ToProperiesList())

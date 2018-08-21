@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public class Controller : Actor, IActor
+    public class Controller : Actor
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;

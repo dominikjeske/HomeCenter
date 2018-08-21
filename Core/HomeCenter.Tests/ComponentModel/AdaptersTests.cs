@@ -1,11 +1,12 @@
 ﻿using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Core.Tests.Mocks;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -49,7 +50,7 @@ namespace HomeCenter.Extensions.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                taskList.Add(Task.Run(() => adapter.ExecuteCommand(CommandFatory.RefreshCommand)));
+                taskList.Add(Task.Run(() => adapter.ExecuteCommand(RefreshCommand.Default)));
             }
 
             await Task.WhenAll(taskList).ConfigureAwait(false);
@@ -68,7 +69,7 @@ namespace HomeCenter.Extensions.Tests
             var adapter = new TestAdapter("adapter1", adapterServiceFactory);
             await adapter.Initialize().ConfigureAwait(false);
 
-            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DeviceCommand.GenerateDiscoverCommand(adapter.Uid)).ConfigureAwait(false);
+            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid)).ConfigureAwait(false);
 
             Assert.AreEqual(1, result.SupportedStates.Length);
             Assert.IsInstanceOfType(result.SupportedStates[0], typeof(PowerState));
@@ -86,7 +87,7 @@ namespace HomeCenter.Extensions.Tests
             var adapter = new TestAdapter("adapter1", adapterServiceFactory);
             await adapter.Initialize().ConfigureAwait(false);
 
-            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DeviceCommand.GenerateDiscoverCommand(adapter.Uid), TimeSpan.FromMilliseconds(20)).ConfigureAwait(false);
+            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid), TimeSpan.FromMilliseconds(20)).ConfigureAwait(false);
         }
 
         //TODO

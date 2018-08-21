@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    public class ActorLoggingDecorator : IActor
+    public class ActorLoggingDecorator : Actor
     {
-        private readonly IActor _decoratee;
-        private readonly ILogger<IActor> _logger;
+        private readonly Actor _decoratee;
+        private readonly ILogger<Actor> _logger;
 
-        public ActorLoggingDecorator(IActor decoratee, ILogger<IActor> logger)
+        public ActorLoggingDecorator(Actor decoratee, ILogger<Actor> logger)
         {
             _decoratee = decoratee;
             _logger = logger;
@@ -38,10 +38,10 @@ namespace HomeCenter.Model.Components
             return WrapExecution<bool>((Task<bool>)task, $"Exception while executing command {command.Type} on component {_decoratee.Uid}");
         }
 
-        public Task<T> ExecuteQuery<T>(Command command)
+        public Task<T> ExecuteQuery<T>(Query query)
         {
-            var task = _decoratee.ExecuteQuery<T>(command);
-            return WrapExecution<T>(task, $"Exception while executing command {command.Type} on component {_decoratee.Uid}");
+            var task = _decoratee.ExecuteQuery<T>(query);
+            return WrapExecution<T>(task, $"Exception while executing query {query.Type} on component {_decoratee.Uid}");
         }
 
         public Task Initialize()

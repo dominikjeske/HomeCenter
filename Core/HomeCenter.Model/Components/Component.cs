@@ -11,6 +11,7 @@ using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Collections.Generic;
@@ -111,7 +112,7 @@ namespace HomeCenter.ComponentModel.Components
         {
             foreach (var adapter in _adapters)
             {
-                var capabilities = await _eventAggregator.QueryDeviceAsync<DiscoveryResponse>(new DeviceCommand(CommandType.DiscoverCapabilities, adapter.Uid)).ConfigureAwait(false);
+                var capabilities = await _eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid)).ConfigureAwait(false);
                 if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapter.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
                 MapCapabilitiesToAdapters(adapter, capabilities.SupportedStates);

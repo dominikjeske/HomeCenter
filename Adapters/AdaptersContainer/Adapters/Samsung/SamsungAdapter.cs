@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Samsung
 {
@@ -15,8 +15,10 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
         private string _hostname;
 
         private BooleanValue _powerState;
+
         //private DoubleValue _volume;
         private BooleanValue _mute;
+
         private StringValue _input;
 
         public SamsungAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
@@ -31,7 +33,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
             _hostname = this[AdapterProperties.Hostname].AsString();
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             //TODO Add read only state
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
@@ -41,13 +43,13 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
                                           );
         }
 
-        protected Task TurnOnCommandHandler(Command message)
+        protected Task TurnOn(TurnOnCommand message)
         {
             //TODO ADD infrared message
             return Task.CompletedTask;
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOff(TurnOffCommand message)
         {
             await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
             {
@@ -57,7 +59,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected Task VolumeUpCommandHandler(Command command)
+        protected Task VolumeUp(VolumeUpCommand command)
         {
             return _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
             {
@@ -66,7 +68,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
             });
         }
 
-        protected Task VolumeDownCommandHandler(Command command)
+        protected Task VolumeDown(VolumeDownCommand command)
         {
             return _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
             {
@@ -75,7 +77,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
             });
         }
 
-        protected async Task MuteCommandHandler(Command message)
+        protected async Task Mute(MuteCommand message)
         {
             await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
             {
@@ -86,7 +88,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(!_mute)).ConfigureAwait(false);
         }
 
-        protected async Task SelectInputCommandHandler(Command message)
+        protected async Task InputSet(InputSetCommand message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
 

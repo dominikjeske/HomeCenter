@@ -1,11 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Pc
 {
@@ -41,7 +43,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             return ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
 
-        protected async Task RefreshCommandHandler(Command message)
+        protected async Task Refresh(RefreshCommand message)
         {
             var state = await _eventAggregator.QueryAsync<ComputerControlMessage, ComputerStatus>(new ComputerControlMessage
             {
@@ -57,7 +59,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
@@ -66,7 +68,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
                                           );
         }
 
-        protected async Task TurnOnCommandHandler(Command message)
+        protected async Task TurnOm(TurnOnCommand message)
         {
             await _eventAggregator.QueryAsync<WakeOnLanMessage, string>(new WakeOnLanMessage
             {
@@ -75,7 +77,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOf(TurnOffCommand message)
         {
             await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
             {
@@ -86,7 +88,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUpCommandHandler(Command command)
+        protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
@@ -100,7 +102,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeDownCommandHandler(Command command)
+        protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
             await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
@@ -113,7 +115,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeSetCommandHandler(Command command)
+        protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
             await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
@@ -126,7 +128,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task MuteCommandHandler(Command message)
+        protected async Task Mute(MuteCommand message)
         {
             await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
             {
@@ -138,7 +140,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task UnmuteCommandHandler(Command message)
+        protected async Task UnMute(UnmuteCommand message)
         {
             await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
             {
@@ -150,7 +152,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task SelectInputCommandHandler(Command message)
+        protected async Task InputSet(InputSetCommand message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
 

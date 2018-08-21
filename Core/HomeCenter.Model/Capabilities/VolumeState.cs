@@ -1,6 +1,6 @@
 ﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Commands.Specialized;
 
 namespace HomeCenter.ComponentModel.Capabilities
 {
@@ -15,7 +15,7 @@ namespace HomeCenter.ComponentModel.Capabilities
             this[StateProperties.MinValue] = new DoubleValue(0.0);
             this[StateProperties.StateName] = new StringValue(nameof(VolumeState));
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.SpeakerController);
-            this[StateProperties.SupportedCommands] = new StringListValue(CommandType.VolumeUpCommand, CommandType.VolumeDownCommand, CommandType.VolumeSetCommand);
+            this[StateProperties.SupportedCommands] = new StringListValue(nameof(VolumeUpCommand), nameof(VolumeDownCommand), nameof(VolumeSetCommand));
         }
     }
 }

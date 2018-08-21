@@ -1,7 +1,7 @@
-﻿using Quartz;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
+using Quartz;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -10,7 +10,7 @@ namespace HomeCenter.ComponentModel.Adapters
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<Adapter>();
-            return adapter.ExecuteCommand(new Command(CommandType.RefreshCommand));
+            return adapter.ExecuteCommand(RefreshCommand.Default);
         }
     }
 
@@ -19,7 +19,7 @@ namespace HomeCenter.ComponentModel.Adapters
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<Adapter>();
-            return adapter.ExecuteCommand(new Command(CommandType.RefreshLightCommand));
+            return adapter.ExecuteCommand(RefreshLightCommand.Default);
         }
     }
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
@@ -40,10 +42,10 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             if (!IsEnabled) return;
 
             await ScheduleDeviceRefresh<RefreshLightStateJob>(_poolInterval).ConfigureAwait(false);
-            await ExecuteCommand(CommandFatory.RefreshCommand).ConfigureAwait(false);
+            await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
 
-        protected async Task RefreshCommandHandler(Command message)
+        protected async Task Refresh(RefreshCommand message)
         {
             _fullState = await _eventAggregator.QueryAsync<DenonStatusMessage, DenonDeviceInfo>(new DenonStatusMessage { Address = _hostName }).ConfigureAwait(false);
             var mapping = await _eventAggregator.QueryAsync<DenonMappingMessage, DenonDeviceInfo>(new DenonMappingMessage { Address = _hostName }).ConfigureAwait(false);
@@ -52,7 +54,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _surround = _fullState.Surround;
         }
 
-        protected async Task RefreshLightCommandHandler(Command message)
+        protected async Task RefreshLight(RefreshLightCommand message)
         {
             var state = await _eventAggregator.QueryAsync<DenonStatusLightMessage, DenonStatus>(new DenonStatusLightMessage
             {
@@ -66,7 +68,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
@@ -76,7 +78,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
                                           );
         }
 
-        protected async Task TurnOnCommandHandler(Command message)
+        protected async Task TurnOn(TurnOnCommand message)
         {
             await _eventAggregator.QueryWithResultCheckAsync(new DenonControlMessage
             {
@@ -89,7 +91,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOff(TurnOffCommand message)
         {
             await _eventAggregator.QueryWithResultCheckAsync(new DenonControlMessage
             {
@@ -102,7 +104,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUpCommandHandler(Command command)
+        protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
             var normalized = NormalizeVolume(volume);
@@ -120,7 +122,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeDownCommandHandler(Command command)
+        protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
             var normalized = NormalizeVolume(volume);
@@ -137,7 +139,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeSetCommandHandler(Command command)
+        protected async Task SetVolume(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
             var normalized = NormalizeVolume(volume);
@@ -162,7 +164,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             return (volume - 80).ToFloatString();
         }
 
-        protected async Task MuteCommandHandler(Command message)
+        protected async Task Mute(MuteCommand message)
         {
             await _eventAggregator.QueryWithResultCheckAsync(new DenonControlMessage
             {
@@ -176,7 +178,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task UnmuteCommandHandler(Command message)
+        protected async Task UnMute(UnmuteCommand message)
         {
             await _eventAggregator.QueryWithResultCheckAsync(new DenonControlMessage
             {
@@ -190,7 +192,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task SelectInputCommandHandler(Command message)
+        protected async Task SetInput(InputSetCommand message)
         {
             if (_fullState == null) throw new UnsupportedStateException("Cannot change input source on Denon device because device info was not downloaded from device");
             var inputName = (StringValue)message[CommandProperties.InputSource];
@@ -210,7 +212,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
 
-        protected async Task SelectSurroundModeCommandHandler(Command message)
+        protected async Task SurroundMode(ModeSetCommand message)
         {
             //Surround support only in main zone
             if (_zone != 1) return;

@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Adapters.Drivers;
-using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Commands.Specialized;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
@@ -24,14 +24,12 @@ namespace HomeCenter.ComponentModel.Adapters
             SetState(new byte[] { 0x00, 255 }, true);
         }
 
-        public void TurnOnCommandHandler(Command message)
+        public void TurnOn(TurnOnCommand message)
         {
-            
         }
 
-        public void TurnOffCommandHandler(Command message)
+        public void TurnOff(TurnOffCommand message)
         {
-
         }
     }
 }

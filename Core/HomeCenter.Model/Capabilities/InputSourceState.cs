@@ -1,6 +1,6 @@
 ﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Commands.Specialized;
 
 namespace HomeCenter.ComponentModel.Capabilities
 {
@@ -13,7 +13,7 @@ namespace HomeCenter.ComponentModel.Capabilities
             this[StateProperties.Value] = new StringListValue();
             this[StateProperties.StateName] = new StringValue(nameof(InputSourceState));
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.InputController);
-            this[StateProperties.SupportedCommands] = new StringListValue(CommandType.VolumeUpCommand);
+            this[StateProperties.SupportedCommands] = new StringListValue(nameof(VolumeUpCommand));
         }
     }
 }

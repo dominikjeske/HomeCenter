@@ -77,20 +77,20 @@ namespace HomeCenter.Model.Extensions
             }
         }
 
-        public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, DeviceCommand message) where R : BaseObject
+        public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, Query message) where R : BaseObject
         {
-            return eventAggregator.QueryAsync<DeviceCommand, R>(message, new RoutingFilter(message.Uid));
+            return eventAggregator.QueryAsync<Query, R>(message, new RoutingFilter(message.Uid));
         }
 
-        public static async Task<IValue> QueryForValueType(this IEventAggregator eventAggregator, Command message, string property, IValue defaultValue = null)
+        public static async Task<IValue> QueryForValueType(this IEventAggregator eventAggregator, Query message, string property, IValue defaultValue = null)
         {
-            var value = await eventAggregator.QueryAsync<Command, BaseObject>(message).ConfigureAwait(false);
+            var value = await eventAggregator.QueryAsync<Query, BaseObject>(message).ConfigureAwait(false);
             return value != null ? value[property] : defaultValue ?? NullValue.Value;
         }
 
-        public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, DeviceCommand message, TimeSpan timeOut) where R : BaseObject
+        public static Task<R> QueryDeviceAsync<R>(this IEventAggregator eventAggregator, Query message, TimeSpan timeOut) where R : BaseObject
         {
-            return eventAggregator.QueryWitTimeoutAsync<DeviceCommand, R>(message, timeOut, new RoutingFilter(message.Uid));
+            return eventAggregator.QueryWitTimeoutAsync<Query, R>(message, timeOut, new RoutingFilter(message.Uid));
         }
 
         public static IDisposable SubscribeForDeviceQuery<T>(this IEventAggregator eventAggregator, Func<IMessageEnvelope<T>, Task<object>> action, string uid) where T : BaseObject

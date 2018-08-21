@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Sony
 {
@@ -49,7 +50,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             return ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
 
-        protected async Task RefreshCommandHandler(Command message)
+        protected async Task Refresh(RefreshCommand message)
         {
             var power = await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
             {
@@ -71,7 +72,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             }).ConfigureAwait(false);
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
@@ -80,7 +81,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
                                           );
         }
 
-        protected async Task TurnOnCommandHandler(Command message)
+        protected async Task TurnOn(TurnOnCommand message)
         {
             var result = await _eventAggregator.QueryAsync<SonyControlMessage, string>(new SonyControlMessage
             {
@@ -91,7 +92,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOff(TurnOffCommand message)
         {
             var result = await _eventAggregator.QueryAsync<SonyControlMessage, string>(new SonyControlMessage
             {
@@ -102,7 +103,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUpCommandHandler(Command command)
+        protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
             await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
@@ -117,7 +118,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeDownCommandHandler(Command command)
+        protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
             await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
@@ -132,7 +133,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeSetCommandHandler(Command command)
+        protected async Task VolumeSer(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
             await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
@@ -147,7 +148,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task MuteCommandHandler(Command message)
+        protected async Task Mute(MuteCommand message)
         {
             await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
             {
@@ -161,7 +162,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task UnmuteCommandHandler(Command message)
+        protected async Task UnMute(UnmuteCommand message)
         {
             await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
             {
@@ -175,7 +176,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task SelectInputCommandHandler(Command message)
+        protected async Task InputSet(InputSetCommand message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
             if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");

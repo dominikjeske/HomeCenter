@@ -9,8 +9,10 @@ using HomeCenter.Core.Hardware.RemoteSockets;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Queries.Specialized;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -75,7 +77,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
         //    return ExecuteCommand(messageEnvelope.Message);
         //}
 
-        protected async Task TurnOnCommandHandler(Command message)
+        protected async Task TurnOn(TurnOnCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
 
@@ -85,7 +87,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             }
         }
 
-        protected async Task TurnOffCommandHandler(Command message)
+        protected async Task TurnOff(TurnOffCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
 
@@ -119,7 +121,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, _state.ElementAtOrNull(code.ToShortCode()), new StringValue(PowerStateValue.ON)).ConfigureAwait(false);
         }
 
-        protected DiscoveryResponse DiscoverCapabilitiesHandler(Command message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.DipswitchCode, EventDirections.Recieving),
                                                                  new EventSource(EventType.DipswitchCode, EventDirections.Sending)}, new PowerState());
