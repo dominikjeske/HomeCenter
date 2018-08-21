@@ -157,6 +157,13 @@ namespace HomeCenter.Model.Core
             {
                 try
                 {
+                    foreach (var reference in component.AdapterReferences)
+                    {
+                        var adapter = _homeConfiguration.Adapters.FirstOrDefault(x => x.Uid == reference);
+                        if (adapter == null) throw new ConfigurationException($"Adapter {reference} for component {component.Uid} was not found in current configuration");
+                        component.InitializeAdapter(adapter);
+                    }
+
                     await component.Initialize().ConfigureAwait(false);
                     _disposables.Add(component);
                 }

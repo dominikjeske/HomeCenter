@@ -46,9 +46,6 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
             _serialMessagingService.RegisterMessageHandler(SerialHandler);
-
-            //TODO
-            //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
         }
 
         public async Task<bool> SerialHandler(byte messageType, byte messageSize, IBinaryReader reader)
@@ -70,12 +67,6 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             }
             return false;
         }
-
-        //TODO
-        //private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
-        //{
-        //    return ExecuteCommand(messageEnvelope.Message);
-        //}
 
         protected async Task TurnOn(TurnOnCommand message)
         {

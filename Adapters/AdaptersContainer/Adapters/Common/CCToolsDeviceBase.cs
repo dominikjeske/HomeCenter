@@ -48,16 +48,8 @@ namespace HomeCenter.ComponentModel.Adapters
 
             await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
 
-            //TODO
-            //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
-
             await base.Initialize().ConfigureAwait(false);
         }
-
-        //private Task DeviceCommandHandler(IMessageEnvelope<Query> messageEnvelope)
-        //{
-        //    return ExecuteCommand(messageEnvelope.Message);
-        //}
 
         protected Task Refresh(RefreshCommand message) => FetchState();
 

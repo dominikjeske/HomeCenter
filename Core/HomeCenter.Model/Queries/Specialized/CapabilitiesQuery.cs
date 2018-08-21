@@ -2,8 +2,7 @@
 
 namespace HomeCenter.Model.Queries.Specialized
 {
-    public class DiscoverQuery : Query
+    public class CapabilitiesQuery : Query
     {
-        public static DiscoverQuery Default => new DiscoverQuery();
     }
 }

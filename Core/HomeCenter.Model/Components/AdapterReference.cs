@@ -1,9 +1,17 @@
-﻿using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.ComponentModel.Commands;
 
 namespace HomeCenter.ComponentModel.Components
 {
     public class AdapterReference : BaseObject
     {
+        public Adapter Adapter { get; private set; }
+
+        public void InitializeAdapter(Adapter adapter)
+        {
+            Adapter = adapter;
+        }
+
         public Command GetDeviceCommand(Command baseCommand)
         {
             var command = new Command(baseCommand.Type, Uid);

@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.ComponentModel.Adapters;
 using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
@@ -12,7 +13,6 @@ using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
-using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ namespace HomeCenter.ComponentModel.Components
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;
-        private List<string> _tagCache;
+        private List<string> _tagCache = new List<string>();
 
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
@@ -33,11 +33,13 @@ namespace HomeCenter.ComponentModel.Components
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
-        public Component(IEventAggregator eventAggregator, ILogger<Component> logger, IScheduler scheduler)
+        public Component(IEventAggregator eventAggregator, IScheduler scheduler)
         {
             _eventAggregator = eventAggregator;
             _scheduler = scheduler;
         }
+
+        public IReadOnlyList<string> AdapterReferences => _adapters.Select(a => a.Uid).ToList().AsReadOnly();
 
         public override async Task Initialize()
         {
@@ -48,6 +50,13 @@ namespace HomeCenter.ComponentModel.Components
             SubscribeForRemoteCommands();
 
             await base.Initialize().ConfigureAwait(false);
+        }
+
+        public void InitializeAdapter(Adapter adapter)
+        {
+            var reference = _adapters.FirstOrDefault(a => a.Uid == adapter.Uid);
+            if (reference == null) throw new KeyNotFoundException($"Adapter {adapter.Uid} was not found in component {Uid}");
+            reference.InitializeAdapter(adapter);
         }
 
         private Task InitializeTriggers()
@@ -110,15 +119,15 @@ namespace HomeCenter.ComponentModel.Components
 
         private async Task InitializeAdapters()
         {
-            foreach (var adapter in _adapters)
+            foreach (var adapterRef in _adapters)
             {
-                var capabilities = await _eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid)).ConfigureAwait(false);
-                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapter.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+                var capabilities = await adapterRef.Adapter.ExecuteQuery<DiscoveryResponse>(DiscoverQuery.Default).ConfigureAwait(false);
+                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
-                MapCapabilitiesToAdapters(adapter, capabilities.SupportedStates);
+                MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
                 BuildCapabilityStates(capabilities);
-                MapEventSourcesToAdapters(adapter, capabilities.EventSources);
-                SubscribeToAdapterEvents(adapter, capabilities.RequierdProperties);
+                MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
+                SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
             }
         }
 
@@ -203,7 +212,7 @@ namespace HomeCenter.ComponentModel.Components
             await _eventAggregator.PublishDeviceEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
 
-        protected IReadOnlyCollection<string> SupportedCapabilitiesCommandHandler(Command command) => _capabilities.Values
+        protected IReadOnlyCollection<string> Capabilities(CapabilitiesQuery command) => _capabilities.Values
                                                                                                 .Select(cap => cap.GetPropertyValue(StateProperties.StateName))
                                                                                                 .Where(cap => cap.HasValue)
                                                                                                 .Cast<StringValue>()
@@ -212,7 +221,7 @@ namespace HomeCenter.ComponentModel.Components
                                                                                                 .ToList()
                                                                                                 .AsReadOnly();
 
-        protected IReadOnlyCollection<string> SupportedStatesCommandHandler(Command command) => _capabilities.Values
+        protected IReadOnlyCollection<string> SupportedStates(SupportedStatesQuery command) => _capabilities.Values
                                                                                    .Select(cap => cap.GetPropertyValue(StateProperties.StateName))
                                                                                    .Where(cap => cap.HasValue)
                                                                                    .Cast<StringValue>()
@@ -221,7 +230,7 @@ namespace HomeCenter.ComponentModel.Components
                                                                                    .ToList()
                                                                                    .AsReadOnly();
 
-        protected IReadOnlyCollection<string> SupportedTagsCommandHandler(Command command)
+        protected IReadOnlyCollection<string> SupportedTags(TagsQuery command)
         {
             if (_tagCache == null)
             {
@@ -231,7 +240,7 @@ namespace HomeCenter.ComponentModel.Components
             return _tagCache.AsReadOnly();
         }
 
-        protected Maybe<IValue> GetStateCommandHandler(Command command)
+        protected Maybe<IValue> GetStateCommandHandler(StateQuery command)
         {
             var stateName = command[CommandProperties.StateName].AsString();
 
