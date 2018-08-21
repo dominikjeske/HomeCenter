@@ -1,15 +1,9 @@
 ﻿using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Core.Tests.Mocks;
-using HomeCenter.Messaging;
 using HomeCenter.Model.Commands.Specialized;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -58,37 +52,37 @@ namespace HomeCenter.Extensions.Tests
             Assert.AreEqual(0, adapter.Counter);
         }
 
-        [TestMethod]
-        public async Task AdapterCommandViaEventAggregatorExecuteShouldGetResult()
-        {
-            var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
-                                                                       .BuildAndRun()
-                                                                       .ConfigureAwait(false);
-            var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
-            var eventAggregator = container.GetInstance<IEventAggregator>();
-            var adapter = new TestAdapter("adapter1", adapterServiceFactory);
-            await adapter.Initialize().ConfigureAwait(false);
+        //[TestMethod]
+        //public async Task AdapterCommandViaEventAggregatorExecuteShouldGetResult()
+        //{
+        //    var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
+        //                                                               .BuildAndRun()
+        //                                                               .ConfigureAwait(false);
+        //    var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
+        //    var eventAggregator = container.GetInstance<IEventAggregator>();
+        //    var adapter = new TestAdapter("adapter1", adapterServiceFactory);
+        //    await adapter.Initialize().ConfigureAwait(false);
 
-            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid)).ConfigureAwait(false);
+        //    var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid)).ConfigureAwait(false);
 
-            Assert.AreEqual(1, result.SupportedStates.Length);
-            Assert.IsInstanceOfType(result.SupportedStates[0], typeof(PowerState));
-        }
+        //    Assert.AreEqual(1, result.SupportedStates.Length);
+        //    Assert.IsInstanceOfType(result.SupportedStates[0], typeof(PowerState));
+        //}
 
-        [TestMethod]
-        [ExpectedException(typeof(TimeoutException))]
-        public async Task AdapterCommandViaEventAggregatorExecuteShouldTimeoutWhenExecuteToLong()
-        {
-            var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
-                                                                       .BuildAndRun()
-                                                                       .ConfigureAwait(false);
-            var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
-            var eventAggregator = container.GetInstance<IEventAggregator>();
-            var adapter = new TestAdapter("adapter1", adapterServiceFactory);
-            await adapter.Initialize().ConfigureAwait(false);
+        //[TestMethod]
+        //[ExpectedException(typeof(TimeoutException))]
+        //public async Task AdapterCommandViaEventAggregatorExecuteShouldTimeoutWhenExecuteToLong()
+        //{
+        //    var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
+        //                                                               .BuildAndRun()
+        //                                                               .ConfigureAwait(false);
+        //    var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
+        //    var eventAggregator = container.GetInstance<IEventAggregator>();
+        //    var adapter = new TestAdapter("adapter1", adapterServiceFactory);
+        //    await adapter.Initialize().ConfigureAwait(false);
 
-            var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid), TimeSpan.FromMilliseconds(20)).ConfigureAwait(false);
-        }
+        //    var result = await eventAggregator.QueryDeviceAsync<DiscoveryResponse>(DiscoverQuery.Query(adapter.Uid), TimeSpan.FromMilliseconds(20)).ConfigureAwait(false);
+        //}
 
         //TODO
         //[TestMethod]
