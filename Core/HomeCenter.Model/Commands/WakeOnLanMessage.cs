@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace HomeCenter.Core.Interface.Messaging
 {
+    //TODO
     public class WakeOnLanMessage : IUdpBroadcastMessage
     {
         public string MAC { get; set; }

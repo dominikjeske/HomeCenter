@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -23,9 +22,10 @@ namespace HomeCenter.ComponentModel.Components
         protected bool _isInitialized;
         protected BufferBlock<CommandJob<object>> _commandQueue = new BufferBlock<CommandJob<object>>();
         protected readonly DisposeContainer _disposables = new DisposeContainer();
-        protected Dictionary<string, Func<Command, Task<object>>> _asyncQueryHandlers = new Dictionary<string, Func<Command, Task<object>>>();
-        protected Dictionary<string, Func<Command, Task>> _asyncCommandHandlers = new Dictionary<string, Func<Command, Task>>();
+
         protected Dictionary<string, Action<Command>> _commandHandlers = new Dictionary<string, Action<Command>>();
+        protected Dictionary<string, Func<Command, Task>> _asyncCommandHandlers = new Dictionary<string, Func<Command, Task>>();
+        protected Dictionary<string, Func<Query, Task<object>>> _asyncQueryHandlers = new Dictionary<string, Func<Query, Task<object>>>();
 
         public void Dispose() => _disposables.Dispose();
 
@@ -51,7 +51,7 @@ namespace HomeCenter.ComponentModel.Components
             return result.Cast<T>();
         }
 
-        private async Task<Task<object>> QueueJob(Command command)
+        private async Task<Task<object>> QueueJob(ActorMessage command)
         {
             var commandJob = new CommandJob<object>(command);
             var sendResult = await _commandQueue.SendAsync(commandJob).ConfigureAwait(false);
@@ -73,36 +73,35 @@ namespace HomeCenter.ComponentModel.Components
 
         private void RegisterCommandHandlers()
         {
-            var handlers = GetHandlers();
+            var commandHandlers = GetHandlers<Command>();
 
-            RegisterAsyncQueryHandlers(handlers);
-            RegisterAsyncCommandsHandlers(handlers);
-            RegisterActionHandlers(handlers);
-            RegisterSpecificTaskHandler(handlers);
-            RegisterCustomTypeHandlers(handlers);
+            RegisterCommandHandlers(commandHandlers);
+            RegisterAsyncCommandsHandlers(commandHandlers);
+
+            var queryHandlers = GetHandlers<Query>();
+
+            RegisterSpecificTaskHandler(queryHandlers);
+            RegisterQueryHandlers(queryHandlers);
+            RegisterAsyncQueryHandlers(queryHandlers);
         }
 
-        private Dictionary<string, MethodInfo> GetHandlers()
+        private Dictionary<string, MethodInfo> GetHandlers<T>() where T : ActorMessage
         {
             var handlers = new Dictionary<string, MethodInfo>();
-            Regex r = new Regex(@"^(?<Name>\w*)Handler", RegexOptions.Compiled);
-            foreach (var handler in GetType().GetMethodsBySignature(typeof(Command)))
+
+            foreach (var handler in GetType().GetMethodsBySignature(typeof(T)))
             {
-                var commandName = GetCommandName(r, handler);
-                if (commandName.HasValue)
-                {
-                    handlers.Add(commandName.Value, handler);
-                }
+                handlers.Add(handler.GetParameters().First().ParameterType.Name, handler);
             }
             return handlers;
         }
 
-        private void RegisterAsyncQueryHandlers(Dictionary<string, MethodInfo> handlers)
+        private void RegisterCommandHandlers(Dictionary<string, MethodInfo> handlers)
         {
-            var filtered = handlers.Where(h => h.Value.ReturnType == typeof(Task<object>)).ToList();
+            var filtered = handlers.Where(h => h.Value.ReturnType == typeof(void)).ToList();
             foreach (var handler in filtered)
             {
-                _asyncQueryHandlers.Add(handler.Key, (Func<Command, Task<object>>)Delegate.CreateDelegate(typeof(Func<Command, Task<object>>), this, handler.Value, false));
+                _commandHandlers.Add(handler.Key, (Action<Command>)Delegate.CreateDelegate(typeof(Action<Command>), this, handler.Value, false));
             }
             handlers.RemoveRange(filtered.Select(f => f.Key));
         }
@@ -117,12 +116,17 @@ namespace HomeCenter.ComponentModel.Components
             handlers.RemoveRange(filtered.Select(f => f.Key));
         }
 
-        private void RegisterActionHandlers(Dictionary<string, MethodInfo> handlers)
+        private void RegisterQueryHandlers(Dictionary<string, MethodInfo> handlers)
         {
-            var filtered = handlers.Where(h => h.Value.ReturnType == typeof(void)).ToList();
+            handlers.ForEach(handler => _asyncQueryHandlers.Add(handler.Key, handler.Value.WrapSimpleTypeToGenericTask(this)));
+        }
+
+        private void RegisterAsyncQueryHandlers(Dictionary<string, MethodInfo> handlers)
+        {
+            var filtered = handlers.Where(h => h.Value.ReturnType == typeof(Task<object>)).ToList();
             foreach (var handler in filtered)
             {
-                _commandHandlers.Add(handler.Key, (Action<Command>)Delegate.CreateDelegate(typeof(Action<Command>), this, handler.Value, false));
+                _asyncQueryHandlers.Add(handler.Key, (Func<Query, Task<object>>)Delegate.CreateDelegate(typeof(Func<Query, Task<object>>), this, handler.Value, false));
             }
             handlers.RemoveRange(filtered.Select(f => f.Key));
         }
@@ -134,21 +138,6 @@ namespace HomeCenter.ComponentModel.Components
             handlers.RemoveRange(filtered.Select(f => f.Key));
         }
 
-        private void RegisterCustomTypeHandlers(Dictionary<string, MethodInfo> handlers)
-        {
-            handlers.ForEach(handler => _asyncQueryHandlers.Add(handler.Key, handler.Value.WrapSimpleTypeToGenericTask(this)));
-        }
-
-        private Maybe<string> GetCommandName(Regex r, MethodInfo handler)
-        {
-            var match = r.Match(handler.Name);
-            if (match?.Success ?? false)
-            {
-                return match.Groups["Name"].Value;
-            }
-            return Maybe<string>.None;
-        }
-
         private async Task HandleCommands()
         {
             while (await _commandQueue.OutputAvailableAsync(_disposables.Token).ConfigureAwait(false))
@@ -156,7 +145,7 @@ namespace HomeCenter.ComponentModel.Components
                 var command = await _commandQueue.ReceiveAsync(_disposables.Token).ConfigureAwait(false);
                 try
                 {
-                    var result = await ProcessCommand(command.Command).ConfigureAwait(false);
+                    var result = await ProcessCommand(command.Message).ConfigureAwait(false);
                     AssertForWrappedTask(result);
                     command.SetResult(result);
                 }
@@ -172,24 +161,25 @@ namespace HomeCenter.ComponentModel.Components
             if (result?.GetType()?.Namespace == "System.Threading.Tasks") throw new UnwrappingResultException("Result from handler wan not unwrapped properly");
         }
 
-        private Task<object> ProcessCommand(Command command)
+        private Task<object> ProcessCommand(ActorMessage message)
         {
-            if (_asyncQueryHandlers.ContainsKey(command.Type))
+            if (_asyncQueryHandlers.ContainsKey(message.Type))
             {
-                return _asyncQueryHandlers[command.Type].Invoke(command);
+                return _asyncQueryHandlers[message.Type].Invoke((Query)message);
             }
-            else if (_asyncCommandHandlers.ContainsKey(command.Type))
+            else if (_asyncCommandHandlers.ContainsKey(message.Type))
             {
-                return _asyncCommandHandlers[command.Type].Invoke(command).Cast<object>(VoidResult.Void);
+                return _asyncCommandHandlers[message.Type].Invoke((Command)message).Cast<object>(VoidResult.Void);
             }
-            else if (_commandHandlers.ContainsKey(command.Type))
+            else if (_commandHandlers.ContainsKey(message.Type))
             {
-                _commandHandlers[command.Type].Invoke(command);
+                _commandHandlers[message.Type].Invoke((Command)message);
                 return Task.FromResult<object>(VoidResult.Void);
             }
             else
             {
-                return UnhandledCommand(command);
+                //TODO unhandled query
+                return UnhandledCommand((Command)message);
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace HomeCenter.ComponentModel.Commands
 {
-    public class Command : BaseObject
+    public class Command : ActorMessage
     {
         public CancellationToken CancellationToken { get; }
 
@@ -22,10 +22,10 @@ namespace HomeCenter.ComponentModel.Commands
             Uid = uid;
         }
 
-        public Command(string commandType, params Property[] properties) : base(properties)
-        {
-            Type = commandType;
-        }
+        //public Command(string commandType, params Property[] properties) : base(properties)
+        //{
+        //    Type = commandType;
+        //}
 
         public Command(string commandType, CancellationToken cancellationToken) : base()
         {
