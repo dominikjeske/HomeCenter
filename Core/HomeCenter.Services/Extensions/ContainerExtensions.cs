@@ -1,7 +1,5 @@
 ﻿using Castle.DynamicProxy;
-using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core;
-using HomeCenter.Model.Core;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -12,10 +10,8 @@ namespace HomeCenter.Model.Extensions
 {
     public static class ContainerExtensions
     {
-        public static IEnumerable<IService> GetSerives(this Container container) => container.GetAllInstances<IService>();
-
         public static Registration RegisterService<T, K>(this Container container) where T : class, IService
-                                                                                where K : class, T
+                                                                                   where K : class, T
         {
             var registration = Lifestyle.Singleton.CreateRegistration<K>(container);
             container.AddRegistration<T>(registration);
@@ -38,15 +34,9 @@ namespace HomeCenter.Model.Extensions
         {
             c.ExpressionBuilt += (s, e) =>
             {
-                if (e.RegisteredServiceType == typeof(Controller))
-                {
-                    var sss = typeof(Actor).IsAssignableFrom(typeof(Controller));
-                }
-
                 if (predicate(e.RegisteredServiceType))
                 {
-                    var interceptorExpression =
-                        c.GetRegistration(typeof(TInterceptor), true).BuildExpression();
+                    var interceptorExpression = c.GetRegistration(typeof(TInterceptor), true).BuildExpression();
 
                     var tab = new List<Expression>();
                     foreach (var par in e.RegisteredServiceType.GetConstructors().FirstOrDefault().GetParameters())
@@ -55,8 +45,7 @@ namespace HomeCenter.Model.Extensions
                         tab.Add(parInstance);
                     }
 
-                    e.Expression = Expression.Convert(
-                        Expression.Invoke(Expression.Constant(createProxy),
+                    e.Expression = Expression.Convert(Expression.Invoke(Expression.Constant(createProxy),
                             Expression.Constant(e.RegisteredServiceType, typeof(Type)),
                             e.Expression,
                             interceptorExpression,

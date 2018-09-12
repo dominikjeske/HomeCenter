@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpFunctionalExtensions" Version="1.10.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview1-35029" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview2-35157" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Quartz" Version="3.0.6" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
