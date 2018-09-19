@@ -12,45 +12,45 @@ namespace HomeCenter.Extensions.Tests
     [TestClass]
     public class AdaptersTests : ReactiveTest
     {
-        [TestMethod]
-        public async Task AdapterCommandExecuteShouldGetResult()
-        {
-            var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
-                                                                       .BuildAndRun()
-                                                                       .ConfigureAwait(false);
+        //[TestMethod]
+        //public async Task AdapterCommandExecuteShouldGetResult()
+        //{
+        //    var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
+        //                                                               .BuildAndRun()
+        //                                                               .ConfigureAwait(false);
 
-            var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
-            var adapter = new TestAdapter("adapter1", adapterServiceFactory);
-            await adapter.Initialize().ConfigureAwait(false);
+        //    var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
+        //    var adapter = new TestAdapter("adapter1", adapterServiceFactory);
+        //    await adapter.Initialize().ConfigureAwait(false);
 
-            //TODO Test
-            //var result = await adapter.ExecuteCommand<DiscoveryResponse>(CommandFatory.DiscoverCapabilitiesCommand).ConfigureAwait(false);
+        //    //TODO Test
+        //    //var result = await adapter.ExecuteCommand<DiscoveryResponse>(CommandFatory.DiscoverCapabilitiesCommand).ConfigureAwait(false);
 
-            //Assert.AreEqual(1, result.SupportedStates.Length);
-            //Assert.IsInstanceOfType(result.SupportedStates[0], typeof(PowerState));
-        }
+        //    //Assert.AreEqual(1, result.SupportedStates.Length);
+        //    //Assert.IsInstanceOfType(result.SupportedStates[0], typeof(PowerState));
+        //}
 
-        [TestMethod]
-        public async Task MultiThreadAdapterCommandsExecuteShouldBeQueued()
-        {
-            var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
-                                                                       .BuildAndRun()
-                                                                       .ConfigureAwait(false);
-            var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
-            var adapter = new TestAdapter("adapter1", adapterServiceFactory);
-            await adapter.Initialize().ConfigureAwait(false);
+        //[TestMethod]
+        //public async Task MultiThreadAdapterCommandsExecuteShouldBeQueued()
+        //{
+        //    var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
+        //                                                               .BuildAndRun()
+        //                                                               .ConfigureAwait(false);
+        //    var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
+        //    var adapter = new TestAdapter("adapter1", adapterServiceFactory);
+        //    await adapter.Initialize().ConfigureAwait(false);
 
-            var taskList = new List<Task>();
+        //    var taskList = new List<Task>();
 
-            for (int i = 0; i < 10; i++)
-            {
-                taskList.Add(Task.Run(() => adapter.ExecuteCommand(RefreshCommand.Default)));
-            }
+        //    for (int i = 0; i < 10; i++)
+        //    {
+        //        taskList.Add(Task.Run(() => adapter.ExecuteCommand(RefreshCommand.Default)));
+        //    }
 
-            await Task.WhenAll(taskList).ConfigureAwait(false);
+        //    await Task.WhenAll(taskList).ConfigureAwait(false);
 
-            Assert.AreEqual(0, adapter.Counter);
-        }
+        //    Assert.AreEqual(0, adapter.Counter);
+        //}
 
         //[TestMethod]
         //public async Task AdapterCommandViaEventAggregatorExecuteShouldGetResult()

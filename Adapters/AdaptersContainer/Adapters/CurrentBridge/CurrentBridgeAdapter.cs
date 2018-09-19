@@ -6,6 +6,7 @@ using HomeCenter.Core.Services;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,9 +23,10 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
 
-        public override async Task Initialize()
+
+        protected override async Task OnStarted(IContext context)
         {
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             var _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
 
@@ -37,6 +39,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
 
             _serialMessagingService.RegisterMessageHandler(MessageHandler);
         }
+
 
         public async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
         {

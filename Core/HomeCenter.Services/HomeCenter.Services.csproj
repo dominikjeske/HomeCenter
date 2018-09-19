@@ -31,4 +31,16 @@
     <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Actor.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Mailbox">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Router">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

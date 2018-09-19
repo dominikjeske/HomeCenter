@@ -1,7 +1,7 @@
 ﻿using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Commands.Specialized;
+using Proto;
 using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
@@ -12,20 +12,21 @@ namespace HomeCenter.ComponentModel.Adapters
         {
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return;
+            await base.OnStarted(context).ConfigureAwait(false);
 
             var address = (IntValue)this[AdapterProperties.I2cAddress];
             var i2cAddress = new I2CSlaveAddress(address.Value);
             _portExpanderDriver = new MAX7311Driver(i2cAddress, _i2CBusService);
 
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
             _i2CBusService.Write(i2cAddress, setupAsInputs);
 
-            await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
+            //TODO
+            //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
 
         //public HSPE16InputOnlyAdapter(string id, I2CSlaveAddress address, II2CBusService i2CBusService, ILogger log)

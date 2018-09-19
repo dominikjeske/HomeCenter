@@ -57,26 +57,22 @@ namespace HomeCenter.Model.Core
             _services = services;
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(Proto.IContext context)
         {
-            try
-            {
-                await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
-                RegisterRestCommandHanler();
-                LoadDynamicAdapters(_controllerOptions.AdapterMode);
+            RegisterRestCommandHanler();
+            LoadDynamicAdapters(_controllerOptions.AdapterMode);
 
-                await LoadCalendars().ConfigureAwait(false);
-                await InitializeConfiguration().ConfigureAwait(false);
-                await InitializeServices().ConfigureAwait(false);
-                await RunScheduler().ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unhanded exception while application startup");
-                throw;
-            }
+            await LoadCalendars().ConfigureAwait(false);
+            await InitializeConfiguration().ConfigureAwait(false);
+            await InitializeServices().ConfigureAwait(false);
+            await RunScheduler().ConfigureAwait(false);
+
+            //TODO
+            //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
+
 
         private void RegisterRestCommandHanler()
         {
@@ -144,7 +140,8 @@ namespace HomeCenter.Model.Core
             {
                 try
                 {
-                    await adapter.Initialize().ConfigureAwait(false);
+                    //TODO - obsolate?
+                    //await adapter.Initialize().ConfigureAwait(false);
                     _disposables.Add(adapter);
                 }
                 catch (Exception e)
@@ -164,7 +161,8 @@ namespace HomeCenter.Model.Core
                         component.InitializeAdapter(adapter);
                     }
 
-                    await component.Initialize().ConfigureAwait(false);
+                    //TODO - obsolate?
+                    //await component.Initialize().ConfigureAwait(false);
                     _disposables.Add(component);
                 }
                 catch (Exception e)

@@ -2,6 +2,7 @@
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Commands.Specialized;
+using Proto;
 using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
@@ -12,14 +13,12 @@ namespace HomeCenter.ComponentModel.Adapters
         {
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return;
-
             var address = (IntValue)this[AdapterProperties.I2cAddress];
             _portExpanderDriver = new MAX7311Driver(new I2CSlaveAddress(address.Value), _i2CBusService);
 
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             SetState(new byte[] { 0x00, 255 }, true);
         }

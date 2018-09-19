@@ -1,8 +1,9 @@
-﻿using System.Threading;
+﻿using HomeCenter.ComponentModel.Components;
+using System.Threading;
 
 namespace HomeCenter.ComponentModel.Commands
 {
-    public class Query : ActorMessage
+    public class Query : ActorMessage, IExecutionContext
     {
         public CancellationToken CancellationToken { get; }
 
@@ -32,6 +33,8 @@ namespace HomeCenter.ComponentModel.Commands
             Type = commandType;
             CancellationToken = cancellationToken;
         }
+
+        public Proto.IContext Context { get; set; }
 
         public static implicit operator Query(string value) => new Query(value);
     }

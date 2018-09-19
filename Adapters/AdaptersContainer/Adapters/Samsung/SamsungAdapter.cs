@@ -6,6 +6,7 @@ using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Samsung
@@ -25,10 +26,9 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
         {
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return;
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             _hostname = this[AdapterProperties.Hostname].AsString();
         }

@@ -7,6 +7,7 @@ using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,21 +29,21 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
 
         public DenonAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
+
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             _hostName = this[AdapterProperties.Hostname].AsString();
             _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
             //TODO make zone as required parameter
             _zone = this[AdapterProperties.Zone].AsInt();
 
-            if (!IsEnabled) return;
-
             await ScheduleDeviceRefresh<RefreshLightStateJob>(_poolInterval).ConfigureAwait(false);
-            await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
+            //TODO
+            //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
 
         protected async Task Refresh(RefreshCommand message)

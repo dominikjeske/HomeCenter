@@ -6,6 +6,7 @@ using HomeCenter.Core.Interface.Messaging;
 using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,18 +30,16 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
         {
         }
 
-        public override Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            base.Initialize();
+            await base.OnStarted(context).ConfigureAwait(false);
 
             _hostname = this[AdapterProperties.Hostname].AsString();
             _port = this[AdapterProperties.Port].AsInt();
             _mac = this[AdapterProperties.MAC].AsString();
             _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
 
-            if (!IsEnabled) return Task.CompletedTask;
-
-            return ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
+            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
 
         protected async Task Refresh(RefreshCommand message)

@@ -12,17 +12,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.74">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="CSharpFunctionalExtensions" Version="1.10.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview2-35157" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Quartz" Version="3.0.6" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
     <PackageReference Include="System.Reactive" Version="4.1.0" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Actor.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Mailbox">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Router">
+      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.74" />
   </ItemGroup>
 
 </Project>

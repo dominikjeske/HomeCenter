@@ -6,6 +6,7 @@ using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,17 +39,17 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
         {
         }
 
-        public override Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return Task.CompletedTask;
-            base.Initialize();
+            await base.OnStarted(context).ConfigureAwait(false);
 
             _hostname = this[AdapterProperties.Hostname].AsString();
             _authorisationKey = this[AdapterProperties.AuthKey].AsString();
             _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
 
-            return ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
+            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
+
 
         protected async Task Refresh(RefreshCommand message)
         {

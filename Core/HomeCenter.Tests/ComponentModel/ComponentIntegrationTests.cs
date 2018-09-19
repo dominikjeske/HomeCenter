@@ -56,7 +56,7 @@ namespace HomeCenter.Extensions.Tests
                                                                        .ConfigureAwait(false);
             var eventAggregator = container.GetInstance<IEventAggregator>();
 
-            await controller.ExecuteQuery<DeviceSearchQuery>(DeviceSearchQuery.Query("uid"));
+          //  await controller.ExecuteQuery<DeviceSearchQuery>(DeviceSearchQuery.Query("uid"));
 
             //await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
             //TODO

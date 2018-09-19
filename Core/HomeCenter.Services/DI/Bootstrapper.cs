@@ -58,7 +58,8 @@ namespace HomeCenter.Services.Configuration
         private async Task<Controller> CreateController()
         {
             var controller = _container.GetInstance<Controller>();
-            await controller.Initialize().ConfigureAwait(false);
+            //TODO
+            //await controller.Initialize().ConfigureAwait(false);
             return controller;
         }
 

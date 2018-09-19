@@ -10,7 +10,10 @@ namespace HomeCenter.ComponentModel.Adapters
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<Adapter>();
-            return adapter.ExecuteCommand(RefreshCommand.Default);
+
+            //TODO
+            return Task.CompletedTask;
+            //return adapter.ExecuteCommand(RefreshCommand.Default);
         }
     }
 
@@ -19,7 +22,9 @@ namespace HomeCenter.ComponentModel.Adapters
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<Adapter>();
-            return adapter.ExecuteCommand(RefreshLightCommand.Default);
+            //return adapter.ExecuteCommand(RefreshLightCommand.Default);
+            //TODO
+            return Task.CompletedTask;
         }
     }
 }

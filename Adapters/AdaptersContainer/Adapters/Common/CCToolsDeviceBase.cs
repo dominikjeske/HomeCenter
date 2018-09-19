@@ -10,6 +10,7 @@ using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Extensions.Logging;
+using Proto;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,8 +38,10 @@ namespace HomeCenter.ComponentModel.Adapters
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
+            await base.OnStarted(context).ConfigureAwait(false);
+
             var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
 
             _poolDurationWarning = (IntValue)this[AdapterProperties.PollDurationWarningThreshold];
@@ -47,8 +50,6 @@ namespace HomeCenter.ComponentModel.Adapters
             _committedState = new byte[_portExpanderDriver.StateSize];
 
             await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
-
-            await base.Initialize().ConfigureAwait(false);
         }
 
         protected Task Refresh(RefreshCommand message) => FetchState();

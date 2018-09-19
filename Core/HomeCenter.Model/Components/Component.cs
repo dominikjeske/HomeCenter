@@ -13,6 +13,7 @@ using HomeCenter.Messaging;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using Quartz;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,15 +42,15 @@ namespace HomeCenter.ComponentModel.Components
 
         public IReadOnlyList<string> AdapterReferences => _adapters.Select(a => a.Uid).ToList().AsReadOnly();
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
             if (!IsEnabled) return;
+
+            await base.OnStarted(context).ConfigureAwait(false);
 
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
             SubscribeForRemoteCommands();
-
-            await base.Initialize().ConfigureAwait(false);
         }
 
         public void InitializeAdapter(Adapter adapter)
@@ -112,7 +113,8 @@ namespace HomeCenter.ComponentModel.Components
                         continue;
                     }
 
-                    await ExecuteCommand(command).ConfigureAwait(false);
+                    //TODO
+                    //await ExecuteCommand(command).ConfigureAwait(false);
                 }
             }
         }
@@ -121,13 +123,14 @@ namespace HomeCenter.ComponentModel.Components
         {
             foreach (var adapterRef in _adapters)
             {
-                var capabilities = await adapterRef.Adapter.ExecuteQuery<DiscoveryResponse>(DiscoverQuery.Default).ConfigureAwait(false);
-                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+                //TODO
+                //var capabilities = await adapterRef.Adapter.ExecuteQuery<DiscoveryResponse>(DiscoverQuery.Default).ConfigureAwait(false);
+                //if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
-                MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
-                BuildCapabilityStates(capabilities);
-                MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
-                SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
+                //MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
+                //BuildCapabilityStates(capabilities);
+                //MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
+                //SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
             }
         }
 
@@ -153,7 +156,8 @@ namespace HomeCenter.ComponentModel.Components
 
         private void SubscribeForRemoteCommands()
         {
-            _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
+            //TODO
+           // _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
         }
 
         private Dictionary<string, string> GetAdapterRouterAttributes(AdapterReference adapter, IList<string> requierdProperties)

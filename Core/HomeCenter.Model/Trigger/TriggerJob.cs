@@ -13,7 +13,8 @@ namespace HomeCenter.Model.Extensions
 
             if (await trigger.Condition.Validate().ConfigureAwait(false))
             {
-                await trigger.Actor.ExecuteCommand(trigger.Command).ConfigureAwait(false);
+                //TODO
+                //await trigger.Actor.ExecuteCommand(trigger.Command).ConfigureAwait(false);
             }
 
             if (trigger.FinishCommand != null)

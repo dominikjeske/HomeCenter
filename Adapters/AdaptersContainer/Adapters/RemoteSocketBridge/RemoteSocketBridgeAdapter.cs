@@ -13,6 +13,7 @@ using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
+using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,11 +37,9 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _i2cServiceBus = adapterServiceFactory.GetI2CService();
         }
 
-        public override async Task Initialize()
+        protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return;
-
-            await base.Initialize().ConfigureAwait(false);
+            await base.OnStarted(context).ConfigureAwait(false);
 
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
