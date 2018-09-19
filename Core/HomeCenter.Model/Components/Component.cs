@@ -6,10 +6,10 @@ using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Contracts.Exceptions;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
@@ -157,7 +157,7 @@ namespace HomeCenter.ComponentModel.Components
         private void SubscribeForRemoteCommands()
         {
             //TODO
-           // _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
+            // _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
         }
 
         private Dictionary<string, string> GetAdapterRouterAttributes(AdapterReference adapter, IList<string> requierdProperties)
@@ -178,26 +178,24 @@ namespace HomeCenter.ComponentModel.Components
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        protected override async Task<object> UnhandledCommand(Command command)
+        protected override async Task UnhandledCommand(Proto.IContext context)
         {
+            var command = context.Message as ActorMessage;
+
             bool handled = false;
             // TODO use value converter before publish and maybe queue?
-            foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(command)))
-            {
-                var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
-                await _eventAggregator.PublishDeviceCommnd(adapter.GetDeviceCommand(command)).ConfigureAwait(false);
+            //foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(command)))
+            //{
+            //    var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
+            //    await _eventAggregator.PublishDeviceCommnd(adapter.GetDeviceCommand(command)).ConfigureAwait(false);
 
-                handled = true;
-            }
+            //    handled = true;
+            //}
 
-            if (!handled)
-            {
-                return base.UnhandledCommand(command);
-            }
-            else
-            {
-                return VoidResult.Void;
-            }
+            //if (!handled)
+            //{
+            //    await base.UnhandledCommand(command).ConfigureAwait(false);
+            //}
         }
 
         private async Task DeviceEventHandler(IMessageEnvelope<Event> deviceEvent)

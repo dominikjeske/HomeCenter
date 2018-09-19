@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace HomeCenter.Core
+namespace HomeCenter.Model.Core
 {
     public class DisposeContainer : IDisposable
     {

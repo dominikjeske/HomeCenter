@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using HomeCenter.ComponentModel.Capabilities.Constants;
+﻿using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core;
+using HomeCenter.Model.Core;
+using System;
+using System.Collections.Generic;
 
 namespace HomeCenter.ComponentModel.Events
 {
@@ -17,15 +17,16 @@ namespace HomeCenter.ComponentModel.Events
             this[EventProperties.NewValue] = newValue;
             this[EventProperties.OldValue] = oldValue;
             this[EventProperties.EventTime] = (DateTimeValue)SystemTime.Now;
-            
-            if(additionalProperties != null)
+
+            if (additionalProperties != null)
             {
-                foreach(var val in additionalProperties)
+                foreach (var val in additionalProperties)
                 {
                     SetPropertyValue(val.Key, val.Value);
                 }
             }
         }
+
         public string PropertyChangedName => (StringValue)this[StateProperties.StateName];
         public IValue NewValue => this[EventProperties.NewValue];
         public IValue OldValue => this[EventProperties.OldValue];

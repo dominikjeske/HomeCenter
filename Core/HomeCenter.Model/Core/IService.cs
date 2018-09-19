@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core
+namespace HomeCenter.Model.Core
 {
     public interface IService : IDisposable
     {

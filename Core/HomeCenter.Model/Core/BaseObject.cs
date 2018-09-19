@@ -1,19 +1,20 @@
-﻿using System;
+﻿using HomeCenter.ComponentModel.Events;
+using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Services.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.ComponentModel
+namespace HomeCenter.Model.Core
 {
     public class BaseObject
     {
         //TODO do we need this?
         private readonly Subject<Event> _events = new Subject<Event>();
+
         [Map] private Dictionary<string, Property> _properties { get; set; } = new Dictionary<string, Property>();
         protected bool SupressPropertyChangeEvent { get; set; }
         public string Uid { get; protected set; }
@@ -28,7 +29,6 @@ namespace HomeCenter.ComponentModel
         }
 
         public override string ToString() => $"Type: [{Type}] | Uid: [{Uid}] | Properties: [{GetPropertiesStrings()?.ToFormatedString()}] | Tags: [{Tags.ToFormatedString()}]";
-        
 
         public BaseObject(params Property[] properties)
         {
@@ -87,6 +87,7 @@ namespace HomeCenter.ComponentModel
         }
 
         public IDictionary<string, string> GetPropertiesStrings() => _properties.Values.ToDictionary(k => k.Key, v => v.Value?.ToString());
+
         public IEnumerable<string> GetPropetiesKeys() => _properties.Keys;
     }
 }

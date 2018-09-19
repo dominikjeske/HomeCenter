@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
+﻿using HomeCenter.Core.Extensions;
+using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Messaging;
+using HomeCenter.Model.Core;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using HomeCenter.Core.Interface.Messaging;
-using HomeCenter.Messaging;
-using HomeCenter.Core.Extensions;
 
 namespace HomeCenter.Core.Services
 {

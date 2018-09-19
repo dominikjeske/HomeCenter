@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using HomeCenter.ComponentModel;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Messaging;
 using HomeCenter.Messaging.Behaviors;
+using HomeCenter.Model.Core;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;

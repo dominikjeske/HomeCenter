@@ -1,6 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using HomeCenter.CodeGeneration;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Proto;
+using Proto.Router;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,8 +11,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.CodeGeneration
+namespace HomeCenter.TestRunner
 {
+
     public class ProxyGeneratorTest
     {
         public async Task<string> Generate(string code, Assembly[] externalReferences)
@@ -21,8 +25,8 @@ namespace HomeCenter.CodeGeneration
             var semanticModel = models.semanticModel;
             var classToDecorate = models.syntaxTree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
 
-            if(classToDecorate.Count == 0) return "No class found to decorate";
-            
+            if (classToDecorate.Count == 0) return "No class found to decorate";
+
             NamespaceDeclarationSyntax oldNamespace = classToDecorate[0].Parent as NamespaceDeclarationSyntax;
             NamespaceDeclarationSyntax newNamespace = oldNamespace;
             List<ClassDeclarationSyntax> classList = new List<ClassDeclarationSyntax>();
@@ -91,27 +95,12 @@ namespace HomeCenter.CodeGeneration
             var syntaxTree = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
 
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            var comp = CSharpCompilation.Create("Demo").AddSyntaxTrees(tree).AddReferences(mscorlib);
+            var model = MetadataReference.CreateFromFile(typeof(ComponentModel.Components.Component).Assembly.Location);
+            var comp = CSharpCompilation.Create("Demo").AddSyntaxTrees(tree).AddReferences(mscorlib, model);
 
             var semanticModel = comp.GetSemanticModel(tree);
 
             return (syntaxTree, semanticModel);
-        }
-    }
-
-    public static class ConsoleWriter
-    {
-        public static void WriteOK(string text) => Write(text, ConsoleColor.Green);
-
-        public static void WriteError(string text) => Write(text, ConsoleColor.Red);
-
-        public static void WriteWarning(string text) => Write(text, ConsoleColor.Yellow);
-
-        public static void Write(string text, ConsoleColor color = ConsoleColor.White)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(text);
-            Console.ResetColor();
         }
     }
 }

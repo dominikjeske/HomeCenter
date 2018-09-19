@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
@@ -11,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Samsung
 {
-    public class SamsungAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class SamsungAdapter : Adapter
     {
         private string _hostname;
 
@@ -22,7 +24,7 @@ namespace HomeCenter.ComponentModel.Adapters.Samsung
 
         private StringValue _input;
 
-        public SamsungAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected SamsungAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

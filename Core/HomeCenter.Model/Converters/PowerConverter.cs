@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HomeCenter.ComponentModel.Components;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.ComponentModel.Components;
+using HomeCenter.Model.Core;
+using System;
 
 namespace HomeCenter.Core.ComponentModel.Converters
 {

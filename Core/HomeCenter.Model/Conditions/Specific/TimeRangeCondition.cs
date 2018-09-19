@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Core;
+﻿using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Conditions.Specialized
 {
@@ -11,7 +11,6 @@ namespace HomeCenter.Conditions.Specialized
     {
         private Func<Task<TimeSpan?>> _startValueProvider;
         private Func<Task<TimeSpan?>> _endValueProvider;
-
 
         public TimeRangeCondition WithStart(Func<Task<TimeSpan?>> start)
         {

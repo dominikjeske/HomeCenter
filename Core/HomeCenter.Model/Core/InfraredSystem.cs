@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Core.Hardware.IR
+﻿namespace HomeCenter.Model.Core
 {
     public enum IfraredSystem
     {

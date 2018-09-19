@@ -4,8 +4,8 @@ using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace HomeCenter.Extensions.Tests
                                                                        .ConfigureAwait(false);
             var eventAggregator = container.GetInstance<IEventAggregator>();
 
-          //  await controller.ExecuteQuery<DeviceSearchQuery>(DeviceSearchQuery.Query("uid"));
+            //  await controller.ExecuteQuery<DeviceSearchQuery>(DeviceSearchQuery.Query("uid"));
 
             //await Task.Delay(Timeout.Infinite).ConfigureAwait(false);
             //TODO

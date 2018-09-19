@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
@@ -11,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Kodi
 {
-    public class KodiAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class KodiAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 
@@ -29,7 +31,7 @@ namespace HomeCenter.ComponentModel.Adapters.Kodi
         //TODO read this value in refresh?
         private int? PlayerId { get; }
 
-        public KodiAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected KodiAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

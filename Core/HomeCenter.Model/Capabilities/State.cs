@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using HomeCenter.ComponentModel.Capabilities.Constants;
+﻿using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
+using HomeCenter.Model.Core;
+using System.Linq;
 
 namespace HomeCenter.ComponentModel.Capabilities
 {

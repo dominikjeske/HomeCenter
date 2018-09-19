@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Core.Interface.Native;
+using HomeCenter.Model.Core;
 
 namespace HomeCenter.Core.Services.I2C
 {

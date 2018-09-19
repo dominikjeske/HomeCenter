@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -15,7 +16,8 @@ namespace HomeCenter.CodeGeneration
             try
             {
                 var classSemantic = model.GetDeclaredSymbol(classSyntax);
-                var classDeclaration = ClassDeclaration($"{classSemantic.Name}Proxy");
+                var className = $"{classSemantic.Name}Proxy";
+                var classDeclaration = ClassDeclaration(className);
 
                 classDeclaration = classDeclaration.AddModifiers(classSyntax.Modifiers.ToArray())
                                                    .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))));
@@ -29,10 +31,34 @@ namespace HomeCenter.CodeGeneration
                                            FillContextData(),
                                            GenerateCommandHandlers(classSyntax, model),
                                            GenerateQueryHandlers(classSyntax, model),
-                                           GetUnsupportedThrow())
+                                           GetUnsupportedMessage())
                                         );
 
                 classDeclaration = classDeclaration.AddMembers(methodDeclaration);
+
+                //TODO select constructor
+                var baseConstructor = classSemantic.Constructors.FirstOrDefault(p => p.Parameters.Length > 0);
+
+                if (baseConstructor != null)
+                {
+                    var parList = new List<SyntaxNodeOrToken>();
+                    var baseList = new List<SyntaxNodeOrToken>();
+                    foreach (var par in baseConstructor.Parameters)
+                    {
+                        parList.Add(Parameter(Identifier(par.Name)).WithType(IdentifierName(par.Type.Name)));
+                        parList.Add(Token(SyntaxKind.CommaToken));
+
+                        baseList.Add(Argument(IdentifierName(par.Name)));
+                        baseList.Add(Token(SyntaxKind.CommaToken));
+                    }
+
+                    var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
+                    var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
+
+                    var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.ProtectedKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
+
+                    classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
+                }
 
                 return classDeclaration;
             }
@@ -52,12 +78,40 @@ namespace HomeCenter.CodeGeneration
 
         public StatementSyntax FillContextData()
         {
-            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("IExecutionContext"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("HomeCenter.Model.Core.ActorMessage"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
         }
 
-        private StatementSyntax GetQueryInvocationBody(string handlerName, string paramName)
+        private StatementSyntax GetQueryInvocationBody(string handlerName, string paramName, string returnType)
         {
-            return Block(LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("result")).WithInitializer(EqualsValueClause(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName(paramName))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression))))))))))), ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Respond"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("result")))))), ReturnStatement());
+            LocalDeclarationStatementSyntax varibleExpression;
+
+            if (returnType == "Task")
+            {
+                varibleExpression = LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("result")).WithInitializer(EqualsValueClause(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName(paramName))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))))))));
+            }
+            else
+            {
+                varibleExpression = LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(VariableDeclarator(Identifier("result")).WithInitializer(EqualsValueClause(InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName(paramName))))))))));
+            }
+
+            return Block(varibleExpression, ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Respond"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("result")))))), ReturnStatement());
+
+        }
+
+        private StatementSyntax GetCommandInvocationBody(string handlerName, string paramName, string returnType)
+        {
+            ExpressionStatementSyntax varibleExpression;
+
+            if (returnType == "Void")
+            {
+                varibleExpression = ExpressionStatement(InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName(paramName))))));
+            }
+            else
+            {
+                varibleExpression = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName(paramName))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
+            }
+
+            return Block(varibleExpression, ReturnStatement());
         }
 
         private StatementSyntax GenerateCommandHandlers(ClassDeclarationSyntax classSyntax, SemanticModel model)
@@ -84,7 +138,9 @@ namespace HomeCenter.CodeGeneration
 
         private IfStatementSyntax GetIfCommand(ref int param_num, MethodDescription method)
         {
-            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"command_"}{param_num}")))), GetCommandInvocationBody(method.Method.Identifier.ValueText, $"{"command_"}{param_num++}"));
+      
+
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"command_"}{param_num}")))), GetCommandInvocationBody(method.Method.Identifier.ValueText, $"{"command_"}{param_num++}", method.ReturnType.Name));
         }
 
         private StatementSyntax GenerateQueryHandlers(ClassDeclarationSyntax classSyntax, SemanticModel model)
@@ -109,40 +165,36 @@ namespace HomeCenter.CodeGeneration
 
         private IfStatementSyntax GetIfQuery(ref int param_num, MethodDescription method)
         {
-            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"query_"}{param_num}")))), GetQueryInvocationBody(method.Method.Identifier.ValueText, $"{"query_"}{param_num++}"));
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"query_"}{param_num}")))), GetQueryInvocationBody(method.Method.Identifier.ValueText, $"{"query_"}{param_num++}", method.ReturnType.Name));
         }
 
         private static List<MethodDescription> GetMethodList(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType)
         {
-            foreach(var x in  classSyntax.DescendantNodes()
-                                     .OfType<MethodDeclarationSyntax>()
-                                     .Where(m => m.ParameterList.Parameters.Count == 1))
-            {
-                var test = model.GetDeclaredSymbol(x.ParameterList.Parameters.FirstOrDefault());
-            }
+            var result = classSyntax.DescendantNodes()
+                              .OfType<MethodDeclarationSyntax>()
+                              .Where(m => m.ParameterList.Parameters.Count == 1)
+                              .Select(c => new MethodDescription { Method = c,
+                                                                   Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
+                                                                   ReturnType = model.GetTypeInfo(c.ReturnType).Type
+                              })
+                              .Where(x => x.Parameter.Type.BaseType?.Name == parameterType)
+                              .ToList();
 
-            return classSyntax.DescendantNodes()
-                                     .OfType<MethodDeclarationSyntax>()
-                                     .Where(m => m.ParameterList.Parameters.Count == 1)
-                                     .Select(c => new MethodDescription { Method = c, Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()) })
-                                     .Where(x => x.Parameter.Type.BaseType?.Name == parameterType)
-                                     .ToList();
+            return result;
         }
 
-        private static StatementSyntax GetUnsupportedThrow()
+        private static StatementSyntax GetUnsupportedMessage()
         {
-            return ThrowStatement(ObjectCreationExpression(IdentifierName("Exception")).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(new InterpolatedStringContentSyntax[] { InterpolatedStringText().WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, "Command type ", "Command type ", TriviaList())), Interpolation(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("msg"), IdentifierName("GetType"))), IdentifierName("Name"))), InterpolatedStringText().WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, " is not supported", " is not supported", TriviaList())) })))))));
+            return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledCommand")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context")))))));
         }
 
-        private StatementSyntax GetCommandInvocationBody(string handlerName, string paramName)
-        {
-            return Block(ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(IdentifierName(handlerName)).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName(paramName))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression))))))), ReturnStatement());
-        }
+       
 
         private class MethodDescription
         {
             public MethodDeclarationSyntax Method { get; set; }
             public IParameterSymbol Parameter { get; set; }
+            public ITypeSymbol ReturnType { get; set; }
         }
     }
 }

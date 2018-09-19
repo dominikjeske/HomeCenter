@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Capabilities.Constants;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
@@ -20,7 +21,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class RemoteSocketBridgeAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class RemoteSocketBridgeAdapter : Adapter
     {
         private const int DEFAULT_REPEAT = 3;
         private IntValue _pinNumber;
@@ -31,7 +33,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
 
         private readonly Dictionary<StringValue, StringValue> _state = new Dictionary<StringValue, StringValue>();
 
-        public RemoteSocketBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected RemoteSocketBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _serialMessagingService = adapterServiceFactory.GetUartService();
             _i2cServiceBus = adapterServiceFactory.GetI2CService();

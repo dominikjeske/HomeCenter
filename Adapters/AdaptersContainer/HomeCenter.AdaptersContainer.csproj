@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,11 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.74">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview2-35157" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
@@ -26,6 +31,10 @@
     <Reference Include="Proto.Router">
       <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.74" />
   </ItemGroup>
 
 </Project>

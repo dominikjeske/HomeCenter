@@ -7,6 +7,7 @@ using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Commands.Specialized;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Specialized;
 using Microsoft.Extensions.Logging;

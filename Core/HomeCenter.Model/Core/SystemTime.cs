@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace HomeCenter.Core
+namespace HomeCenter.Model.Core
 {
     public static class SystemTime
     {

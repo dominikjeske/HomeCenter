@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;
 
@@ -19,9 +20,11 @@ namespace HomeCenter.ComponentModel.ValueTypes
         }
 
         public static implicit operator DateTimeValue(DateTimeOffset value) => new DateTimeValue(value);
+
         public static implicit operator DateTimeOffset(DateTimeValue value) => value.Value;
 
         public override string ToString() => Value.ToString();
+
         public bool HasValue => true;
-    }    
+    }
 }

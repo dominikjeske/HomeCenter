@@ -1,5 +1,6 @@
 ﻿using HomeCenter.ComponentModel;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Interface.Native;
@@ -12,12 +13,13 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class TemperatureBridgeAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class TemperatureBridgeAdapter : Adapter
     {
         private readonly ISerialMessagingService _serialMessagingService;
-        private Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
+        private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
 
-        public TemperatureBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected TemperatureBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _serialMessagingService = adapterServiceFactory.GetUartService();
             _requierdProperties.Add(AdapterProperties.PinNumber);

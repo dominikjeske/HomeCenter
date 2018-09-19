@@ -1,5 +1,5 @@
 ﻿using Castle.DynamicProxy;
-using HomeCenter.Core;
+using HomeCenter.Model.Core;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;

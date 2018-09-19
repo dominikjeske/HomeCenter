@@ -1,5 +1,5 @@
-﻿using HTTPnet.Core.Pipeline;
-using HomeCenter.Core;
+﻿using HomeCenter.Model.Core;
+using HTTPnet.Core.Pipeline;
 
 namespace HomeCenter.Services.Networking
 {

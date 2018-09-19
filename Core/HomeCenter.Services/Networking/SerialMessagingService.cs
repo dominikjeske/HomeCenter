@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HomeCenter.Core.Interface.Native;
+using HomeCenter.Model.Core;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.Core.Interface.Native;
-using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Core.Services
 {
@@ -35,6 +36,7 @@ namespace HomeCenter.Core.Services
         }
 
         public void RegisterMessageHandler(Func<byte, byte, IBinaryReader, Task<bool>> handler) => _messageHandlers.Add(handler);
+
         public void Dispose() => _disposeContainer.Dispose();
 
         private async Task Listen()
@@ -70,7 +72,7 @@ namespace HomeCenter.Core.Services
                     {
                         foreach (var handler in _messageHandlers)
                         {
-                            if(await handler(messageType, messageBodySize, _dataReader).ConfigureAwait(false))
+                            if (await handler(messageType, messageBodySize, _dataReader).ConfigureAwait(false))
                             {
                                 break;
                             }

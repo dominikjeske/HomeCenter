@@ -1,6 +1,6 @@
-﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Events;
+﻿using HomeCenter.ComponentModel.Events;
 using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Core;
 
 namespace HomeCenter.ComponentModel.Capabilities
 {

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using HomeCenter.ComponentModel.Components;
+using HomeCenter.Model.Core;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.Components;
 using System.ComponentModel;
 
 namespace HomeCenter.Core.ComponentModel.Configuration

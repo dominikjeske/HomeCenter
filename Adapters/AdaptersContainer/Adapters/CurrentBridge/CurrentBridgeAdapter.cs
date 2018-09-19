@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Interface.Native;
@@ -12,12 +13,13 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class CurrentBridgeAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class CurrentBridgeAdapter : Adapter
     {
         private readonly ISerialMessagingService _serialMessagingService;
         private readonly Dictionary<IntValue, IntValue> _state = new Dictionary<IntValue, IntValue>();
 
-        public CurrentBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected CurrentBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _serialMessagingService = adapterServiceFactory.GetUartService();
             _requierdProperties.Add(AdapterProperties.PinNumber);

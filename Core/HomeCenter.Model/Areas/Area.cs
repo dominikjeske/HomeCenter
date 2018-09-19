@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.Components;
+﻿using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Core;
+using System.Collections.Generic;
 
 namespace HomeCenter.Core.ComponentModel.Areas
 {

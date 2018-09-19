@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.ComponentModel.ValueTypes
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.ComponentModel.ValueTypes
 {
     public class NullValue : IValue
     {

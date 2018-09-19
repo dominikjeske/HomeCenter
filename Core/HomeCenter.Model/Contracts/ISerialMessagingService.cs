@@ -1,7 +1,7 @@
-﻿using System;
+﻿using HomeCenter.Core.Interface.Native;
+using HomeCenter.Model.Core;
+using System;
 using System.Threading.Tasks;
-using HomeCenter.Core.Interface.Messaging;
-using HomeCenter.Core.Interface.Native;
 
 namespace HomeCenter.Core.Services
 {

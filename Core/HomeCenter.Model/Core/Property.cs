@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using HomeCenter.ComponentModel.ValueTypes;
 
-namespace HomeCenter.ComponentModel
+namespace HomeCenter.Model.Core
 {
     public sealed class Property : ValueObject
     {

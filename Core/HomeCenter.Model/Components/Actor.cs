@@ -1,6 +1,5 @@
-﻿using HomeCenter.ComponentModel.Commands;
-using HomeCenter.Core;
-using HomeCenter.Core.Services.DependencyInjection;
+﻿using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using Proto;
 using Proto.Mailbox;
@@ -24,9 +23,16 @@ namespace HomeCenter.ComponentModel.Components
             return Task.CompletedTask;
         }
 
-        protected virtual Task<object> UnhandledCommand(Command command)
+        protected virtual Task UnhandledCommand(Proto.IContext command)
         {
-            throw new MissingHandlerException($"Component [{Uid}] cannot process command because there is no registered handler for [{command.Type}]");
+            if (command.Message is ActorMessage actorMessage)
+            {
+                throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type}]");
+            }
+            else
+            {
+                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {command.Message.GetType().Name} is not ActorMessage");
+            }
         }
 
         public void Dispose() => _disposables.Dispose();

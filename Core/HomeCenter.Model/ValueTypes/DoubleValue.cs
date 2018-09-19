@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
 namespace HomeCenter.ComponentModel.ValueTypes
@@ -18,8 +19,11 @@ namespace HomeCenter.ComponentModel.ValueTypes
         }
 
         public static implicit operator DoubleValue(double value) => new DoubleValue(value);
+
         public static implicit operator double(DoubleValue value) => value.Value;
+
         public override string ToString() => Value.ToString();
+
         public bool HasValue => true;
-    }    
+    }
 }

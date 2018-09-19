@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
@@ -12,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Pc
 {
-    public class PcAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class PcAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 
@@ -26,7 +28,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
         private BooleanValue _mute;
         private StringValue _input;
 
-        public PcAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected PcAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

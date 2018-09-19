@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.ComponentModel.Capabilities;
+using HomeCenter.Model.Core;
+using System.Collections.Generic;
 
 namespace HomeCenter.ComponentModel.Commands.Responses
 {

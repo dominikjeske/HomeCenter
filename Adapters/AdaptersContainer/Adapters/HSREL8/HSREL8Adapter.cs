@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Adapters.Drivers;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Commands.Specialized;
@@ -7,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
-    public class HSREL8Adapter : CCToolsBaseAdapter
+    [ProxyCodeGenerator]
+    public abstract class HSREL8Adapter : CCToolsBaseAdapter
     {
-        public HSREL8Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected HSREL8Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

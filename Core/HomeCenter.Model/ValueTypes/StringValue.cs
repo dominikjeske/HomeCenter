@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
 namespace HomeCenter.ComponentModel.ValueTypes
@@ -18,8 +19,11 @@ namespace HomeCenter.ComponentModel.ValueTypes
         }
 
         public static implicit operator StringValue(string value) => new StringValue(value);
+
         public static implicit operator string(StringValue value) => value.Value;
+
         public override string ToString() => Value;
+
         public bool HasValue => true;
     }
 }

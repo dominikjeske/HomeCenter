@@ -1,6 +1,7 @@
-﻿using System;
+﻿using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Core;
+using System;
 using System.Collections.Generic;
-using HomeCenter.ComponentModel.ValueTypes;
 
 namespace HomeCenter.Model.Extensions
 {

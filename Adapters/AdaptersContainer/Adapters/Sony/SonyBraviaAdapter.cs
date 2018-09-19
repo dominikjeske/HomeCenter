@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.ValueTypes;
@@ -14,7 +15,8 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     // TODO test when power off
-    public class SonyBraviaAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class SonyBraviaAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 
@@ -27,7 +29,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
         private string _hostname;
         private string _authorisationKey;
 
-        private Dictionary<string, string> _inputSourceMap = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _inputSourceMap = new Dictionary<string, string>
         {
             { "HDMI1", "AAAAAgAAABoAAABaAw==" },
             { "HDMI2", "AAAAAgAAABoAAABbAw==" },
@@ -35,7 +37,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
             { "HDMI4", "AAAAAgAAABoAAABdAw==" }
         };
 
-        public SonyBraviaAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected SonyBraviaAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.ComponentModel.ValueTypes
+﻿namespace HomeCenter.Model.Core
 {
     public interface IValue
     {

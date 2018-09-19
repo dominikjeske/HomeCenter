@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Capabilities;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Commands.Responses;
 using HomeCenter.ComponentModel.Events;
@@ -17,7 +18,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class InfraredBridgeAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
         private IntValue _pinNumber;
@@ -27,7 +29,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
         private readonly II2CBusService _i2cServiceBus;
         private readonly Dictionary<IntValue, BooleanValue> _state = new Dictionary<IntValue, BooleanValue>();
 
-        public InfraredBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected InfraredBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _serialMessagingService = adapterServiceFactory.GetUartService();
             _i2cServiceBus = adapterServiceFactory.GetI2CService();

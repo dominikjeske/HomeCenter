@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Adapters.Drivers;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.ComponentModel.Adapters.Drivers;
 using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Services.I2C;
 using Proto;
@@ -6,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
-    public sealed class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
+    [ProxyCodeGenerator]
+    public abstract class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
     {
-        public HSPE16InputOnlyAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected HSPE16InputOnlyAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
         }
 

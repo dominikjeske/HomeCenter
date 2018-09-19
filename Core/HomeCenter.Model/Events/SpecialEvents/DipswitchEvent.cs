@@ -6,6 +6,7 @@ using HomeCenter.Core.Extensions;
 using HomeCenter.Model.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using HomeCenter.Model.Core;
 
 namespace HomeCenter.ComponentModel.Events
 {

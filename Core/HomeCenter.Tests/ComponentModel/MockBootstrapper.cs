@@ -6,6 +6,7 @@ using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Networking;

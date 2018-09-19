@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
 namespace HomeCenter.ComponentModel.Events

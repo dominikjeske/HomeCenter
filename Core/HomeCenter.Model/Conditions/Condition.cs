@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.ComponentModel;
+﻿using HomeCenter.Model.Core;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Conditions
 {
