@@ -1,0 +1,3 @@
+[submodule "ProtoActor"]
+	path = ProtoActor
+	url = https://github.com/AsynkronIT/protoactor-dotnet.git
