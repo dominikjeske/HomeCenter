@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters
 {
     [ProxyCodeGenerator]
-    public abstract class HSREL8Adapter : CCToolsBaseAdapter
+    internal abstract class HSREL8Adapter : CCToolsBaseAdapter
     {
         protected HSREL8Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {

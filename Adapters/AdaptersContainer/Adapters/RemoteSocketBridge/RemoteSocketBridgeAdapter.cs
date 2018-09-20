@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     [ProxyCodeGenerator]
-    public abstract class RemoteSocketBridgeAdapter : Adapter
+    internal abstract class RemoteSocketBridgeAdapter : Adapter
     {
         private const int DEFAULT_REPEAT = 3;
         private IntValue _pinNumber;

@@ -8,7 +8,7 @@ using HomeCenter.Core;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class DenonStatusLightMessage : HttpMessage
+    internal class DenonStatusLightMessage : HttpMessage
     {
         public string Zone { get; set; } = "1";
 

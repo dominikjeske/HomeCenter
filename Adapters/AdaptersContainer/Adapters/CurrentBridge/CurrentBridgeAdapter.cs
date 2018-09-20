@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     [ProxyCodeGenerator]
-    public abstract class CurrentBridgeAdapter : Adapter
+    internal abstract class CurrentBridgeAdapter : Adapter
     {
         private readonly ISerialMessagingService _serialMessagingService;
         private readonly Dictionary<IntValue, IntValue> _state = new Dictionary<IntValue, IntValue>();

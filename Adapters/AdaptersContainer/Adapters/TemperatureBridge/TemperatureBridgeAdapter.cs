@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     [ProxyCodeGenerator]
-    public abstract class TemperatureBridgeAdapter : Adapter
+    internal abstract class TemperatureBridgeAdapter : Adapter
     {
         private readonly ISerialMessagingService _serialMessagingService;
         private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
@@ -38,7 +38,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _serialMessagingService.RegisterMessageHandler(MessageHandler);
         }
 
-        public async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
+        private async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
         {
             if (messageType == 1 && messageSize == 5)
             {

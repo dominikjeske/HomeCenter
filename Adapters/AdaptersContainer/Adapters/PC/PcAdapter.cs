@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Pc
 {
     [ProxyCodeGenerator]
-    public abstract class PcAdapter : Adapter
+    internal abstract class PcAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 

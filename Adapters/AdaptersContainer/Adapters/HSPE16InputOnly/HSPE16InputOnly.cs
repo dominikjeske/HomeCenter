@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters
 {
     [ProxyCodeGenerator]
-    public abstract class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
+    internal abstract class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
     {
         protected HSPE16InputOnlyAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {

@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.ComponentModel.Adapters.Drivers
 {
-    public interface II2CPortExpanderDriver
+    internal interface II2CPortExpanderDriver
     {
         int StateSize { get; }
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public static class DenonSurroundModes
+    internal static class DenonSurroundModes
     {
         private static Dictionary<string, string> _surroundApiMap;
         private static Dictionary<string, string> _surroundResultMap;

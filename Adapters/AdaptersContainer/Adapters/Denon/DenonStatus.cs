@@ -2,7 +2,7 @@
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class DenonStatus
+    internal class DenonStatus
     {
         public string ActiveInput { get; set; }
         public bool PowerStatus { get; set; }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Samsung
 {
     [ProxyCodeGenerator]
-    public abstract class SamsungAdapter : Adapter
+    internal abstract class SamsungAdapter : Adapter
     {
         private string _hostname;
 

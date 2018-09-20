@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.ComponentModel.Adapters
 {
-    public abstract class CCToolsBaseAdapter : Adapter
+    internal abstract class CCToolsBaseAdapter : Adapter
     {
         private int _poolDurationWarning;
         private byte[] _committedState;

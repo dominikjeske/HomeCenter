@@ -3,7 +3,7 @@ using HomeCenter.Core.Services.I2C;
 
 namespace HomeCenter.ComponentModel.Adapters.Drivers
 {
-    public sealed class MAX7311Driver : II2CPortExpanderDriver
+    internal sealed class MAX7311Driver : II2CPortExpanderDriver
     {
         private readonly II2CBusService _i2CBus;
         private readonly I2CSlaveAddress _address;
@@ -20,7 +20,7 @@ namespace HomeCenter.ComponentModel.Adapters.Drivers
         private readonly byte[] _outputWriteBuffer = { 2, 0, 0 };
         private readonly byte[] _configurationWriteBuffer = { 6, 0, 0 };
 
-        public MAX7311Driver(I2CSlaveAddress address, II2CBusService i2CBus)
+        internal MAX7311Driver(I2CSlaveAddress address, II2CBusService i2CBus)
         {
             _address = address;
             _i2CBus = i2CBus ?? throw new ArgumentNullException(nameof(i2CBus));

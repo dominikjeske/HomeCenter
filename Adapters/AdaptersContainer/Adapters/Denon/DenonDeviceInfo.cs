@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
-    public class DenonDeviceInfo
+    internal class DenonDeviceInfo
     {
         public string Surround { get; set; }
         public string Model { get; set; }
