@@ -15,6 +15,7 @@ namespace HomeCenter.TestRunner
 
             var props = Props.FromProducer(() => new HttpServiceProxy());
 
+            
             //var props = Props.FromProducer(() => new DeviceProxy()).WithChildSupervisorStrategy(new OneForOneStrategy(Decider.Decide, 10, null));
 
             //var pid = context.SpawnNamed(props, "ROOT");

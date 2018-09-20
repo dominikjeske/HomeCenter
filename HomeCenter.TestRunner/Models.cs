@@ -60,7 +60,7 @@ namespace HomeCenter.TestRunner
         }
     }
 
-    //[ProxyCodeGenerator]
+    [ProxyCodeGenerator]
     public class HttpServiceHandler : Actor
     {
         public HttpServiceHandler(string A, int B)

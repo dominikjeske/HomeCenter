@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Configuration;
-using HomeCenter.Core;
 using HomeCenter.Core.Quartz;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
@@ -29,8 +27,6 @@ namespace HomeCenter.Services.Configuration
 
         public async Task<Controller> BuildController()
         {
-            RegisterInterceptors();
-
             RegisterControllerOptions();
 
             RegisterNativeServices();
@@ -48,11 +44,6 @@ namespace HomeCenter.Services.Configuration
             _container.Verify();
 
             return await CreateController().ConfigureAwait(false);
-        }
-
-        private void RegisterInterceptors()
-        {
-            _container.InterceptWith<ExceptionLoggerInterceptor>(x => typeof(Actor).IsAssignableFrom(x));
         }
 
         private async Task<Controller> CreateController()
