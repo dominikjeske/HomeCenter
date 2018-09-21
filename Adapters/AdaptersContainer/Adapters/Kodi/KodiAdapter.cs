@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Kodi
 {
     [ProxyCodeGenerator]
-    internal abstract class KodiAdapter : Adapter
+    public abstract class KodiAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 

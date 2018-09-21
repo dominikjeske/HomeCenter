@@ -13,13 +13,14 @@ namespace HomeCenter.CodeGeneration
     {
         public ClassDeclarationSyntax GenerateProxy(ClassDeclarationSyntax classSyntax, SemanticModel model)
         {
+            var classSemantic = model.GetDeclaredSymbol(classSyntax);
+            var className = $"{classSemantic.Name}Proxy";
+
             try
             {
-                var classSemantic = model.GetDeclaredSymbol(classSyntax);
-                var className = $"{classSemantic.Name}Proxy";
                 var classDeclaration = ClassDeclaration(className);
 
-                classDeclaration = classDeclaration.AddModifiers(classSyntax.Modifiers.ToArray())
+                classDeclaration = classDeclaration.AddModifiers(Token(SyntaxKind.PublicKeyword))
                                                    .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))));
 
                 var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsync")
@@ -45,7 +46,23 @@ namespace HomeCenter.CodeGeneration
                     var baseList = new List<SyntaxNodeOrToken>();
                     foreach (var par in baseConstructor.Parameters)
                     {
-                        parList.Add(Parameter(Identifier(par.Name)).WithType(IdentifierName(par.Type.Name)));
+                        var parType = par.Type as INamedTypeSymbol;
+
+                        if (parType.IsGenericType)
+                        {
+                            var argumentList = new List<SyntaxNodeOrToken>();
+                            foreach(var arg in parType.TypeArguments)
+                            {
+                                argumentList.Add(IdentifierName(arg.Name));
+                                argumentList.Add(Token(SyntaxKind.CommaToken));
+                            }
+
+                            parList.Add(Parameter(Identifier(par.Name)).WithType(GenericName(Identifier(par.Type.Name)).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(argumentList.Take(argumentList.Count - 1))))));
+                        }
+                        else
+                        {
+                            parList.Add(Parameter(Identifier(par.Name)).WithType(IdentifierName(par.Type.Name)));
+                        }
                         parList.Add(Token(SyntaxKind.CommaToken));
 
                         baseList.Add(Argument(IdentifierName(par.Name)));
@@ -55,19 +72,20 @@ namespace HomeCenter.CodeGeneration
                     var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
                     var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
 
-                    var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.ProtectedKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
+                    var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
 
                     classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
                 }
 
                 return classDeclaration;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Logger.Error(e.ToString(), "");
+                return ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
             }
 
-            return ClassDeclaration($"Error");
+            
 
         }
 

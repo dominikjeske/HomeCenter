@@ -9,9 +9,11 @@ using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Configuration;
+using HomeCenter.Services.DI;
 using HomeCenter.Services.Networking;
 using Moq;
 using SimpleInjector;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -42,6 +44,12 @@ namespace HomeCenter.Core.Tests.ComponentModel
             Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(configFile);
 
             _container.RegisterInstance(resourceLocator);
+
+            var actorRegistry = new ActorPropsRegistry();
+
+            _container.RegisterInstance(actorRegistry);
+            _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
+            _container.RegisterSingleton<IActorFactory, ActorFactory>();
 
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();

@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Adapters.Kodi;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.Core.ComponentModel.Areas;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Utils;
-using SimpleInjector;
-using Microsoft.Extensions.Logging;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Services.DI;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Proto;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace HomeCenter.ComponentModel.Configuration
 {
@@ -24,16 +24,18 @@ namespace HomeCenter.ComponentModel.Configuration
         private readonly IAdapterServiceFactory _adapterServiceFactory;
         private readonly ILogger<ConfigurationService> _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
-        private readonly Container _container;
+        private readonly IActorFactory _actorFactory;
+        private readonly IServiceProvider _serviceProvider;
 
         public ConfigurationService(IMapper mapper, IAdapterServiceFactory adapterServiceFactory, ILogger<ConfigurationService> logger,
-            IResourceLocatorService resourceLocatorService, Container container)
+            IResourceLocatorService resourceLocatorService, IActorFactory actorFactory, IServiceProvider serviceProvider)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _adapterServiceFactory = adapterServiceFactory ?? throw new ArgumentNullException(nameof(adapterServiceFactory));
             _resourceLocatorService = resourceLocatorService;
-            _container = container;
             _logger = logger;
+            _actorFactory = actorFactory;
+            _serviceProvider = serviceProvider;
         }
 
         public HomeCenterConfiguration ReadConfiguration(AdapterMode adapterMode)
@@ -55,24 +57,25 @@ namespace HomeCenter.ComponentModel.Configuration
                 Areas = areas
             };
 
-            CheckForDuplicateUid(configuration);
+            //TODO check before map
+            //CheckForDuplicateUid(configuration);
 
             return configuration;
         }
 
-        private void CheckForDuplicateUid(HomeCenterConfiguration configuration)
-        {
-            var allUids = configuration.Adapters.Select(a => a.Uid).ToList();
-            allUids.AddRange(configuration.Components.Select(c => c.Uid));
+        //private void CheckForDuplicateUid(HomeCenterConfiguration configuration)
+        //{
+        //    var allUids = configuration.Adapters.Select(a => a.Uid).ToList();
+        //    allUids.AddRange(configuration.Components.Select(c => c.Uid));
 
-            var duplicateKeys = allUids.GroupBy(x => x)
-                                       .Where(group => group.Count() > 1)
-                                       .Select(group => group.Key);
-            if (duplicateKeys?.Count() > 0)
-            {
-                throw new ConfigurationException($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
-            }
-        }
+        //    var duplicateKeys = allUids.GroupBy(x => x)
+        //                               .Where(group => group.Count() > 1)
+        //                               .Select(group => group.Key);
+        //    if (duplicateKeys?.Count() > 0)
+        //    {
+        //        throw new ConfigurationException($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
+        //    }
+        //}
 
         private IList<Area> MapAreas(HomeCenterConfigDTO result, IList<Component> components)
         {
@@ -103,17 +106,17 @@ namespace HomeCenter.ComponentModel.Configuration
             return _mapper.Map<IList<ComponentDTO>, IList<Component>>(result.HomeCenter.Components);
         }
 
-        private IList<Adapter> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
+        private IList<PID> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
         {
-            var adapters = new List<Adapter>();
+            var adapters = new List<PID>();
 
             // force to load HomeCenter.AdaptersContainer into memory
             if (adapterMode == AdapterMode.Embedded)
             {
-                var testAdapter = typeof(KodiAdapter);
+                var testAdapter = typeof(AdaptersContainer.ForceAssemblyLoadType);
             }
 
-            var types = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>());
+            var types = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>(true));
 
             Mapper.Initialize(p =>
             {
@@ -123,16 +126,16 @@ namespace HomeCenter.ComponentModel.Configuration
                 }
 
                 p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
-                p.ConstructServicesUsing(_container.GetInstance);
+                p.ConstructServicesUsing(_serviceProvider.GetService);
             });
 
             foreach (var adapterConfig in adapterConfigs)
             {
                 try
                 {
-                    var adapterType = types.Find(t => t.Name == adapterConfig.Type);
+                    var adapterType = types.Find(t => t.Name == $"{adapterConfig.Type}Proxy");
                     if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
-                    var adapter = (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType);
+                    var adapter = _actorFactory.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
 
                     adapters.Add(adapter);
                 }

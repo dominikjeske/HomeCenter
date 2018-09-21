@@ -1,8 +1,8 @@
-﻿using System;
+﻿using HomeCenter.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HomeCenter.Core.Extensions;
 
 namespace HomeCenter.Core.Utils
 {
@@ -10,6 +10,11 @@ namespace HomeCenter.Core.Utils
     {
         private const string TestAssembliesName = "Tests";
 
+        /// <summary>
+        /// Get a list of all assemblies in solution
+        /// </summary>
+        /// <param name="ignoreTestAssemblies"></param>
+        /// <returns></returns>
         public static IEnumerable<Assembly> GetProjectAssemblies(bool ignoreTestAssemblies = true)
         {
             var mainAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
@@ -25,10 +30,26 @@ namespace HomeCenter.Core.Utils
             return list;
         }
 
-        public static IEnumerable<Type> GetAllTypes<T>() => GetProjectAssemblies().SelectMany(s => s.GetTypes())
-                                                                                      .Where(p => typeof(T).IsAssignableFrom(p) && !p.IsAbstract);
+        /// <summary>
+        /// Get  all types in solution accessible via type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<Type> GetAllTypes<T>(bool inclueAbstract = false) => GetAllTypes(typeof(T), inclueAbstract);
 
-        public static IEnumerable<Type> GetAllInherited<T>(Assembly assembly) => assembly.GetTypes().Where(p => typeof(T).IsAssignableFrom(p) && !p.IsAbstract);
+
+        public static IEnumerable<Type> GetAllTypes(Type type, bool inclueAbstract = false)
+        {
+            var types = GetProjectAssemblies().SelectMany(s => s.GetTypes())
+                                              .Where(p => type.IsAssignableFrom(p));
+
+            if (!inclueAbstract)
+            {
+                types = types.Where(t => !t.IsAbstract);
+            }
+
+            return types;
+        }
 
         public static IEnumerable<string> GetReferencedAssemblies(Type sourceType)
         {

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     [ProxyCodeGenerator]
-    internal abstract class InfraredBridgeAdapter : Adapter
+    public abstract class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
         private IntValue _pinNumber;

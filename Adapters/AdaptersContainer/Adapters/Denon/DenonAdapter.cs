@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.ComponentModel.Adapters.Denon
 {
     [ProxyCodeGenerator]
-    internal class DenonAdapter : Adapter
+    public class DenonAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 

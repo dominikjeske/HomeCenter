@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Model.Core;
+using Proto;
 using SimpleInjector;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace HomeCenter.Core.Tests.ComponentModel
             return this;
         }
 
-        public async Task<(Controller controller, Container container)> BuildAndRun()
+        public async Task<(PID controller, Container container)> BuildAndRun()
         {
             var bootstrapper = new MockBootstrapper(_repositoryPath, _configuration);
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);

@@ -16,7 +16,7 @@ namespace HomeCenter.ComponentModel.Adapters.Sony
 {
     // TODO test when power off
     [ProxyCodeGenerator]
-    internal abstract class SonyBraviaAdapter : Adapter
+    public abstract class SonyBraviaAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 

@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Core;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace HomeCenter.Services.Configuration
 {
     public interface IBootstrapper : IDisposable
     {
-        Task<Controller> BuildController();
+        Task<PID> BuildController();
     }
 }

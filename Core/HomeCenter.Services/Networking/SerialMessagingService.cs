@@ -41,16 +41,16 @@ namespace HomeCenter.Core.Services
 
         private async Task Listen()
         {
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     await ReadAsync(_disposeContainer.Token).ConfigureAwait(false);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logService.LogError(ex.ToString());
+                catch (Exception ex)
+                {
+                    _logService.LogError(ex.ToString());
+                }
             }
         }
 

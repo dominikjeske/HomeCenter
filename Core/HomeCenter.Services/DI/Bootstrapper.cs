@@ -10,8 +10,10 @@ using HomeCenter.Core.Utils;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Services.DI;
 using HomeCenter.Services.Networking;
 using Microsoft.Extensions.Logging;
+using Proto;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
@@ -25,7 +27,7 @@ namespace HomeCenter.Services.Configuration
     {
         protected Container _container = new Container();
 
-        public async Task<Controller> BuildController()
+        public async Task<PID> BuildController()
         {
             RegisterControllerOptions();
 
@@ -43,19 +45,25 @@ namespace HomeCenter.Services.Configuration
 
             _container.Verify();
 
-            return await CreateController().ConfigureAwait(false);
+            return CreateController();
         }
 
-        private async Task<Controller> CreateController()
+        private PID CreateController()
         {
-            var controller = _container.GetInstance<Controller>();
-            //TODO
-            //await controller.Initialize().ConfigureAwait(false);
-            return controller;
+            var actorFactory = _container.GetInstance<IActorFactory>();
+            return actorFactory.GetActor<Controller>();
         }
 
         protected virtual void RegisterBaseDependencies()
         {
+            var actorRegistry = new ActorPropsRegistry();
+
+            _container.RegisterInstance(actorRegistry);
+            _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
+            _container.RegisterSingleton<IActorFactory, ActorFactory>();
+
+            //TODO add some special configuration for props per actor type on actorRegistry
+
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();

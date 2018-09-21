@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
+using HomeCenter.CodeGeneration;
 using HomeCenter.ComponentModel.Commands;
 using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Configuration;
-using HomeCenter.Core;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Roslyn;
@@ -27,7 +27,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public class Controller : Actor
+    [ProxyCodeGenerator]
+    public abstract class Controller : Actor
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;
@@ -39,10 +40,10 @@ namespace HomeCenter.Model.Core
         private readonly IMapper _mapper;
         private readonly IHttpServerService _httpServerService;
 
-        private HomeCenterConfiguration _homeConfiguration = null;
+        private HomeCenterConfiguration _homeConfiguration;
         private readonly IEnumerable<IService> _services;
 
-        public Controller(IEventAggregator eventAggregator, IMapper mapper, IHttpServerService httpServerService, IScheduler scheduler, IRoslynCompilerService roslynCompilerService,
+        protected Controller(IEventAggregator eventAggregator, IMapper mapper, IHttpServerService httpServerService, IScheduler scheduler, IRoslynCompilerService roslynCompilerService,
             IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, ILogger<Controller> logger, IControllerOptions controllerOptions, IEnumerable<IService> services)
         {
             _eventAggregator = eventAggregator;
@@ -65,14 +66,13 @@ namespace HomeCenter.Model.Core
             LoadDynamicAdapters(_controllerOptions.AdapterMode);
 
             await LoadCalendars().ConfigureAwait(false);
-            await InitializeConfiguration().ConfigureAwait(false);
+            InitializeConfiguration();
             await InitializeServices().ConfigureAwait(false);
             await RunScheduler().ConfigureAwait(false);
 
             //TODO
             //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
-
 
         private void RegisterRestCommandHanler()
         {
@@ -132,52 +132,34 @@ namespace HomeCenter.Model.Core
             }
         }
 
-        private async Task InitializeConfiguration()
+        private void InitializeConfiguration()
         {
             _homeConfiguration = _configurationService.ReadConfiguration(_controllerOptions.AdapterMode);
 
-            foreach (var adapter in _homeConfiguration.Adapters)
-            {
-                try
-                {
-                    //TODO - obsolate?
-                    //await adapter.Initialize().ConfigureAwait(false);
-                    _disposables.Add(adapter);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, $"Exception while initialization of adapter {adapter.Uid}");
-                }
-            }
-
-            foreach (var component in _homeConfiguration.Components)
-            {
-                try
-                {
-                    foreach (var reference in component.AdapterReferences)
-                    {
-                        var adapter = _homeConfiguration.Adapters.FirstOrDefault(x => x.Uid == reference);
-                        if (adapter == null) throw new ConfigurationException($"Adapter {reference} for component {component.Uid} was not found in current configuration");
-                        component.InitializeAdapter(adapter);
-                    }
-
-                    //TODO - obsolate?
-                    //await component.Initialize().ConfigureAwait(false);
-                    _disposables.Add(component);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, $"Exception while initialization of component {component.Uid}");
-                }
-            }
+            //foreach (var component in _homeConfiguration.Components)
+            //{
+            //    try
+            //    {
+            //        foreach (var reference in component.AdapterReferences)
+            //        {
+            //            var adapter = _homeConfiguration.Adapters.FirstOrDefault(x => x.Uid == reference);
+            //            if (adapter == null) throw new ConfigurationException($"Adapter {reference} for component {component.Uid} was not found in current configuration");
+            //            component.InitializeAdapter(adapter);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        _logger.LogError(e, $"Exception while initialization of component {component.Uid}");
+            //    }
+            //}
         }
 
-        protected Component GetComponentCommandHandler(Command command)
-        {
-            if (string.IsNullOrWhiteSpace(command.Uid)) throw new ArgumentException($"Command GetComponentCommand is missing destination uid");
+        //protected Component GetComponentCommandHandler(Command command)
+        //{
+        //    if (string.IsNullOrWhiteSpace(command.Uid)) throw new ArgumentException($"Command GetComponentCommand is missing destination uid");
 
-            return _homeConfiguration.Components.FirstOrDefault(c => c.Uid == command.Uid);
-        }
+        //    return _homeConfiguration.Components.FirstOrDefault(c => c.Uid == command.Uid);
+        //}
     }
 
     public class RestCommandHandler : IHttpContextPipelineHandler

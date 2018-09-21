@@ -3,6 +3,7 @@ using HomeCenter.ComponentModel.Components;
 using HomeCenter.Model.Commands.Specialized;
 using HomeCenter.Model.Queries.Specialized;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
@@ -60,10 +61,10 @@ namespace HomeCenter.TestRunner
         }
     }
 
-    [ProxyCodeGenerator]
+    //[ProxyCodeGenerator]
     public class HttpServiceHandler : Actor
     {
-        public HttpServiceHandler(string A, int B)
+        public HttpServiceHandler(string A, int B, IEnumerable<string> list)
         {
 
         }
