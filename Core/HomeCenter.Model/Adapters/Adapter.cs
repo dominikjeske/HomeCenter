@@ -1,6 +1,5 @@
 ﻿using HomeCenter.ComponentModel.Components;
 using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
@@ -35,6 +34,6 @@ namespace HomeCenter.ComponentModel.Adapters
             return newValue;
         }
 
-        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => _scheduler.ScheduleInterval<T, Adapter>(interval, this, Uid, _disposables.Token);
+        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => _scheduler.ScheduleInterval<T, Proto.PID>(interval, Self, Uid, _disposables.Token);
     }
 }

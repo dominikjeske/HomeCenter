@@ -116,6 +116,8 @@ namespace HomeCenter.Services.Configuration
                                    .AddEventSourceLogger()
                                    .AddConsole();
 
+            Proto.Log.SetLoggerFactory(loggerFactory);
+
             _container.RegisterInstance(loggerFactory);
             _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
         }

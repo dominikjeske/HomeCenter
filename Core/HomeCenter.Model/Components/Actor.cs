@@ -10,19 +10,12 @@ namespace HomeCenter.ComponentModel.Components
 {
     public abstract class Actor : BaseObject, IDisposable, IActor
     {
-        //TODO check for obsolate
-        protected bool _isInitialized;
-
-        //TODO check for obsolate
+        internal PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
-
         [Map] protected bool IsEnabled { get; private set; } = true;
 
-        public virtual Task ReceiveAsync(IContext context)
-        {
-            return Task.CompletedTask;
-        }
-
+        public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
+        
         protected virtual Task UnhandledCommand(Proto.IContext command)
         {
             if (command.Message is ActorMessage actorMessage)
@@ -37,19 +30,15 @@ namespace HomeCenter.ComponentModel.Components
 
         public void Dispose() => _disposables.Dispose();
 
-        //TODO invoke in proxy
-        private void AssertActorState()
-        {
-            if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
-            if (!_isInitialized) throw new UnsupportedStateException($"Component {Uid} is not initialized");
-        }
-
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
             var msg = context.Message;
             if (msg is Started)
             {
                 if (!IsEnabled) return false;
+
+                //TODO kill actor
+
                 await OnStarted(context).ConfigureAwait(false);
                 return true;
             }
@@ -89,8 +78,7 @@ namespace HomeCenter.ComponentModel.Components
 
         protected virtual Task OnStarted(IContext context)
         {
-            _isInitialized = true;
-
+            Self = context.Self;
             return Task.CompletedTask;
         }
 
@@ -106,6 +94,8 @@ namespace HomeCenter.ComponentModel.Components
 
         protected virtual Task OnStop(IContext context)
         {
+            //TODO check if this is eecuted only once
+            _disposables.Dispose();
             return Task.CompletedTask;
         }
 
@@ -123,5 +113,12 @@ namespace HomeCenter.ComponentModel.Components
         {
             return Task.CompletedTask;
         }
+
+
+        //TODO invoke in proxy
+        //private void AssertActorState()
+        //{
+        //    if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
+        //}
     }
 }

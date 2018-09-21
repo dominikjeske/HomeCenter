@@ -16,7 +16,7 @@ namespace HomeCenter.ComponentModel.Adapters.Pc
     [ProxyCodeGenerator]
     public abstract class PcAdapter : Adapter
     {
-        public const int DEFAULT_POOL_INTERVAL = 1000;
+        private const int DEFAULT_POOL_INTERVAL = 1000;
 
         private string _hostname;
         private int _port;
