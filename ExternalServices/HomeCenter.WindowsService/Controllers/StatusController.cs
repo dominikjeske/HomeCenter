@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using HomeCenter.ComponentModel.Adapters.Pc;
+using HomeCenter.Model.Adapters.Pc;
 using HomeCenter.WindowsService.Core;
 
 namespace HomeCenter.WindowsService.Controllers

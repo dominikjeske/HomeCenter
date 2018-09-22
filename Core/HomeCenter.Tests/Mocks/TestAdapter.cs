@@ -1,7 +1,7 @@
-﻿using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Commands.Responses;
+﻿using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Commands;
+using HomeCenter.Model.Commands.Responses;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Tests.Mocks

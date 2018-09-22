@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.Components;
+﻿using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using Newtonsoft.Json;
 using System.Collections.Generic;

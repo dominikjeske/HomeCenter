@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Model.Core;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public interface IValueConverter
     {

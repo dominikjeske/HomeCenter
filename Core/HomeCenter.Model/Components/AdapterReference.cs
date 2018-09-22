@@ -1,8 +1,8 @@
-﻿using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Commands;
 using HomeCenter.Model.Core;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public class AdapterReference : BaseObject
     {

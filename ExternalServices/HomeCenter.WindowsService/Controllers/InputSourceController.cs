@@ -2,7 +2,7 @@
 using HomeCenter.WindowsService.Core;
 using System.Linq;
 using System.Collections.Generic;
-using HomeCenter.ComponentModel.Adapters.Pc;
+using HomeCenter.Model.Adapters.Pc;
 
 namespace HomeCenter.WindowsService.Controllers
 {

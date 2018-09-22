@@ -1,25 +1,24 @@
 ﻿using CSharpFunctionalExtensions;
-using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Commands;
+using HomeCenter.Model.Commands.Responses;
+using HomeCenter.Model.Events;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
-using Proto;
+using HomeCenter.Model.Queries.Device;
 using Quartz;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public class Component : Actor
     {
@@ -42,7 +41,7 @@ namespace HomeCenter.ComponentModel.Components
 
         public IReadOnlyList<string> AdapterReferences => _adapters.Select(a => a.Uid).ToList().AsReadOnly();
 
-        protected override async Task OnStarted(IContext context)
+        protected override async Task OnStarted(Proto.IContext context)
         {
             if (!IsEnabled) return;
 

@@ -1,7 +1,7 @@
-﻿using HomeCenter.ComponentModel.Adapters;
+﻿using HomeCenter.Model.Adapters;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Core.Tests.Mocks;
-using HomeCenter.Model.Commands.Specialized;
+using HomeCenter.Model.Commands.Device;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;

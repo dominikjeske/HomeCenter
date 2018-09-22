@@ -2,7 +2,7 @@
 using System.Net;
 using HomeCenter.Core.Interface.Messaging;
 
-namespace HomeCenter.ComponentModel.Adapters.Sony
+namespace HomeCenter.Model.Adapters.Sony
 {
     public class SonyControlMessage : HttpMessage
     {

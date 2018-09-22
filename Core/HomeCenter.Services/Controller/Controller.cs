@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
 using HomeCenter.CodeGeneration;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Components;
-using HomeCenter.ComponentModel.Configuration;
+using HomeCenter.Model.Commands;
+using HomeCenter.Model.Components;
+using HomeCenter.Model.Configuration;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Roslyn;

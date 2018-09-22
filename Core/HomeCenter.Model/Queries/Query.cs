@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Core;
 using System.Threading;
 
-namespace HomeCenter.ComponentModel.Commands
+namespace HomeCenter.Model.Queries
 {
     public class Query : ActorMessage
     {

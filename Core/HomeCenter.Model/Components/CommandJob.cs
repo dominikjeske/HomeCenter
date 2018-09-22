@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     public class CommandJob<T>
     {

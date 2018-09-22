@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;

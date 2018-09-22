@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Commands;
 using Quartz;
 using System.Threading.Tasks;
 

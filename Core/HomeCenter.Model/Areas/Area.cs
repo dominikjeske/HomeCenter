@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.Components;
+﻿using HomeCenter.Model.Components;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Model.Core;
 using System.Collections.Generic;

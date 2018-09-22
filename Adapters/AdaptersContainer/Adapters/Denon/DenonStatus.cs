@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Core;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     internal class DenonStatus
     {

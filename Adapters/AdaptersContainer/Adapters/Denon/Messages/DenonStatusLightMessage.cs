@@ -6,7 +6,7 @@ using HomeCenter.Core.Interface.Messaging;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     internal class DenonStatusLightMessage : HttpMessage
     {

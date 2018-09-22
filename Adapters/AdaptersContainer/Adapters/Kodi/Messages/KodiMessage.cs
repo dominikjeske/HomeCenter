@@ -3,7 +3,7 @@ using System;
 using HomeCenter.Core.Interface.Messaging;
 using HomeCenter.Model.Exceptions;
 
-namespace HomeCenter.ComponentModel.Adapters.Kodi
+namespace HomeCenter.Model.Adapters.Kodi
 {
     //https://github.com/FabienLavocat/kodi-remote/tree/master/src/KodiRemote.Core
     //https://github.com/akshay2000/XBMCRemoteRT/blob/master/XBMCRemoteRT/XBMCRemoteRT.Shared/RPCWrappers/Player.cs

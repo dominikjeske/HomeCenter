@@ -1,25 +1,23 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Hardware.RemoteSockets;
 using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Commands.Specialized;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Commands;
+using HomeCenter.Model.Commands.Responses;
+using HomeCenter.Model.Commands.Device;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
+using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     [ProxyCodeGenerator]
     public abstract class RemoteSocketBridgeAdapter : Adapter
@@ -28,14 +26,12 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
 
-        private readonly ISerialMessagingService _serialMessagingService;
         private readonly II2CBusService _i2cServiceBus;
 
         private readonly Dictionary<StringValue, StringValue> _state = new Dictionary<StringValue, StringValue>();
 
         protected RemoteSocketBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
-            _serialMessagingService = adapterServiceFactory.GetUartService();
             _i2cServiceBus = adapterServiceFactory.GetI2CService();
         }
 
@@ -46,7 +42,7 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
-            _serialMessagingService.RegisterMessageHandler(SerialHandler);
+            //TODO register handler
         }
 
         public async Task<bool> SerialHandler(byte messageType, byte messageSize, IBinaryReader reader)

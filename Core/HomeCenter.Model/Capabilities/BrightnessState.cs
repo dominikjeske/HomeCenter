@@ -1,7 +1,7 @@
-﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.ValueTypes;
 
-namespace HomeCenter.ComponentModel.Capabilities
+namespace HomeCenter.Model.Capabilities
 {
     public class BrightnessState : State
     {

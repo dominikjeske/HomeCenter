@@ -1,8 +1,5 @@
-﻿using HomeCenter.ComponentModel.Commands;
-
-namespace HomeCenter.Model.Queries.Specialized
+﻿namespace HomeCenter.Model.Queries.Device
 {
-
     public class DeviceSearchQuery : Query
     {
         public static DeviceSearchQuery Query(string deviceUid) => new DeviceSearchQuery(deviceUid);

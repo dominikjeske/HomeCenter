@@ -1,5 +1,5 @@
 ﻿using System;
-using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core;
 using HomeCenter.Core.Hardware.RemoteSockets;
 using HomeCenter.Core.Extensions;
@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HomeCenter.Model.Core;
 
-namespace HomeCenter.ComponentModel.Events
+namespace HomeCenter.Model.Events
 {
     public class DipswitchEvent : Event
     {

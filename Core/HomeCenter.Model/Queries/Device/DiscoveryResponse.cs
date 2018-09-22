@@ -1,8 +1,8 @@
-﻿using HomeCenter.ComponentModel.Capabilities;
+﻿using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
-namespace HomeCenter.ComponentModel.Commands.Responses
+namespace HomeCenter.Model.Commands.Responses
 {
     public class DiscoveryResponse : BaseObject
     {

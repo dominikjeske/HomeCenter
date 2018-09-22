@@ -1,5 +1,4 @@
-﻿using HomeCenter.ComponentModel.Components;
-using HomeCenter.ComponentModel.Events;
+﻿using HomeCenter.Model.Events;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
@@ -9,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     public abstract class Adapter : Actor
     {

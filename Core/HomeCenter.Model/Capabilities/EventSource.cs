@@ -1,8 +1,8 @@
-﻿using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Events;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Core;
 
-namespace HomeCenter.ComponentModel.Capabilities
+namespace HomeCenter.Model.Capabilities
 {
     public class EventSource : BaseObject
     {

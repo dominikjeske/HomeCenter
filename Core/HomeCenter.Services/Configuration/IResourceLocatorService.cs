@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.ComponentModel.Configuration
+﻿namespace HomeCenter.Model.Configuration
 {
     public interface IResourceLocatorService
     {

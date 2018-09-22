@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HomeCenter.ComponentModel.Adapters.Pc
+namespace HomeCenter.Model.Adapters.Pc
 {
     public class VolumePost
     {

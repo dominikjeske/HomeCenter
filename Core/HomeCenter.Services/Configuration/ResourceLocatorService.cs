@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using HomeCenter.Core.Interface.Native;
 
-namespace HomeCenter.ComponentModel.Configuration
+namespace HomeCenter.Model.Configuration
 {
     public class ResourceLocatorService : IResourceLocatorService
     {

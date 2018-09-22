@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Commands;
+using HomeCenter.Model.Queries;
 using Proto;
 using Proto.Router;
 using System;
@@ -13,9 +14,8 @@ namespace HomeCenter.TestRunner
         {
             var context = new RootContext();
 
-            var props = Props.FromProducer(() => new HttpServiceProxy());
+            //var props = Props.FromProducer(() => new HttpServiceProxy());
 
-            
             //var props = Props.FromProducer(() => new DeviceProxy()).WithChildSupervisorStrategy(new OneForOneStrategy(Decider.Decide, 10, null));
 
             //var pid = context.SpawnNamed(props, "ROOT");

@@ -12,7 +12,7 @@ using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using HomeCenter.ComponentModel.Adapters;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Utils;

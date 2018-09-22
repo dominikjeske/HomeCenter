@@ -1,7 +1,7 @@
 ﻿using System;
 using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public class ManualSchedule
     {

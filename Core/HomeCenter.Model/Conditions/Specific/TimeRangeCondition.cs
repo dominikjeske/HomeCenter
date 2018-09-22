@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;

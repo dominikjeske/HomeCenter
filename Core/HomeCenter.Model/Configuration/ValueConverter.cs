@@ -1,5 +1,5 @@
-﻿using HomeCenter.ComponentModel;
-using HomeCenter.ComponentModel.Components;
+﻿using HomeCenter.Model;
+using HomeCenter.Model.Components;
 using HomeCenter.Core.Utils;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;

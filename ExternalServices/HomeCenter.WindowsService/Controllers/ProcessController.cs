@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using HomeCenter.ComponentModel.Adapters.Pc;
+using HomeCenter.Model.Adapters.Pc;
 using HomeCenter.WindowsService.Services;
 using HomeCenter.WindowsService.Exceptions;
 

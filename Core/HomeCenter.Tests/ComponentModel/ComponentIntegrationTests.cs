@@ -1,7 +1,7 @@
-﻿using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Events;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Tests.ComponentModel;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;

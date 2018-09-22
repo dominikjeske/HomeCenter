@@ -95,7 +95,7 @@ namespace HomeCenter.TestRunner
             var syntaxTree = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
 
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            var model = MetadataReference.CreateFromFile(typeof(ComponentModel.Components.Component).Assembly.Location);
+            var model = MetadataReference.CreateFromFile(typeof(Model.Components.Component).Assembly.Location);
             var comp = CSharpCompilation.Create("Demo").AddSyntaxTrees(tree).AddReferences(mscorlib, model);
 
             var semanticModel = comp.GetSemanticModel(tree);

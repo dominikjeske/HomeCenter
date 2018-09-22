@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Messaging;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
+using HomeCenter.Model.Queries.Device;
 using System;
 
 namespace HomeCenter.Conditions.Specialized

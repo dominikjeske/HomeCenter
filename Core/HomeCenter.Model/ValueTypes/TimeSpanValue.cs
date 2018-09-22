@@ -3,7 +3,7 @@ using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;
 
-namespace HomeCenter.ComponentModel.ValueTypes
+namespace HomeCenter.Model.ValueTypes
 {
     public class TimeSpanValue : ValueObject, IValue
     {

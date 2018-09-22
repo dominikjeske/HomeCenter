@@ -1,6 +1,4 @@
-﻿using HomeCenter.ComponentModel.Commands;
-
-namespace HomeCenter.Model.Queries.Specialized
+﻿namespace HomeCenter.Model.Queries.Device
 {
     public class SunsetQuery : Query
     {

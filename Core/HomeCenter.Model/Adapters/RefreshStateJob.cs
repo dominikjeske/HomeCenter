@@ -1,10 +1,10 @@
-﻿using HomeCenter.Model.Commands.Specialized;
+﻿using HomeCenter.Model.Commands.Device;
 using HomeCenter.Model.Extensions;
 using Proto;
 using Quartz;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     public class RefreshStateJob : IJob
     {

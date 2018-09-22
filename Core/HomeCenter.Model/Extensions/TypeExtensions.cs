@@ -1,4 +1,5 @@
-﻿using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Commands;
+using HomeCenter.Model.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;

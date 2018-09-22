@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     internal static class DenonSurroundModes
     {

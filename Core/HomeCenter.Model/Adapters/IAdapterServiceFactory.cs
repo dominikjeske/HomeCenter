@@ -4,7 +4,7 @@ using HomeCenter.Core.Services.I2C;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     public interface IAdapterServiceFactory
     {
@@ -13,8 +13,6 @@ namespace HomeCenter.ComponentModel.Adapters
         II2CBusService GetI2CService();
 
         IScheduler GetScheduler();
-
-        ISerialMessagingService GetUartService();
 
         ILogger<T> GetLogger<T>() where T : class;
     }

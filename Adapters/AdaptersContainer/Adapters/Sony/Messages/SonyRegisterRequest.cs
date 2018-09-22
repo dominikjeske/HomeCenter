@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using HomeCenter.Core.Interface.Messaging;
 
-namespace HomeCenter.ComponentModel.Adapters.Sony
+namespace HomeCenter.Model.Adapters.Sony
 {
     public partial class SonyRegisterRequest : HttpMessage
     {

@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.ComponentModel.Adapters
+﻿namespace HomeCenter.Model.Adapters
 {
     public static class AdapterProperties
     {

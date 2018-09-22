@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.ComponentModel.Events
+﻿namespace HomeCenter.Model.Events
 {
     public static class EventProperties
     {

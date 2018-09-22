@@ -1,11 +1,11 @@
-﻿using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.Events;
+﻿using HomeCenter.Model.Commands;
+using HomeCenter.Model.Events;
 using HomeCenter.Conditions;
 using HomeCenter.Core.Services.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public class Trigger
     {

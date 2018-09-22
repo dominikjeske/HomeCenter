@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Components;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Components;
 using HomeCenter.Core.ComponentModel.Areas;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Extensions;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace HomeCenter.ComponentModel.Configuration
+namespace HomeCenter.Model.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {

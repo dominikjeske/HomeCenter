@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
-using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Configuration;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Configuration;
 using HomeCenter.Core.Quartz;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
@@ -75,7 +75,6 @@ namespace HomeCenter.Services.Configuration
         {
             var services = new List<Registration>
             {
-                _container.RegisterService<ISerialMessagingService, SerialMessagingService>(),
                 _container.RegisterService<II2CBusService, I2CBusService>(),
                 _container.RegisterService<IHttpServerService, HttpServerService>()
             };

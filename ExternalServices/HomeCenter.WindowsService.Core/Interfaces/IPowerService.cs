@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.Adapters.Pc;
+﻿using HomeCenter.Model.Adapters.Pc;
 
 namespace HomeCenter.WindowsService.Services
 {

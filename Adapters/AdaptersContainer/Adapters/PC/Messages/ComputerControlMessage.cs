@@ -3,7 +3,7 @@ using System;
 using HomeCenter.Core.Interface.Messaging;
 
 
-namespace HomeCenter.ComponentModel.Adapters.Pc
+namespace HomeCenter.Model.Adapters.Pc
 {
     public class ComputerControlMessage : HttpMessage
     {

@@ -1,6 +1,4 @@
-﻿using HomeCenter.ComponentModel.Commands;
-
-namespace HomeCenter.Model.Commands.Specialized
+﻿namespace HomeCenter.Model.Commands.Device
 {
     public class StopCommand : Command
     {

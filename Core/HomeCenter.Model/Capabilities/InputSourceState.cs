@@ -1,8 +1,8 @@
-﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.ValueTypes;
-using HomeCenter.Model.Commands.Specialized;
+﻿using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.ValueTypes;
+using HomeCenter.Model.Commands.Device;
 
-namespace HomeCenter.ComponentModel.Capabilities
+namespace HomeCenter.Model.Capabilities
 {
     public class InputSourceState : State
     {

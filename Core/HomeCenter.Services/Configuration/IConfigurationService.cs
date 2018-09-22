@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.ComponentModel.Configuration
+namespace HomeCenter.Model.Configuration
 {
     public interface IConfigurationService
     {

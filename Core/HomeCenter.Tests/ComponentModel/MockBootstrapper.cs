@@ -1,5 +1,5 @@
-﻿using HomeCenter.ComponentModel.Adapters;
-using HomeCenter.ComponentModel.Configuration;
+﻿using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Configuration;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.DependencyInjection;
@@ -62,8 +62,7 @@ namespace HomeCenter.Core.Tests.ComponentModel
             var services = new List<Registration>
             {
                 _container.RegisterService<II2CBusService, I2CBusService>(),
-                _container.RegisterService<IHttpServerService, HttpServerService>(),
-                _container.RegisterService(Mock.Of<ISerialMessagingService>())
+                _container.RegisterService<IHttpServerService, HttpServerService>()
             };
 
             _container.Collection.Register<IService>(services);

@@ -1,15 +1,15 @@
-﻿using HomeCenter.ComponentModel.Adapters.Drivers;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Adapters.Drivers;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Commands.Responses;
+using HomeCenter.Model.Events;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Commands.Specialized;
+using HomeCenter.Model.Commands.Device;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
+using HomeCenter.Model.Queries.Device;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;
@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     public abstract class CCToolsBaseAdapter : Adapter
     {

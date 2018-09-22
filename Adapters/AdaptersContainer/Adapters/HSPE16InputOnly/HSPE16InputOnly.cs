@@ -1,11 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.ComponentModel.Adapters.Drivers;
-using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Adapters.Drivers;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Services.I2C;
 using Proto;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters
+namespace HomeCenter.Model.Adapters
 {
     [ProxyCodeGenerator]
     public abstract class HSPE16InputOnlyAdapter : CCToolsBaseAdapter

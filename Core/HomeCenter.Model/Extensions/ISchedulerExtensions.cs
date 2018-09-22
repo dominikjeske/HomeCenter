@@ -1,4 +1,4 @@
-﻿using HomeCenter.ComponentModel.Commands;
+﻿using HomeCenter.Model.Commands;
 using Quartz;
 using Quartz.Impl.Matchers;
 using System;

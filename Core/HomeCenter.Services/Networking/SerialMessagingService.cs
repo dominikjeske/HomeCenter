@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Core.Interface.Native;
+using HomeCenter.Model.Commands.Serial;
 using HomeCenter.Model.Core;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Services
 {
-    public class SerialMessagingService : ISerialMessagingService
+    public class SerialMessagingService : Actor
     {
         private IBinaryReader _dataReader;
 
-        private readonly ILogger<SerialMessagingService> _logService;
         private readonly ISerialDevice _serialDevice;
-        private readonly List<Func<byte, byte, IBinaryReader, Task<bool>>> _messageHandlers = new List<Func<byte, byte, IBinaryReader, Task<bool>>>();
+        private readonly List<SerialRegistrationCommand> _messageHandlers = new List<SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
         private readonly ILogger<SerialMessagingService> _logger;
 
@@ -24,8 +24,10 @@ namespace HomeCenter.Core.Services
             _logger = logger;
         }
 
-        public async Task Initialize()
+        protected override async Task OnStarted(Proto.IContext context)
         {
+            await base.OnStarted(context).ConfigureAwait(false);
+
             await _serialDevice.Init().ConfigureAwait(false);
             _dataReader = _serialDevice.GetBinaryReader();
 
@@ -35,9 +37,12 @@ namespace HomeCenter.Core.Services
             var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
-        public void RegisterMessageHandler(Func<byte, byte, IBinaryReader, Task<bool>> handler) => _messageHandlers.Add(handler);
+        protected Task Handle(SerialRegistrationCommand registration)
+        {
+            _messageHandlers.Add(registration);
 
-        public void Dispose() => _disposeContainer.Dispose();
+            return Task.CompletedTask;
+        }
 
         private async Task Listen()
         {
@@ -49,7 +54,7 @@ namespace HomeCenter.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _logService.LogError(ex.ToString());
+                    _logger.LogError(ex, "Exception while listening for Serial device");
                 }
             }
         }
@@ -72,10 +77,10 @@ namespace HomeCenter.Core.Services
                     {
                         foreach (var handler in _messageHandlers)
                         {
-                            if (await handler(messageType, messageBodySize, _dataReader).ConfigureAwait(false))
-                            {
-                                break;
-                            }
+                            //if (await handler(messageType, messageBodySize, _dataReader).ConfigureAwait(false))
+                            //{
+                            //    break;
+                            //}
                         }
                     }
                 }

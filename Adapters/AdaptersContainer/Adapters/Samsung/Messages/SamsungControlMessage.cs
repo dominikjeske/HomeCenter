@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using HomeCenter.Core.Interface.Messaging;
 
-namespace HomeCenter.ComponentModel.Adapters.Samsung
+namespace HomeCenter.Model.Adapters.Samsung
 {
     public class SamsungControlMessage : ITcpMessage
     {

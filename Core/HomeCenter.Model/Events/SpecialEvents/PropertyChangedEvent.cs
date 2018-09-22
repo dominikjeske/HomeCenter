@@ -1,10 +1,10 @@
-﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;
 
-namespace HomeCenter.ComponentModel.Events
+namespace HomeCenter.Model.Events
 {
     public class PropertyChangedEvent : Event
     {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HomeCenter.ComponentModel.Adapters.Kodi
+namespace HomeCenter.Model.Adapters.Kodi
 {
     public class JsonRpcRequest
     {

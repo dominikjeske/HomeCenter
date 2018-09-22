@@ -1,5 +1,5 @@
-﻿using HomeCenter.ComponentModel.Events;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Events;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.DependencyInjection;
 using System;

@@ -3,7 +3,7 @@ using HomeCenter.Model.Core;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HomeCenter.ComponentModel.ValueTypes
+namespace HomeCenter.Model.ValueTypes
 {
     public class StringListValue : ValueObject, IValue
     {

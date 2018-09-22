@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Components
 {
     public class Schedule
     {

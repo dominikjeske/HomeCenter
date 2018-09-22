@@ -1,9 +1,9 @@
-﻿using HomeCenter.ComponentModel.Capabilities.Constants;
-using HomeCenter.ComponentModel.Commands;
-using HomeCenter.ComponentModel.ValueTypes;
+﻿using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Commands;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 
-namespace HomeCenter.ComponentModel.Capabilities
+namespace HomeCenter.Model.Capabilities
 {
     public class TemperatureState : State
     {

@@ -1,28 +1,27 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.ComponentModel.Adapters.Kodi;
-using HomeCenter.ComponentModel.Capabilities;
-using HomeCenter.ComponentModel.Commands.Responses;
-using HomeCenter.ComponentModel.ValueTypes;
+using HomeCenter.Model.Adapters.Kodi;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Commands.Responses;
+using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Specialized;
+using HomeCenter.Model.Queries.Device;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     [ProxyCodeGenerator]
     public abstract class CurrentBridgeAdapter : Adapter
     {
-        private readonly ISerialMessagingService _serialMessagingService;
+        //TODO register handler
         private readonly Dictionary<IntValue, IntValue> _state = new Dictionary<IntValue, IntValue>();
 
         protected CurrentBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
-            _serialMessagingService = adapterServiceFactory.GetUartService();
             _requierdProperties.Add(AdapterProperties.PinNumber);
 
             //KodiAdapterProxy
@@ -42,7 +41,6 @@ namespace HomeCenter.ComponentModel.Adapters.Denon
 
             if (!IsEnabled) return;
 
-            _serialMessagingService.RegisterMessageHandler(MessageHandler);
         }
 
 

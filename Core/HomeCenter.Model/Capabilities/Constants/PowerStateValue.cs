@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Core;
 using HomeCenter.Core.Extensions;
 
-namespace HomeCenter.ComponentModel.Capabilities.Constants
+namespace HomeCenter.Model.Capabilities.Constants
 {
     public static class PowerStateValue
     {

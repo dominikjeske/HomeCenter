@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.ComponentModel.Capabilities.Constants
+﻿namespace HomeCenter.Model.Capabilities.Constants
 {
     public static class ValueUnit
     {

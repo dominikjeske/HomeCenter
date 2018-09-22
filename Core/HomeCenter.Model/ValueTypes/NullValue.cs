@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Model.Core;
 
-namespace HomeCenter.ComponentModel.ValueTypes
+namespace HomeCenter.Model.ValueTypes
 {
     public class NullValue : IValue
     {

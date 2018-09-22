@@ -4,7 +4,7 @@ using System.IO;
 using System;
 using HomeCenter.Core.Interface.Messaging;
 
-namespace HomeCenter.ComponentModel.Adapters.Denon
+namespace HomeCenter.Model.Adapters.Denon
 {
     internal class DenonControlMessage : HttpMessage
     {

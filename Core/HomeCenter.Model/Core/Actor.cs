@@ -6,7 +6,7 @@ using Proto.Mailbox;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.ComponentModel.Components
+namespace HomeCenter.Model.Core
 {
     public abstract class Actor : BaseObject, IDisposable, IActor
     {
