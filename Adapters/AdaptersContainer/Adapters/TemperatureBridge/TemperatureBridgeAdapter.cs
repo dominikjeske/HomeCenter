@@ -1,10 +1,10 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Commands.Responses;
-using HomeCenter.Model.Commands.Serial;
+using HomeCenter.Model.Messages.Commands.Responses;
+using HomeCenter.Model.Messages.Commands.Serial;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;

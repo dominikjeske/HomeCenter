@@ -1,7 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Device;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

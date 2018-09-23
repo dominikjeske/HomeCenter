@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Commands
+﻿namespace HomeCenter.Model.Messages.Commands
 {
     public static class CommandProperties
     {

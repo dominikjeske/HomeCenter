@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Queries.Device
+﻿namespace HomeCenter.Model.Messages.Queries.Device
 {
     public class SupportedStatesQuery : Query
     {

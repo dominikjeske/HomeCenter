@@ -2,7 +2,7 @@
 using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Commands.Responses
+namespace HomeCenter.Model.Messages.Commands.Responses
 {
     public class DiscoveryResponse : BaseObject
     {

@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Core.Interface.Native;
-using HomeCenter.Model.Commands.Serial;
+using HomeCenter.Model.Messages.Commands.Serial;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.ValueTypes;

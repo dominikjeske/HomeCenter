@@ -1,11 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Commands;
-using HomeCenter.Model.Commands.Responses;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
 using System;
 using System.Threading.Tasks;

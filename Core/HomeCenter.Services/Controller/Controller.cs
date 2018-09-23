@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Commands;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Configuration;
 using HomeCenter.Core.ComponentModel.Configuration;

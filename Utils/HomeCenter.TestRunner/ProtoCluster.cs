@@ -1,5 +1,5 @@
-﻿using HomeCenter.Model.Commands;
-using HomeCenter.Model.Queries;
+﻿using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Queries;
 using Proto;
 using Proto.Router;
 using System;

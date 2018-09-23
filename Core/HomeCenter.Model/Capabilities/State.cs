@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Commands;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Core;

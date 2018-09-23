@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Commands.Device;
+﻿using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Extensions;
 using Proto;
 using Quartz;

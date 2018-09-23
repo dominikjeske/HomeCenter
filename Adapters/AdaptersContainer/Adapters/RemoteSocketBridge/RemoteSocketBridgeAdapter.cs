@@ -5,18 +5,18 @@ using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services.I2C;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Commands;
-using HomeCenter.Model.Commands.Responses;
-using HomeCenter.Model.Commands.Device;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Responses;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Model.Commands.Serial;
+using HomeCenter.Model.Messages.Commands.Serial;
 
 namespace HomeCenter.Model.Adapters.Denon
 {

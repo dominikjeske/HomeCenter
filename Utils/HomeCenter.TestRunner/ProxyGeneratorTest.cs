@@ -1,4 +1,5 @@
 ﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Messages.Queries;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -64,7 +65,7 @@ namespace HomeCenter.TestRunner
             var runtime = MetadataReference.CreateFromFile(typeof(FileAttributes).GetTypeInfo().Assembly.Location);
             var console = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
             var generator = MetadataReference.CreateFromFile(typeof(ProxyGenerator).Assembly.Location);
-            var model = MetadataReference.CreateFromFile(typeof(Model.Queries.Query).Assembly.Location);
+            var model = MetadataReference.CreateFromFile(typeof(Query).Assembly.Location);
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
 

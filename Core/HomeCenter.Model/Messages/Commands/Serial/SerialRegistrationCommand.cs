@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.Model.Commands.Serial
+namespace HomeCenter.Model.Messages.Commands.Serial
 {
     public class SerialRegistrationCommand : Command
     {

@@ -1,5 +1,5 @@
-﻿using HomeCenter.Model.Commands;
-using HomeCenter.Model.Queries;
+﻿using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;

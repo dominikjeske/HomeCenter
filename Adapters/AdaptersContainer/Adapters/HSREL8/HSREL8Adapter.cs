@@ -2,7 +2,7 @@
 using HomeCenter.Model.Adapters.Drivers;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Device;
 using Proto;
 using System.Threading.Tasks;
 

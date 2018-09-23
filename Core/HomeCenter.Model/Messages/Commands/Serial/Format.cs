@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Commands.Serial
+namespace HomeCenter.Model.Messages.Commands.Serial
 {
     public class Format
     {

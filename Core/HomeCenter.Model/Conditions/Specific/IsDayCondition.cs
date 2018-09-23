@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Commands;
+﻿using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Extensions;

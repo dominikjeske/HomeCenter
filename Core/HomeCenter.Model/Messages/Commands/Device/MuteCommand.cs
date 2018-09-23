@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Commands.Device
+﻿namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class MuteCommand : Command
     {

@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using HomeCenter.Model.Commands;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Events;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Messaging;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.Model.Queries;
+using HomeCenter.Model.Messages.Queries;
 
 namespace HomeCenter.Model.Extensions
 {

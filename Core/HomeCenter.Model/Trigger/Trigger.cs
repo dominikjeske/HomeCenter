@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Commands;
+﻿using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Events;
 using HomeCenter.Conditions;
 using HomeCenter.Core.Services.DependencyInjection;

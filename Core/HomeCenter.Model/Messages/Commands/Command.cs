@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Core;
 using System.Threading;
 
-namespace HomeCenter.Model.Commands
+namespace HomeCenter.Model.Messages.Commands
 {
     public class Command : ActorMessage
     {

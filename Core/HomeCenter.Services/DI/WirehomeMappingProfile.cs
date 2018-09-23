@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HomeCenter.Model.Commands;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Events;
 using HomeCenter.Conditions;

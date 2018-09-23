@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Commands;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Core;
 
 namespace HomeCenter.Model.Components

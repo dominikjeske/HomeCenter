@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
