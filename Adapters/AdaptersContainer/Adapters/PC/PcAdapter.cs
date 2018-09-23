@@ -71,10 +71,11 @@ namespace HomeCenter.Model.Adapters.Pc
 
         protected async Task TurnOm(TurnOnCommand message)
         {
-            await _eventAggregator.QueryAsync<WakeOnLanMessage, string>(new WakeOnLanMessage
-            {
-                MAC = _mac
-            }).ConfigureAwait(false);
+            //TODO
+            //await _eventAggregator.QueryAsync<WakeOnLanMessage, string>(new WakeOnLanMessage
+            //{
+            //    MAC = _mac
+            //}).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
