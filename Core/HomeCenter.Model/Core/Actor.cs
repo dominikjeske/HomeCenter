@@ -10,7 +10,7 @@ namespace HomeCenter.Model.Core
 {
     public abstract class Actor : BaseObject, IDisposable, IActor
     {
-        internal PID Self { get; private set; }
+        public PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         [Map] protected bool IsEnabled { get; private set; } = true;
 

@@ -19,6 +19,12 @@ namespace HomeCenter.Model.Extensions
         public static int AsInt(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is IntValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(int).Name}");
 
+        public static uint AsUInt(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is UIntValue val ? val.Value :
+                   throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(uint).Name}");
+
+        public static byte AsByte(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is ByteValue val ? val.Value :
+           throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(byte).Name}");
+
         public static TimeSpan AsTimeSpan(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is TimeSpanValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(TimeSpan).Name}");
 

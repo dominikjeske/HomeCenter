@@ -1,12 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
+using HomeCenter.Model.Commands.Serial;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,21 +32,18 @@ namespace HomeCenter.Model.Adapters.Denon
             {
                 _state.Add(IntValue.FromString(val), 0);
             }
-            //TODO register handler
+            var registration = new SerialRegistrationCommand(Self, 1, new Format[]
+            {
+                new Format(1, typeof(byte), "Pin"),
+                new Format(2, typeof(float), "Temperature")
+            });
+            //TODO Send
+            //TODO count size??
         }
 
-        private async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
+        protected void Handle(SerialResultCommand serialResultCommand)
         {
-            if (messageType == 1 && messageSize == 5)
-            {
-                var pin = reader.ReadByte();
-                var temperature = reader.ReadSingle();
-
-                _state[pin] = await UpdateState(TemperatureState.StateName, pin, (DoubleValue)temperature).ConfigureAwait(false);
-
-                return true;
-            }
-            return false;
+            // _state[pin] = await UpdateState(TemperatureState.StateName, pin, (DoubleValue)temperature).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

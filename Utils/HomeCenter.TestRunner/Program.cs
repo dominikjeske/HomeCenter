@@ -1,8 +1,5 @@
-﻿using Proto;
-using Proto.Router;
-using System;
+﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
@@ -14,7 +11,7 @@ namespace HomeCenter.TestRunner
             // Runtime
             //await ProtoCluster.Start();
 
-           // await ProtoTest.Start();
+            // await ProtoTest.Start();
 
             // Debug
             await GenerateDebuging().ConfigureAwait(false);
@@ -26,15 +23,11 @@ namespace HomeCenter.TestRunner
         {
             try
             {
-                //TODO
                 var code = await File.ReadAllTextAsync(@"..\..\..\Models.cs").ConfigureAwait(false);
 
-                var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Proto.Mailbox.UnboundedMailbox).Assembly, typeof(Router).Assembly };
-
-                var result = await new ProxyGeneratorTest().Generate(code, externalRefs).ConfigureAwait(false);
+                var result = await new ProxyGeneratorTest().Generate(code).ConfigureAwait(false);
 
                 Console.ReadLine();
-
                 Console.WriteLine(result);
             }
             catch (Exception e)
@@ -43,4 +36,6 @@ namespace HomeCenter.TestRunner
             }
         }
     }
+
+   
 }

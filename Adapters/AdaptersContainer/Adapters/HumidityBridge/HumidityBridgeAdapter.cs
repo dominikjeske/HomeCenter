@@ -1,12 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
+using HomeCenter.Model.Commands.Serial;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +15,6 @@ namespace HomeCenter.Model.Adapters.Denon
     [ProxyCodeGenerator]
     public abstract class HumidityBridgeAdapter : Adapter
     {
-        //TODO register handler
         private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
 
         protected HumidityBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
@@ -35,20 +33,17 @@ namespace HomeCenter.Model.Adapters.Denon
                 _state.Add(IntValue.FromString(val), 0);
             }
 
+            var registration = new SerialRegistrationCommand(Self, 6, new Format[]
+            {
+                new Format(1, typeof(byte), "Pin"),
+                new Format(2, typeof(float), "Humidity")
+            });
+            //TODO Send
         }
 
-        public async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
+        protected void Handle(SerialResultCommand serialResultCommand)
         {
-            if (messageType == 6 && messageSize == 5)
-            {
-                var pin = reader.ReadByte();
-                var humidity = reader.ReadSingle();
-
-                _state[pin] = await UpdateState(HumidityState.StateName, pin, (DoubleValue)humidity).ConfigureAwait(false);
-
-                return true;
-            }
-            return false;
+            // _state[pin] = await UpdateState(HumidityState.StateName, pin, (DoubleValue)humidity).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

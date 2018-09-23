@@ -16,7 +16,7 @@ namespace HomeCenter.TestRunner
 
     public class ProxyGeneratorTest
     {
-        public async Task<string> Generate(string code, Assembly[] externalReferences)
+        public async Task<string> Generate(string code)
         {
             var generator = new ProxyGenerator();
             var models = await GetModels(code);
@@ -52,26 +52,29 @@ namespace HomeCenter.TestRunner
 
             syntaxTree = syntaxTree.ReplaceNode(oldNamespace, newNamespace);
 
-            Veryfy(syntaxTree, externalReferences);
+            Veryfy(syntaxTree);
 
             return syntaxTree.NormalizeWhitespace().ToFullString();
         }
 
-        private static void Veryfy(CompilationUnitSyntax syntaxTree, Assembly[] externalReferences)
+        private static void Veryfy(CompilationUnitSyntax syntaxTree)
         {
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             var tasklib = MetadataReference.CreateFromFile(typeof(Task).Assembly.Location);
             var runtime = MetadataReference.CreateFromFile(typeof(FileAttributes).GetTypeInfo().Assembly.Location);
             var console = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
-            var self = MetadataReference.CreateFromFile(typeof(ProxyGeneratorTest).Assembly.Location);
+            var generator = MetadataReference.CreateFromFile(typeof(ProxyGenerator).Assembly.Location);
+            var model = MetadataReference.CreateFromFile(typeof(Model.Queries.Query).Assembly.Location);
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
 
-            var external = externalReferences.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();
+
+            var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Proto.Mailbox.UnboundedMailbox).Assembly, typeof(Router).Assembly };
+            var external = externalRefs.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();
 
             var comp = CSharpCompilation.Create("Final").WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                                                         .AddSyntaxTrees(syntaxTree.SyntaxTree)
-                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, self)
+                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, generator, model)
                                                         .AddReferences(external);
 
             var result = comp.Emit("final.dll");

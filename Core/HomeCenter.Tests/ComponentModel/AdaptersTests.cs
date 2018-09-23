@@ -6,6 +6,7 @@ using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace HomeCenter.Extensions.Tests
 {
@@ -15,9 +16,16 @@ namespace HomeCenter.Extensions.Tests
         [TestMethod]
         public async Task AdapterCommandExecuteShouldGetResult()
         {
-            var (controller, container) = await new ControllerBuilder().WithConfiguration("oneComponentConfiguration")
+            var (controller, container) = await new ControllerBuilder().WithConfiguration("ComponentConfiguration")
                                                                        .BuildAndRun()
                                                                        .ConfigureAwait(false);
+
+            var xx = sizeof(byte);
+            var xx2 = sizeof(int);
+            var xx3 = sizeof(uint);
+            var xx4 = sizeof(float);
+
+            var ss = Marshal.SizeOf(typeof(float));
 
             await Task.Delay(1000000);
 

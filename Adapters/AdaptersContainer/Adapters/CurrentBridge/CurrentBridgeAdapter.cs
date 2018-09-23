@@ -1,13 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters.Kodi;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
+using HomeCenter.Model.Commands.Serial;
 using HomeCenter.Model.ComponentModel.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,16 +15,12 @@ namespace HomeCenter.Model.Adapters.Denon
     [ProxyCodeGenerator]
     public abstract class CurrentBridgeAdapter : Adapter
     {
-        //TODO register handler
         private readonly Dictionary<IntValue, IntValue> _state = new Dictionary<IntValue, IntValue>();
 
         protected CurrentBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _requierdProperties.Add(AdapterProperties.PinNumber);
-
-            //KodiAdapterProxy
         }
-
 
         protected override async Task OnStarted(IContext context)
         {
@@ -39,23 +33,17 @@ namespace HomeCenter.Model.Adapters.Denon
                 _state.Add(IntValue.FromString(val), 0);
             }
 
-            if (!IsEnabled) return;
-
+            var registration = new SerialRegistrationCommand(Self, 5, new Format[]
+            {
+                new Format(1, typeof(byte), "Pin"),
+                new Format(2, typeof(byte), "Current")
+            });
+            //TODO Send
         }
 
-
-        public async Task<bool> MessageHandler(byte messageType, byte messageSize, IBinaryReader reader)
+        protected void Handle(SerialResultCommand serialResultCommand)
         {
-            if (messageType == 5 && messageSize == 2)
-            {
-                var pin = reader.ReadByte();
-                var currentExists = reader.ReadByte();
-
-                _state[pin] = await UpdateState(CurrentState.StateName, pin, (IntValue)currentExists).ConfigureAwait(false);
-
-                return true;
-            }
-            return false;
+            //_state[pin] = await UpdateState(CurrentState.StateName, pin, (IntValue)currentExists).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse DeviceDiscoveryQuery(DiscoverQuery message)

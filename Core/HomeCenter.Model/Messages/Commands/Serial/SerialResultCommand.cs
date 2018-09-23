@@ -1,6 +1,7 @@
 ﻿namespace HomeCenter.Model.Commands.Serial
 {
-    public class SerialRegistrationCommand : Command
+    public class SerialResultCommand : Command
     {
+
     }
 }

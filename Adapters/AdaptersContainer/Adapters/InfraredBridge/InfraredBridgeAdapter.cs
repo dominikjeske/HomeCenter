@@ -14,6 +14,7 @@ using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Model.Commands.Serial;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
@@ -41,24 +42,22 @@ namespace HomeCenter.Model.Adapters.Denon
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
+            var registration = new SerialRegistrationCommand(Self, 3, new Format[]
+               {
+                new Format(1, typeof(byte), "System"),
+                new Format(2, typeof(uint), "Code"),
+                new Format(3, typeof(byte), "Bits")
+               });
+            //TODO Send
+            //TODO count size??
+
         }
 
-
-        public async Task<bool> SerialHandler(byte messageType, byte messageSize, IBinaryReader reader)
+        protected void Handle(SerialResultCommand serialResultCommand)
         {
-            if (messageType == 3 && messageSize == 6)
-            {
-                var system = reader.ReadByte();
-                var code = reader.ReadUInt32();
-                var bits = reader.ReadByte();
-
-                await _eventAggregator.PublishDeviceEvent(new InfraredEvent(Uid, system, (int)code)).ConfigureAwait(false);
-
-                return true;
-            }
-            return false;
+            //await _eventAggregator.PublishDeviceEvent(new InfraredEvent(Uid, system, (int)code)).ConfigureAwait(false);
         }
-
+        
         protected Task SendCode(SendCodeCommand message)
         {
             //TODO uint?

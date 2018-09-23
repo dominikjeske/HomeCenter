@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using System;
 using System.Collections.Generic;
-using HomeCenter.Model.ValueTypes;
 
 namespace HomeCenter.Model.Core
 {
@@ -9,9 +8,12 @@ namespace HomeCenter.Model.Core
     {
         public string Key { get; set; }
         public IValue Value { get; set; }
+
         public override string ToString() => $"{Key}={Convert.ToString(Value)}";
 
-        public Property() { }
+        public Property()
+        {
+        }
 
         public Property(string type, IValue value)
         {
