@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Messaging;
 using HomeCenter.Messaging.Behaviors;

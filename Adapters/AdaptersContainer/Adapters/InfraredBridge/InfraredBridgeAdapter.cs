@@ -2,7 +2,7 @@
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services;

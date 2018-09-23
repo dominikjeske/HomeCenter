@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Events;
+﻿using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Core;
 

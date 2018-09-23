@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HomeCenter.Model.Core;
 
-namespace HomeCenter.Model.Events
+namespace HomeCenter.Model.Messages.Events
 {
     public class DipswitchEvent : Event
     {

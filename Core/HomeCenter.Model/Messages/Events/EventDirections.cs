@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Events
+﻿namespace HomeCenter.Model.Messages.Events
 {
     public static class EventDirections
     {

@@ -4,7 +4,7 @@ using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Events
+namespace HomeCenter.Model.Messages.Events
 {
     public class PropertyChangedEvent : Event
     {

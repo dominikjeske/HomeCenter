@@ -1,7 +1,7 @@
 ﻿using System;
 using HomeCenter.Model.ValueTypes;
 
-namespace HomeCenter.Model.Events
+namespace HomeCenter.Model.Messages.Events
 {
     public class InfraredEvent : Event
     {

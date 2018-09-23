@@ -8,7 +8,7 @@ using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;

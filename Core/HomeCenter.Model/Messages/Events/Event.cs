@@ -2,7 +2,7 @@
 using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Events
+namespace HomeCenter.Model.Messages.Events
 {
     public class Event : BaseObject, System.IEquatable<Event>
     {

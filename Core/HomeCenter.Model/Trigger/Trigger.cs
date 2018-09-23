@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Conditions;
 using HomeCenter.Core.Services.DependencyInjection;
 using System.Collections.Generic;

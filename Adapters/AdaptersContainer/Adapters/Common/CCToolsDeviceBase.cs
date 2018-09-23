@@ -2,7 +2,7 @@
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Extensions;
 using HomeCenter.Core.Services.I2C;

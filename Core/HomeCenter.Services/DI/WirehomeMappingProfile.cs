@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Components;
-using HomeCenter.Model.Events;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Conditions;
 using HomeCenter.Core.ComponentModel.Areas;
 using HomeCenter.Core.ComponentModel.Configuration;
