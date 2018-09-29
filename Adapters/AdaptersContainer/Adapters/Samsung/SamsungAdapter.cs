@@ -53,7 +53,7 @@ namespace HomeCenter.Model.Adapters.Samsung
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
+            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = "KEY_POWEROFF"
@@ -63,7 +63,7 @@ namespace HomeCenter.Model.Adapters.Samsung
 
         protected Task VolumeUp(VolumeUpCommand command)
         {
-            return _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
+            return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = "KEY_VOLUP"
@@ -72,7 +72,7 @@ namespace HomeCenter.Model.Adapters.Samsung
 
         protected Task VolumeDown(VolumeDownCommand command)
         {
-            return _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
+            return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = "KEY_VOLDOWN"
@@ -81,7 +81,7 @@ namespace HomeCenter.Model.Adapters.Samsung
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
+            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = "KEY_MUTE"
@@ -114,7 +114,7 @@ namespace HomeCenter.Model.Adapters.Samsung
 
             if (source?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on Samsung available device input sources");
 
-            await _eventAggregator.QueryAsync<SamsungControlMessage, string>(new SamsungControlMessage
+            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = source

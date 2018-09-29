@@ -1,23 +1,22 @@
-﻿using System.Linq;
-using System.Xml.Linq;
+﻿using HomeCenter.Core.Extensions;
+using HomeCenter.Model.Messages.Queries.Services;
 using System.IO;
-using System;
-using HomeCenter.Core.Interface.Messaging;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
-    internal class DenonStatusLightMessage : HttpMessage
+    internal class DenonStatusLightQuery : HttpQuery
     {
         public string Zone { get; set; } = "1";
 
-        public DenonStatusLightMessage()
+        public override string Address
         {
-            RequestType = "GET";
+            get => MessageAddress();
+            set => base.Address = value;
         }
 
-        public override string MessageAddress()
+        private string MessageAddress()
         {
             if (Zone == "1")
             {
@@ -26,7 +25,12 @@ namespace HomeCenter.Model.Adapters.Denon
             return $"http://{Address}/goform/formZone{Zone}_Zone{Zone}XmlStatusLite.xml";
         }
 
-        public override object ParseResult(string responseData, Type responseType = null)
+        private float? NormalizeVolume(float? volume)
+        {
+            return volume == null ? null : volume + 80.0f;
+        }
+
+        public DenonStatus ParseResult(string responseData)
         {
             using (var reader = new StringReader(responseData))
             {
@@ -40,11 +44,6 @@ namespace HomeCenter.Model.Adapters.Denon
                     Mute = xml.Descendants("Mute").FirstOrDefault()?.Value?.Trim().ToLower() == "on"
                 };
             }
-        }
-
-        public float? NormalizeVolume(float? volume)
-        {
-            return volume == null ? null : volume + 80.0f;
         }
     }
 }

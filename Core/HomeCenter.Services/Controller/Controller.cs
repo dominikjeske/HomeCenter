@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Components;
-using HomeCenter.Model.Configuration;
 using HomeCenter.Core.ComponentModel.Configuration;
 using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Configuration;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Services.Networking;
 using HTTPnet.Core.Pipeline;
 using Microsoft.Extensions.Logging;
@@ -30,7 +29,6 @@ namespace HomeCenter.Model.Core
     [ProxyCodeGenerator]
     public abstract class Controller : Actor
     {
-        private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;
         private readonly IRoslynCompilerService _roslynCompilerService;
         private readonly IControllerOptions _controllerOptions;
@@ -41,12 +39,12 @@ namespace HomeCenter.Model.Core
         private readonly IHttpServerService _httpServerService;
 
         private HomeCenterConfiguration _homeConfiguration;
-        private readonly IEnumerable<IService> _services;
+        //TODO
+        private readonly IEnumerable<Service> _services;
 
         protected Controller(IEventAggregator eventAggregator, IMapper mapper, IHttpServerService httpServerService, IScheduler scheduler, IRoslynCompilerService roslynCompilerService,
-            IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, ILogger<Controller> logger, IControllerOptions controllerOptions, IEnumerable<IService> services)
+            IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, ILogger<Controller> logger, IControllerOptions controllerOptions) : base(eventAggregator)
         {
-            _eventAggregator = eventAggregator;
             _scheduler = scheduler;
             _roslynCompilerService = roslynCompilerService;
             _controllerOptions = controllerOptions;
@@ -55,7 +53,6 @@ namespace HomeCenter.Model.Core
             _resourceLocatorService = resourceLocatorService;
             _mapper = mapper;
             _httpServerService = httpServerService;
-            _services = services;
         }
 
         protected override async Task OnStarted(Proto.IContext context)
@@ -67,7 +64,6 @@ namespace HomeCenter.Model.Core
 
             await LoadCalendars().ConfigureAwait(false);
             InitializeConfiguration();
-            await InitializeServices().ConfigureAwait(false);
             await RunScheduler().ConfigureAwait(false);
 
             //TODO
@@ -113,22 +109,6 @@ namespace HomeCenter.Model.Core
             else
             {
                 _logger.LogInformation($"Using only build in adapters");
-            }
-        }
-
-        private async Task InitializeServices()
-        {
-            foreach (var service in _services)
-            {
-                try
-                {
-                    await service.Initialize().ConfigureAwait(false);
-                    _disposables.Add(service);
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(exception, $"Error while starting service '{service.GetType().Name}'. " + exception.Message);
-                }
             }
         }
 

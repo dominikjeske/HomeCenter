@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Service;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using HomeCenter.Core.Interface.Messaging;
 
 namespace HomeCenter.Model.Adapters.Samsung
 {
-    public class SamsungControlMessage : ITcpMessage
+    public class SamsungControlCommand : TcpCommand, IFormatableMessage<SamsungControlCommand>
     {
         public string Address { get; set; }
         public string Code { get; set; }
@@ -89,6 +90,11 @@ namespace HomeCenter.Model.Adapters.Samsung
         private string Format(int value)
         {
             return char.ToString((char)value);
+        }
+
+        public SamsungControlCommand FormatMessage()
+        {
+            throw new NotImplementedException();
         }
     }
 }

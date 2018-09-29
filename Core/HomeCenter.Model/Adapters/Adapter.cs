@@ -19,7 +19,7 @@ namespace HomeCenter.Model.Adapters
 
         public IList<string> RequierdProperties() => _requierdProperties;
 
-        protected Adapter(IAdapterServiceFactory adapterServiceFactory)
+        protected Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory.GetEventAggregator())
         {
             _eventAggregator = adapterServiceFactory.GetEventAggregator();
             _scheduler = adapterServiceFactory.GetScheduler();

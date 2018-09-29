@@ -1,12 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Interface.Messaging;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace HomeCenter.Model.Adapters.Pc
 
         protected async Task Refresh(RefreshCommand message)
         {
-            var state = await _eventAggregator.QueryAsync<ComputerControlMessage, ComputerStatus>(new ComputerControlMessage
+            var state = await _eventAggregator.QueryAsync<ComputerControlCommand, ComputerStatus>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Port = _port,
@@ -81,7 +80,7 @@ namespace HomeCenter.Model.Adapters.Pc
 
         protected async Task TurnOf(TurnOffCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Power",
@@ -94,7 +93,7 @@ namespace HomeCenter.Model.Adapters.Pc
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Volume",
@@ -107,7 +106,7 @@ namespace HomeCenter.Model.Adapters.Pc
         protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Volume",
@@ -120,7 +119,7 @@ namespace HomeCenter.Model.Adapters.Pc
         protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Volume",
@@ -132,7 +131,7 @@ namespace HomeCenter.Model.Adapters.Pc
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Mute",
@@ -144,7 +143,7 @@ namespace HomeCenter.Model.Adapters.Pc
 
         protected async Task UnMute(UnmuteCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "Mute",
@@ -158,7 +157,7 @@ namespace HomeCenter.Model.Adapters.Pc
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
 
-            await _eventAggregator.QueryAsync<ComputerControlMessage, string>(new ComputerControlMessage
+            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
             {
                 Address = _hostname,
                 Service = "InputSource",

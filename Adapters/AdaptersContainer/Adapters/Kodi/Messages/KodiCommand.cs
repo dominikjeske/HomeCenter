@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using HomeCenter.Core.Interface.Messaging;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages.Commands.Service;
+using Newtonsoft.Json;
+using System;
 
 namespace HomeCenter.Model.Adapters.Kodi
 {
@@ -10,7 +11,7 @@ namespace HomeCenter.Model.Adapters.Kodi
     //http://kodi.wiki/view/JSON-RPC_API/Examples
     //http://kodi.wiki/view/JSON-RPC_API/v8#Notifications_2
 
-    public class KodiMessage : HttpMessage
+    public class KodiCommand : HttpCommand, IFormatableMessage<KodiCommand>
     {
         public string UserName { get; set; }
         public string Password { get; set; }
@@ -18,31 +19,28 @@ namespace HomeCenter.Model.Adapters.Kodi
         public int Port { get; set; }
         public object Parameters { get; set; }
 
-        public KodiMessage()
+        public KodiCommand()
         {
-            RequestType = "POST";
             ContentType = "application/json-rpc";
         }
 
-        public override string MessageAddress()
+        public KodiCommand FormatMessage()
         {
             Creditionals = new System.Net.NetworkCredential(UserName, Password);
+            Address = $"http://{Address}:{Port}/jsonrpc";
 
-            return $"http://{Address}:{Port}/jsonrpc";
-        }
-
-        public override string Serialize()
-        {
             var jsonRpcRequest = new JsonRpcRequest
             {
                 Method = Method,
                 Parameters = Parameters
             };
 
-            return JsonConvert.SerializeObject(jsonRpcRequest);
-        }
+            Body = JsonConvert.SerializeObject(jsonRpcRequest);
 
-        public override object ParseResult(string responseData, Type responseType = null)
+            return this;
+        }
+        
+        public string ParseResult(string responseData, Type responseType = null)
         {
             var result = JsonConvert.DeserializeObject<JsonRpcResponse>(responseData);
 

@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Queries.Device;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Messaging;
 
 namespace HomeCenter.TestRunner
 {
@@ -63,7 +64,7 @@ namespace HomeCenter.TestRunner
     [ProxyCodeGenerator]
     public class HttpServiceHandler : Actor
     {
-        public HttpServiceHandler(string A, int B, IEnumerable<string> list)
+        public HttpServiceHandler(IEventAggregator eventAggregator) : base(eventAggregator) 
         {
         }
 
@@ -73,14 +74,15 @@ namespace HomeCenter.TestRunner
         }
 
 
-        //protected async Task<string> Handle(TurnOnCommand query)
-        //{
-        //    await Task.Delay(3000);
+        [Subscibe]
+        protected async Task<string> Handle(TurnOnCommand query)
+        {
+            await Task.Delay(3000);
 
-        //    Console.WriteLine($"Actor [{nameof(HttpServiceHandler)}] | Actor:{query.Context.Self.Id} | Sender:{query.Context.Sender.Id}");
+            Console.WriteLine($"Actor [{nameof(HttpServiceHandler)}] | Actor:{query.Context.Self.Id} | Sender:{query.Context.Sender.Id}");
 
-        //    return "Test";
-        //}
+            return "Test";
+        }
     }
 
     public class Result

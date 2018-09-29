@@ -55,7 +55,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
         protected async Task Refresh(RefreshCommand message)
         {
-            var power = await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            var power = await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -66,7 +66,7 @@ namespace HomeCenter.Model.Adapters.Sony
             //TODO
             //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
 
-            var audio = await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            var audio = await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -86,7 +86,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
         protected async Task TurnOn(TurnOnCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<SonyControlMessage, string>(new SonyControlMessage
+            var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -97,7 +97,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<SonyControlMessage, string>(new SonyControlMessage
+            var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -109,7 +109,7 @@ namespace HomeCenter.Model.Adapters.Sony
         protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
-            await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -124,7 +124,7 @@ namespace HomeCenter.Model.Adapters.Sony
         protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
-            await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -139,7 +139,7 @@ namespace HomeCenter.Model.Adapters.Sony
         protected async Task VolumeSer(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -153,7 +153,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -167,7 +167,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
         protected async Task UnMute(UnmuteCommand message)
         {
-            await _eventAggregator.QueryAsync<SonyJsonMessage, string>(new SonyJsonMessage
+            await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -186,7 +186,7 @@ namespace HomeCenter.Model.Adapters.Sony
 
             var cmd = _inputSourceMap[inputName];
 
-            var result = await _eventAggregator.QueryAsync<SonyControlMessage, string>(new SonyControlMessage
+            var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,

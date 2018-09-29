@@ -1,20 +1,18 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
 using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Responses;
+using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Model.Messages.Commands.Serial;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
@@ -24,7 +22,6 @@ namespace HomeCenter.Model.Adapters.Denon
         private const int DEAFULT_REPEAT = 3;
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
-
 
         private readonly II2CBusService _i2cServiceBus;
         private readonly Dictionary<IntValue, BooleanValue> _state = new Dictionary<IntValue, BooleanValue>();
@@ -50,14 +47,13 @@ namespace HomeCenter.Model.Adapters.Denon
                });
             //TODO Send
             //TODO count size??
-
         }
 
         protected void Handle(SerialResultCommand serialResultCommand)
         {
             //await _eventAggregator.PublishDeviceEvent(new InfraredEvent(Uid, system, (int)code)).ConfigureAwait(false);
         }
-        
+
         protected Task SendCode(SendCodeCommand message)
         {
             //TODO uint?

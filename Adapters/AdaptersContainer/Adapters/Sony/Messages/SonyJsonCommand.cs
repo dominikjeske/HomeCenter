@@ -2,44 +2,21 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
-using HomeCenter.Core.Interface.Messaging;
+using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Core;
 
 namespace HomeCenter.Model.Adapters.Sony
 {
-    public class SonyJsonMessage : HttpMessage
+    public class SonyJsonCommand : HttpCommand, IFormatableMessage<SonyJsonCommand>
     {
         public string Path { get; set; }
         public string Method { get; set; }
         public object Params { get; set; }
         public int Id { get; set; } = 1;
         public string Version { get; set; } = "1.0";
-
         public string AuthorisationKey { get; set; }
 
-        public SonyJsonMessage()
-        {
-            RequestType = "POST";
-        }
-
-        public override string MessageAddress()
-        {
-            Cookies = new CookieContainer();
-            Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", AuthorisationKey, "/sony", Address));
-            return $"http://{Address}/sony/{Path}";
-        }
-
-        public override string Serialize()
-        {
-            return JsonConvert.SerializeObject(new
-            {
-                @method = Method,
-                @params = Params == null ? new object[] { } : new object[] { Params },
-                @id = Id,
-                @version = Version,
-            });
-        }
-
-        public override object ParseResult(string responseData, Type responseType = null)
+        public object ParseResult(string responseData, Type responseType = null)
         {
             var response = (JObject)JsonConvert.DeserializeObject(responseData);
 
@@ -78,39 +55,21 @@ namespace HomeCenter.Model.Adapters.Sony
                 //}
             }
         }
-    }
 
-    public class SonyAudioVolumeRequest
-    {
-        [JsonProperty("target")]
-        public System.String Target { get; set; }
-
-        [JsonProperty("volume")]
-        public System.String Volume { get; set; }
-
-        public SonyAudioVolumeRequest()
+        public SonyJsonCommand FormatMessage()
         {
-        }
+            Cookies = new CookieContainer();
+            Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", AuthorisationKey, "/sony", Address));
+            Address = $"http://{Address}/sony/{Path}";
+            Body = JsonConvert.SerializeObject(new
+            {
+                @method = Method,
+                @params = Params == null ? new object[] { } : new object[] { Params },
+                @id = Id,
+                @version = Version,
+            });
 
-        public SonyAudioVolumeRequest(System.String @target, System.String @volume)
-        {
-            this.Target = @target;
-            this.Volume = @volume;
-        }
-    }
-
-    public class SonyAudioMuteRequest
-    {
-        [JsonProperty("status")]
-        public System.Boolean Status { get; set; }
-
-        public SonyAudioMuteRequest()
-        {
-        }
-
-        public SonyAudioMuteRequest(System.Boolean @status)
-        {
-            this.Status = @status;
+            return this;
         }
     }
 }

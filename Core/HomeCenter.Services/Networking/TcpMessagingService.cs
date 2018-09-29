@@ -1,6 +1,6 @@
-﻿using HomeCenter.Core.Interface.Messaging;
-using HomeCenter.Messaging;
+﻿using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Service;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,49 +10,30 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Services
 {
-    public class TcpMessagingService : ITcpMessagingService
+    public class TcpMessagingService : Service
     {
         private readonly ILogger<TcpMessagingService> _logger;
-        private readonly IEventAggregator _eventAggregator;
-        private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
-        public TcpMessagingService(ILogger<TcpMessagingService> logger, IEventAggregator eventAggregator)
+        public TcpMessagingService(ILogger<TcpMessagingService> logger, IEventAggregator eventAggregator) : base(eventAggregator)
         {
-            _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
             _logger = logger;
         }
 
-        public Task Initialize()
+        //TODO query?
+
+        [Subscibe]
+        protected async Task<string> Handle(TcpCommand tcpCommand)
         {
-            _disposeContainer.Add(_eventAggregator.SubscribeForAsyncResult<ITcpMessage>(MessageHandler));
-            return Task.CompletedTask;
-        }
-
-        public void Dispose() => _disposeContainer.Dispose();
-
-        private Task<object> MessageHandler(IMessageEnvelope<ITcpMessage> message) => SendMessage(message);
-
-        private async Task<object> SendMessage(IMessageEnvelope<ITcpMessage> message)
-        {
-            try
+            using (var socket = new TcpClient())
             {
-                using (var socket = new TcpClient())
+                var uri = new Uri($"tcp://{tcpCommand.Address}");
+                await socket.ConnectAsync(uri.Host, uri.Port).ConfigureAwait(false);
+                using (var stream = socket.GetStream())
                 {
-                    var uri = new Uri($"tcp://{message.Message.MessageAddress()}");
-                    await socket.ConnectAsync(uri.Host, uri.Port).ConfigureAwait(false);
-                    using (var stream = socket.GetStream())
-                    {
-                        var messageBytes = message.Message.Serialize();
-                        await stream.WriteAsync(messageBytes, 0, messageBytes.Length, message.CancellationToken).ConfigureAwait(false);
-                        return await ReadString(stream).ConfigureAwait(false);
-                    }
+                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length).ConfigureAwait(false);
+                    return await ReadString(stream).ConfigureAwait(false);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Message {message.GetType().Name} failed during send TCP message");
-            }
-            return null;
         }
 
         private static async Task<string> ReadString(NetworkStream stream)

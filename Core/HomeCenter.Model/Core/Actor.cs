@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using Proto;
@@ -8,13 +9,21 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
+
     public abstract class Actor : BaseObject, IDisposable, IActor
     {
         public PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
+        protected readonly IEventAggregator _eventAggregator;
+
         [Map] protected bool IsEnabled { get; private set; } = true;
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
+
+        public Actor(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
+        }
         
         protected virtual Task UnhandledCommand(Proto.IContext command)
         {
@@ -37,7 +46,7 @@ namespace HomeCenter.Model.Core
             {
                 if (!IsEnabled) return false;
 
-                //TODO kill actor
+                //TODO kill actor and clean subscriptions
 
                 await OnStarted(context).ConfigureAwait(false);
                 return true;

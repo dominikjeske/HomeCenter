@@ -1,7 +1,8 @@
 ﻿using HomeCenter.Core.Interface.Native;
-using HomeCenter.Model.Messages.Commands.Serial;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.ValueTypes;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Services
 {
-    public class SerialMessagingService : Actor
+    public class SerialMessagingService : Service
     {
         private IBinaryReader _dataReader;
 
@@ -21,7 +22,7 @@ namespace HomeCenter.Core.Services
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
         private readonly ILogger<SerialMessagingService> _logger;
 
-        public SerialMessagingService(ISerialDevice serialDevice, ILogger<SerialMessagingService> logger)
+        public SerialMessagingService(ISerialDevice serialDevice, ILogger<SerialMessagingService> logger, IEventAggregator eventAggregator) : base(eventAggregator)
         {
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
             _logger = logger;
@@ -38,6 +39,7 @@ namespace HomeCenter.Core.Services
             var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
+        [Subscibe]
         protected Task Handle(SerialRegistrationCommand registration)
         {
             if (_messageHandlers.ContainsKey(registration.MessageType))

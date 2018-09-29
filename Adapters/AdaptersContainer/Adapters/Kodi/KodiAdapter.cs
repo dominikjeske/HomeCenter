@@ -77,7 +77,7 @@ namespace HomeCenter.Model.Adapters.Kodi
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -92,7 +92,7 @@ namespace HomeCenter.Model.Adapters.Kodi
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -109,7 +109,7 @@ namespace HomeCenter.Model.Adapters.Kodi
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -125,7 +125,7 @@ namespace HomeCenter.Model.Adapters.Kodi
         protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -140,7 +140,7 @@ namespace HomeCenter.Model.Adapters.Kodi
 
         protected async Task Mute(MuteCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -155,7 +155,7 @@ namespace HomeCenter.Model.Adapters.Kodi
 
         protected async Task Unmute(UnmuteCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -173,7 +173,7 @@ namespace HomeCenter.Model.Adapters.Kodi
             if (_speed != 0) return;
 
             //{"jsonrpc": "2.0", "method": "Player.PlayPause", "params": { "playerid": 1 }, "id": 1}
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,
@@ -191,7 +191,7 @@ namespace HomeCenter.Model.Adapters.Kodi
             if (_speed != 0) return;
 
             //{ "jsonrpc": "2.0", "method": "Player.Stop", "id": "libMovies", "params": { "playerid": 1 } }
-            var result = await _eventAggregator.QueryAsync<KodiMessage, string>(new KodiMessage
+            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
             {
                 Address = _hostname,
                 UserName = _userName,

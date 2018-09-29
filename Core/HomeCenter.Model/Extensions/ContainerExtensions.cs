@@ -9,7 +9,7 @@ namespace HomeCenter.Model.Extensions
 {
     public static class ContainerExtensions
     {
-        public static Registration RegisterService<T, K>(this Container container) where T : class, IService
+        public static Registration RegisterService<T, K>(this Container container) where T : Service
                                                                                    where K : class, T
         {
             var registration = Lifestyle.Singleton.CreateRegistration<K>(container);
@@ -17,7 +17,7 @@ namespace HomeCenter.Model.Extensions
             return registration;
         }
 
-        public static Registration RegisterService<T>(this Container container, T instance) where T : class, IService
+        public static Registration RegisterService<T>(this Container container, T instance) where T : Service
         {
             var registration = Lifestyle.Singleton.CreateRegistration<T>(() => instance, container);
             container.AddRegistration<T>(registration);

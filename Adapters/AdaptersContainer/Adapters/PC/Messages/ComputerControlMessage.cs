@@ -1,38 +1,28 @@
-﻿using Newtonsoft.Json;
-using System;
-using HomeCenter.Core.Interface.Messaging;
-
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Service;
+using Newtonsoft.Json;
 
 namespace HomeCenter.Model.Adapters.Pc
 {
-    public class ComputerControlMessage : HttpMessage
+    public class ComputerControlCommand : HttpCommand, IFormatableMessage<ComputerControlCommand>
     {
         public int Port { get; set; } = 5000;
         public string Service { get; set; }
         public object Message { get; set; }
 
-        public ComputerControlMessage()
+        public ComputerControlCommand()
         {
-            RequestType = "POST";
             ContentType = "application/json";
         }
 
-        public override string MessageAddress()
-        {
-            return $"http://{Address}:{Port}/api/{Service}";
-        }
+        public T ParseResult<T>(string responseData) => JsonConvert.DeserializeObject<T>(responseData);
 
-        public override string Serialize()
+        public ComputerControlCommand FormatMessage()
         {
-            if (Message == null) return "";
-            return JsonConvert.SerializeObject(Message);
-        }
+            Address = $"http://{Address}:{Port}/api/{Service}";
+            Body = JsonConvert.SerializeObject(Message);
 
-        public override object ParseResult(string responseData, Type responseType = null)
-        {
-            if (string.IsNullOrWhiteSpace(responseData)) return string.Empty;
-
-            return JsonConvert.DeserializeObject(responseData, responseType);
+            return this;
         }
     }
 }

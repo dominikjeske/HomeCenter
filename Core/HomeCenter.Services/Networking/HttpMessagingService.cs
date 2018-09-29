@@ -1,7 +1,8 @@
 ﻿using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Interface.Messaging;
 using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,91 +10,61 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Core.Services
 {
-    public class HttpMessagingService : IHttpMessagingService
+    public class HttpMessagingService : Service
     {
-        private readonly IEventAggregator _eventAggregator;
-        private readonly DisposeContainer _disposeContainer = new DisposeContainer();
-
-        public HttpMessagingService(IEventAggregator eventAggregator)
+        public HttpMessagingService(IEventAggregator eventAggregator) : base(eventAggregator)
         {
-            _eventAggregator = eventAggregator;
         }
 
-        public void Dispose() => _disposeContainer.Dispose();
-
-        public Task Initialize()
-        {
-            _disposeContainer.Add(_eventAggregator.SubscribeForAsyncResult<IHttpMessage>(MessageHandler));
-            return Task.CompletedTask;
-        }
-
-        public async Task<object> MessageHandler(IMessageEnvelope<IHttpMessage> message)
-        {
-            var httpMessage = message.Message;
-
-            if (httpMessage.RequestType == "POST")
-            {
-                return await SendPostRequest(message).ConfigureAwait(false);
-            }
-            else
-            if (httpMessage.RequestType == "GET")
-            {
-                return await SendGetRequest(message).ConfigureAwait(false);
-            }
-
-            return null;
-        }
-
-        public async Task<object> SendGetRequest(IMessageEnvelope<IHttpMessage> message)
+        [Subscibe]
+        private async Task<string> SendGetRequest(HttpQuery httpMessage)
         {
             using (var httpClient = new HttpClient())
             {
-                var address = message.Message.MessageAddress();
-                var httpResponse = await httpClient.GetAsync(address).ConfigureAwait(false);
+                var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
                 httpResponse.EnsureSuccessStatusCode();
                 var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                return message.Message.ParseResult(responseBody, message.ResponseType);
+                return responseBody;
             }
         }
 
-        public async Task<object> SendPostRequest(IMessageEnvelope<IHttpMessage> message)
+        [Subscibe]
+        private async Task<string> SendPostRequest(HttpCommand httpMessage)
         {
-            var address = message.Message.MessageAddress();
             var httpClientHandler = new HttpClientHandler();
-            if (message.Message.Cookies != null)
+            if (httpMessage.Cookies != null)
             {
-                httpClientHandler.CookieContainer = message.Message.Cookies;
+                httpClientHandler.CookieContainer = httpMessage.Cookies;
                 httpClientHandler.UseCookies = true;
             }
 
-            if (message.Message.Creditionals != null)
+            if (httpMessage.Creditionals != null)
             {
-                httpClientHandler.Credentials = message.Message.Creditionals;
+                httpClientHandler.Credentials = httpMessage.Creditionals;
             }
 
             using (var httpClient = new HttpClient(httpClientHandler))
             {
-                foreach (var header in message.Message.DefaultHeaders)
+                foreach (var header in httpMessage.DefaultHeaders)
                 {
                     httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                 }
 
-                if (!string.IsNullOrWhiteSpace(message.Message.AuthorisationHeader.Key))
+                if (!string.IsNullOrWhiteSpace(httpMessage.AuthorisationHeader.Key))
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(message.Message.AuthorisationHeader.Key, message.Message.AuthorisationHeader.Value);
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(httpMessage.AuthorisationHeader.Key, httpMessage.AuthorisationHeader.Value);
                 }
 
-                var content = new StringContent(message.Message.Serialize());
-                if (!string.IsNullOrWhiteSpace(message.Message.ContentType))
+                var content = new StringContent(httpMessage.Body);
+                if (!string.IsNullOrWhiteSpace(httpMessage.ContentType))
                 {
-                    content.Headers.ContentType = new MediaTypeHeaderValue(message.Message.ContentType);
+                    content.Headers.ContentType = new MediaTypeHeaderValue(httpMessage.ContentType);
                 }
-                var response = await httpClient.PostAsync(address, content).ConfigureAwait(false);
+                var response = await httpClient.PostAsync(httpMessage.Address, content).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);
 
-                return message.Message.ParseResult(responseBody, message.ResponseType);
+                return responseBody;
             }
         }
     }

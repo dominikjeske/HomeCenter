@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Messaging;
 using HomeCenter.Messaging.Behaviors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Model.ValueTypes;
+using Proto;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.Model.Messages.Queries;
 
 namespace HomeCenter.Model.Extensions
 {
@@ -136,6 +137,14 @@ namespace HomeCenter.Model.Extensions
         public static Task PublishDeviceCommnd<T>(this IEventAggregator eventAggregator, T message) where T : Command
         {
             return eventAggregator.Publish(message, new RoutingFilter(message.Uid));
+        }
+
+        public static IDisposable SubscribeForActorCommand<T>(this IEventAggregator eventAggregator, PID actor, IContext parent = null, RoutingFilter filter = null) where T : Command
+        {
+            return eventAggregator.Subscribe<T>(message =>
+            {
+                (parent ?? (IContext)RootContext.Empty).Send(actor, message.Message);
+            }, filter);
         }
     }
 }

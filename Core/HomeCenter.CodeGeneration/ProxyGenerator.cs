@@ -42,39 +42,29 @@ namespace HomeCenter.CodeGeneration
 
                 if (baseConstructor != null)
                 {
-                    var parList = new List<SyntaxNodeOrToken>();
-                    var baseList = new List<SyntaxNodeOrToken>();
-                    foreach (var par in baseConstructor.Parameters)
+                    ConstructorDeclarationSyntax constructorDecclaration = BenerateConstructor(className, baseConstructor);
+                    classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
+                }
+
+                var methods = GetMethodList(classSyntax, model, "Command", "Subscibe");
+
+                if (methods.Count > 0)
+                {
+                    var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
+
+                    List<StatementSyntax> statementSyntaxes = new List<StatementSyntax>();
+                    statementSyntaxes.Add(baseClassInvoke);
+
+                    foreach (var method in methods)
                     {
-                        var parType = par.Type as INamedTypeSymbol;
+                        var registration = ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Extensions")), IdentifierName("EventAggregateExtensions")), GenericName(Identifier("SubscribeForActorCommand")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))))).WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName("_eventAggregator")), Token(SyntaxKind.CommaToken), Argument(IdentifierName("Self")) }))));
 
-                        if (parType.IsGenericType)
-                        {
-                            var argumentList = new List<SyntaxNodeOrToken>();
-                            foreach(var arg in parType.TypeArguments)
-                            {
-                                argumentList.Add(IdentifierName(arg.Name));
-                                argumentList.Add(Token(SyntaxKind.CommaToken));
-                            }
-
-                            parList.Add(Parameter(Identifier(par.Name)).WithType(GenericName(Identifier(par.Type.Name)).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(argumentList.Take(argumentList.Count - 1))))));
-                        }
-                        else
-                        {
-                            parList.Add(Parameter(Identifier(par.Name)).WithType(IdentifierName(par.Type.Name)));
-                        }
-                        parList.Add(Token(SyntaxKind.CommaToken));
-
-                        baseList.Add(Argument(IdentifierName(par.Name)));
-                        baseList.Add(Token(SyntaxKind.CommaToken));
+                        statementSyntaxes.Add(registration);
                     }
 
-                    var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
-                    var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
+                    var subscriptions = MethodDeclaration(IdentifierName("Task"), Identifier("OnStarted")).WithModifiers(TokenList(new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.OverrideKeyword), Token(SyntaxKind.AsyncKeyword) })).WithParameterList(ParameterList(SingletonSeparatedList<ParameterSyntax>(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext")))))).WithBody(Block(statementSyntaxes));
 
-                    var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
-
-                    classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
+                    classDeclaration = classDeclaration.AddMembers(subscriptions);
                 }
 
                 return classDeclaration;
@@ -84,9 +74,42 @@ namespace HomeCenter.CodeGeneration
                 Logger.Error(e.ToString(), "");
                 return ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
             }
+        }
 
-            
+        private static ConstructorDeclarationSyntax BenerateConstructor(string className, IMethodSymbol baseConstructor)
+        {
+            var parList = new List<SyntaxNodeOrToken>();
+            var baseList = new List<SyntaxNodeOrToken>();
+            foreach (var par in baseConstructor.Parameters)
+            {
+                var parType = par.Type as INamedTypeSymbol;
 
+                if (parType.IsGenericType)
+                {
+                    var argumentList = new List<SyntaxNodeOrToken>();
+                    foreach (var arg in parType.TypeArguments)
+                    {
+                        argumentList.Add(IdentifierName(arg.Name));
+                        argumentList.Add(Token(SyntaxKind.CommaToken));
+                    }
+
+                    parList.Add(Parameter(Identifier(par.Name)).WithType(GenericName(Identifier(par.Type.Name)).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(argumentList.Take(argumentList.Count - 1))))));
+                }
+                else
+                {
+                    parList.Add(Parameter(Identifier(par.Name)).WithType(IdentifierName(par.Type.Name)));
+                }
+                parList.Add(Token(SyntaxKind.CommaToken));
+
+                baseList.Add(Argument(IdentifierName(par.Name)));
+                baseList.Add(Token(SyntaxKind.CommaToken));
+            }
+
+            var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
+            var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
+
+            var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
+            return constructorDecclaration;
         }
 
         public StatementSyntax GenerateSystemMessagesHandler()
@@ -113,7 +136,6 @@ namespace HomeCenter.CodeGeneration
             }
 
             return Block(varibleExpression, ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Respond"))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("result")))))), ReturnStatement());
-
         }
 
         private StatementSyntax GetCommandInvocationBody(string handlerName, string paramName, string returnType)
@@ -140,7 +162,6 @@ namespace HomeCenter.CodeGeneration
 
             if (methods.Count > 0)
             {
-
                 var ifStatement = GetIfCommand(ref param_num, methods[0]);
 
                 foreach (var method in methods.Skip(1))
@@ -156,8 +177,6 @@ namespace HomeCenter.CodeGeneration
 
         private IfStatementSyntax GetIfCommand(ref int param_num, MethodDescription method)
         {
-      
-
             return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"command_"}{param_num}")))), GetCommandInvocationBody(method.Method.Identifier.ValueText, $"{"command_"}{param_num++}", method.ReturnType.Name));
         }
 
@@ -177,7 +196,7 @@ namespace HomeCenter.CodeGeneration
 
                 return ifStatement;
             }
-            
+
             return EmptyStatement();
         }
 
@@ -186,15 +205,22 @@ namespace HomeCenter.CodeGeneration
             return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"query_"}{param_num}")))), GetQueryInvocationBody(method.Method.Identifier.ValueText, $"{"query_"}{param_num++}", method.ReturnType.Name));
         }
 
-        private static List<MethodDescription> GetMethodList(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType)
+        private static List<MethodDescription> GetMethodList(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType = null)
         {
-            var result = classSyntax.DescendantNodes()
+            var filter = classSyntax.DescendantNodes()
                               .OfType<MethodDeclarationSyntax>()
-                              .Where(m => m.ParameterList.Parameters.Count == 1)
-                              .Select(c => new MethodDescription { Method = c,
-                                                                   Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
-                                                                   ReturnType = model.GetTypeInfo(c.ReturnType).Type
-                              })
+                              .Where(m => m.ParameterList.Parameters.Count == 1);
+            if (attributeType != null)
+            {
+                filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));
+            }
+
+            var result = filter.Select(c => new MethodDescription
+            {
+                Method = c,
+                Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
+                ReturnType = model.GetTypeInfo(c.ReturnType).Type
+            })
                               .Where(x => x.Parameter.Type.BaseType?.Name == parameterType)
                               .ToList();
 
@@ -205,8 +231,6 @@ namespace HomeCenter.CodeGeneration
         {
             return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledCommand")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context")))))));
         }
-
-       
 
         private class MethodDescription
         {

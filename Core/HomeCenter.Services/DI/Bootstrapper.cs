@@ -1,24 +1,19 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Configuration;
 using HomeCenter.Core.Quartz;
-using HomeCenter.Core.Services;
-using HomeCenter.Core.Services.I2C;
 using HomeCenter.Core.Services.Roslyn;
 using HomeCenter.Core.Utils;
 using HomeCenter.Messaging;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Configuration;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Services.DI;
-using HomeCenter.Services.Networking;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration
@@ -41,7 +36,7 @@ namespace HomeCenter.Services.Configuration
 
             await RegisterQuartz().ConfigureAwait(false);
 
-            RegisterServices();
+            //RegisterServices();
 
             _container.Verify();
 
@@ -69,17 +64,6 @@ namespace HomeCenter.Services.Configuration
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-        }
-
-        protected virtual void RegisterServices()
-        {
-            var services = new List<Registration>
-            {
-                _container.RegisterService<II2CBusService, I2CBusService>(),
-                _container.RegisterService<IHttpServerService, HttpServerService>()
-            };
-
-            _container.Collection.Register<IService>(services);
         }
 
         private async Task RegisterQuartz()

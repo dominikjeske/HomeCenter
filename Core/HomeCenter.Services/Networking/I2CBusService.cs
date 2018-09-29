@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HomeCenter.Core.Interface.Native;
 using HomeCenter.Core.Services.I2C;
+using HomeCenter.Messaging;
+using HomeCenter.Model.Core;
 using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Core.Services
 {
-    public sealed class I2CBusService : II2CBusService
+    public sealed class I2CBusService : Service, II2CBusService
     {
         private readonly Dictionary<int, II2cDevice> _deviceCache = new Dictionary<int, II2cDevice>();
         private readonly string _busId;
         private readonly II2cBus _nativeI2CBus;
         private readonly ILogger<I2CBusService> _logger;
 
-        public I2CBusService(ILogger<I2CBusService> logger, II2cBus nativeI2CBus)
+        public I2CBusService(ILogger<I2CBusService> logger, II2cBus nativeI2CBus, IEventAggregator eventAggregator) : base(eventAggregator)
         {
             _nativeI2CBus = nativeI2CBus ?? throw new ArgumentNullException(nameof(nativeI2CBus));
             _busId = _nativeI2CBus.GetBusId();

@@ -33,7 +33,7 @@ namespace HomeCenter.Model.Components
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
-        public Component(IEventAggregator eventAggregator, IScheduler scheduler)
+        public Component(IEventAggregator eventAggregator, IScheduler scheduler) : base(eventAggregator)
         {
             _eventAggregator = eventAggregator;
             _scheduler = scheduler;

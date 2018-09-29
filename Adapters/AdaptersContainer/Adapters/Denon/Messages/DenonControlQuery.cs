@@ -1,26 +1,26 @@
-﻿using System.Linq;
-using System.Xml.Linq;
+﻿using HomeCenter.Model.Messages.Queries.Services;
 using System.IO;
-using System;
-using HomeCenter.Core.Interface.Messaging;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
-    internal class DenonControlMessage : HttpMessage
+    internal class DenonControlQuery : HttpQuery
     {
         public string Command { get; set; }
         public string Api { get; set; }
         public string ReturnNode { get; set; }
         public string Zone { get; set; }
 
-        public DenonControlMessage()
+        public override string Address
         {
-            RequestType = "GET";
+            get => MessageAddress();
+            set => base.Address = value;
         }
 
-        public override string MessageAddress() => $"http://{Address}/goform/{Api}.xml?{Zone}{(Zone?.Length == 0 ? "" : "+")}{Command}";
+        private string MessageAddress() => $"http://{Address}/goform/{Api}.xml?{Zone}{(Zone?.Length == 0 ? "" : "+")}{Command}";
 
-        public override object ParseResult(string responseData, Type responseType = null)
+        public string ParseResult(string responseData)
         {
             using (var reader = new StringReader(responseData))
             {

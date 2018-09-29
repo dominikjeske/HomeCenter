@@ -3,7 +3,7 @@ using HTTPnet.Core.Pipeline;
 
 namespace HomeCenter.Services.Networking
 {
-    public interface IHttpServerService : IService
+    public interface IHttpServerService 
     {
         void AddRequestHandler(IHttpContextPipelineHandler handler);
 

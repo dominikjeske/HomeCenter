@@ -57,16 +57,6 @@ namespace HomeCenter.Core.Tests.ComponentModel
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
         }
 
-        protected override void RegisterServices()
-        {
-            var services = new List<Registration>
-            {
-                _container.RegisterService<II2CBusService, I2CBusService>(),
-                _container.RegisterService<IHttpServerService, HttpServerService>()
-            };
-
-            _container.Collection.Register<IService>(services);
-        }
 
         protected override void RegisterNativeServices()
         {

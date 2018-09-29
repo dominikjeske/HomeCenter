@@ -1,4 +1,5 @@
 ﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Messaging;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -66,6 +67,8 @@ namespace HomeCenter.TestRunner
             var console = MetadataReference.CreateFromFile(typeof(Console).Assembly.Location);
             var generator = MetadataReference.CreateFromFile(typeof(ProxyGenerator).Assembly.Location);
             var model = MetadataReference.CreateFromFile(typeof(Query).Assembly.Location);
+            var eventAggregator = MetadataReference.CreateFromFile(typeof(IEventAggregator).Assembly.Location);
+
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
 
@@ -75,7 +78,7 @@ namespace HomeCenter.TestRunner
 
             var comp = CSharpCompilation.Create("Final").WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                                                         .AddSyntaxTrees(syntaxTree.SyntaxTree)
-                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, generator, model)
+                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, generator, model, eventAggregator)
                                                         .AddReferences(external);
 
             var result = comp.Emit("final.dll");

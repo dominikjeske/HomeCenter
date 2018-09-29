@@ -1,9 +1,8 @@
 ﻿using HomeCenter.Core.Interface.Native;
-using HomeCenter.Model.Core;
 
 namespace HomeCenter.Core.Services.I2C
 {
-    public interface II2CBusService : IService
+    public interface II2CBusService
     {
         I2cTransferResult Write(I2CSlaveAddress address, byte[] buffer, bool useCache = true);
 
