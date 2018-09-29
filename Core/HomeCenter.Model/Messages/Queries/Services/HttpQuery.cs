@@ -2,7 +2,7 @@
 {
     public class HttpQuery : Query
     {
-        public virtual string Address { get; set; }
+        public string Address { get; set; }
         public string RequestType { get; set; } = "GET";
     }
 }

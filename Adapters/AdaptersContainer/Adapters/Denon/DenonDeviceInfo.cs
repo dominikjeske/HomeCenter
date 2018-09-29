@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
@@ -15,7 +14,7 @@ namespace HomeCenter.Model.Adapters.Denon
         {
             string input = "";
 
-            // If inputName is renamed value we changed it to orginal
+            // If inputName is renamed value we changed it to original
             if (InputSources.ContainsKey(inputName))
             {
                 inputName = InputSources[inputName];

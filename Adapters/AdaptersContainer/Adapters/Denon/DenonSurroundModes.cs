@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
     internal static class DenonSurroundModes
     {
-        private static Dictionary<string, string> _surroundApiMap;
-        private static Dictionary<string, string> _surroundResultMap;
+        private static readonly Dictionary<string, string> _surroundApiMap;
+        private static readonly Dictionary<string, string> _surroundResultMap;
 
         public static string MapApiCommand(string surroundMode)
         {

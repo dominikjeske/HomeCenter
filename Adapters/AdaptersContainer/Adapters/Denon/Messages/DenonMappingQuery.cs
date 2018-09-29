@@ -1,23 +1,13 @@
-﻿using HomeCenter.Model.Messages.Queries.Services;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Queries.Services;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
-    internal class DenonMappingQuery : HttpQuery
+    internal class DenonMappingQuery : HttpQuery, IFormatableMessage<DenonMappingQuery>
     {
-        public override string Address
-        {
-            get => MessageAddress();
-            set => base.Address = value;
-        }
-
-        private string MessageAddress()
-        {
-            return $"http://{Address}/goform/formMainZone_MainZoneXml.xml";
-        }
-
         public DenonDeviceInfo ParseResult(string responseData)
         {
             using (var reader = new StringReader(responseData))
@@ -30,6 +20,13 @@ namespace HomeCenter.Model.Adapters.Denon
                     InputMap = xml.Descendants("VideoSelectLists").Descendants("value").ToDictionary(y => y.Attribute("table").Value, x => x.Attribute("index").Value)
                 };
             }
+        }
+
+        public DenonMappingQuery FormatMessage()
+        {
+            Address = $"http://{Address}/goform/formMainZone_MainZoneXml.xml";
+
+            return this;
         }
     }
 }
