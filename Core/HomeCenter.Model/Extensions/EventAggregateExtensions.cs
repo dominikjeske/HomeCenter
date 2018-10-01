@@ -138,7 +138,5 @@ namespace HomeCenter.Model.Extensions
         {
             return eventAggregator.Publish(message, new RoutingFilter(message.Uid));
         }
-
-       
     }
 }

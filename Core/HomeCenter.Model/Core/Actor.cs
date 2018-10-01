@@ -126,7 +126,7 @@ namespace HomeCenter.Model.Core
             return Task.CompletedTask;
         }
 
-        private void SubscribeForCommand<T>(RoutingFilter filter = null, IContext parent = null) where T : Command
+        protected void SubscribeForCommand<T>(RoutingFilter filter = null, IContext parent = null) where T : Command
         {
             _disposables.Add
             (
@@ -134,7 +134,7 @@ namespace HomeCenter.Model.Core
             );
         }
 
-        private void SubscribeForQuery<T, R>(RoutingFilter filter = null, IContext parent = null) where T : Query
+        protected void SubscribeForQuery<T, R>(RoutingFilter filter = null, IContext parent = null) where T : Query
         {
             _disposables.Add
             (

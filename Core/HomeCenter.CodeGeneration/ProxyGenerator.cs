@@ -57,7 +57,7 @@ namespace HomeCenter.CodeGeneration
 
                     foreach (var method in methods)
                     {
-                        var registration = ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Extensions")), IdentifierName("EventAggregateExtensions")), GenericName(Identifier("SubscribeForActorCommand")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))))).WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName("_eventAggregator")), Token(SyntaxKind.CommaToken), Argument(IdentifierName("Self")) }))));
+                        var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("SubscribeForCommand")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
 
                         statementSyntaxes.Add(registration);
                     }
