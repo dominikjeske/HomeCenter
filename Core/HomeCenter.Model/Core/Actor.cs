@@ -1,15 +1,18 @@
 ﻿using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Messaging;
-using HomeCenter.Model.Core;
+using HomeCenter.Messaging.Exceptions;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Model.Messages.Queries.Services;
 using Proto;
 using Proto.Mailbox;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-
     public abstract class Actor : BaseObject, IDisposable, IActor
     {
         public PID Self { get; private set; }
@@ -24,7 +27,7 @@ namespace HomeCenter.Model.Core
         {
             _eventAggregator = eventAggregator;
         }
-        
+
         protected virtual Task UnhandledCommand(Proto.IContext command)
         {
             if (command.Message is ActorMessage actorMessage)
@@ -123,6 +126,44 @@ namespace HomeCenter.Model.Core
             return Task.CompletedTask;
         }
 
+        private void SubscribeForCommand<T>(RoutingFilter filter = null, IContext parent = null) where T : Command
+        {
+            _disposables.Add
+            (
+                _eventAggregator.Subscribe<T>(message => (parent ?? (IContext)RootContext.Empty).Send(Self, message.Message), filter)
+            );
+        }
+
+        private void SubscribeForQuery<T, R>(RoutingFilter filter = null, IContext parent = null) where T : Query
+        {
+            _disposables.Add
+            (
+                _eventAggregator.SubscribeForAsyncResult<T>(async message =>
+                {
+                    var result = await (parent ?? (IContext)RootContext.Empty).RequestAsync<R>(Self, message.Message, message.CancellationToken).ConfigureAwait(false);
+                    return result;
+                }, filter)
+            );
+        }
+
+        protected Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
+                                                                                   where R : class
+        {
+            if (query is IFormatableMessage<T> formatableMessage)
+            {
+                query = formatableMessage.FormatMessage();
+            }
+
+            return _eventAggregator.QueryAsync<T, R>(query, filter);
+        }
+
+        protected async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
+                                                                                                                           where Q : class
+                                                                                                                           where R : class
+        {
+            var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
+            return query.Verify(result, expectedResult);
+        }
 
         //TODO invoke in proxy
         //private void AssertActorState()

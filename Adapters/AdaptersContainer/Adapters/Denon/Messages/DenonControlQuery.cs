@@ -6,18 +6,24 @@ using System.Xml.Linq;
 
 namespace HomeCenter.Model.Adapters.Denon
 {
-    internal class DenonControlQuery : HttpQuery, IFormatableMessage<DenonControlQuery>
+    internal class DenonControlQuery : HttpQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, string>
     {
         public string Command { get; set; }
         public string Api { get; set; }
         public string ReturnNode { get; set; }
         public string Zone { get; set; }
 
-        public string ParseResult(string responseData)
+        public bool Verify(string input, string expectedResult)
         {
-            using (var reader = new StringReader(responseData))
+            var parsed = Parse(input);
+            return expectedResult == parsed;
+        }
+
+        public string Parse(string input)
+        {
+            using (var reader = new StringReader(input))
             {
-                if (responseData?.Length == 0 && ReturnNode?.Length == 0) return "";
+                if (input?.Length == 0 && ReturnNode?.Length == 0) return "";
 
                 var xml = XDocument.Load(reader);
                 var returnNode = xml.Descendants(ReturnNode).FirstOrDefault();
@@ -28,7 +34,6 @@ namespace HomeCenter.Model.Adapters.Denon
         public DenonControlQuery FormatMessage()
         {
             Address = $"http://{Address}/goform/{Api}.xml?{Zone}{(Zone?.Length == 0 ? "" : "+")}{Command}";
-
             return this;
         }
     }

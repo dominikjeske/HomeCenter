@@ -139,12 +139,6 @@ namespace HomeCenter.Model.Extensions
             return eventAggregator.Publish(message, new RoutingFilter(message.Uid));
         }
 
-        public static IDisposable SubscribeForActorCommand<T>(this IEventAggregator eventAggregator, PID actor, IContext parent = null, RoutingFilter filter = null) where T : Command
-        {
-            return eventAggregator.Subscribe<T>(message =>
-            {
-                (parent ?? (IContext)RootContext.Empty).Send(actor, message.Message);
-            }, filter);
-        }
+       
     }
 }

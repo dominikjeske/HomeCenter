@@ -1,13 +1,13 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Core.Extensions;
-using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -31,7 +31,6 @@ namespace HomeCenter.Model.Adapters.Denon
 
         protected DenonAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
-
         }
 
         protected override async Task OnStarted(IContext context)
@@ -50,8 +49,8 @@ namespace HomeCenter.Model.Adapters.Denon
 
         protected async Task Refresh(RefreshCommand message)
         {
-            _fullState = await _eventAggregator.QueryAsync<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
-            var mapping = await _eventAggregator.QueryAsync<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
+            _fullState = await QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
+            var mapping = await QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
             _fullState.FriendlyName = mapping.FriendlyName;
             _fullState.InputMap = mapping.InputMap;
             _surround = _fullState.Surround;
@@ -59,11 +58,13 @@ namespace HomeCenter.Model.Adapters.Denon
 
         protected async Task RefreshLight(RefreshLightCommand message)
         {
-            var state = await _eventAggregator.QueryAsync<DenonStatusLightQuery, DenonStatus>(new DenonStatusLightQuery
+            var statusQuery = new DenonStatusLightQuery
             {
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }).ConfigureAwait(false);
+            };
+
+            var state = await QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery).ConfigureAwait(false);
 
             _input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
             _volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
@@ -83,28 +84,36 @@ namespace HomeCenter.Model.Adapters.Denon
 
         protected async Task TurnOn(TurnOnCommand message)
         {
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = "PowerOn",
                 Api = "formiPhoneAppPower",
                 ReturnNode = "Power",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }, "ON").ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
+            };
+
+            if (await QueryServiceWithVerify<DenonControlQuery, string, string>(control, "ON").ConfigureAwait(false))
+            {
+                _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
+            }
         }
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = "PowerStandby",
                 Api = "formiPhoneAppPower",
                 ReturnNode = "Power",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }, "OFF").ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            };
+
+            if (await QueryServiceWithVerify<DenonControlQuery, string, string>(control, "OFF").ConfigureAwait(false))
+            {
+                _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            }
         }
 
         protected async Task VolumeUp(VolumeUpCommand command)
@@ -112,16 +121,17 @@ namespace HomeCenter.Model.Adapters.Denon
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
             var normalized = NormalizeVolume(volume);
 
-            // Results are unpredictyble so we ignore them
-            await _eventAggregator.QueryAsync<DenonControlQuery, string>(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = normalized,
                 Api = "formiPhoneAppVolume",
                 ReturnNode = "MasterVolume",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }).ConfigureAwait(false);
+            };
 
+            // Results are unpredictable so we ignore them
+            await QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
@@ -130,15 +140,17 @@ namespace HomeCenter.Model.Adapters.Denon
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
             var normalized = NormalizeVolume(volume);
 
-            await _eventAggregator.QueryAsync<DenonControlQuery, string>(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = normalized,
                 Api = "formiPhoneAppVolume",
                 ReturnNode = "MasterVolume",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }).ConfigureAwait(false);
+            };
 
+            // Results are unpredictable so we ignore them
+            await QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
@@ -147,15 +159,16 @@ namespace HomeCenter.Model.Adapters.Denon
             var volume = command[CommandProperties.Value].AsDouble();
             var normalized = NormalizeVolume(volume);
 
-            await _eventAggregator.QueryAsync<DenonControlQuery, string>(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = normalized,
                 Api = "formiPhoneAppVolume",
                 ReturnNode = "MasterVolume",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }).ConfigureAwait(false);
+            };
 
+            await QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
@@ -169,30 +182,36 @@ namespace HomeCenter.Model.Adapters.Denon
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = "MuteOn",
                 Api = "formiPhoneAppMute",
                 ReturnNode = "Mute",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }, "on").ConfigureAwait(false);
+            };
 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
+            if (await QueryServiceWithVerify<DenonControlQuery, string, string>(control, "on").ConfigureAwait(false))
+            {
+                _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
+            }
         }
 
         protected async Task UnMute(UnmuteCommand message)
         {
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = "MuteOff",
                 Api = "formiPhoneAppMute",
                 ReturnNode = "Mute",
                 Address = _hostName,
                 Zone = _zone.ToString()
-            }, "off").ConfigureAwait(false);
+            };
 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
+            if (await QueryServiceWithVerify<DenonControlQuery, string, string>(control, "off").ConfigureAwait(false))
+            {
+                _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
+            }
         }
 
         protected async Task SetInput(InputSetCommand message)
@@ -202,15 +221,16 @@ namespace HomeCenter.Model.Adapters.Denon
             var input = _fullState.TranslateInputName(inputName, _zone.ToString());
             if (input?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = input,
                 Api = "formiPhoneAppDirect",
                 ReturnNode = "",
                 Zone = "",
                 Address = _hostName
-            }, "").ConfigureAwait(false);
+            };
 
+            await QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
             //TODO Check if this value is ok - confront with pooled state
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
@@ -223,15 +243,16 @@ namespace HomeCenter.Model.Adapters.Denon
             var mode = DenonSurroundModes.MapApiCommand(surroundMode);
             if (mode?.Length == 0) throw new UnsupportedPropertyStateException($"Surroundmode {mode} was not found on available surround modes");
 
-            await _eventAggregator.QueryWithResultCheckAsync(new DenonControlQuery
+            var control = new DenonControlQuery
             {
                 Command = mode,
                 Api = "formiPhoneAppDirect",
                 ReturnNode = "",
                 Zone = "",
                 Address = _hostName
-            }, "").ConfigureAwait(false);
+            };
 
+            await QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
             //TODO Check if this value is ok - confront with pooled state
             _surround = await UpdateState(SurroundSoundState.StateName, _surround, surroundMode).ConfigureAwait(false);
         }
