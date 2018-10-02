@@ -1,6 +1,6 @@
-﻿using HomeCenter.WindowsService.Interop;
+﻿using HomeCenter.WindowsService.Core.Interop.Enum;
 
-namespace HomeCenter.WindowsService.Core
+namespace HomeCenter.WindowsService.Core.Display
 {
     public static class EnumExtension
     {

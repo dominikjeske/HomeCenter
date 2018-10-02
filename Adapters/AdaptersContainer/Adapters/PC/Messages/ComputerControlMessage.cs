@@ -1,8 +1,8 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using Newtonsoft.Json;
 
-namespace HomeCenter.Model.Adapters.Pc
+namespace HomeCenter.Adapters.PC.Messages
 {
     public class ComputerControlCommand : HttpCommand, IFormatableMessage<ComputerControlCommand>
     {

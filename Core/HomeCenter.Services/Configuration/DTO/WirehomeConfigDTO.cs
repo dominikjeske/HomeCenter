@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HomeCenter.Core.ComponentModel.Configuration
+namespace HomeCenter.Services.Configuration.DTO
 {
     public class HomeCenterConfigDTO
     {

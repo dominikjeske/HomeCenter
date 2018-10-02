@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using HomeCenter.Alexa.Model.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using HomeCenter.Alexa.Model.Common;
 
 namespace HomeCenter.Alexa.Model.Power
 {
@@ -50,7 +50,6 @@ namespace HomeCenter.Alexa.Model.Power
         public IList<Property> Properties { get; set; }
     }
 
-
     public class SimpleEndpoint
     {
         [JsonProperty("scope")]
@@ -59,6 +58,4 @@ namespace HomeCenter.Alexa.Model.Power
         [JsonProperty("endpointId")]
         public string EndpointId { get; set; }
     }
-
-
 }

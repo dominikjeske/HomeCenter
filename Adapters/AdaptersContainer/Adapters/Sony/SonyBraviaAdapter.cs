@@ -1,18 +1,19 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.Sony.Messages;
+using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Sony
+namespace HomeCenter.Adapters.Sony
 {
     // TODO test when power off
     [ProxyCodeGenerator]
@@ -51,7 +52,6 @@ namespace HomeCenter.Model.Adapters.Sony
 
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
-
 
         protected async Task Refresh(RefreshCommand message)
         {

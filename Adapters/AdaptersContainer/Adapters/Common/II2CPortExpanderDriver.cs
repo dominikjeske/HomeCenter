@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Adapters.Drivers
+﻿namespace HomeCenter.Adapters.Common
 {
     public interface II2CPortExpanderDriver
     {

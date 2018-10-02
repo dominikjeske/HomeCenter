@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Adapters.Pc
+﻿namespace HomeCenter.WindowsService.Core.Power
 {
     public enum ComputerPowerState
     {

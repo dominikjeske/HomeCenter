@@ -1,23 +1,24 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Exceptions;
+using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Interop;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using HomeCenter.WindowsService.Core.Exceptions;
-using HomeCenter.WindowsService.Interop;
 
-namespace HomeCenter.WindowsService.Services
+namespace HomeCenter.WindowsService.Core.Services
 {
     public class ProcessService : IProcessService
     {
         public void StartProcess(string path, bool restoreWhenRunning = true)
         {
-            if(!File.Exists(path)) throw new ProcessNotFoundException($"Process {path} cannot be found on PC");
+            if (!File.Exists(path)) throw new ProcessNotFoundException($"Process {path} cannot be found on PC");
 
-            if(restoreWhenRunning)
+            if (restoreWhenRunning)
             {
                 var process = GetActiveProcess(Path.GetFileNameWithoutExtension(path));
-                if(process.Any())
+                if (process.Any())
                 {
                     BringProcessToFront(process.FirstOrDefault());
                     return;
@@ -30,7 +31,7 @@ namespace HomeCenter.WindowsService.Services
         {
             var active = GetActiveProcess(Path.GetFileNameWithoutExtension(name));
 
-            if(active.Any())
+            if (active.Any())
             {
                 Process.GetProcessById(active.FirstOrDefault().PID)?.Kill();
             }
@@ -40,15 +41,15 @@ namespace HomeCenter.WindowsService.Services
         {
             return GetActiveProcess(Path.GetFileNameWithoutExtension(processName)).Any();
         }
-     
+
         private IEnumerable<ProcessDetails> GetActiveProcess(string processIndicator)
         {
             var activeProcess = Process.GetProcesses().Select(x => new ProcessDetails
-                                                                   {
-                                                                       ProcessName = x.ProcessName,
-                                                                       PID = x.Id,
-                                                                       MainWindowHandle = x.MainWindowHandle
-                                                                   }
+            {
+                ProcessName = x.ProcessName,
+                PID = x.Id,
+                MainWindowHandle = x.MainWindowHandle
+            }
             ).ToList();
 
             var list = new List<ProcessDetails>();

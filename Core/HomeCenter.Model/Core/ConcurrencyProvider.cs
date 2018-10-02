@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Concurrency;
 
-namespace HomeCenter.Motion.Model
+namespace HomeCenter.Model.Core
 {
     public class ConcurrencyProvider : IConcurrencyProvider
     {
@@ -10,6 +10,7 @@ namespace HomeCenter.Motion.Model
             Task = TaskPoolScheduler.Default;
             Thread = NewThreadScheduler.Default;
         }
+
         public IScheduler Scheduler { get; }
         public IScheduler Task { get; }
         public IScheduler Thread { get; }

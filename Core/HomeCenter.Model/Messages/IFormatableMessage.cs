@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Core
+﻿namespace HomeCenter.Model.Messages
 {
     public interface IFormatableMessage<T>
     {

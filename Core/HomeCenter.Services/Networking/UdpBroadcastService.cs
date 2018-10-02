@@ -1,4 +1,4 @@
-﻿using HomeCenter.Messaging;
+﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using Microsoft.Extensions.Logging;
@@ -6,7 +6,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.Services
+namespace HomeCenter.Services.Networking
 {
     public class UdpBroadcastService : Service
     {

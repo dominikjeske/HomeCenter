@@ -1,15 +1,14 @@
-﻿using HomeCenter.Model.Adapters.Drivers;
+﻿using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Services.I2C;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Native;
+using HomeCenter.Model.ValueTypes;
+using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;
@@ -19,7 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters
+namespace HomeCenter.Adapters.Common
 {
     public abstract class CCToolsBaseAdapter : Adapter
     {
@@ -111,7 +110,8 @@ namespace HomeCenter.Model.Adapters
                 var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, new BooleanValue(oldPinState),
                                             new BooleanValue(newPinState), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(i) } });
 
-                await _eventAggregator.PublishDeviceEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
+                //TODO DNF
+                //await _eventAggregator.PublishDeviceEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 
                 _log.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }

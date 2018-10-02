@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.WindowsService.Interop
+﻿namespace HomeCenter.WindowsService.Core.Interop.Enum
 {
     /// <summary>
     /// Use this enum so that you don't have to hardcode magic values.

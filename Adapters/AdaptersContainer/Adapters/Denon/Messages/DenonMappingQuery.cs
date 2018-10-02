@@ -1,10 +1,10 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace HomeCenter.Model.Adapters.Denon
+namespace HomeCenter.Adapters.Denon.Messages
 {
     internal class DenonMappingQuery : HttpQuery, IFormatableMessage<DenonMappingQuery>
     {

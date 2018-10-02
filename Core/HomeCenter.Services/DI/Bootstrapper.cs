@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
-using HomeCenter.Core.Quartz;
-using HomeCenter.Core.Services.Roslyn;
-using HomeCenter.Core.Utils;
-using HomeCenter.Messaging;
+using HomeCenter.Broker;
 using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Configuration;
-using HomeCenter.Model.Core;
-using HomeCenter.Services.DI;
+using HomeCenter.Services.Configuration;
+using HomeCenter.Services.Controllers;
+using HomeCenter.Services.Quartz;
+using HomeCenter.Services.Roslyn;
+using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Quartz;
@@ -16,7 +15,7 @@ using SimpleInjector;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.Configuration
+namespace HomeCenter.Services.DI
 {
     public abstract class Bootstrapper : IBootstrapper
     {

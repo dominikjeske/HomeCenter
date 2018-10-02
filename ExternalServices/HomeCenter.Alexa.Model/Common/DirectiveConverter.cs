@@ -1,16 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using HomeCenter.Alexa.Model.Discovery;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using HomeCenter.Alexa.Model.Discovery;
 
 namespace HomeCenter.Alexa.Model.Common
 {
     public class DirectiveConverter : JsonConverter
     {
         public override bool CanWrite => false;
+
         public override bool CanConvert(Type objectType) => true;
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
-        
+
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jObject = JObject.Load(reader);
@@ -41,13 +43,13 @@ namespace HomeCenter.Alexa.Model.Common
             {
                 throw new InvalidOperationException("Unsupported smart home request: " + jObject);
             }
-            
+
             return directive;
         }
 
         private Payload ReadPayload(string headerName, JObject jObject)
         {
-            if(headerName == "Discover")
+            if (headerName == "Discover")
             {
                 return jObject["payload"]?.ToObject<PayloadWithScope>();
             }

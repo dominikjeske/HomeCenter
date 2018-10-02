@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.WindowsService.Interop
+﻿namespace HomeCenter.WindowsService.Core.Interop
 {
     public static class HResult
     {

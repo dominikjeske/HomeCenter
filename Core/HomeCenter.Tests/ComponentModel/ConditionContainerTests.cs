@@ -1,10 +1,10 @@
-﻿using Microsoft.Reactive.Testing;
+﻿using HomeCenter.Model.Conditions;
+using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Threading.Tasks;
-using HomeCenter.Conditions;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.ComponentModel
 {
     [TestClass]
     public class ConditionContainerTests : ReactiveTest
@@ -54,7 +54,6 @@ namespace HomeCenter.Extensions.Tests
             container.Conditions.Add(c1);
             container.Conditions.Add(c2);
             container.Expression = "C1 and (not C2)";
-
 
             var result = await container.Validate().ConfigureAwait(false);
 

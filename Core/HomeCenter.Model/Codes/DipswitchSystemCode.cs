@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Core.Hardware.RemoteSockets
+namespace HomeCenter.Model.Codes
 {
     [Flags]
     public enum DipswitchSystemCode

@@ -1,9 +1,9 @@
-﻿using HomeCenter.Model.Components;
-using HomeCenter.Core.ComponentModel.Areas;
+﻿using HomeCenter.Model.Areas;
+using HomeCenter.Model.Components;
 using Proto;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Configuration
+namespace HomeCenter.Services.Configuration
 {
     public class HomeCenterConfiguration
     {

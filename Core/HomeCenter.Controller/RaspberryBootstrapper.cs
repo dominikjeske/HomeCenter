@@ -1,7 +1,4 @@
-﻿using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Raspberry;
-using HomeCenter.Services.Configuration;
+﻿using HomeCenter.Services.Configuration;
 
 namespace HomeCenter.Controller
 {

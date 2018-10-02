@@ -1,10 +1,10 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HomeCenter.Model.Adapters.Samsung
+namespace HomeCenter.Adapters.Samsung.Messages
 {
     public class SamsungControlCommand : TcpCommand, IFormatableMessage<SamsungControlCommand>
     {

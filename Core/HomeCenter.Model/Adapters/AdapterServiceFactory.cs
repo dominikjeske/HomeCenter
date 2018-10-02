@@ -1,5 +1,5 @@
-﻿using HomeCenter.Messaging;
-using HomeCenter.Core.Services.I2C;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
@@ -29,7 +29,5 @@ namespace HomeCenter.Model.Adapters
         public IEventAggregator GetEventAggregator() => _eventAggregator;
 
         public IScheduler GetScheduler() => _scheduler;
-
-        
     }
 }

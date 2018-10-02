@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using HomeCenter.WindowsService.Core.Interop.Enum;
+using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     [ComImport]
     [Guid("F8679F50-850A-41CF-9C72-430F290290C8")]

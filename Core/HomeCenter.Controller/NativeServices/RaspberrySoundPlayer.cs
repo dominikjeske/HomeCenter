@@ -1,9 +1,8 @@
-﻿using Windows.Media.Playback;
+﻿using System;
 using Windows.Media.Core;
-using System;
-using HomeCenter.Core.Interface.Native;
+using Windows.Media.Playback;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class RaspberrySoundPlayer : ISoundPlayer
     {

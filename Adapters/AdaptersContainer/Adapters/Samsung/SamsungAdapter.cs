@@ -1,16 +1,17 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.Samsung.Messages;
+using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Samsung
+namespace HomeCenter.Adapters.Samsung
 {
     [ProxyCodeGenerator]
     public abstract class SamsungAdapter : Adapter

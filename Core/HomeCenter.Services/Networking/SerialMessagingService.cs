@@ -1,8 +1,8 @@
-﻿using HomeCenter.Core.Interface.Native;
-using HomeCenter.Messaging;
+﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.Services
+namespace HomeCenter.Services.Networking
 {
     public class SerialMessagingService : Service
     {

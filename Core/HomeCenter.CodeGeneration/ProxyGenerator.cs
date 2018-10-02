@@ -119,7 +119,7 @@ namespace HomeCenter.CodeGeneration
 
         public StatementSyntax FillContextData()
         {
-            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("HomeCenter.Model.Core.ActorMessage"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("HomeCenter.Model.Messages.ActorMessage"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
         }
 
         private StatementSyntax GetQueryInvocationBody(string handlerName, string paramName, string returnType)

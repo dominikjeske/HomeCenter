@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Messages.Commands;
-
-namespace HomeCenter.Model.Messages.Commands.Service
+﻿namespace HomeCenter.Model.Messages.Commands.Service
 {
     public class UdpCommand : Command
     {

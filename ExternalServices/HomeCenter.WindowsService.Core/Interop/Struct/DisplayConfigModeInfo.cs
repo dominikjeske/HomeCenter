@@ -1,7 +1,7 @@
+using HomeCenter.WindowsService.Core.Interop.Enum;
 using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Interop;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop.Struct
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct DisplayConfigModeInfo

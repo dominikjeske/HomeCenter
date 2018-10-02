@@ -2,7 +2,6 @@
 {
     public static class CommandProperties
     {
-        public const string CommandSource = nameof(CommandSource);
         public const string IsFinishComand = nameof(IsFinishComand);
         public const string ExecutionDelay = nameof(ExecutionDelay);
         public const string CancelPrevious = nameof(CancelPrevious);

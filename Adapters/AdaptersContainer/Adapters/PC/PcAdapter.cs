@@ -1,16 +1,18 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.PC.Messages;
+using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;
+using HomeCenter.Adapters.PC.Model;
 using Proto;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Pc
+namespace HomeCenter.Adapters.PC
 {
     [ProxyCodeGenerator]
     public abstract class PcAdapter : Adapter

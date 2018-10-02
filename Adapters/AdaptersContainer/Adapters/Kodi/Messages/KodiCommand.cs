@@ -1,10 +1,11 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Adapters.Kodi.Messages.JsonModels;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using Newtonsoft.Json;
 using System;
 
-namespace HomeCenter.Model.Adapters.Kodi
+namespace HomeCenter.Adapters.Kodi.Messages
 {
     //https://github.com/FabienLavocat/kodi-remote/tree/master/src/KodiRemote.Core
     //https://github.com/akshay2000/XBMCRemoteRT/blob/master/XBMCRemoteRT/XBMCRemoteRT.Shared/RPCWrappers/Player.cs
@@ -39,7 +40,7 @@ namespace HomeCenter.Model.Adapters.Kodi
 
             return this;
         }
-        
+
         public string ParseResult(string responseData, Type responseType = null)
         {
             var result = JsonConvert.DeserializeObject<JsonRpcResponse>(responseData);

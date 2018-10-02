@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace HomeCenter.WindowsService.Core
+namespace HomeCenter.WindowsService.Core.Display
 {
     public struct DisplaySettings
     {

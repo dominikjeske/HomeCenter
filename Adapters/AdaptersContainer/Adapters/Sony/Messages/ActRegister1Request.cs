@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HomeCenter.Model.Adapters.Sony
+namespace HomeCenter.Adapters.Sony.Messages
 {
     public class ActRegister1Request
     {

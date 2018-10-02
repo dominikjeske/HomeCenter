@@ -1,7 +1,8 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Interop.Enum;
+using System;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     [Guid("D666063F-1587-4E43-81F1-B948E807363F")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.Core.Services.DependencyInjection;
-
-namespace HomeCenter.Model.Configuration
+﻿namespace HomeCenter.Services.Configuration
 {
     public interface IConfigurationService
     {

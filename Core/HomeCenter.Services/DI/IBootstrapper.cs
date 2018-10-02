@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.Configuration
+namespace HomeCenter.Services.DI
 {
     public interface IBootstrapper : IDisposable
     {

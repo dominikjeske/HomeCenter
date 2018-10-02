@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HomeCenter.Model.Adapters.Pc;
-using HomeCenter.WindowsService.Services;
+﻿using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Power;
+using HomeCenter.Adapters.PC.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HomeCenter.WindowsService.Controllers
 {
@@ -19,7 +20,7 @@ namespace HomeCenter.WindowsService.Controllers
         {
             return true;
         }
-        
+
         [HttpPost]
         public IActionResult Post([FromBody] PowerPost value)
         {

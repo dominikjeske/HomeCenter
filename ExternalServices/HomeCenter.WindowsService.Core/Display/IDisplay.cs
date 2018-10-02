@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.WindowsService.Core
+﻿namespace HomeCenter.WindowsService.Core.Display
 {
     public interface IDisplay
     {

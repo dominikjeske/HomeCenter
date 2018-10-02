@@ -1,4 +1,3 @@
-
 {
     "Information" : [
         "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",

@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using Newtonsoft.Json;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace HomeCenter.Model.Adapters.Sony
+namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyRegisterCommand : HttpCommand, IFormatableMessage<SonyRegisterCommand>
     {

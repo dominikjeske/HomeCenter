@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Core.Interface.Native
+﻿namespace HomeCenter.Model.Native
 {
     public interface IStorage
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop.Enum
 {
     [Flags]
     public enum DisplayConfigTopologyId : uint

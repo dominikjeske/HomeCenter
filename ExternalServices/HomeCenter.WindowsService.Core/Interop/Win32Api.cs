@@ -1,7 +1,9 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Interop.Enum;
+using HomeCenter.WindowsService.Core.Interop.Struct;
+using System;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     public static partial class Win32Api
     {
@@ -69,6 +71,7 @@ namespace HomeCenter.WindowsService.Interop
 
         [DllImport("User32.dll")]
         private static extern StatusCode DisplayConfigSetDeviceInfo(IntPtr requestPacket);
+
         public static StatusCode DisplayConfigSetDeviceInfo<T>(ref T displayConfig) where T : IDisplayConfigInfo
         {
             return MarshalStructureAndCall(ref displayConfig, DisplayConfigSetDeviceInfo);
@@ -76,6 +79,7 @@ namespace HomeCenter.WindowsService.Interop
 
         [DllImport("User32.dll")]
         private static extern StatusCode DisplayConfigGetDeviceInfo(IntPtr requestPacket);
+
         public static StatusCode DisplayConfigGetDeviceInfo<T>(ref T displayConfig) where T : IDisplayConfigInfo
         {
             return MarshalStructureAndCall(ref displayConfig, DisplayConfigGetDeviceInfo);
@@ -131,7 +135,7 @@ namespace HomeCenter.WindowsService.Interop
         public const uint FORMAT_MESSAGE_FROM_SYSTEM = 0x1000;
         public const uint FORMAT_MESSAGE_FLAGS = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM;
 
-        private static StatusCode MarshalStructureAndCall<T>(ref T displayConfig,  Func<IntPtr, StatusCode> func) where T : IDisplayConfigInfo
+        private static StatusCode MarshalStructureAndCall<T>(ref T displayConfig, Func<IntPtr, StatusCode> func) where T : IDisplayConfigInfo
         {
             var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(displayConfig));
             Marshal.StructureToPtr(displayConfig, ptr, false);

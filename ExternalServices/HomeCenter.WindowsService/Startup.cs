@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NLog.Web;
-using Microsoft.AspNetCore.Http;
 using NLog.Extensions.Logging;
-using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
+using NLog.Web;
 using NSwag.AspNetCore;
+using System.Net;
 using System.Reflection;
-using HomeCenter.WindowsService.Core;
-using HomeCenter.WindowsService.Services;
 
 namespace HomeCenter.WindowsService
 {
@@ -52,22 +52,22 @@ namespace HomeCenter.WindowsService
 
             app.UseExceptionHandler(options =>
             {
-                 options.Run(
-                 async context =>
-                 {
-                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                     context.Response.ContentType = "text/html";
-                     var ex = context.Features.Get<IExceptionHandlerFeature>();
-                     if (ex != null)
-                     {
-                         var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
-                         await context.Response.WriteAsync(err).ConfigureAwait(false);
-                     }
+                options.Run(
+                async context =>
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    context.Response.ContentType = "text/html";
+                    var ex = context.Features.Get<IExceptionHandlerFeature>();
+                    if (ex != null)
+                    {
+                        var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
+                        await context.Response.WriteAsync(err).ConfigureAwait(false);
+                    }
 
-                     var logger = loggerFactory.CreateLogger("GlobalExceptionHandler");
-                     logger.LogError(ex.Error, "Unhandled Excteption");
-                 });
-             }
+                    var logger = loggerFactory.CreateLogger("GlobalExceptionHandler");
+                    logger.LogError(ex.Error, "Unhandled Excteption");
+                });
+            }
             );
 
             app.UseMvc();

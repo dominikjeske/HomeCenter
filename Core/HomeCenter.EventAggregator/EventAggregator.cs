@@ -1,7 +1,7 @@
-﻿using HomeCenter.Core.Extensions;
-using HomeCenter.Messaging.Behaviors;
-using HomeCenter.Messaging.Exceptions;
-using HomeCenter.Messaging.Handlers;
+﻿using HomeCenter.Broker.Behaviors;
+using HomeCenter.Broker.Exceptions;
+using HomeCenter.Broker.Handlers;
+using HomeCenter.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 // 4. Filter key-value
 
 //TODO: Add dynamic handlers - types that are not registered as singleton to make instance of that type and invoke on publish
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public sealed class EventAggregator : IEventAggregator, IDisposable
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Core.Hardware.RemoteSockets
+namespace HomeCenter.Model.Codes
 {
     public class DipswitchCode : IEquatable<DipswitchCode>
     {
@@ -21,11 +21,10 @@ namespace HomeCenter.Core.Hardware.RemoteSockets
         public uint Code => _code;
 
         public static DipswitchCode ParseCode(string system, string unit, string command) =>
-                     new DipswitchCode((DipswitchSystemCode)Enum.Parse(typeof(DipswitchSystemCode), system), 
-                                       (DipswitchUnitCode)Enum.Parse(typeof(DipswitchUnitCode), unit), 
+                     new DipswitchCode((DipswitchSystemCode)Enum.Parse(typeof(DipswitchSystemCode), system),
+                                       (DipswitchUnitCode)Enum.Parse(typeof(DipswitchUnitCode), unit),
                                        (RemoteSocketCommand)Enum.Parse(typeof(RemoteSocketCommand), command)
                                       );
-        
 
         public static DipswitchCode ParseCode(uint code)
         {
@@ -137,7 +136,6 @@ namespace HomeCenter.Core.Hardware.RemoteSockets
             return mask;
         }
 
-        
         private static uint SetSystemCode(uint code, DipswitchSystemCode systemCode)
         {
             // A LOW switch is binary 10 and a HIGH switch is binary 00.
@@ -235,8 +233,6 @@ namespace HomeCenter.Core.Hardware.RemoteSockets
             return code;
         }
 
-
-
         public bool Equals(DipswitchCode other)
         {
             return AreEqual(this, other);
@@ -291,5 +287,4 @@ namespace HomeCenter.Core.Hardware.RemoteSockets
     //00000000|00010001000|1010001|010100 = 1119316 C OFF
     //00000000|00010001000|1010100|010001 = 1119505 D ON
     //00000000|00010001000|1010100|010100 = 1119508 D OFF
-
 }

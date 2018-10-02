@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HomeCenter.Model.Capabilities.Constants
+﻿namespace HomeCenter.Model.Capabilities.Constants
 {
     public static class Capabilities
     {

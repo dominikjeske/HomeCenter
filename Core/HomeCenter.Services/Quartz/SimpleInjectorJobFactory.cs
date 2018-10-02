@@ -3,7 +3,7 @@ using Quartz.Spi;
 using SimpleInjector;
 using System;
 
-namespace HomeCenter.Core.Quartz
+namespace HomeCenter.Services.Quartz
 {
     public class SimpleInjectorJobFactory : IJobFactory
     {

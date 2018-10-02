@@ -36,6 +36,4 @@ namespace HomeCenter.TestRunner
             }
         }
     }
-
-   
 }

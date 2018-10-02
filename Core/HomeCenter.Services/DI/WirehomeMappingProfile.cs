@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
+using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
-using HomeCenter.Conditions;
-using HomeCenter.Core.ComponentModel.Areas;
-using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Core.Utils;
+using HomeCenter.Model.Triggers;
+using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HomeCenter.Core.Services.DependencyInjection
+namespace HomeCenter.Services.DI
 {
     public class HomeCenterMappingProfile : Profile
     {
@@ -26,13 +28,11 @@ namespace HomeCenter.Core.Services.DependencyInjection
             CreateMap<ConditionContainerDTO, ConditionContainer>().ForMember(s => s.Conditions, d => d.ResolveUsing<ConditionResolver>()).ConstructUsingServiceLocator();
 
             var commandTypes = AssemblyHelper.GetAllTypes<Command>();
-            foreach(var commandType in commandTypes)
+            foreach (var commandType in commandTypes)
             {
                 CreateMap(typeof(CommandDTO), commandType);
             }
         }
-
-
     }
 
     public class CommandResolver : IValueResolver<TriggerDTO, Trigger, IList<Command>>

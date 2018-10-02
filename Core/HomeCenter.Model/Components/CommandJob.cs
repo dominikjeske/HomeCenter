@@ -1,8 +1,8 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters
+namespace HomeCenter.Model.Components
 {
     public class CommandJob<T>
     {

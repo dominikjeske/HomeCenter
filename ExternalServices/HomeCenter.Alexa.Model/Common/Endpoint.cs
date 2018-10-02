@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using HomeCenter.Alexa.Model.Common;
 
 namespace HomeCenter.Alexa.Model.Common
 {

@@ -1,8 +1,8 @@
-﻿using HomeCenter.Messaging;
+﻿using HomeCenter.Broker;
 
 namespace HomeCenter.Model.Core
 {
-    public abstract class Service : Actor
+    public abstract class Service : DeviceActor
     {
         protected Service(IEventAggregator eventAggregator) : base(eventAggregator)
         {

@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.Mocks
 {
     public class TestException : Exception
     {
-
     }
 }

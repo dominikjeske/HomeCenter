@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HomeCenter.Model.Adapters.Kodi
+namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class JsonRpcError
     {

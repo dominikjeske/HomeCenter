@@ -1,13 +1,12 @@
+using HomeCenter.Broker;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Native;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services.I2C;
-using HomeCenter.Messaging;
-using HomeCenter.Model.Core;
-using Microsoft.Extensions.Logging;
 
-namespace HomeCenter.Core.Services
+namespace HomeCenter.Services.Networking
 {
     public sealed class I2CBusService : Service, II2CBusService
     {
@@ -141,7 +140,6 @@ namespace HomeCenter.Core.Services
 
         public void Dispose()
         {
-            
         }
     }
 }

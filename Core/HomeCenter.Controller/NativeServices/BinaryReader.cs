@@ -2,9 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
-using HomeCenter.Core.Interface.Native;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class BinaryReader : IBinaryReader
     {
@@ -26,9 +25,13 @@ namespace HomeCenter.Raspberry
         }
 
         public byte ReadByte() => _dataReader.ReadByte();
+
         public float ReadSingle() => _dataReader.ReadSingle();
-        public string ReadString(byte size) =>_dataReader.ReadString(size);
+
+        public string ReadString(byte size) => _dataReader.ReadString(size);
+
         public uint ReadUInt32() => _dataReader.ReadUInt32();
+
         public Task<uint> LoadAsync(uint count, CancellationToken cancellationToken) => _dataReader.LoadAsync(count).AsTask(cancellationToken);
     }
 }

@@ -1,6 +1,4 @@
-﻿using HomeCenter.Core.Interface.Native;
-
-namespace HomeCenter.Core.Services.I2C
+﻿namespace HomeCenter.Model.Native
 {
     public interface II2CBusService
     {

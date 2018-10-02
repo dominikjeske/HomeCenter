@@ -1,9 +1,8 @@
-﻿using Quartz.Impl.Calendar;
+﻿using HomeCenter.Model.Core;
 using System;
 using System.Collections.Generic;
-using HomeCenter.Core.Services.DependencyInjection;
 
-namespace HomeCenter.Model.Components
+namespace HomeCenter.Model.Triggers
 {
     public class Schedule
     {

@@ -1,17 +1,15 @@
-﻿using HomeCenter.Model.Adapters;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Tests.ComponentModel;
-using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Model.ValueTypes;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.ComponentModel
 {
     [TestClass]
     public class ComponentIntegrationTests : ReactiveTest
@@ -27,7 +25,7 @@ namespace HomeCenter.Extensions.Tests
             var properyChangeEvent = new PropertyChangedEvent("HSPE16InputOnly_1", PowerState.StateName, new BooleanValue(false),
                                      new BooleanValue(true), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(2) } });
 
-            await eventAggregator.PublishDeviceEvent(properyChangeEvent, new string[] { AdapterProperties.PinNumber }).ConfigureAwait(false);
+            //await eventAggregator.PublishDeviceEvent(properyChangeEvent, new string[] { AdapterProperties.PinNumber }).ConfigureAwait(false);
 
             //var lamp = configuration.Components.FirstOrDefault(c => c.Uid == "Lamp1");
             //await lamp.ExecuteCommand(new Command { Type = CommandType.TurnOn }).ConfigureAwait(false);

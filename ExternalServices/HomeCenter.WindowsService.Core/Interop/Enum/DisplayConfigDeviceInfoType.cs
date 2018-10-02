@@ -1,11 +1,11 @@
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop.Enum
 {
-	public enum DisplayConfigDeviceInfoType : uint
-	{
-		GetSourceName = 1,
-		GetTargetName = 2,
-		GetTargetPreferredMode = 3,
-		GetAdapterName = 4,
-		SetTargetPersistence = 5,
-	}
+    public enum DisplayConfigDeviceInfoType : uint
+    {
+        GetSourceName = 1,
+        GetTargetName = 2,
+        GetTargetPreferredMode = 3,
+        GetAdapterName = 4,
+        SetTargetPersistence = 5,
+    }
 }

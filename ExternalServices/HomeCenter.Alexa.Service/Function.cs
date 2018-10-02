@@ -1,11 +1,8 @@
+using Amazon.Lambda.Core;
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Amazon.Lambda.Core;
-using Newtonsoft.Json;
-using HomeCenter.Alexa.Model.Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -24,7 +21,7 @@ namespace HomeCenter.Alexa.Service
                 {
                     var response = await httpClient.PostAsync(HandlerUri, new StringContent(request.ToString(), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
-                    if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     }

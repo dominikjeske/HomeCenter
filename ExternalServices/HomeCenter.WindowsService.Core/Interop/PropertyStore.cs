@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using HomeCenter.WindowsService.Core.Interop.Struct;
+using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     public class PropertyStore
     {
@@ -8,7 +9,7 @@ namespace HomeCenter.WindowsService.Interop
 
         internal PropertyStore(IPropertyStore store)
         {
-           _underlyingStore = store;
+            _underlyingStore = store;
         }
 
         public int Count
@@ -106,4 +107,3 @@ namespace HomeCenter.WindowsService.Interop
         }
     }
 }
-

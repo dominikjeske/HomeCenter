@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
-using HomeCenter.Core.ComponentModel.Areas;
-using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Utils;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.DI;
+using HomeCenter.Utils;
+using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Proto;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace HomeCenter.Model.Configuration
+namespace HomeCenter.Services.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {

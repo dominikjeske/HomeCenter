@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeCenter.Model.Adapters.Pc
+﻿namespace HomeCenter.Adapters.PC.Model
 {
     public class VolumePost
     {

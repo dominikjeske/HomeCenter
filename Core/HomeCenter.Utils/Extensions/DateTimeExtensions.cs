@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter.Utils.Extensions
 {
     public static class DateTimeExtensions
-   {
+    {
         public static bool HappendInPrecedingTimeWindow(this DateTimeOffset time, DateTimeOffset? comparedTime, TimeSpan timeWindow) => comparedTime < time && time - comparedTime < timeWindow;
 
         public static bool HappendBeforePrecedingTimeWindow(this DateTimeOffset time, DateTimeOffset? comparedTime, TimeSpan timeWindow) => comparedTime < time && time - comparedTime > timeWindow;

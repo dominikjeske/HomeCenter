@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public class SubscriptionToken : IDisposable
     {

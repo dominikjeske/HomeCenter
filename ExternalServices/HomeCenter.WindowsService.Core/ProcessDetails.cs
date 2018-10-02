@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.WindowsService.Services
+namespace HomeCenter.WindowsService.Core
 {
     public class ProcessDetails
     {

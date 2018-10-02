@@ -12,9 +12,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.Networking
+namespace HomeCenter.Services
 {
-    public class HttpServerService 
+    public class HttpServerService
     {
         private HttpServer _httpServer = null;
         private bool _IsInitialized = false;

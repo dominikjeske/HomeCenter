@@ -1,15 +1,14 @@
-﻿using HomeCenter.Model;
-using HomeCenter.Model.Components;
-using HomeCenter.Core.Utils;
+﻿using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HomeCenter.Core.ComponentModel.Configuration
+namespace HomeCenter.Services.Configuration
 {
     public class ValueConverter : JsonConverter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HomeCenter.Model.Adapters.Denon
+namespace HomeCenter.Adapters.Denon
 {
     internal static class DenonSurroundModes
     {

@@ -1,12 +1,13 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters.Drivers;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Services.I2C;
+﻿using HomeCenter.Adapters.Common;
+using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Native;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters
+namespace HomeCenter.Adapters.HSREL8
 {
     [ProxyCodeGenerator]
     public abstract class HSREL8Adapter : CCToolsBaseAdapter

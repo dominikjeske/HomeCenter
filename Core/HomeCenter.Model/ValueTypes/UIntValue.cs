@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace HomeCenter.Model.ValueTypes
 {
-
     public class UIntValue : ValueObject, IValue
     {
         public UIntValue(uint value = 0) => Value = value;

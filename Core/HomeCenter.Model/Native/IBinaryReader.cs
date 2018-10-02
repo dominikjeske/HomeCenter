@@ -2,14 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.Interface.Native
+namespace HomeCenter.Model.Native
 {
     public interface IBinaryReader : IDisposable
     {
         byte ReadByte();
+
         string ReadString(byte size);
+
         float ReadSingle();
+
         uint ReadUInt32();
+
         Task<uint> LoadAsync(uint count, CancellationToken cancellationToken);
     }
 }

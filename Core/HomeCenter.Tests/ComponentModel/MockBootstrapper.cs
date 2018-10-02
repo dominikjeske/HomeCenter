@@ -1,23 +1,15 @@
-﻿using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Configuration;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.I2C;
-using HomeCenter.Core.Services.Roslyn;
-using HomeCenter.Messaging;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Native;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.DI;
-using HomeCenter.Services.Networking;
+using HomeCenter.Services.Roslyn;
 using Moq;
 using SimpleInjector;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
-namespace HomeCenter.Core.Tests.ComponentModel
+namespace HomeCenter.Tests.ComponentModel
 {
     public class MockBootstrapper : Bootstrapper
     {
@@ -56,7 +48,6 @@ namespace HomeCenter.Core.Tests.ComponentModel
             _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
         }
-
 
         protected override void RegisterNativeServices()
         {

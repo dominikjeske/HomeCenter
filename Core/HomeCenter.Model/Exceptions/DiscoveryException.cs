@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Contracts.Exceptions
+namespace HomeCenter.Model.Exceptions
 {
     public class DiscoveryException : Exception
     {

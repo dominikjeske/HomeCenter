@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HomeCenter.WindowsService.Core;
-using System.Linq;
+﻿using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Interop.Enum;
+using HomeCenter.Adapters.PC.Model;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using HomeCenter.Model.Adapters.Pc;
+using System.Linq;
 
 namespace HomeCenter.WindowsService.Controllers
 {
@@ -19,14 +20,14 @@ namespace HomeCenter.WindowsService.Controllers
         [HttpGet]
         public IEnumerable<AudioDeviceInfo> Get()
         {
-            var devices = _audioService.GetAudioDevices(Interop.AudioDeviceKind.Playback, Interop.AudioDeviceState.Active);
+            var devices = _audioService.GetAudioDevices(AudioDeviceKind.Playback, AudioDeviceState.Active);
             return devices.Select(x => new AudioDeviceInfo { Id = x.Id, Name = x.ToString() }).ToList();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] InputSourcePost inputSource)
         {
-            var device = _audioService.GetAudioDevices(Interop.AudioDeviceKind.Playback, Interop.AudioDeviceState.Active).FirstOrDefault(x => x.ToString() == inputSource.Input);
+            var device = _audioService.GetAudioDevices(AudioDeviceKind.Playback, AudioDeviceState.Active).FirstOrDefault(x => x.ToString() == inputSource.Input);
             if (device == null) throw new System.Exception($"Device {inputSource.Input} was not found oncomputer");
 
             _audioService.SetDefaultAudioDevice(device);

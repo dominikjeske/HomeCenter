@@ -1,7 +1,6 @@
 ﻿using Windows.Storage;
-using HomeCenter.Core.Interface.Native;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class RaspberryStorage : IStorage
     {

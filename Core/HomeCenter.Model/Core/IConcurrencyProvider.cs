@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Concurrency;
 
-namespace HomeCenter.Motion.Model
+namespace HomeCenter.Model.Core
 {
     public interface IConcurrencyProvider
     {

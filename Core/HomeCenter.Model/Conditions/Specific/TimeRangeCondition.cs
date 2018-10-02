@@ -1,11 +1,11 @@
-﻿using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Conditions;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.ValueTypes;
+using HomeCenter.Utils.Extensions;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Conditions.Specialized
+namespace HomeCenter.Model.Conditions.Specific
 {
     public class TimeRangeCondition : Condition
     {

@@ -1,8 +1,7 @@
 ﻿using System;
 using Windows.Foundation.Diagnostics;
-using HomeCenter.Core.Services.Logging;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class RaspberryLoggingService : ILogAdapter
     {
@@ -16,7 +15,7 @@ namespace HomeCenter.Raspberry
 
             fields.AddString("Source", logEntry.Source ?? "");
             fields.AddString("Exception", logEntry.Exception ?? "");
-            
+
             _loggingChannel.LogEvent(logEntry.Message, fields, MapSeverity(logEntry.Severity));
         }
 

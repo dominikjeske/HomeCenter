@@ -1,16 +1,16 @@
-﻿using HomeCenter.Core.Services.DependencyInjection;
+﻿using HomeCenter.Model.Core;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Conditions
+namespace HomeCenter.Model.Conditions
 {
     public class ConditionContainer : IValidable
     {
         private const string CONDITION_NAME = "C";
         private const string DEFAULT_OPERATOR = "AND";
 
-        [Map] public string Expression { get; set; } 
+        [Map] public string Expression { get; set; }
         [Map] public bool IsInverted { get; private set; }
         [Map] public string DefaultOperator { get; private set; } = DEFAULT_OPERATOR;
         [Map] public IList<IValidable> Conditions { get; private set; } = new List<IValidable>();

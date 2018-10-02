@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using HomeCenter.Alexa.Model.Common;
+﻿using HomeCenter.Alexa.Model.Common;
+using Newtonsoft.Json;
 
 namespace HomeCenter.Alexa.Model.Discovery
 {

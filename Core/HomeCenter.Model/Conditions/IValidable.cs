@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HomeCenter.Conditions
+namespace HomeCenter.Model.Conditions
 {
     public interface IValidable
     {

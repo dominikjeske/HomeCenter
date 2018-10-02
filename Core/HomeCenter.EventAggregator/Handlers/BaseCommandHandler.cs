@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace HomeCenter.Messaging.Handlers
+namespace HomeCenter.Broker.Handlers
 {
     public abstract class BaseCommandHandler
     {

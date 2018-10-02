@@ -10,7 +10,7 @@ namespace HomeCenter.Alexa.Model.Common
 
         [JsonProperty("endpoint")]
         public Endpoint Endpoint { get; set; }
-        
+
         [JsonProperty("payload")]
         public Payload Payload { get; set; }
     }

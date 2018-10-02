@@ -1,9 +1,8 @@
 ﻿using HomeCenter.Model.Components;
-using HomeCenter.Core.Services.DependencyInjection;
 using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
-namespace HomeCenter.Core.ComponentModel.Areas
+namespace HomeCenter.Model.Areas
 {
     public class Area : BaseObject
     {

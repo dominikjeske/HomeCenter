@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Services.DependencyInjection;
+using HomeCenter.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

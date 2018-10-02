@@ -1,8 +1,8 @@
 ﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.ComponentModel.Capabilities.Constants;
+using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;
@@ -10,7 +10,7 @@ using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Denon
+namespace HomeCenter.Adapters.CurrentBridge
 {
     [ProxyCodeGenerator]
     public abstract class CurrentBridgeAdapter : Adapter

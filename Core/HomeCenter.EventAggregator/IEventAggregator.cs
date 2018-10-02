@@ -1,11 +1,11 @@
-﻿using HomeCenter.Messaging.Behaviors;
-using HomeCenter.Messaging.Handlers;
+﻿using HomeCenter.Broker.Behaviors;
+using HomeCenter.Broker.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public interface IEventAggregator
     {

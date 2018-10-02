@@ -1,8 +1,8 @@
-﻿using System;
+﻿using HomeCenter.Alexa.Model.Common;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using HomeCenter.Alexa.Model.Common;
 
 namespace HomeCenter.Alexa.Model.Discovery
 {
@@ -14,7 +14,7 @@ namespace HomeCenter.Alexa.Model.Discovery
         public static DiscoverResponse GenerateResponse(IList<AlexaDevice> devices)
         {
             var endpoints = new List<Endpoint>();
-            foreach(var device in devices)
+            foreach (var device in devices)
             {
                 endpoints.Add(new Endpoint
                 {
@@ -36,7 +36,7 @@ namespace HomeCenter.Alexa.Model.Discovery
                             Supported = capability.States.Select(state => new Supported { Name = state }).ToList()
                         }
                     }).ToList()
-            });
+                });
             }
 
             return new DiscoverResponse
@@ -61,12 +61,12 @@ namespace HomeCenter.Alexa.Model.Discovery
         {
             var list = new List<string>();
             //TODO fix the logic
-            if(device.Capabilities.Any(capability => capability.Interface == InterfaceType.PowerController))
+            if (device.Capabilities.Any(capability => capability.Interface == InterfaceType.PowerController))
             {
                 list.Add(nameof(DisplayCategory.LIGHT));
             }
 
-            if(list.Count == 0)
+            if (list.Count == 0)
             {
                 list.Add(nameof(DisplayCategory.OTHER));
             }

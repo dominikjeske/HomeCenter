@@ -1,9 +1,9 @@
-﻿using Quartz.Spi;
-using Quartz;
-using Quartz.Impl;
+﻿using Quartz;
 using Quartz.Core;
+using Quartz.Impl;
+using Quartz.Spi;
 
-namespace HomeCenter.Core.Quartz
+namespace HomeCenter.Services.Quartz
 {
     public class SimpleInjectorSchedulerFactory : StdSchedulerFactory
     {
@@ -20,5 +20,4 @@ namespace HomeCenter.Core.Quartz
             return base.Instantiate(rsrcs, qs);
         }
     }
-
 }

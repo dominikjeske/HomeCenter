@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HomeCenter.Messaging.Behaviors
+namespace HomeCenter.Broker.Behaviors
 {
     public class AsyncBehavior : Behavior
     {

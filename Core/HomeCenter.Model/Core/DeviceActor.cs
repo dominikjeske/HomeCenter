@@ -1,19 +1,20 @@
-﻿using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Messaging;
-using HomeCenter.Messaging.Exceptions;
+﻿using HomeCenter.Broker;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Proto;
 using Proto.Mailbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public abstract class Actor : BaseObject, IDisposable, IActor
+    public abstract class DeviceActor : BaseObject, IDisposable, IActor
     {
         public PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
@@ -23,7 +24,7 @@ namespace HomeCenter.Model.Core
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
 
-        public Actor(IEventAggregator eventAggregator)
+        public DeviceActor(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }
@@ -134,6 +135,23 @@ namespace HomeCenter.Model.Core
             );
         }
 
+        protected void SubscribeForEvent(Event ev, IContext parent = null)
+        {
+            var attributes = ev.GetPropertiesStrings();
+            if (!attributes.ContainsKey(EventProperties.EventType))
+            {
+                attributes.Add(EventProperties.EventType, EventType.PropertyChanged);
+            }
+
+            var routingKey = attributes[MessageProperties.MessageSource];
+            var filter = new RoutingFilter(routingKey, attributes);
+
+            _disposables.Add
+            (
+                _eventAggregator.Subscribe<Event>(message => (parent ?? (IContext)RootContext.Empty).Send(Self, message.Message), filter)
+            );
+        }
+
         protected void SubscribeForQuery<T, R>(RoutingFilter filter = null, IContext parent = null) where T : Query
         {
             _disposables.Add
@@ -163,6 +181,22 @@ namespace HomeCenter.Model.Core
         {
             var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
             return query.Verify(result, expectedResult);
+        }
+
+        protected Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes) where T : Event
+        {
+            var attributes = routerAttributes.ToDictionary(k => k, v => message[v].ToString());
+            attributes[EventProperties.EventType] = message.Type;
+            var routingKey = message[MessageProperties.MessageSource].ToString();
+
+            var filter = new RoutingFilter(routingKey, attributes);
+
+            return _eventAggregator.Publish(message, filter);
+        }
+
+        protected void PublishToSelf(Command command)
+        {
+            RootContext.Empty.Send(Self, command);
         }
 
         //TODO invoke in proxy

@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using HomeCenter.WindowsService.Core.Interop;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Interop;
 
-namespace HomeCenter.WindowsService.Audio
+namespace HomeCenter.WindowsService.Core.Audio
 {
     public class AudioDeviceCollection : IEnumerable<AudioDevice>
     {
@@ -30,7 +30,7 @@ namespace HomeCenter.WindowsService.Audio
             {
                 IMMDevice underlyingDevice;
                 Marshal.ThrowExceptionForHR(_underlyingCollection.Item(index, out underlyingDevice));
-                
+
                 return new AudioDevice(underlyingDevice);
             }
         }

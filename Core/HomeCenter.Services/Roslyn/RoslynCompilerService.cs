@@ -1,4 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Model.Adapters;
+using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.Controllers;
+using HomeCenter.Utils;
+using HomeCenter.Utils.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
@@ -12,14 +17,8 @@ using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Utils;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 
-namespace HomeCenter.Core.Services.Roslyn
+namespace HomeCenter.Services.Roslyn
 {
     public class RoslynCompilerService : IRoslynCompilerService
     {

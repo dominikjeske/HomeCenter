@@ -1,5 +1,6 @@
-﻿
-namespace HomeCenter.WindowsService.Interop
+﻿using HomeCenter.WindowsService.Core.Interop.Struct;
+
+namespace HomeCenter.WindowsService.Core.Interop
 {
     public class PropertyStoreProperty
     {
@@ -28,4 +29,3 @@ namespace HomeCenter.WindowsService.Interop
         }
     }
 }
-

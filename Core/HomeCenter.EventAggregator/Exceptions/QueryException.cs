@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Messaging.Exceptions
+namespace HomeCenter.Broker.Exceptions
 {
     public class QueryException : Exception
     {

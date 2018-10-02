@@ -1,10 +1,10 @@
-﻿using HomeCenter.Core.Extensions;
+﻿using HomeCenter.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace HomeCenter.Core.Utils
+namespace HomeCenter.Utils
 {
     public static class AssemblyHelper
     {
@@ -36,7 +36,6 @@ namespace HomeCenter.Core.Utils
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static IEnumerable<Type> GetAllTypes<T>(bool inclueAbstract = false) => GetAllTypes(typeof(T), inclueAbstract);
-
 
         public static IEnumerable<Type> GetAllTypes(Type type, bool inclueAbstract = false)
         {

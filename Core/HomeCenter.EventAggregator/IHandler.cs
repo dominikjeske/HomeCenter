@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Messaging
+﻿namespace HomeCenter.Broker
 {
     public interface IHandler<T>
     {

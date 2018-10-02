@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 
 namespace HomeCenter.Model.Messages.Commands.Service
 {
-   
     public class WakeOnLanCommand : UdpCommand
     {
         public WakeOnLanCommand(string macAddress)

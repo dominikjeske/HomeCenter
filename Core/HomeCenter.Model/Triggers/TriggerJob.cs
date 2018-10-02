@@ -1,8 +1,9 @@
-﻿using Quartz;
+﻿using HomeCenter.Model.Extensions;
+using Quartz;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter.Model.Triggers
 {
     public class TriggerJob : IJob
     {

@@ -1,14 +1,14 @@
-﻿using HomeCenter.Core.Extensions;
-using HomeCenter.Messaging;
+﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
+using HomeCenter.Utils.Extensions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.Services
+namespace HomeCenter.Services.Networking
 {
     public class HttpMessagingService : Service
     {

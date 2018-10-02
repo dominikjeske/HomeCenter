@@ -1,7 +1,6 @@
 ﻿using Windows.Devices.Gpio;
-using HomeCenter.Core.Interface.Native;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class RaspberryGpioController : IGpioController
     {

@@ -1,16 +1,17 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.Kodi.Messages;
+using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Kodi
+namespace HomeCenter.Adapters.Kodi
 {
     [ProxyCodeGenerator]
     public abstract class KodiAdapter : Adapter

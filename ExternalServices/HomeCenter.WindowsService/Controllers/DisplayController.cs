@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HomeCenter.WindowsService.Core.Display;
+using HomeCenter.WindowsService.Core.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using HomeCenter.WindowsService.Core;
 
 namespace HomeCenter.WindowsService.Controllers
 {
@@ -19,7 +20,7 @@ namespace HomeCenter.WindowsService.Controllers
         {
             return _displayService.GetActiveMonitors();
         }
-        
+
         [HttpPost]
         public IActionResult Post(DisplayMode displayMode)
         {

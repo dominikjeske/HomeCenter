@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     [Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IAudioEndpointVolume
@@ -179,5 +179,5 @@ namespace HomeCenter.WindowsService.Interop
             [Out] [MarshalAs(UnmanagedType.R4)] out float volumeMin,
             [Out] [MarshalAs(UnmanagedType.R4)] out float volumeMax,
             [Out] [MarshalAs(UnmanagedType.R4)] out float volumeStep);
-    } 
+    }
 }

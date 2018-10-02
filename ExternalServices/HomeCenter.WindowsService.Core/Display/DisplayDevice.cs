@@ -1,12 +1,13 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Interop;
+using HomeCenter.WindowsService.Core.Interop.Struct;
+using System;
 using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Interop;
 
-namespace HomeCenter.WindowsService.Core
+namespace HomeCenter.WindowsService.Core.Display
 {
-    public class Display : IDisplay
+    public class DisplayDevice : IDisplay
     {
-        public Display(DisplaySettings settings)
+        public DisplayDevice(DisplaySettings settings)
         {
             Settings = settings;
         }

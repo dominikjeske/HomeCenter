@@ -3,13 +3,13 @@ using System;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.Helpers
 {
     public static class AggregateExceptionHelper
     {
         public static void AssertAggregateException(this AggregateException ae, Type typeOfInner, string message = null)
         {
-            while(ae.InnerException.GetType() == typeof(AggregateException))
+            while (ae.InnerException.GetType() == typeof(AggregateException))
             {
                 ae = ae.InnerException as AggregateException;
             }
@@ -72,7 +72,7 @@ namespace HomeCenter.Extensions.Tests
                 ex.AssertAggregateException(typeof(T), message);
                 return;
             }
-            catch( Exception e)
+            catch (Exception e)
             {
                 Assert.Fail($"Excepted {typeof(T).Name} Exception but {e.GetType().Name} Exception was thrown with message: {e.Message}");
                 return;

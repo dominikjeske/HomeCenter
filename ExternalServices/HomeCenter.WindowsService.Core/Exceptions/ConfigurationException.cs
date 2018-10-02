@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.WindowsService.Exceptions
+namespace HomeCenter.WindowsService.Core.Exceptions
 {
     public class ConfigurationException : Exception
     {

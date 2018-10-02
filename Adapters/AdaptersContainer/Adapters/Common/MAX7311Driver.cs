@@ -1,7 +1,7 @@
-﻿using System;
-using HomeCenter.Core.Services.I2C;
+﻿using HomeCenter.Model.Native;
+using System;
 
-namespace HomeCenter.Model.Adapters.Drivers
+namespace HomeCenter.Adapters.Common
 {
     internal sealed class MAX7311Driver : II2CPortExpanderDriver
     {

@@ -1,5 +1,5 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands.Device;
 using Proto;
 using Quartz;
 using System.Threading.Tasks;

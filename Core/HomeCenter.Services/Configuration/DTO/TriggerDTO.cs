@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace HomeCenter.Core.ComponentModel.Configuration
+namespace HomeCenter.Services.Configuration.DTO
 {
     public class TriggerDTO
     {

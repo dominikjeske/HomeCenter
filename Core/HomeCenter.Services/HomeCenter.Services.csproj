@@ -24,7 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="2.2.0-preview2-35157" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
-    <PackageReference Include="System.Reactive" Version="4.1.0" />
+    <PackageReference Include="System.Reactive" Version="4.1.1" />
     <PackageReference Include="System.Reflection.DispatchProxy" Version="4.5.1" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>

@@ -1,7 +1,6 @@
-﻿namespace HomeCenter.Extensions.Tests
+﻿namespace HomeCenter.Tests.Mocks
 {
     public class TestMessage
     {
-
     }
 }

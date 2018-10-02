@@ -1,14 +1,11 @@
 ﻿using HomeCenter.Model.Adapters;
-using HomeCenter.Core.Tests.ComponentModel;
-using HomeCenter.Core.Tests.Mocks;
-using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Tests.Mocks;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.ComponentModel
 {
     [TestClass]
     public class AdaptersTests : ReactiveTest
@@ -31,7 +28,7 @@ namespace HomeCenter.Extensions.Tests
 
             var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
             var adapter = new TestAdapter("adapter1", adapterServiceFactory);
-         //   await adapter.Initialize().ConfigureAwait(false);
+            //   await adapter.Initialize().ConfigureAwait(false);
 
             //TODO Test
             //var result = await adapter.ExecuteCommand<DiscoveryResponse>(CommandFatory.DiscoverCapabilitiesCommand).ConfigureAwait(false);

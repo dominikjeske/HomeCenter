@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public class MessageEnvelope<T> : IMessageEnvelope<T>
     {

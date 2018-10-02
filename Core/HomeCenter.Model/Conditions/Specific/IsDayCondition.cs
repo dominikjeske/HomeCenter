@@ -1,9 +1,6 @@
-﻿using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Messaging;
-using HomeCenter.Model.Conditions;
-using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Broker;
 
-namespace HomeCenter.Conditions.Specialized
+namespace HomeCenter.Model.Conditions.Specific
 {
     public class IsDayCondition : TimeRangeCondition
     {

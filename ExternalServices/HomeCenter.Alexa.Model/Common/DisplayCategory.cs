@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeCenter.Alexa.Model.Common
+﻿namespace HomeCenter.Alexa.Model.Common
 {
     public enum DisplayCategory
     {
@@ -24,7 +20,5 @@ namespace HomeCenter.Alexa.Model.Common
     public enum InterfaceType
     {
         PowerController,
-
-
     }
 }

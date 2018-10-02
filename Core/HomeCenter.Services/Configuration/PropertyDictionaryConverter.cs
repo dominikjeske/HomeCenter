@@ -1,12 +1,11 @@
-﻿using HomeCenter.Model;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace HomeCenter.Core.ComponentModel.Configuration
+namespace HomeCenter.Services.Configuration
 {
     public class PropertyDictionaryConverter : JsonConverter
     {

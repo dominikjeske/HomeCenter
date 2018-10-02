@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Messaging.Behaviors
+namespace HomeCenter.Broker.Behaviors
 {
     public static class BehaviorExtensions
     {

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
-using HomeCenter.Core.Extensions;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public class RoutingFilter
     {
@@ -20,7 +19,7 @@ namespace HomeCenter.Messaging
             RoutingAttributes.AddRangeNewOnly(routingAttributes);
         }
 
-        public string RoutingKey { get;}
+        public string RoutingKey { get; }
         public Dictionary<string, string> RoutingAttributes { get; } = new Dictionary<string, string>();
 
         public bool EvaluateFilter(RoutingFilter messageFilter)

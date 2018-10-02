@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands;
 
 namespace HomeCenter.Model.Components
 {

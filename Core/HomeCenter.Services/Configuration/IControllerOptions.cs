@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Core.Services.DependencyInjection
+﻿namespace HomeCenter.Services.Configuration
 {
     public interface IControllerOptions
     {

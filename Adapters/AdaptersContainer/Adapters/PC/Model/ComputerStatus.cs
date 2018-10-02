@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Adapters.Pc
+﻿namespace HomeCenter.Adapters.PC.Model
 {
     public class ComputerStatus
     {

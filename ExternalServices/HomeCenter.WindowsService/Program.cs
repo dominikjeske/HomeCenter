@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using System.Diagnostics;
 using NLog.Web;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace HomeCenter.WindowsService
 {
@@ -42,5 +42,5 @@ namespace HomeCenter.WindowsService
                 host.Run();
             }
         }
-    }   
+    }
 }

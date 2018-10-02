@@ -38,6 +38,7 @@ namespace HomeCenter.Services.DI
             where T : IActor;
 
         PID GetActor(Type actorType, string id = default, string address = default, IContext parent = default);
+
         PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default);
     }
 }

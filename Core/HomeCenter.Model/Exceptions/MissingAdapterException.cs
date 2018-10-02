@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HomeCenter.Model.Exceptions
 {
-
     public class MissingAdapterException : Exception
     {
         public MissingAdapterException() : base()

@@ -1,11 +1,11 @@
-﻿using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Conditions;
+﻿using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Messages.Commands;
 using Proto;
 using Quartz;
 using System;
 using System.Threading;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter.Model.Triggers
 {
     public class TriggerJobDataDTO
     {

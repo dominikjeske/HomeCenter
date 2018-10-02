@@ -1,6 +1,5 @@
-﻿using HomeCenter.Messaging;
-using HomeCenter.Core.Services;
-using HomeCenter.Core.Services.I2C;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
 using Quartz;
 

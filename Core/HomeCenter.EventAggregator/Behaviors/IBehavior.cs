@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Messaging.Behaviors
+﻿namespace HomeCenter.Broker.Behaviors
 {
     public interface IBehavior : IAsyncCommandHandler
     {

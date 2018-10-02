@@ -1,11 +1,12 @@
+using Amazon.Lambda.Core;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Amazon.Lambda.Core;
-using Newtonsoft.Json;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+
 namespace HomeCenter.Alexa.OAuth
 {
     public class Function
@@ -46,8 +47,10 @@ namespace HomeCenter.Alexa.OAuth
     {
         [JsonProperty("statusCode")]
         public HttpStatusCode StatusCode { get; set; }
+
         [JsonProperty("headers")]
         public Dictionary<string, string> Headers { get; set; }
+
         [JsonProperty("body")]
         public string Body { get; set; }
     }

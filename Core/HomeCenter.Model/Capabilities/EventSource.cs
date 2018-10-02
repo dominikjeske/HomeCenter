@@ -1,6 +1,6 @@
-﻿using HomeCenter.Model.Messages.Events;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.Core;
 
 namespace HomeCenter.Model.Capabilities
 {

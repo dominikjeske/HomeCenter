@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Core.Services.I2C
+namespace HomeCenter.Model.Native
 {
     public struct I2CSlaveAddress
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace HomeCenter.Messaging
+﻿namespace HomeCenter.Broker
 {
     public class VoidResult
     {

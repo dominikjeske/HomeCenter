@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HomeCenter.Messaging.Behaviors
+namespace HomeCenter.Broker.Behaviors
 {
     public class BehaviorChain
     {

@@ -1,11 +1,11 @@
-﻿using HomeCenter.Messaging.Handlers;
+﻿using HomeCenter.Broker.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     public class Subscriptions
     {

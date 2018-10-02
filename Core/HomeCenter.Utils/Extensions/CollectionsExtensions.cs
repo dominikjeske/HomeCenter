@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace HomeCenter.Core.Extensions
+namespace HomeCenter.Utils.Extensions
 {
     public static class CollectionsExtensions
     {
@@ -58,7 +58,6 @@ namespace HomeCenter.Core.Extensions
             }
         }
 
-
         public static K ElementAtOrNull<T, K>(this IDictionary<T, K> dictionary, T lookupValue) where K : class
         {
             return (dictionary?.ContainsKey(lookupValue) ?? false) ? dictionary[lookupValue] : null;
@@ -83,8 +82,6 @@ namespace HomeCenter.Core.Extensions
             dicToAdd.ForEach(x => { if (!dic.ContainsKey(x.Key)) dic.Add(x.Key, x.Value); });
         }
 
-
-
         public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) => new ReadOnlyDictionary<TKey, TValue>(dictionary);
 
         public static bool IsEqual(this Dictionary<string, string> source, Dictionary<string, string> dest)
@@ -101,12 +98,11 @@ namespace HomeCenter.Core.Extensions
             return true;
         }
 
-
         public static void ForEach<T>(this IReadOnlyCollection<T> collection, Action<T> action)
         {
             foreach (T item in collection) action(item);
         }
-        
+
         public static bool LeftEqual<T, K>(this IReadOnlyDictionary<T, K> source, IReadOnlyDictionary<T, K> dest) where T : class where K : class
         {
             if (ReferenceEquals(source, dest)) return true;
@@ -118,7 +114,5 @@ namespace HomeCenter.Core.Extensions
             }
             return true;
         }
-
-      
     }
 }

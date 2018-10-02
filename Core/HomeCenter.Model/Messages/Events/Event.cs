@@ -1,5 +1,5 @@
-﻿using HomeCenter.Core.Extensions;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.Messages.Events

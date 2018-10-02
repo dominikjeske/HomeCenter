@@ -1,5 +1,4 @@
-﻿using HomeCenter.Services.Configuration;
-using Windows.ApplicationModel.Background;
+﻿using Windows.ApplicationModel.Background;
 
 namespace HomeCenter.Controller
 {

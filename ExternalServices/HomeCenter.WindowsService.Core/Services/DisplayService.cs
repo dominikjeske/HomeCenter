@@ -1,11 +1,15 @@
-﻿using HomeCenter.WindowsService.Interop;
+﻿using HomeCenter.WindowsService.Core.Display;
+using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Interop;
+using HomeCenter.WindowsService.Core.Interop.Enum;
+using HomeCenter.WindowsService.Core.Interop.Struct;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Core
+namespace HomeCenter.WindowsService.Core.Services
 {
     //https://stackoverflow.com/questions/6590939/how-to-set-display-settings-to-extend-mode-in-windows-7-using-c
     //https://stackoverflow.com/questions/16790287/programmatically-changing-the-presentation-display-mode
@@ -115,7 +119,7 @@ namespace HomeCenter.WindowsService.Core
             if (nameStatus == StatusCode.Success)
                 displayName = displayConfigSourceDeviceName.viewGdiDeviceName;
 
-            return new Display(new DisplaySettings(resolution, origin, rotationOriginal.ToScreenRotation(), refreshRate, isPrimary, displayName));
+            return new DisplayDevice(new DisplaySettings(resolution, origin, rotationOriginal.ToScreenRotation(), refreshRate, isPrimary, displayName));
         }
 
         private bool IsPrimaryDisplay(Point displayStart)

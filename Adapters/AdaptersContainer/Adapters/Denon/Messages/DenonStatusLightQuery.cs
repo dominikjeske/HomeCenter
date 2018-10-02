@@ -1,18 +1,18 @@
-﻿using HomeCenter.Core.Extensions;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
+using HomeCenter.Utils.Extensions;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace HomeCenter.Model.Adapters.Denon
+namespace HomeCenter.Adapters.Denon.Messages
 {
     internal class DenonStatusLightQuery : HttpQuery, IFormatableMessage<DenonStatusLightQuery>
     {
         public string Zone { get; set; } = "1";
 
         private float? NormalizeVolume(float? volume) => volume == null ? null : volume + 80.0f;
-        
+
         public DenonStatus ParseResult(string responseData)
         {
             using (var reader = new StringReader(responseData))

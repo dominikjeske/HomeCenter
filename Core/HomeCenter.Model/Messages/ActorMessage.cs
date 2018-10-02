@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Core
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages
 {
     public abstract class ActorMessage : BaseObject
     {

@@ -1,10 +1,10 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.ValueTypes;
 using System;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Messages.Events
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class PropertyChangedEvent : Event
     {
@@ -13,7 +13,7 @@ namespace HomeCenter.Model.Messages.Events
             Type = EventType.PropertyChanged;
             Uid = Guid.NewGuid().ToString();
             this[StateProperties.StateName] = (StringValue)changedPropertyName;
-            this[EventProperties.SourceDeviceUid] = (StringValue)deviceUID;
+            this[MessageProperties.MessageSource] = (StringValue)deviceUID;
             this[EventProperties.NewValue] = newValue;
             this[EventProperties.OldValue] = oldValue;
             this[EventProperties.EventTime] = (DateTimeValue)SystemTime.Now;
@@ -31,6 +31,6 @@ namespace HomeCenter.Model.Messages.Events
         public IValue NewValue => this[EventProperties.NewValue];
         public IValue OldValue => this[EventProperties.OldValue];
         public DateTimeOffset EventTime => (DateTimeValue)this[EventProperties.EventTime];
-        public string SourceDeviceUid => (StringValue)this[EventProperties.SourceDeviceUid];
+        public string SourceDeviceUid => (StringValue)this[MessageProperties.MessageSource];
     }
 }

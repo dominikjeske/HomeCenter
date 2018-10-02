@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.Adapters.PC.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
-using HomeCenter.Model.Adapters.Pc;
-using HomeCenter.WindowsService.Services;
-using HomeCenter.WindowsService.Exceptions;
 
 namespace HomeCenter.WindowsService.Controllers
 {
@@ -43,7 +42,7 @@ namespace HomeCenter.WindowsService.Controllers
         {
             return _processService.IsProcessStarted(ReadProcessPath(processName));
         }
-        
+
         [HttpPost]
         public IActionResult Post([FromBody] ProcessPost processPost)
         {

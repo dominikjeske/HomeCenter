@@ -1,10 +1,8 @@
-﻿using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Model.Core;
-using Proto;
+﻿using Proto;
 using SimpleInjector;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Core.Tests.ComponentModel
+namespace HomeCenter.Tests.ComponentModel
 {
     public class ControllerBuilder
     {
@@ -29,6 +27,5 @@ namespace HomeCenter.Core.Tests.ComponentModel
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
             return (controller, bootstrapper.Container);
         }
-
     }
 }

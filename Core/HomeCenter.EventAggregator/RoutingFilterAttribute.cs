@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace HomeCenter.Messaging
+namespace HomeCenter.Broker
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class RoutingFilterAttribute : Attribute

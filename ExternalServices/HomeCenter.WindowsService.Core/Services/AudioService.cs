@@ -1,9 +1,11 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Audio;
+using HomeCenter.WindowsService.Core.Interfaces;
+using HomeCenter.WindowsService.Core.Interop;
+using HomeCenter.WindowsService.Core.Interop.Enum;
+using System;
 using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Audio;
-using HomeCenter.WindowsService.Interop;
 
-namespace HomeCenter.WindowsService.Core
+namespace HomeCenter.WindowsService.Core.Services
 {
     public class AudioService : IAudioService
     {
@@ -12,14 +14,14 @@ namespace HomeCenter.WindowsService.Core
         public AudioDeviceCollection GetAudioDevices(AudioDeviceKind kind = AudioDeviceKind.Playback, AudioDeviceState state = AudioDeviceState.Active)
         {
             int hr = _deviceEnumerator.EnumAudioEndpoints(kind, state, out IMMDeviceCollection underlyingCollection);
-            if (hr == HResult.OK)  return new AudioDeviceCollection(underlyingCollection);
+            if (hr == HResult.OK) return new AudioDeviceCollection(underlyingCollection);
 
             throw Marshal.GetExceptionForHR(hr);
         }
 
         public void SetDefaultAudioDevice(AudioDevice device)
         {
-            if (device == null)  throw new ArgumentNullException(nameof(device));
+            if (device == null) throw new ArgumentNullException(nameof(device));
 
             SetDefaultAudioDevice(device, AudioDeviceRole.Multimedia);
             SetDefaultAudioDevice(device, AudioDeviceRole.Communications);
@@ -28,7 +30,7 @@ namespace HomeCenter.WindowsService.Core
 
         public void SetDefaultAudioDevice(AudioDevice device, AudioDeviceRole role = AudioDeviceRole.Multimedia)
         {
-            if (device == null)  throw new ArgumentNullException(nameof(device));
+            if (device == null) throw new ArgumentNullException(nameof(device));
 
             var config = new PolicyConfig();
 
@@ -48,10 +50,10 @@ namespace HomeCenter.WindowsService.Core
 
         public bool IsDefaultAudioDevice(AudioDevice device, AudioDeviceRole role = AudioDeviceRole.Multimedia)
         {
-            if (device == null)  throw new ArgumentNullException(nameof(device));
+            if (device == null) throw new ArgumentNullException(nameof(device));
 
             AudioDevice defaultDevice = GetDefaultAudioDevice(device.Kind, role);
-            if (defaultDevice == null)  return false;
+            if (defaultDevice == null) return false;
 
             return String.Equals(defaultDevice.Id, device.Id, StringComparison.OrdinalIgnoreCase);
         }
@@ -59,7 +61,7 @@ namespace HomeCenter.WindowsService.Core
         public AudioDevice GetDefaultAudioDevice(AudioDeviceKind kind = AudioDeviceKind.Playback, AudioDeviceRole role = AudioDeviceRole.Multimedia)
         {
             int hr = _deviceEnumerator.GetDefaultAudioEndpoint(kind, role, out IMMDevice underlyingDevice);
-            if (hr == HResult.OK)  return new AudioDevice(underlyingDevice);
+            if (hr == HResult.OK) return new AudioDevice(underlyingDevice);
 
             if (hr == HResult.NotFound || hr == HResult.FileNotFound) return null;
 
@@ -77,7 +79,7 @@ namespace HomeCenter.WindowsService.Core
 
             throw Marshal.GetExceptionForHR(hr);
         }
- 
+
         public float GetMasterVolume()
         {
             IAudioEndpointVolume masterVol = null;
@@ -91,7 +93,7 @@ namespace HomeCenter.WindowsService.Core
             }
             finally
             {
-                if (masterVol != null)  Marshal.ReleaseComObject(masterVol);
+                if (masterVol != null) Marshal.ReleaseComObject(masterVol);
             }
         }
 
@@ -208,7 +210,7 @@ namespace HomeCenter.WindowsService.Core
                 if (deviceEnumerator != null) Marshal.ReleaseComObject(deviceEnumerator);
             }
         }
-        
+
         public float? GetApplicationVolume(int pid)
         {
             var volume = GetVolumeObject(pid);
@@ -242,7 +244,7 @@ namespace HomeCenter.WindowsService.Core
         public void SetApplicationMute(int pid, bool mute)
         {
             ISimpleAudioVolume volume = GetVolumeObject(pid);
-            if (volume == null)  return;
+            if (volume == null) return;
 
             Guid guid = Guid.Empty;
             volume.SetMute(mute, ref guid);

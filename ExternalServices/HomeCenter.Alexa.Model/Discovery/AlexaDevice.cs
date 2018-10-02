@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using HomeCenter.Alexa.Model.Common;
+﻿using HomeCenter.Alexa.Model.Common;
+using System.Collections.Generic;
 
 namespace HomeCenter.Alexa.Model.Discovery
 {

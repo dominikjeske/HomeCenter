@@ -1,8 +1,7 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Model.ComponentModel.Capabilities.Constants;
-using HomeCenter.Model.Core;
 using System.Linq;
 
 namespace HomeCenter.Model.Capabilities

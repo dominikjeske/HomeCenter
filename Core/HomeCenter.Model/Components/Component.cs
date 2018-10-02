@@ -1,18 +1,18 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Broker;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Responses;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Messaging;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Triggers;
+using HomeCenter.Model.ValueTypes;
+using HomeCenter.Utils.Extensions;
 using Quartz;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +20,9 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    public class Component : Actor
+    // TODO replace UID with Self
+    public class Component : DeviceActor
     {
-        private readonly IEventAggregator _eventAggregator;
         private readonly IScheduler _scheduler;
         private List<string> _tagCache = new List<string>();
 
@@ -35,7 +35,6 @@ namespace HomeCenter.Model.Components
 
         public Component(IEventAggregator eventAggregator, IScheduler scheduler) : base(eventAggregator)
         {
-            _eventAggregator = eventAggregator;
             _scheduler = scheduler;
         }
 
@@ -65,16 +64,25 @@ namespace HomeCenter.Model.Components
             return InitScheduledTriggers();
         }
 
+        private void InitEventTriggers()
+        {
+            foreach (var trigger in _triggers.Where(x => x.Schedule == null))
+            {
+                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
+                SubscribeForEvent(trigger.Event);
+            }
+        }
+
         private async Task InitScheduledTriggers()
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule != null))
             {
-                trigger.Commands.ForEach(c => c[CommandProperties.CommandSource] = (StringValue)Uid);
+                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
                     //TODO DNF
-                    //await scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    await _scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
@@ -88,19 +96,9 @@ namespace HomeCenter.Model.Components
             }
         }
 
-        private void InitEventTriggers()
+        protected async Task DeviceTriggerHandler(Event ev)
         {
-            foreach (var trigger in _triggers.Where(x => x.Schedule == null))
-            {
-                trigger.Commands.ForEach(c => c[CommandProperties.CommandSource] = (StringValue)Uid);
-                var subscription = _eventAggregator.SubscribeForDeviceEvent(DeviceTriggerHandler, trigger.Event.GetPropertiesStrings(), trigger.Event.Type);
-                _disposables.Add(subscription);
-            }
-        }
-
-        private async Task DeviceTriggerHandler(IMessageEnvelope<Event> deviceEvent)
-        {
-            var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(deviceEvent.Message));
+            var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(ev));
             if (await (trigger.ValidateCondition()).ConfigureAwait(false))
             {
                 foreach (var command in trigger.Commands)
@@ -112,8 +110,7 @@ namespace HomeCenter.Model.Components
                         continue;
                     }
 
-                    //TODO
-                    //await ExecuteCommand(command).ConfigureAwait(false);
+                    PublishToSelf(command);
                 }
             }
         }
@@ -150,7 +147,7 @@ namespace HomeCenter.Model.Components
 
         private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
         {
-            _disposables.Add(_eventAggregator.SubscribeForDeviceEvent(DeviceEventHandler, GetAdapterRouterAttributes(adapter, requierdProperties)));
+            //_disposables.Add(_eventAggregator.SubscribeForDeviceEvent(DeviceEventHandler, GetAdapterRouterAttributes(adapter, requierdProperties)));
         }
 
         private void SubscribeForRemoteCommands()
@@ -167,7 +164,7 @@ namespace HomeCenter.Model.Components
                 if (!adapter.ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {adapter.Uid} in component {Uid} missing configuration property {adapterProperty}");
                 routerAttributes.Add(adapterProperty, adapter[adapterProperty].ToString());
             }
-            routerAttributes.Add(EventProperties.SourceDeviceUid, adapter.Uid);
+            routerAttributes.Add(MessageProperties.MessageSource, adapter.Uid);
 
             return routerAttributes;
         }
@@ -210,7 +207,8 @@ namespace HomeCenter.Model.Components
 
             state[StateProperties.Value] = newValue;
 
-            await _eventAggregator.PublishDeviceEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+            //TODO
+            //await PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
 
         protected IReadOnlyCollection<string> Capabilities(CapabilitiesQuery command) => _capabilities.Values

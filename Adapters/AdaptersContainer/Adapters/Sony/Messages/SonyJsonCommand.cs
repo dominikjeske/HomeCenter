@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands.Service;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
-using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Core;
 
-namespace HomeCenter.Model.Adapters.Sony
+namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyJsonCommand : HttpCommand, IFormatableMessage<SonyJsonCommand>
     {

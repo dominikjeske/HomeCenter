@@ -1,7 +1,7 @@
-﻿using System;
-using HomeCenter.Model.ValueTypes;
+﻿using HomeCenter.Model.ValueTypes;
+using System;
 
-namespace HomeCenter.Model.Messages.Events
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class InfraredEvent : Event
     {
@@ -9,7 +9,7 @@ namespace HomeCenter.Model.Messages.Events
         {
             Type = EventType.InfraredCode;
             Uid = Guid.NewGuid().ToString();
-            this[EventProperties.SourceDeviceUid] = (StringValue)deviceUID;
+            this[MessageProperties.MessageSource] = (StringValue)deviceUID;
             this[EventProperties.System] = (IntValue)system;
             this[EventProperties.CommandCode] = (IntValue)commandCode;
         }

@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop.Struct
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct PropVariant
@@ -26,16 +25,21 @@ namespace HomeCenter.WindowsService.Interop
         [FieldOffset(8)] private double dblVal;
         [FieldOffset(8)] private bool boolVal;
         [FieldOffset(8)] private int scode;
+
         //CY cyVal;
         [FieldOffset(8)] private DateTime date;
+
         [FieldOffset(8)] private System.Runtime.InteropServices.ComTypes.FILETIME filetime;
+
         //CLSID* puuid;
         //CLIPDATA* pclipdata;
         //BSTR bstrVal;
         //BSTRBLOB bstrblobVal;
         [FieldOffset(8)] private Blob blobVal;
+
         //LPSTR pszVal;
-        [FieldOffset(8)] private IntPtr pointerValue; //LPWSTR 
+        [FieldOffset(8)] private IntPtr pointerValue; //LPWSTR
+
         //IUnknown* punkVal;
         /*IDispatch* pdispVal;
         IStream* pStream;
@@ -91,7 +95,7 @@ namespace HomeCenter.WindowsService.Interop
         /// </summary>
         public static PropVariant FromLong(long value)
         {
-            return new PropVariant() {vt = (short) VarEnum.VT_I8, hVal = value};
+            return new PropVariant() { vt = (short)VarEnum.VT_I8, hVal = value };
         }
 
         /// <summary>
@@ -110,18 +114,18 @@ namespace HomeCenter.WindowsService.Interop
         public T[] GetBlobAsArrayOf<T>()
         {
             var blobByteLength = blobVal.Length;
-            var singleInstance = (T) Activator.CreateInstance(typeof (T));
+            var singleInstance = (T)Activator.CreateInstance(typeof(T));
             var structSize = Marshal.SizeOf(singleInstance);
-            if (blobByteLength%structSize != 0)
+            if (blobByteLength % structSize != 0)
             {
                 throw new InvalidDataException(String.Format("Blob size {0} not a multiple of struct size {1}", blobByteLength, structSize));
             }
-            var items = blobByteLength/structSize;
+            var items = blobByteLength / structSize;
             var array = new T[items];
             for (int n = 0; n < items; n++)
             {
-                array[n] = (T) Activator.CreateInstance(typeof (T));
-                Marshal.PtrToStructure(new IntPtr((long) blobVal.Data + n*structSize), array[n]);
+                array[n] = (T)Activator.CreateInstance(typeof(T));
+                Marshal.PtrToStructure(new IntPtr((long)blobVal.Data + n * structSize), array[n]);
             }
             return array;
         }
@@ -131,7 +135,7 @@ namespace HomeCenter.WindowsService.Interop
         /// </summary>
         public VarEnum DataType
         {
-            get { return (VarEnum) vt; }
+            get { return (VarEnum)vt; }
         }
 
         public bool IsEmpty
@@ -139,7 +143,7 @@ namespace HomeCenter.WindowsService.Interop
             get { return DataType == VarEnum.VT_EMPTY; }
         }
 
-    /// <summary>
+        /// <summary>
         /// Property value
         /// </summary>
         public object Value
@@ -151,23 +155,32 @@ namespace HomeCenter.WindowsService.Interop
                 {
                     case VarEnum.VT_I1:
                         return bVal;
+
                     case VarEnum.VT_I2:
                         return iVal;
+
                     case VarEnum.VT_I4:
                         return lVal;
+
                     case VarEnum.VT_I8:
                         return hVal;
+
                     case VarEnum.VT_INT:
                         return iVal;
+
                     case VarEnum.VT_UI4:
                         return ulVal;
+
                     case VarEnum.VT_UI8:
                         return uhVal;
+
                     case VarEnum.VT_LPWSTR:
                         return Marshal.PtrToStringUni(pointerValue);
+
                     case VarEnum.VT_BLOB:
                     case VarEnum.VT_VECTOR | VarEnum.VT_UI1:
                         return GetBlob();
+
                     case VarEnum.VT_CLSID:
                         return (Guid)Marshal.PtrToStructure(pointerValue, typeof(Guid));
                 }

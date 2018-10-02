@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Core.Hardware.RemoteSockets
+﻿namespace HomeCenter.Model.Codes
 {
     public enum IntertechnoSystemCode
     {

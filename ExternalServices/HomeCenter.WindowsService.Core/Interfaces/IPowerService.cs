@@ -1,6 +1,6 @@
-﻿using HomeCenter.Model.Adapters.Pc;
+﻿using HomeCenter.WindowsService.Core.Power;
 
-namespace HomeCenter.WindowsService.Services
+namespace HomeCenter.WindowsService.Core.Interfaces
 {
     public interface IPowerService
     {

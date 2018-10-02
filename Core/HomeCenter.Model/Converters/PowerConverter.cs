@@ -2,7 +2,7 @@
 using HomeCenter.Model.Core;
 using System;
 
-namespace HomeCenter.Core.ComponentModel.Converters
+namespace HomeCenter.Model.Converters
 {
     public class PowerConverter : IValueConverter
     {

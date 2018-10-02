@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
+using System.Collections.Generic;
 
-namespace HomeCenter.Core.Services.Roslyn
+namespace HomeCenter.Services.Roslyn
 {
     public interface IRoslynCompilerService
     {

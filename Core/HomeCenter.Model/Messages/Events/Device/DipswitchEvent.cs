@@ -1,14 +1,11 @@
-﻿using System;
-using HomeCenter.Model.ValueTypes;
-using HomeCenter.Core;
-using HomeCenter.Core.Hardware.RemoteSockets;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Model.Extensions;
-using System.Collections;
-using System.Collections.Generic;
+﻿using HomeCenter.Model.Codes;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
+using HomeCenter.Model.ValueTypes;
+using System;
+using System.Collections.Generic;
 
-namespace HomeCenter.Model.Messages.Events
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class DipswitchEvent : Event
     {
@@ -16,7 +13,7 @@ namespace HomeCenter.Model.Messages.Events
         {
             Type = EventType.DipswitchCode;
             Uid = Guid.NewGuid().ToString();
-            this[EventProperties.SourceDeviceUid] = (StringValue)deviceUID;
+            this[MessageProperties.MessageSource] = (StringValue)deviceUID;
             this[EventProperties.Unit] = (StringValue)code.Unit.ToString();
             this[EventProperties.System] = (StringValue)code.System.ToString();
             this[EventProperties.CommandCode] = (StringValue)code.Command.ToString();
@@ -24,7 +21,7 @@ namespace HomeCenter.Model.Messages.Events
         }
 
         public override IEnumerable<string> RoutingAttributes() => new string[] { EventProperties.Unit, EventProperties.System };
-        
+
         public DipswitchCode DipswitchCode => DipswitchCode.ParseCode(this[EventProperties.System].AsString(), this[EventProperties.Unit].AsString(), this[EventProperties.CommandCode].AsString());
     }
 }

@@ -1,5 +1,5 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Messaging;
+﻿using HomeCenter.Broker;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
 {
-
     public class ProxyGeneratorTest
     {
         public async Task<string> Generate(string code)
@@ -69,9 +68,7 @@ namespace HomeCenter.TestRunner
             var model = MetadataReference.CreateFromFile(typeof(Query).Assembly.Location);
             var eventAggregator = MetadataReference.CreateFromFile(typeof(IEventAggregator).Assembly.Location);
 
-
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
-
 
             var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Proto.Mailbox.UnboundedMailbox).Assembly, typeof(Router).Assembly };
             var external = externalRefs.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();

@@ -1,11 +1,10 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Broker;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Messaging;
 
 namespace HomeCenter.TestRunner
 {
@@ -62,9 +61,9 @@ namespace HomeCenter.TestRunner
     //}
 
     [ProxyCodeGenerator]
-    public class HttpServiceHandler : Actor
+    public class HttpServiceHandler : DeviceActor
     {
-        public HttpServiceHandler(IEventAggregator eventAggregator) : base(eventAggregator) 
+        public HttpServiceHandler(IEventAggregator eventAggregator) : base(eventAggregator)
         {
         }
 
@@ -72,7 +71,6 @@ namespace HomeCenter.TestRunner
         {
             return "xx";
         }
-
 
         [Subscibe]
         protected async Task<string> Handle(TurnOnCommand query)

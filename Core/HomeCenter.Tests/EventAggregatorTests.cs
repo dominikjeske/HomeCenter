@@ -1,6 +1,8 @@
-﻿using HomeCenter.Messaging;
-using HomeCenter.Messaging.Behaviors;
+﻿using HomeCenter.Broker;
+using HomeCenter.Broker.Behaviors;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Tests.Helpers;
+using HomeCenter.Tests.Mocks;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -10,7 +12,7 @@ using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests
 {
     [TestClass]
     public class EventAggregatorTests : ReactiveTest

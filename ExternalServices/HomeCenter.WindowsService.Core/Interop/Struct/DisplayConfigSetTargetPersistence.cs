@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop.Struct
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct DisplayConfigSetTargetPersistence : IDisplayConfigInfo

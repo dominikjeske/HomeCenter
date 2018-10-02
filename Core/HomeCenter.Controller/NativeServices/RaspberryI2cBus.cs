@@ -2,9 +2,8 @@
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
-using HomeCenter.Core.Interface.Native;
 
-namespace HomeCenter.Raspberry
+namespace HomeCenter.Controller.NativeServices
 {
     internal class RaspberryI2cBus : II2cBus
     {

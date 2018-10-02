@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Extensions.Tests.Helpers
+namespace HomeCenter.Tests.Helpers
 {
     public static class TaskHelper
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeCenter.Model.ComponentModel.Capabilities.Constants
+﻿namespace HomeCenter.Model.Capabilities.Constants
 {
     public static class ReadWriteModeValues
     {

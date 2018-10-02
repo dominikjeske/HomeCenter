@@ -1,9 +1,9 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using System;
 using System.Net;
 
-namespace HomeCenter.Model.Adapters.Sony
+namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyControlCommand : HttpCommand, IFormatableMessage<SonyControlCommand>
     {
@@ -17,7 +17,7 @@ namespace HomeCenter.Model.Adapters.Sony
             Cookies = new CookieContainer();
             Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", AuthorisationKey, "/sony", Address));
             Address = $"http://{Address}/sony/IRCC";
-            Body =  $@"<?xml version=""1.0""?>
+            Body = $@"<?xml version=""1.0""?>
                     <s:Envelope xmlns:s=""http://schemas.xmlsoap.org/soap/envelope/"" s:encodingStyle=""http://schemas.xmlsoap.org/soap/encoding/"">
                         <s:Body>
                         <u:X_SendIRCC xmlns:u=""urn:schemas-sony-com:service:IRCC:1"">

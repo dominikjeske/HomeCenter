@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using HomeCenter.WindowsService.Core.Interop.Enum;
+using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     [ComImport]
     [Guid("00000000-0000-0000-C000-000000000046")]  // We just cast it to IUnknown, and pray that v-table layout is correct

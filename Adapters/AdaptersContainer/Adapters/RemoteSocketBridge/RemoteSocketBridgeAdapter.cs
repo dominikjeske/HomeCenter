@@ -1,24 +1,23 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Core.Extensions;
-using HomeCenter.Core.Hardware.RemoteSockets;
-using HomeCenter.Core.Interface.Native;
-using HomeCenter.Core.Services.I2C;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Codes;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Commands.Responses;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
+using HomeCenter.Utils.Extensions;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Adapters.Denon
+namespace HomeCenter.Adapters.RemoteSocketBridge
 {
     [ProxyCodeGenerator]
     public abstract class RemoteSocketBridgeAdapter : Adapter

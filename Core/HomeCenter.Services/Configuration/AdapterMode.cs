@@ -1,9 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace HomeCenter.Core.Services.DependencyInjection
+﻿namespace HomeCenter.Services.Configuration
 {
-
     public enum AdapterMode
     {
         Embedded,

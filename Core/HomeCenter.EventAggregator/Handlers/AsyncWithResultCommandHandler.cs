@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Messaging.Handlers
+namespace HomeCenter.Broker.Handlers
 {
     public sealed class AsyncWithResultCommandHandler : BaseCommandHandler, IAsyncCommandHandler
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HomeCenter.Extensions.Tests
+namespace HomeCenter.Tests.ComponentModel
 {
     [TestClass]
     public class ComponentTests : ReactiveTest

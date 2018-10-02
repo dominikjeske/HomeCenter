@@ -1,5 +1,4 @@
-﻿using HomeCenter.Core;
-using HomeCenter.Core.Extensions;
+﻿using HomeCenter.Utils.Extensions;
 
 namespace HomeCenter.Model.Capabilities.Constants
 {

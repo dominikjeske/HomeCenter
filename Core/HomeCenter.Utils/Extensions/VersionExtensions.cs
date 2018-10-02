@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter.Utils.Extensions
 {
     public static class VersionExtensions
     {

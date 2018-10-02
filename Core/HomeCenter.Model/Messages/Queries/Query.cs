@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using System.Threading;
+﻿using System.Threading;
 
 namespace HomeCenter.Model.Messages.Queries
 {

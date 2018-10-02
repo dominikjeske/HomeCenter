@@ -1,19 +1,19 @@
 ﻿using Quartz.Impl.Calendar;
 using System;
 
-namespace HomeCenter.Motion
+namespace HomeCenter.Model.Triggers.Calendars
 {
     public class PolishCalendar : HolidayCalendar
     {
         public PolishCalendar()
         {
             Description = "Polish holiday calendar";
-            
-            for(int year = DateTime.Now.Year; year < DateTime.Now.Year + 100; year++)
+
+            for (int year = DateTime.Now.Year; year < DateTime.Now.Year + 100; year++)
             {
-                for(int month = 1; month<13; month++)
+                for (int month = 1; month < 13; month++)
                 {
-                    for(int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
+                    for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
                     {
                         var date = new DateTime(year, month, day);
                         if (IsDayOff(date))
@@ -24,7 +24,7 @@ namespace HomeCenter.Motion
                 }
             }
         }
-        
+
         private bool IsDayOff(DateTime date)
         {
             if (date.DayOfWeek == DayOfWeek.Saturday) return true;

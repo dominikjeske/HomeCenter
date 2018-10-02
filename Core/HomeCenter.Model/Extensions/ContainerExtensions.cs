@@ -1,5 +1,5 @@
-﻿using HomeCenter.Core.Utils;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Utils;
 using Proto;
 using SimpleInjector;
 using System;

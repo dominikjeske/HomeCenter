@@ -1,21 +1,19 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
+using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Core.ComponentModel.Configuration;
-using HomeCenter.Core.Services.DependencyInjection;
-using HomeCenter.Core.Services.Roslyn;
-using HomeCenter.Core.Utils;
-using HomeCenter.Messaging;
-using HomeCenter.Model.Configuration;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Services.Networking;
+using HomeCenter.Services.Configuration;
+using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.Roslyn;
+using HomeCenter.Utils;
 using HTTPnet.Core.Pipeline;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,10 +22,10 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Core
+namespace HomeCenter.Services.Controllers
 {
     [ProxyCodeGenerator]
-    public abstract class Controller : Actor
+    public abstract class Controller : DeviceActor
     {
         private readonly IScheduler _scheduler;
         private readonly IRoslynCompilerService _roslynCompilerService;
@@ -39,6 +37,7 @@ namespace HomeCenter.Model.Core
         private readonly IHttpServerService _httpServerService;
 
         private HomeCenterConfiguration _homeConfiguration;
+
         //TODO
         private readonly IEnumerable<Service> _services;
 
@@ -163,7 +162,9 @@ namespace HomeCenter.Model.Core
                     var result = JsonConvert.DeserializeObject<CommandDTO>(rawCommandString);
 
                     var command = _mapper.Map<Command>(result);
-                    await _eventAggregator.PublishDeviceCommnd(command).ConfigureAwait(false);
+
+                    //TODO DNF
+                    //await _eventAggregator.PublishDeviceCommnd(command).ConfigureAwait(false);
                 }
 
                 //context.HttpContext.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(s.ToUpperInvariant()));

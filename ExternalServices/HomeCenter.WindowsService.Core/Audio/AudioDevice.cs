@@ -1,7 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using HomeCenter.WindowsService.Interop;
+﻿using HomeCenter.WindowsService.Core.Interop;
+using HomeCenter.WindowsService.Core.Interop.Enum;
+using System.Runtime.InteropServices;
 
-namespace HomeCenter.WindowsService.Audio
+namespace HomeCenter.WindowsService.Core.Audio
 {
     public class AudioDevice
     {

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using HomeCenter.WindowsService.Core.Interop.Struct;
+using System;
 
-namespace HomeCenter.WindowsService.Interop
+namespace HomeCenter.WindowsService.Core.Interop
 {
     public static class PropertyKeys
     {
