@@ -17,22 +17,22 @@ namespace HomeCenter.Model.Triggers
 
         public Task<bool> ValidateCondition() => Condition?.Validate() ?? Task.FromResult(true);
 
-        public TriggerJobDataDTO ToJobData(IActor actor) => new TriggerJobDataDTO
+        public TriggerJobDataDTO ToJobData(PID actor) => new TriggerJobDataDTO
         {
+            Condition = Condition,
+            Actor = actor,
             //TODO DNF
-            //Condition = Condition,
-            //Actor = actor,
             //Command = Command
         };
 
-        public TriggerJobDataDTO ToJobDataWithFinish(IActor actor) => new TriggerJobDataDTO
+        public TriggerJobDataDTO ToJobDataWithFinish(PID actor) => new TriggerJobDataDTO
         {
-            //TODO DNF
-            //Condition = Condition,
-            //Actor = actor,
+            Condition = Condition,
+            Actor = actor,
+            // TODO DNF
             //Command = Command,
-            //FinishCommand = FinishCommand,
-            //FinishCommandTime = Schedule.WorkingTime
+           // FinishCommand = FinishCommand,
+            FinishCommandTime = Schedule.WorkingTime
         };
     }
 }

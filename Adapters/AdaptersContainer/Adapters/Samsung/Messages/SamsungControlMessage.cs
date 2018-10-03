@@ -8,7 +8,6 @@ namespace HomeCenter.Adapters.Samsung.Messages
 {
     public class SamsungControlCommand : TcpCommand, IFormatableMessage<SamsungControlCommand>
     {
-        public string Address { get; set; }
         public string Code { get; set; }
         public int Port { get; set; } = 55000;
 

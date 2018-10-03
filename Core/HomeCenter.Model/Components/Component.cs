@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    // TODO replace UID with Self
     public class Component : DeviceActor
     {
         private readonly IScheduler _scheduler;
@@ -74,14 +73,14 @@ namespace HomeCenter.Model.Components
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    await _scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    await _scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(Self), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
                 }
             }
@@ -175,13 +174,14 @@ namespace HomeCenter.Model.Components
 
             bool handled = false;
 
-            if (message is Command)
+            if (message is Command command)
             {
                 // TODO use value converter before publish and maybe queue?
                 foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(message)))
                 {
                     var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
-                    Send(message, adapter.ID);
+                    var adapterCommand = adapter.GetDeviceCommand(command);
+                    Send(adapterCommand, adapter.ID);
                     handled = true;
                 }
             }

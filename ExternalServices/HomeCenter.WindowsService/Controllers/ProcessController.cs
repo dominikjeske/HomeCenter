@@ -1,11 +1,11 @@
-﻿using HomeCenter.WindowsService.Core.Interfaces;
-using HomeCenter.Adapters.PC.Model;
+﻿using HomeCenter.Adapters.PC.Model;
+using HomeCenter.WindowsService.Core.Exceptions;
+using HomeCenter.WindowsService.Core.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 
 namespace HomeCenter.WindowsService.Controllers

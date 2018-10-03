@@ -7,9 +7,11 @@ namespace HomeCenter.Model.Triggers
 {
     public class DelayCommandJob : IJob
     {
-        public async Task Execute(IJobExecutionContext context)
+        public Task Execute(IJobExecutionContext context)
         {
             var trigger = context.GetDataContext<Command>();
+            //TODO send command
+            return Task.CompletedTask;
         }
     }
 }

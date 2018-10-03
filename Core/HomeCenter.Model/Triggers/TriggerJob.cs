@@ -14,7 +14,7 @@ namespace HomeCenter.Model.Triggers
 
             if (await trigger.Condition.Validate().ConfigureAwait(false))
             {
-                //TODO
+                //TODO DNF
                 //await trigger.Actor.ExecuteCommand(trigger.Command).ConfigureAwait(false);
             }
 

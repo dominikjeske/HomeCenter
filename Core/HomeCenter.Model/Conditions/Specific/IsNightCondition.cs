@@ -1,4 +1,10 @@
 ﻿using HomeCenter.Broker;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.ValueTypes;
+using System;
 
 namespace HomeCenter.Model.Conditions.Specific
 {
@@ -6,17 +12,20 @@ namespace HomeCenter.Model.Conditions.Specific
     {
         public IsNightCondition(IEventAggregator eventAggregator)
         {
-            //TODO
-            //WithStart(async () =>
-            //{
-            //    var result = await eventAggregator.QueryForValueType(SunsetQuery.Default, ConditionProperies.EndTime).ConfigureAwait(false);
-            //    return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
-            //});
-            //WithEnd(async () =>
-            //{
-            //    var result = await eventAggregator.QueryForValueType(SunriseQuery.Default, ConditionProperies.EndTime).ConfigureAwait(false);
-            //    return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
-            //});
+            WithStart(async () =>
+            {
+                var value = await eventAggregator.QueryAsync<Query, BaseObject>(SunsetQuery.Default).ConfigureAwait(false);
+                var result = value?[ConditionProperies.StartTime] ?? NullValue.Value;
+
+                return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
+            });
+            WithEnd(async () =>
+            {
+                var value = await eventAggregator.QueryAsync<Query, BaseObject>(SunsetQuery.Default).ConfigureAwait(false);
+                var result = value?[ConditionProperies.EndTime] ?? NullValue.Value;
+
+                return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
+            });
         }
     }
 }

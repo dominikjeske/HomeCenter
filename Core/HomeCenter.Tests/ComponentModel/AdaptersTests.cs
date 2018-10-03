@@ -17,12 +17,6 @@ namespace HomeCenter.Tests.ComponentModel
                                                                        .BuildAndRun()
                                                                        .ConfigureAwait(false);
 
-            var xx = sizeof(byte);
-            var xx2 = sizeof(int);
-            var xx3 = sizeof(uint);
-            var xx4 = sizeof(float);
-
-            var ss = Marshal.SizeOf(typeof(float));
 
             await Task.Delay(1000000);
 

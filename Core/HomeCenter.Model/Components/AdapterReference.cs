@@ -2,10 +2,10 @@
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using Proto;
 using System.Collections.Generic;
-
 
 namespace HomeCenter.Model.Components
 {
@@ -27,27 +27,25 @@ namespace HomeCenter.Model.Components
             routerAttributes.Add(EventProperties.EventType, EventType.PropertyChanged);
 
             return new RoutingFilter(routingKey, routerAttributes);
-
         }
 
-        //TODO clean
-        //public Command GetDeviceCommand(Command baseCommand)
-        //{
-        //    var command = new Command(baseCommand.Type, Uid);
+        public Command GetDeviceCommand(Command baseCommand)
+        {
+            var command = new Command(baseCommand.Type, Uid);
 
-        //    // copy properties from base command
-        //    foreach (var prop in baseCommand.ToProperiesList())
-        //    {
-        //        command.SetPropertyValue(prop.Key, prop.Value.Value);
-        //    }
+            // copy properties from base command
+            foreach (var prop in baseCommand.ToProperiesList())
+            {
+                command.SetPropertyValue(prop.Key, prop.Value.Value);
+            }
 
-        //    // add properties from adapter reference
-        //    foreach (var prop in ToProperiesList())
-        //    {
-        //        command.SetPropertyValue(prop.Key, prop.Value.Value);
-        //    }
+            // add properties from adapter reference
+            foreach (var prop in ToProperiesList())
+            {
+                command.SetPropertyValue(prop.Key, prop.Value.Value);
+            }
 
-        //    return command;
-        //}
+            return command;
+        }
     }
 }

@@ -39,9 +39,6 @@ namespace HomeCenter.Services.Controllers
 
         private HomeCenterConfiguration _homeConfiguration;
 
-        //TODO
-        private readonly IEnumerable<Service> _services;
-
         protected Controller(IEventAggregator eventAggregator, IMapper mapper, IHttpServerService httpServerService, IScheduler scheduler, IRoslynCompilerService roslynCompilerService,
             IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, ILogger<Controller> logger, IControllerOptions controllerOptions) : base(eventAggregator)
         {
@@ -65,9 +62,6 @@ namespace HomeCenter.Services.Controllers
             await LoadCalendars().ConfigureAwait(false);
             InitializeConfiguration();
             await RunScheduler().ConfigureAwait(false);
-
-            //TODO
-            //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
         }
 
         private void RegisterRestCommandHanler()

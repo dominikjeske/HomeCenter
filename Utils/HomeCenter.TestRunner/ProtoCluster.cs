@@ -10,7 +10,7 @@ namespace HomeCenter.TestRunner
 {
     public static class ProtoCluster
     {
-        public static async Task Start()
+        public static Task Start()
         {
             var context = new RootContext();
 
@@ -42,6 +42,8 @@ namespace HomeCenter.TestRunner
             //}
 
             Console.ReadLine();
+
+            return Task.CompletedTask;
         }
 
         internal static class Decider
@@ -65,7 +67,7 @@ namespace HomeCenter.TestRunner
     {
         public static PID Service;
 
-        public static async Task Start()
+        public static Task Start()
         {
             var context = new RootContext();
             var props = Props.FromProducer(() => new ClientActor());
@@ -86,6 +88,7 @@ namespace HomeCenter.TestRunner
             }
 
             Console.ReadLine();
+            return Task.CompletedTask;
         }
     }
 

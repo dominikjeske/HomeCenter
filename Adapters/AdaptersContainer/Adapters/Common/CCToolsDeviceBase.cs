@@ -110,8 +110,7 @@ namespace HomeCenter.Adapters.Common
                 var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, new BooleanValue(oldPinState),
                                             new BooleanValue(newPinState), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(i) } });
 
-                //TODO DNF
-                //await _eventAggregator.PublishDeviceEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
+                await PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 
                 _log.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }

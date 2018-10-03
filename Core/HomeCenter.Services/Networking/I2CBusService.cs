@@ -138,8 +138,5 @@ namespace HomeCenter.Services.Networking
             return Task.CompletedTask;
         }
 
-        public void Dispose()
-        {
-        }
     }
 }
