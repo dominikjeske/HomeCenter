@@ -29,15 +29,15 @@ namespace HomeCenter.Model.Core
             _eventAggregator = eventAggregator;
         }
 
-        protected virtual Task UnhandledCommand(Proto.IContext command)
+        protected virtual Task UnhandledMessage(IContext context)
         {
-            if (command.Message is ActorMessage actorMessage)
+            if (context.Message is ActorMessage actorMessage)
             {
                 throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type}]");
             }
             else
             {
-                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {command.Message.GetType().Name} is not ActorMessage");
+                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {context.Message.GetType().Name} is not ActorMessage");
             }
         }
 
@@ -107,7 +107,7 @@ namespace HomeCenter.Model.Core
 
         protected virtual Task OnStop(IContext context)
         {
-            //TODO check if this is eecuted only once
+            //TODO check if this is executed only once
             _disposables.Dispose();
             return Task.CompletedTask;
         }
@@ -127,42 +127,14 @@ namespace HomeCenter.Model.Core
             return Task.CompletedTask;
         }
 
-        protected void SubscribeForCommand<T>(RoutingFilter filter = null, IContext parent = null) where T : Command
+        protected void SubscribeForMessage<T>(RoutingFilter filter = null, IContext parent = null) where T : ActorMessage
         {
             _disposables.Add
             (
                 _eventAggregator.Subscribe<T>(message => (parent ?? (IContext)RootContext.Empty).Send(Self, message.Message), filter)
             );
         }
-
-        protected void SubscribeForEvent(Event ev, IContext parent = null)
-        {
-            var attributes = ev.GetPropertiesStrings();
-            if (!attributes.ContainsKey(EventProperties.EventType))
-            {
-                attributes.Add(EventProperties.EventType, EventType.PropertyChanged);
-            }
-
-            var routingKey = attributes[MessageProperties.MessageSource];
-            var filter = new RoutingFilter(routingKey, attributes);
-
-            _disposables.Add
-            (
-                _eventAggregator.Subscribe<Event>(message => (parent ?? (IContext)RootContext.Empty).Send(Self, message.Message), filter)
-            );
-        }
-
-        protected void SubscribeForQuery<T, R>(RoutingFilter filter = null, IContext parent = null) where T : Query
-        {
-            _disposables.Add
-            (
-                _eventAggregator.SubscribeForAsyncResult<T>(async message =>
-                {
-                    var result = await (parent ?? (IContext)RootContext.Empty).RequestAsync<R>(Self, message.Message, message.CancellationToken).ConfigureAwait(false);
-                    return result;
-                }, filter)
-            );
-        }
+               
 
         protected Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
                                                                                    where R : class
@@ -183,21 +155,17 @@ namespace HomeCenter.Model.Core
             return query.Verify(result, expectedResult);
         }
 
-        protected Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes) where T : Event
+        protected Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes = null) where T : Event
         {
-            var attributes = routerAttributes.ToDictionary(k => k, v => message[v].ToString());
-            attributes[EventProperties.EventType] = message.Type;
-            var routingKey = message[MessageProperties.MessageSource].ToString();
-
-            var filter = new RoutingFilter(routingKey, attributes);
-
-            return _eventAggregator.Publish(message, filter);
+            return _eventAggregator.Publish(message, message.GetRoutingFilter(routerAttributes));
         }
 
-        protected void PublishToSelf(Command command)
+        protected void Send(ActorMessage message, PID destination = null)
         {
-            RootContext.Empty.Send(Self, command);
+            RootContext.Empty.Send(destination ?? Self, message);
         }
+
+        protected Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => RootContext.Empty.RequestAsync<R>(actor, message);
 
         //TODO invoke in proxy
         //private void AssertActorState()

@@ -46,8 +46,10 @@ namespace HomeCenter.Services.Configuration
 
             var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
 
+            CheckForDuplicateUid(result);
+
             var adapters = MapAdapters(result.HomeCenter.Adapters, adapterMode);
-            var components = MapComponents(result);
+            var components = MapComponents(result, adapters);
             var areas = MapAreas(result, components);
 
             var configuration = new HomeCenterConfiguration
@@ -57,27 +59,24 @@ namespace HomeCenter.Services.Configuration
                 Areas = areas
             };
 
-            //TODO check before map
-            //CheckForDuplicateUid(configuration);
-
             return configuration;
         }
 
-        //private void CheckForDuplicateUid(HomeCenterConfiguration configuration)
-        //{
-        //    var allUids = configuration.Adapters.Select(a => a.Uid).ToList();
-        //    allUids.AddRange(configuration.Components.Select(c => c.Uid));
+        private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
+        {
+            var allUids = configuration.HomeCenter.Adapters.Select(a => a.Uid).ToList();
+            allUids.AddRange(configuration.HomeCenter.Components.Select(c => c.Uid));
 
-        //    var duplicateKeys = allUids.GroupBy(x => x)
-        //                               .Where(group => group.Count() > 1)
-        //                               .Select(group => group.Key);
-        //    if (duplicateKeys?.Count() > 0)
-        //    {
-        //        throw new ConfigurationException($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
-        //    }
-        //}
+            var duplicateKeys = allUids.GroupBy(x => x)
+                                       .Where(group => group.Count() > 1)
+                                       .Select(group => group.Key);
+            if (duplicateKeys?.Count() > 0)
+            {
+                throw new ConfigurationException($"Duplicate UID's found in config file: {string.Join(", ", duplicateKeys)}");
+            }
+        }
 
-        private IList<Area> MapAreas(HomeCenterConfigDTO result, IList<Component> components)
+        private IList<Area> MapAreas(HomeCenterConfigDTO result, IDictionary<string, PID> components)
         {
             var areas = _mapper.Map<IList<AreaDTO>, IList<Area>>(result.HomeCenter.Areas);
             MapComponentsToArea(result.HomeCenter.Areas, components, areas);
@@ -85,7 +84,7 @@ namespace HomeCenter.Services.Configuration
             return areas;
         }
 
-        private void MapComponentsToArea(IList<AreaDTO> areasFromConfig, IList<Component> components, IList<Area> areas)
+        private void MapComponentsToArea(IList<AreaDTO> areasFromConfig, IDictionary<string, PID> components, IList<Area> areas)
         {
             var configAreas = areasFromConfig.Expand(a => a.Areas);
             foreach (var area in areas.Expand(a => a.Areas))
@@ -95,20 +94,30 @@ namespace HomeCenter.Services.Configuration
                 {
                     foreach (var component in areInConfig?.Components)
                     {
-                        area.AddComponent(components.FirstOrDefault(c => c.Uid == component.Uid));
+                        area.AddComponent(component.Uid, components[component.Uid]);
                     }
                 }
             }
         }
 
-        private IList<Component> MapComponents(HomeCenterConfigDTO result)
+        private IDictionary<string, PID> MapComponents(HomeCenterConfigDTO result, IDictionary<string, PID> adapters)
         {
-            return _mapper.Map<IList<ComponentDTO>, IList<Component>>(result.HomeCenter.Components);
+            var components = new Dictionary<string, PID>();
+
+            foreach (var componentConfig in result.HomeCenter.Components)
+            {
+               // fill adapter actor reference
+               componentConfig.Adapters.ForEach(a => a.ID = adapters[a.Uid]);
+
+               var component = _actorFactory.GetActor(() => (Component)Mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
+            }
+
+            return components;
         }
 
-        private IList<PID> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
+        private IDictionary<string, PID> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
         {
-            var adapters = new List<PID>();
+            var adapters = new Dictionary<string, PID>();
 
             // force to load HomeCenter.AdaptersContainer into memory
             if (adapterMode == AdapterMode.Embedded)
@@ -137,7 +146,7 @@ namespace HomeCenter.Services.Configuration
                     if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
                     var adapter = _actorFactory.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
 
-                    adapters.Add(adapter);
+                    adapters.Add(adapterConfig.Uid, adapter);
                 }
                 catch (Exception ex)
                 {

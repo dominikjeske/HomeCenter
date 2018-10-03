@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.ValueTypes;
 using System.Linq;
 
@@ -16,6 +16,6 @@ namespace HomeCenter.Model.Capabilities
             this[StateProperties.ReadWriteMode] = ReadWriteMode;
         }
 
-        public bool IsCommandSupported(Command command) => ((StringListValue)this[StateProperties.SupportedCommands]).Value.Contains(command.Type);
+        public bool IsCommandSupported(ActorMessage command) => ((StringListValue)this[StateProperties.SupportedCommands]).Value.Contains(command.Type);
     }
 }

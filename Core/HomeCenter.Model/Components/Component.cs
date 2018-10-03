@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Broker;
-using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
@@ -9,10 +8,12 @@ using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
+using Proto;
 using Quartz;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,8 +39,6 @@ namespace HomeCenter.Model.Components
             _scheduler = scheduler;
         }
 
-        public IReadOnlyList<string> AdapterReferences => _adapters.Select(a => a.Uid).ToList().AsReadOnly();
-
         protected override async Task OnStarted(Proto.IContext context)
         {
             if (!IsEnabled) return;
@@ -49,13 +48,6 @@ namespace HomeCenter.Model.Components
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
             SubscribeForRemoteCommands();
-        }
-
-        public void InitializeAdapter(Adapter adapter)
-        {
-            var reference = _adapters.FirstOrDefault(a => a.Uid == adapter.Uid);
-            if (reference == null) throw new KeyNotFoundException($"Adapter {adapter.Uid} was not found in component {Uid}");
-            reference.InitializeAdapter(adapter);
         }
 
         private Task InitializeTriggers()
@@ -69,7 +61,8 @@ namespace HomeCenter.Model.Components
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
                 trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
-                SubscribeForEvent(trigger.Event);
+
+                SubscribeForMessage<Event>(trigger.Event.GetRoutingFilter());
             }
         }
 
@@ -81,20 +74,63 @@ namespace HomeCenter.Model.Components
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    //TODO DNF
                     await _scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(this), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        //TODO DNF
-                        //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        //await scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(this), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
                 }
             }
         }
+
+        private async Task InitializeAdapters()
+        {
+            foreach (var adapterRef in _adapters)
+            {
+                var capabilities = await Request<DiscoverQuery, DiscoveryResponse>(adapterRef.ID, DiscoverQuery.Default).ConfigureAwait(false);
+                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+
+                MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
+                BuildCapabilityStates(capabilities);
+                MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
+                SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
+            }
+        }
+
+        private void MapCapabilitiesToAdapters(AdapterReference adapter, State[] states)
+        {
+            states.ForEach(state => _adapterStateMap[state[StateProperties.StateName].AsString()] = adapter);
+        }
+
+        private void BuildCapabilityStates(DiscoveryResponse capabilities)
+        {
+            _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => ((StringValue)key[StateProperties.StateName]).ToString(), val => val));
+        }
+
+        private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
+        {
+            eventSources.ForEach(es => _eventSources[es[EventProperties.EventType].AsString()] = adapter);
+        }
+
+        /// <summary>
+        /// Subscribe for event generated by child adapters
+        /// </summary>
+        /// <param name="adapter"></param>
+        /// <param name="requierdProperties"></param>
+        private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
+        {
+            var routingFilter = adapter.GetRoutingFilter(requierdProperties);
+            SubscribeForMessage<Event>(routingFilter);
+        }
+
+        /// <summary>
+        /// Subscribe for commands addressed to this component via event aggregator
+        /// </summary>
+        private void SubscribeForRemoteCommands() => SubscribeForMessage<Command>(new RoutingFilter(Uid));
 
         protected async Task DeviceTriggerHandler(Event ev)
         {
@@ -110,106 +146,53 @@ namespace HomeCenter.Model.Components
                         continue;
                     }
 
-                    PublishToSelf(command);
+                    Send(command);
                 }
             }
-        }
 
-        private async Task InitializeAdapters()
-        {
-            foreach (var adapterRef in _adapters)
+            //TODO distinct trigger and property change from adapter
+            if (ev is PropertyChangedEvent propertyChanged)
             {
-                //TODO
-                //var capabilities = await adapterRef.Adapter.ExecuteQuery<DiscoveryResponse>(DiscoverQuery.Default).ConfigureAwait(false);
-                //if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+                var propertyName = ev[StateProperties.StateName].AsString();
+                if (!_capabilities.ContainsKey(propertyName)) return;
 
-                //MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
-                //BuildCapabilityStates(capabilities);
-                //MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
-                //SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
+                var state = _capabilities[propertyName];
+                var oldValue = state[StateProperties.Value];
+                var newValue = ev[EventProperties.NewValue];
+
+                if (newValue.Equals(oldValue)) return;
+
+                state[StateProperties.Value] = newValue;
+
+                await PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
             }
         }
 
-        private void BuildCapabilityStates(DiscoveryResponse capabilities)
-        {
-            _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => ((StringValue)key[StateProperties.StateName]).ToString(), val => val));
-        }
 
-        private void MapCapabilitiesToAdapters(AdapterReference adapter, State[] states)
+        protected override async Task UnhandledMessage(IContext context)
         {
-            states.ForEach(state => _adapterStateMap[state[StateProperties.StateName].AsString()] = adapter);
-        }
-
-        private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
-        {
-            eventSources.ForEach(es => _eventSources[es[EventProperties.EventType].AsString()] = adapter);
-        }
-
-        private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
-        {
-            //_disposables.Add(_eventAggregator.SubscribeForDeviceEvent(DeviceEventHandler, GetAdapterRouterAttributes(adapter, requierdProperties)));
-        }
-
-        private void SubscribeForRemoteCommands()
-        {
-            //TODO
-            // _disposables.Add(_eventAggregator.SubscribeForDeviceCommnd((IMessageEnvelope<Command> deviceCommand) => ExecuteCommand(deviceCommand.Message), Uid));
-        }
-
-        private Dictionary<string, string> GetAdapterRouterAttributes(AdapterReference adapter, IList<string> requierdProperties)
-        {
-            var routerAttributes = new Dictionary<string, string>();
-            foreach (var adapterProperty in requierdProperties)
-            {
-                if (!adapter.ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {adapter.Uid} in component {Uid} missing configuration property {adapterProperty}");
-                routerAttributes.Add(adapterProperty, adapter[adapterProperty].ToString());
-            }
-            routerAttributes.Add(MessageProperties.MessageSource, adapter.Uid);
-
-            return routerAttributes;
-        }
-
-        /// <summary>
-        /// All command not handled by the component directly are routed to adapters
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        protected override async Task UnhandledCommand(Proto.IContext context)
-        {
-            var command = context.Message as ActorMessage;
+            var message = context.Message as ActorMessage;
 
             bool handled = false;
-            // TODO use value converter before publish and maybe queue?
-            //foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(command)))
-            //{
-            //    var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
-            //    await _eventAggregator.PublishDeviceCommnd(adapter.GetDeviceCommand(command)).ConfigureAwait(false);
 
-            //    handled = true;
-            //}
+            if (message is Command)
+            {
+                // TODO use value converter before publish and maybe queue?
+                foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(message)))
+                {
+                    var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
+                    Send(message, adapter.ID);
+                    handled = true;
+                }
+            }
 
-            //if (!handled)
-            //{
-            //    await base.UnhandledCommand(command).ConfigureAwait(false);
-            //}
+            if (!handled)
+            {
+                await base.UnhandledMessage(context).ConfigureAwait(false);
+            }
         }
 
-        private async Task DeviceEventHandler(IMessageEnvelope<Event> deviceEvent)
-        {
-            var propertyName = (StringValue)deviceEvent.Message[StateProperties.StateName];
-            if (!_capabilities.ContainsKey(propertyName)) return;
-
-            var state = _capabilities[propertyName];
-            var oldValue = state[StateProperties.Value];
-            var newValue = deviceEvent.Message[EventProperties.NewValue];
-
-            if (newValue.Equals(oldValue)) return;
-
-            state[StateProperties.Value] = newValue;
-
-            //TODO
-            //await PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
-        }
+       
 
         protected IReadOnlyCollection<string> Capabilities(CapabilitiesQuery command) => _capabilities.Values
                                                                                                 .Select(cap => cap.GetPropertyValue(StateProperties.StateName))

@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Core;
 using Newtonsoft.Json;
+using Proto;
 using System.Collections.Generic;
 
 namespace HomeCenter.Services.Configuration.DTO
@@ -18,5 +19,7 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonProperty("Type")]
         public string Type { get; set; }
+
+        public PID ID { get; set; }
     }
 }

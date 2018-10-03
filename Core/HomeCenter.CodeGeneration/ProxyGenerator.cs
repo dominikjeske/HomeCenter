@@ -57,7 +57,7 @@ namespace HomeCenter.CodeGeneration
 
                     foreach (var method in methods)
                     {
-                        var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("SubscribeForCommand")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
+                        var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("SubscribeForMessage")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
 
                         statementSyntaxes.Add(registration);
                     }
@@ -229,7 +229,7 @@ namespace HomeCenter.CodeGeneration
 
         private static StatementSyntax GetUnsupportedMessage()
         {
-            return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledCommand")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context")))))));
+            return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledMessage")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context")))))));
         }
 
         private class MethodDescription

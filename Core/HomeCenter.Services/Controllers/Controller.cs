@@ -14,6 +14,7 @@ using HTTPnet.Core.Pipeline;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -114,31 +115,7 @@ namespace HomeCenter.Services.Controllers
         private void InitializeConfiguration()
         {
             _homeConfiguration = _configurationService.ReadConfiguration(_controllerOptions.AdapterMode);
-
-            //foreach (var component in _homeConfiguration.Components)
-            //{
-            //    try
-            //    {
-            //        foreach (var reference in component.AdapterReferences)
-            //        {
-            //            var adapter = _homeConfiguration.Adapters.FirstOrDefault(x => x.Uid == reference);
-            //            if (adapter == null) throw new ConfigurationException($"Adapter {reference} for component {component.Uid} was not found in current configuration");
-            //            component.InitializeAdapter(adapter);
-            //        }
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        _logger.LogError(e, $"Exception while initialization of component {component.Uid}");
-            //    }
-            //}
         }
-
-        //protected Component GetComponentCommandHandler(Command command)
-        //{
-        //    if (string.IsNullOrWhiteSpace(command.Uid)) throw new ArgumentException($"Command GetComponentCommand is missing destination uid");
-
-        //    return _homeConfiguration.Components.FirstOrDefault(c => c.Uid == command.Uid);
-        //}
     }
 
     public class RestCommandHandler : IHttpContextPipelineHandler
