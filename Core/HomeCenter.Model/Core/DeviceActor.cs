@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
+using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
 using System;
@@ -17,14 +18,16 @@ namespace HomeCenter.Model.Core
     public abstract class DeviceActor : BaseObject, IDisposable, IActor
     {
         public PID Self { get; private set; }
+
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected readonly IEventAggregator _eventAggregator;
+        protected ILogger _logger;
 
         [Map] protected bool IsEnabled { get; private set; } = true;
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
 
-        public DeviceActor(IEventAggregator eventAggregator)
+        protected DeviceActor(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }
@@ -41,17 +44,21 @@ namespace HomeCenter.Model.Core
             }
         }
 
+        //TODO kill actor and clean subscriptions ?
         public void Dispose() => _disposables.Dispose();
 
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
+            // If actor is disabled we are ignoring all messages
+            if (!IsEnabled)
+            {
+                _logger.LogInformation($"Device '{Uid}' is disabled and message type '{context.Message.GetType().Name}' will be ignored");
+                return true;
+            }
+
             var msg = context.Message;
             if (msg is Started)
             {
-                if (!IsEnabled) return false;
-
-                //TODO kill actor and clean subscriptions
-
                 await OnStarted(context).ConfigureAwait(false);
                 return true;
             }

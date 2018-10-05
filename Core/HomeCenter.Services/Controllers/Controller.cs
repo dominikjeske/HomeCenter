@@ -14,8 +14,6 @@ using HTTPnet.Core.Pipeline;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,7 +29,6 @@ namespace HomeCenter.Services.Controllers
         private readonly IScheduler _scheduler;
         private readonly IRoslynCompilerService _roslynCompilerService;
         private readonly IControllerOptions _controllerOptions;
-        private readonly ILogger<Controller> _logger;
         private readonly IConfigurationService _configurationService;
         private readonly IResourceLocatorService _resourceLocatorService;
         private readonly IMapper _mapper;
@@ -40,12 +37,11 @@ namespace HomeCenter.Services.Controllers
         private HomeCenterConfiguration _homeConfiguration;
 
         protected Controller(IEventAggregator eventAggregator, IMapper mapper, IHttpServerService httpServerService, IScheduler scheduler, IRoslynCompilerService roslynCompilerService,
-            IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, ILogger<Controller> logger, IControllerOptions controllerOptions) : base(eventAggregator)
+            IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, IControllerOptions controllerOptions) : base(eventAggregator)
         {
             _scheduler = scheduler;
             _roslynCompilerService = roslynCompilerService;
             _controllerOptions = controllerOptions;
-            _logger = logger;
             _configurationService = configurationService;
             _resourceLocatorService = resourceLocatorService;
             _mapper = mapper;

@@ -18,10 +18,9 @@ namespace HomeCenter.CodeGeneration
 
             try
             {
-                var classDeclaration = ClassDeclaration(className);
-
-                classDeclaration = classDeclaration.AddModifiers(Token(SyntaxKind.PublicKeyword))
-                                                   .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))));
+                var classDeclaration = ClassDeclaration(className).AddModifiers(Token(SyntaxKind.PublicKeyword))
+                                                                  .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))))
+                                                                  .WithAttributeLists(SingletonList(AttributeList(SingletonSeparatedList(Attribute(IdentifierName("ProxyClass"))))));
 
                 var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsync")
                                        .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword), Token(SyntaxKind.OverrideKeyword) }))
@@ -106,9 +105,12 @@ namespace HomeCenter.CodeGeneration
             }
 
             var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
+
+            parameters = parameters.AddParameters(Parameter(Identifier("logger")).WithType(QualifiedName(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging")), GenericName(Identifier("ILogger")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(className)))))));
+
             var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
 
-            var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block());
+            var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("_logger"), IdentifierName("logger"))))));
             return constructorDecclaration;
         }
 

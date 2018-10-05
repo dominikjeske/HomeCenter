@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services
 {
-    public class HttpServerService
+    public class HttpServerService : IHttpServerService
     {
         private HttpServer _httpServer = null;
         private bool _IsInitialized = false;

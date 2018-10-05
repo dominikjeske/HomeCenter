@@ -4,19 +4,57 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
 {
-    internal class Program
+    internal static class Program
     {
+        private static readonly bool autorun = true;
+
         private static async Task Main(string[] args)
         {
-            // Runtime
-            //await ProtoCluster.Start();
+            int programNumber = 1;
+            string input = "";
 
-            // await ProtoTest.Start();
+            Console.WriteLine("HomeCenter TestRunner:");
+            Console.WriteLine("1. Full controller configuration");
+            Console.WriteLine("2. ProtoCluster Playground");
+            Console.WriteLine("3. Code generation");
 
-            // Debug
-            await GenerateDebuging().ConfigureAwait(false);
+            if (!autorun)
+            {
+                input = Console.ReadLine();
+            }
+
+            if (!int.TryParse(input, out programNumber))
+            {
+                programNumber = 1;
+            }
+
+            switch (programNumber)
+            {
+                case 1:
+                    await StartController().ConfigureAwait(false);
+                    break;
+
+                case 2:
+                    await StartCluster().ConfigureAwait(false);
+                    break;
+
+                case 3:
+                    await GenerateDebuging().ConfigureAwait(false);
+                    break;
+            }
 
             Console.ReadLine();
+        }
+
+        private static Task StartController()
+        {
+            var runner = new WirehomeRunner();
+            return runner.Run();
+        }
+
+        private static Task StartCluster()
+        {
+            return ProtoCluster.Start();
         }
 
         private static async Task GenerateDebuging()

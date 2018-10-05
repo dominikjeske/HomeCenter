@@ -38,7 +38,7 @@ namespace HomeCenter.Model.Components
             _scheduler = scheduler;
         }
 
-        protected override async Task OnStarted(Proto.IContext context)
+        protected override async Task OnStarted(IContext context)
         {
             if (!IsEnabled) return;
 
@@ -167,7 +167,6 @@ namespace HomeCenter.Model.Components
             }
         }
 
-
         protected override async Task UnhandledMessage(IContext context)
         {
             var message = context.Message as ActorMessage;
@@ -191,8 +190,6 @@ namespace HomeCenter.Model.Components
                 await base.UnhandledMessage(context).ConfigureAwait(false);
             }
         }
-
-       
 
         protected IReadOnlyCollection<string> Capabilities(CapabilitiesQuery command) => _capabilities.Values
                                                                                                 .Select(cap => cap.GetPropertyValue(StateProperties.StateName))

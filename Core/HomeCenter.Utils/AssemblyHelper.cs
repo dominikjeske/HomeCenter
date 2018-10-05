@@ -8,7 +8,7 @@ namespace HomeCenter.Utils
 {
     public static class AssemblyHelper
     {
-        private const string TestAssembliesName = "Tests";
+        private const string TestAssembliesName = "Test";
 
         /// <summary>
         /// Get a list of all assemblies in solution
@@ -31,7 +31,7 @@ namespace HomeCenter.Utils
         }
 
         /// <summary>
-        /// Get  all types in solution accessible via type <typeparamref name="T"/>
+        /// Get all types in solution accessible via type <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -58,11 +58,12 @@ namespace HomeCenter.Utils
             return referenced.Select(assembly => Array.Find(allAsseblies, a => a.FullName == assembly)?.Location).Where(x => !string.IsNullOrWhiteSpace(x));
         }
 
-        private static IEnumerable<Type> GetTypesWithAttribute(IEnumerable<Assembly> assembiles, Type attribute, bool inherit = false)
+        public static IEnumerable<Type> GetTypesWithAttribute<T>(bool inherit = false) 
         {
+            var assembiles = GetProjectAssemblies();
             foreach (Type type in assembiles.SelectMany(a => a.GetTypes()))
             {
-                if (type.GetCustomAttributes(attribute, inherit).Length > 0)
+                if (type.GetCustomAttributes(typeof(T), inherit).Length > 0)
                 {
                     yield return type;
                 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.DI
 {
-    public abstract class Bootstrapper : IBootstrapper
+    public abstract partial class Bootstrapper : IBootstrapper
     {
         protected Container _container = new Container();
 
@@ -35,11 +36,20 @@ namespace HomeCenter.Services.DI
 
             await RegisterQuartz().ConfigureAwait(false);
 
-            //RegisterServices();
+            RegisterActorProxies();
 
             _container.Verify();
 
             return CreateController();
+        }
+
+        private void RegisterActorProxies()
+        {
+            foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())
+            {
+                var registration = Lifestyle.Singleton.CreateRegistration(actorProxy, _container);
+                _container.AddRegistration(actorProxy, registration);
+            }
         }
 
         private PID CreateController()
@@ -63,6 +73,8 @@ namespace HomeCenter.Services.DI
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
+            _container.RegisterSingleton<IHttpServerService, HttpServerService>();
+            
         }
 
         private async Task RegisterQuartz()
@@ -98,27 +110,10 @@ namespace HomeCenter.Services.DI
                                    .AddEventSourceLogger()
                                    .AddConsole();
 
-            Proto.Log.SetLoggerFactory(loggerFactory);
+            Log.SetLoggerFactory(loggerFactory);
 
             _container.RegisterInstance(loggerFactory);
             _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
-        }
-
-        private class GenericLogger<T> : ILogger<T>
-        {
-            private readonly ILogger<T> _underlying;
-
-            public GenericLogger(ILoggerFactory factory)
-            {
-                _underlying = factory.CreateLogger<T>();
-            }
-
-            public IDisposable BeginScope<TState>(TState state) => _underlying.BeginScope(state);
-
-            public bool IsEnabled(LogLevel logLevel) => _underlying.IsEnabled(logLevel);
-
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-                    => _underlying.Log(logLevel, eventId, state, exception, formatter);
         }
 
         protected abstract void RegisterNativeServices();

@@ -15,10 +15,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Moq" Version="4.10.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
+    <ProjectReference Include="..\..\Core\HomeCenter.Services\HomeCenter.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,20 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ComponentModel\SampleConfigs\componentConfiguration.json" />
-    <None Remove="ComponentModel\SampleConfigs\oneComponentConfiguration.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="ComponentModel\SampleConfigs\oneComponentConfiguration.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ComponentModel\SampleConfigs\componentConfiguration.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0-preview-20180924-03" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.1" />

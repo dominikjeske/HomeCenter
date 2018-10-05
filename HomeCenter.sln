@@ -53,6 +53,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.CodeGeneration",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.TestRunner", "Utils\HomeCenter.TestRunner\HomeCenter.TestRunner.csproj", "{DC34DCC2-ADB0-48D7-AD40-9995D4D5EC4F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{416C1B23-9BFF-4763-95D5-BACF7DAB774E}"
+	ProjectSection(SolutionItems) = preProject
+		Configurations\componentConfiguration.json = Configurations\componentConfiguration.json
+		Configurations\oneComponentConfiguration.json = Configurations\oneComponentConfiguration.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
