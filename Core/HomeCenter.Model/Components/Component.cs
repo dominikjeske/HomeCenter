@@ -233,4 +233,5 @@ namespace HomeCenter.Model.Components
             return Maybe<IValue>.From(value);
         }
     }
+
 }

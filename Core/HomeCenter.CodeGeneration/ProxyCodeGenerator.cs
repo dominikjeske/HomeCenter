@@ -22,10 +22,7 @@ namespace HomeCenter.CodeGeneration
         public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
             var results = List<MemberDeclarationSyntax>();
-
-            var applyToClass = (ClassDeclarationSyntax)context.ProcessingNode;
-
-            var proxy = new ProxyGenerator().GenerateProxy(applyToClass, context.SemanticModel);
+            var proxy = new ProxyGenerator().Generate(context);
             results = results.Add(proxy);
 
             return Task.FromResult(results);

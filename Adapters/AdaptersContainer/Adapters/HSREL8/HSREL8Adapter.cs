@@ -14,6 +14,7 @@ namespace HomeCenter.Adapters.HSREL8
     {
         protected HSREL8Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
+            
         }
 
         protected override async Task OnStarted(IContext context)
@@ -28,6 +29,7 @@ namespace HomeCenter.Adapters.HSREL8
 
         public void TurnOn(TurnOnCommand message)
         {
+            
         }
 
         public void TurnOff(TurnOffCommand message)

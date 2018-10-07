@@ -11,8 +11,17 @@ namespace HomeCenter.CodeGeneration
 {
     public class ProxyGenerator
     {
-        public ClassDeclarationSyntax GenerateProxy(ClassDeclarationSyntax classSyntax, SemanticModel model)
+        TransformationContext _context;
+
+        public ClassDeclarationSyntax Generate(TransformationContext context)
         {
+            _context = context;
+
+            var classSyntax = (ClassDeclarationSyntax)context.ProcessingNode;
+            var model = context.SemanticModel;
+
+            //using HomeCenter.Model.Messages.Commands.Device;
+
             var classSemantic = model.GetDeclaredSymbol(classSyntax);
             var className = $"{classSemantic.Name}Proxy";
 
@@ -75,7 +84,7 @@ namespace HomeCenter.CodeGeneration
             }
         }
 
-        private static ConstructorDeclarationSyntax BenerateConstructor(string className, IMethodSymbol baseConstructor)
+        private ConstructorDeclarationSyntax BenerateConstructor(string className, IMethodSymbol baseConstructor)
         {
             var parList = new List<SyntaxNodeOrToken>();
             var baseList = new List<SyntaxNodeOrToken>();
@@ -207,11 +216,28 @@ namespace HomeCenter.CodeGeneration
             return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"query_"}{param_num}")))), GetQueryInvocationBody(method.Method.Identifier.ValueText, $"{"query_"}{param_num++}", method.ReturnType.Name));
         }
 
-        private static List<MethodDescription> GetMethodList(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType = null)
+        private List<MethodDescription> GetMethodList(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType = null)
         {
+            var result = GetMethodListInner(classSyntax, model, parameterType, attributeType);
+
+            if (model.GetDeclaredSymbol(classSyntax)?.BaseType?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is ClassDeclarationSyntax subClassSyntax)
+            {
+                var semanticModel = _context.Compilation.GetSemanticModel(subClassSyntax.SyntaxTree);
+
+                var sub = GetMethodListInner(subClassSyntax, semanticModel, parameterType, attributeType);
+                result.AddRange(sub);
+            }
+
+            return result;
+        }
+
+        private List<MethodDescription> GetMethodListInner(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType)
+        {
+            
             var filter = classSyntax.DescendantNodes()
-                              .OfType<MethodDeclarationSyntax>()
-                              .Where(m => m.ParameterList.Parameters.Count == 1);
+                                .OfType<MethodDeclarationSyntax>()
+                                .Where(m => m.ParameterList.Parameters.Count == 1);
+ 
             if (attributeType != null)
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));
@@ -222,9 +248,7 @@ namespace HomeCenter.CodeGeneration
                 Method = c,
                 Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
                 ReturnType = model.GetTypeInfo(c.ReturnType).Type
-            })
-                              .Where(x => x.Parameter.Type.BaseType?.Name == parameterType)
-                              .ToList();
+            }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType).ToList();
 
             return result;
         }

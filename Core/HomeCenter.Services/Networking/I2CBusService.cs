@@ -13,13 +13,11 @@ namespace HomeCenter.Services.Networking
         private readonly Dictionary<int, II2cDevice> _deviceCache = new Dictionary<int, II2cDevice>();
         private readonly string _busId;
         private readonly II2cBus _nativeI2CBus;
-        private readonly ILogger<I2CBusService> _logger;
 
-        public I2CBusService(ILogger<I2CBusService> logger, II2cBus nativeI2CBus, IEventAggregator eventAggregator) : base(eventAggregator)
+        public I2CBusService(II2cBus nativeI2CBus, IEventAggregator eventAggregator) : base(eventAggregator)
         {
             _nativeI2CBus = nativeI2CBus ?? throw new ArgumentNullException(nameof(nativeI2CBus));
             _busId = _nativeI2CBus.GetBusId();
-            _logger = logger;
         }
 
         private II2cDevice CreateDevice(int slaveAddress)

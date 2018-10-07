@@ -12,11 +12,10 @@ namespace HomeCenter.Services.Networking
 {
     public class TcpMessagingService : Service
     {
-        private readonly ILogger<TcpMessagingService> _logger;
 
-        public TcpMessagingService(ILogger<TcpMessagingService> logger, IEventAggregator eventAggregator) : base(eventAggregator)
+        public TcpMessagingService( IEventAggregator eventAggregator) : base(eventAggregator)
         {
-            _logger = logger;
+
         }
 
         //TODO query?

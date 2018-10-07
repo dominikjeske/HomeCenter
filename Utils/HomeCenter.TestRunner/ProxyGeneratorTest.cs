@@ -1,9 +1,11 @@
-﻿using HomeCenter.Broker;
+﻿using CodeGeneration.Roslyn;
+using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Router;
 using System;
@@ -35,9 +37,13 @@ namespace HomeCenter.TestRunner
             foreach (var classModel in classToDecorate)
             {
                 var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
-                if (classSemantic.BaseType.Name == "Actor")
+
+                if (HasBaseType(classSemantic, "DeviceActor"))
                 {
-                    var proxyClass = generator.GenerateProxy(classModel, semanticModel);
+                    // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
+
+                    var proxy = new TransformationContext(classModel, semanticModel, null, "", null, null);
+                    var proxyClass = generator.Generate(proxy);
 
                     ConsoleWriter.WriteOK($"{classSemantic.Name}:");
                     ConsoleWriter.Write($"{proxyClass.NormalizeWhitespace().ToFullString()}");
@@ -58,6 +64,14 @@ namespace HomeCenter.TestRunner
             return syntaxTree.NormalizeWhitespace().ToFullString();
         }
 
+        private bool HasBaseType(INamedTypeSymbol type, string baseType)
+        {
+            if (type.BaseType == null) return false;
+            if (type.BaseType.Name == baseType) return true;
+
+            return HasBaseType(type.BaseType, baseType);
+        }
+
         private static void Veryfy(CompilationUnitSyntax syntaxTree)
         {
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
@@ -67,6 +81,9 @@ namespace HomeCenter.TestRunner
             var generator = MetadataReference.CreateFromFile(typeof(ProxyGenerator).Assembly.Location);
             var model = MetadataReference.CreateFromFile(typeof(Query).Assembly.Location);
             var eventAggregator = MetadataReference.CreateFromFile(typeof(IEventAggregator).Assembly.Location);
+            var logger = MetadataReference.CreateFromFile(typeof(ILogger).Assembly.Location);
+
+            
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
 
@@ -75,7 +92,7 @@ namespace HomeCenter.TestRunner
 
             var comp = CSharpCompilation.Create("Final").WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                                                         .AddSyntaxTrees(syntaxTree.SyntaxTree)
-                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, generator, model, eventAggregator)
+                                                        .AddReferences(mscorlib, tasklib, netStandard, runtime, console, generator, model, eventAggregator, logger)
                                                         .AddReferences(external);
 
             var result = comp.Emit("final.dll");

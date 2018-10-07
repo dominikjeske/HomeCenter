@@ -109,7 +109,8 @@ namespace HomeCenter.Services.Configuration
                // fill adapter actor reference
                componentConfig.Adapters.ForEach(a => a.ID = adapters[a.Uid]);
 
-               var component = _actorFactory.GetActor(() => (Component)Mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
+               var component = _actorFactory.GetActor(() => (Component)_mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
+                components.Add(componentConfig.Uid, component);
             }
 
             return components;
@@ -157,4 +158,6 @@ namespace HomeCenter.Services.Configuration
             return adapters;
         }
     }
+
+
 }

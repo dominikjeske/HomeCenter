@@ -20,12 +20,11 @@ namespace HomeCenter.Services.Networking
         private readonly ISerialDevice _serialDevice;
         private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
-        private readonly ILogger<SerialMessagingService> _logger;
 
-        public SerialMessagingService(ISerialDevice serialDevice, ILogger<SerialMessagingService> logger, IEventAggregator eventAggregator) : base(eventAggregator)
+
+        public SerialMessagingService(ISerialDevice serialDevice, IEventAggregator eventAggregator) : base(eventAggregator)
         {
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
-            _logger = logger;
         }
 
         protected override async Task OnStarted(Proto.IContext context)

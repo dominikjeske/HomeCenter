@@ -10,11 +10,10 @@ namespace HomeCenter.Services.Networking
 {
     public class UdpBroadcastService : Service
     {
-        private readonly ILogger<UdpBroadcastService> _logger;
 
-        public UdpBroadcastService(ILogger<UdpBroadcastService> logger, IEventAggregator eventAggregator) : base(eventAggregator)
+        public UdpBroadcastService(IEventAggregator eventAggregator) : base(eventAggregator)
         {
-            _logger = logger;
+
         }
 
         [Subscibe]

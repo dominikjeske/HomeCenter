@@ -17,13 +17,12 @@ namespace HomeCenter.Model.Core
 {
     public abstract class DeviceActor : BaseObject, IDisposable, IActor
     {
-        public PID Self { get; private set; }
+        [Map] protected bool IsEnabled { get; private set; } = true;
 
+        protected PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected readonly IEventAggregator _eventAggregator;
         protected ILogger _logger;
-
-        [Map] protected bool IsEnabled { get; private set; } = true;
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
 
@@ -36,7 +35,7 @@ namespace HomeCenter.Model.Core
         {
             if (context.Message is ActorMessage actorMessage)
             {
-                throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type}]");
+                throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type ?? actorMessage.GetType().Name}]");
             }
             else
             {
