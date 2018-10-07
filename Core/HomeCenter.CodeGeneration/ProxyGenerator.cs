@@ -11,77 +11,133 @@ namespace HomeCenter.CodeGeneration
 {
     public class ProxyGenerator
     {
-        TransformationContext _context;
+        private TransformationContext _context;
+        private List<UsingDirectiveSyntax> _usingSyntax = new List<UsingDirectiveSyntax>();
 
-        public ClassDeclarationSyntax Generate(TransformationContext context)
+        public RichGenerationResult Generate(TransformationContext context)
         {
             _context = context;
-
             var classSyntax = (ClassDeclarationSyntax)context.ProcessingNode;
             var model = context.SemanticModel;
-
-            //using HomeCenter.Model.Messages.Commands.Device;
+            ClassDeclarationSyntax classDeclaration = null;
 
             var classSemantic = model.GetDeclaredSymbol(classSyntax);
             var className = $"{classSemantic.Name}Proxy";
 
             try
             {
-                var classDeclaration = ClassDeclaration(className).AddModifiers(Token(SyntaxKind.PublicKeyword))
-                                                                  .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))))
-                                                                  .WithAttributeLists(SingletonList(AttributeList(SingletonSeparatedList(Attribute(IdentifierName("ProxyClass"))))));
+                classDeclaration = GenerateClass(classSemantic, className);
 
-                var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsync")
-                                       .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword), Token(SyntaxKind.OverrideKeyword) }))
-                                       .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext"))))))
-                                       .WithBody(Block(
-                                           GenerateSystemMessagesHandler(),
-                                           LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("msg")).WithInitializer(EqualsValueClause(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Message"))))))),
-                                           FillContextData(),
-                                           GenerateCommandHandlers(classSyntax, model),
-                                           GenerateQueryHandlers(classSyntax, model),
-                                           GetUnsupportedMessage())
-                                        );
+                classDeclaration = AddReciveMapMethod(classSyntax, model, classDeclaration);
 
-                classDeclaration = classDeclaration.AddMembers(methodDeclaration);
+                classDeclaration = AddConstructor(classDeclaration, classSemantic, className);
 
-                //TODO select constructor
-                var baseConstructor = classSemantic.Constructors.FirstOrDefault(p => p.Parameters.Length > 0);
-
-                if (baseConstructor != null)
-                {
-                    ConstructorDeclarationSyntax constructorDecclaration = BenerateConstructor(className, baseConstructor);
-                    classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
-                }
-
-                var methods = GetMethodList(classSyntax, model, "Command", "Subscibe");
-
-                if (methods.Count > 0)
-                {
-                    var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
-
-                    List<StatementSyntax> statementSyntaxes = new List<StatementSyntax>();
-                    statementSyntaxes.Add(baseClassInvoke);
-
-                    foreach (var method in methods)
-                    {
-                        var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("SubscribeForMessage")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
-
-                        statementSyntaxes.Add(registration);
-                    }
-
-                    var subscriptions = MethodDeclaration(IdentifierName("Task"), Identifier("OnStarted")).WithModifiers(TokenList(new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.OverrideKeyword), Token(SyntaxKind.AsyncKeyword) })).WithParameterList(ParameterList(SingletonSeparatedList<ParameterSyntax>(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext")))))).WithBody(Block(statementSyntaxes));
-
-                    classDeclaration = classDeclaration.AddMembers(subscriptions);
-                }
-
-                return classDeclaration;
+                classDeclaration = AddSubscriptions(classSyntax, model, classDeclaration);
             }
             catch (Exception e)
             {
                 Logger.Error(e.ToString(), "");
-                return ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
+                classDeclaration = ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
             }
+
+            var namespaveDeclaration = AddNamespace(classSyntax, classDeclaration);
+
+            var result = new RichGenerationResult
+            {
+                Members = List<MemberDeclarationSyntax>().Add(namespaveDeclaration)
+            };
+
+            if (_usingSyntax.Count > 0)
+            {
+                result.Usings = GenerateUsingStatements();
+            }
+
+            return result;
+        }
+
+        private SyntaxList<UsingDirectiveSyntax> GenerateUsingStatements()
+        {
+            var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
+            foreach (var usingSyntax in _usingSyntax)
+            {
+                // if using is not exists in current class or we already not added it to generated
+                if (!(_context.CompilationUnitUsings?.Any(u => u.Name.ToString() == usingSyntax.Name.ToString()) ?? false) && !usingSyntaxFinal.Any(u => u.Name.ToString() == usingSyntax.Name.ToString()))
+                {
+                    usingSyntaxFinal.Add(usingSyntax);
+                }
+            }
+
+            return List(usingSyntaxFinal);
+        }
+
+        private static NamespaceDeclarationSyntax AddNamespace(ClassDeclarationSyntax classSyntax, ClassDeclarationSyntax classDeclaration)
+        {
+            return NamespaceDeclaration((classSyntax.Parent as NamespaceDeclarationSyntax)?.Name).AddMembers(classDeclaration);
+        }
+
+        private static ClassDeclarationSyntax GenerateClass(INamedTypeSymbol classSemantic, string className)
+        {
+            return ClassDeclaration(className).AddModifiers(Token(SyntaxKind.PublicKeyword))
+                                                                              .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(classSemantic.Name)))))
+                                                                              .WithAttributeLists(SingletonList(AttributeList(SingletonSeparatedList(Attribute(IdentifierName("ProxyClass"))))));
+        }
+
+        private ClassDeclarationSyntax AddReciveMapMethod(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
+        {
+            var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsync")
+                                                   .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword), Token(SyntaxKind.OverrideKeyword) }))
+                                                   .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext"))))))
+                                                   .WithBody(Block(
+                                                       GenerateSystemMessagesHandler(),
+                                                       LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("msg")).WithInitializer(EqualsValueClause(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Message"))))))),
+                                                       FillContextData(),
+                                                       GenerateCommandHandlers(classSyntax, model),
+                                                       GenerateQueryHandlers(classSyntax, model),
+                                                       GetUnsupportedMessage())
+                                                    );
+
+            classDeclaration = classDeclaration.AddMembers(methodDeclaration);
+            return classDeclaration;
+        }
+
+        private ClassDeclarationSyntax AddSubscriptions(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
+        {
+            var methods = GetMethodList(classSyntax, model, "Command", "Subscibe");
+
+            if (methods.Count > 0)
+            {
+                var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
+
+                List<StatementSyntax> statementSyntaxes = new List<StatementSyntax>();
+                statementSyntaxes.Add(baseClassInvoke);
+
+                foreach (var method in methods)
+                {
+                    var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("SubscribeForMessage")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
+
+                    statementSyntaxes.Add(registration);
+                }
+
+                var subscriptions = MethodDeclaration(IdentifierName("Task"), Identifier("OnStarted")).WithModifiers(TokenList(new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.OverrideKeyword), Token(SyntaxKind.AsyncKeyword) })).WithParameterList(ParameterList(SingletonSeparatedList<ParameterSyntax>(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext")))))).WithBody(Block(statementSyntaxes));
+
+                classDeclaration = classDeclaration.AddMembers(subscriptions);
+            }
+
+            return classDeclaration;
+        }
+
+        private ClassDeclarationSyntax AddConstructor(ClassDeclarationSyntax classDeclaration, INamedTypeSymbol classSemantic, string className)
+        {
+            //TODO select constructor
+            var baseConstructor = classSemantic.Constructors.FirstOrDefault(p => p.Parameters.Length > 0);
+
+            if (baseConstructor != null)
+            {
+                var constructorDecclaration = BenerateConstructor(className, baseConstructor);
+                classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
+            }
+
+            return classDeclaration;
         }
 
         private ConstructorDeclarationSyntax BenerateConstructor(string className, IMethodSymbol baseConstructor)
@@ -173,17 +229,30 @@ namespace HomeCenter.CodeGeneration
 
             if (methods.Count > 0)
             {
-                var ifStatement = GetIfCommand(ref param_num, methods[0]);
-
-                foreach (var method in methods.Skip(1))
+                var list = new List<IfStatementSyntax>();
+                foreach (var method in methods)
                 {
-                    ifStatement = ifStatement.WithElse(ElseClause(GetIfCommand(ref param_num, method)));
+                    list.Add(GetIfCommand(ref param_num, method));
                 }
 
-                return ifStatement;
+                return GenerateIfStatement(list);
             }
 
             return EmptyStatement();
+        }
+
+        private static IfStatementSyntax GenerateIfStatement(List<IfStatementSyntax> list)
+        {
+            if (list.Count == 1) return list[0];
+
+            IfStatementSyntax ifStatment = list[list.Count - 2].WithElse(ElseClause(list[list.Count - 1]));
+            var text = ifStatment.NormalizeWhitespace().ToFullString();
+            for (int i = list.Count - 3; i >= 0; i--)
+            {
+                ifStatment = list[i].WithElse(ElseClause(ifStatment));
+            }
+
+            return ifStatment;
         }
 
         private IfStatementSyntax GetIfCommand(ref int param_num, MethodDescription method)
@@ -198,14 +267,13 @@ namespace HomeCenter.CodeGeneration
 
             if (methods.Count > 0)
             {
-                var ifStatement = GetIfQuery(ref param_num, methods[0]);
-
-                foreach (var method in methods.Skip(1))
+                var list = new List<IfStatementSyntax>();
+                foreach (var method in methods)
                 {
-                    ifStatement = ifStatement.WithElse(ElseClause(GetIfQuery(ref param_num, method)));
+                    list.Add(GetIfQuery(ref param_num, method));
                 }
 
-                return ifStatement;
+                return GenerateIfStatement(list);
             }
 
             return EmptyStatement();
@@ -220,9 +288,12 @@ namespace HomeCenter.CodeGeneration
         {
             var result = GetMethodListInner(classSyntax, model, parameterType, attributeType);
 
-            if (model.GetDeclaredSymbol(classSyntax)?.BaseType?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is ClassDeclarationSyntax subClassSyntax)
+            if (_context.Compilation != null && model.GetDeclaredSymbol(classSyntax)?.BaseType?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is ClassDeclarationSyntax subClassSyntax)
             {
                 var semanticModel = _context.Compilation.GetSemanticModel(subClassSyntax.SyntaxTree);
+
+                // add usings from base class
+                _usingSyntax.AddRange(subClassSyntax.SyntaxTree.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>());
 
                 var sub = GetMethodListInner(subClassSyntax, semanticModel, parameterType, attributeType);
                 result.AddRange(sub);
@@ -233,11 +304,10 @@ namespace HomeCenter.CodeGeneration
 
         private List<MethodDescription> GetMethodListInner(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType)
         {
-            
             var filter = classSyntax.DescendantNodes()
                                 .OfType<MethodDeclarationSyntax>()
                                 .Where(m => m.ParameterList.Parameters.Count == 1);
- 
+
             if (attributeType != null)
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));

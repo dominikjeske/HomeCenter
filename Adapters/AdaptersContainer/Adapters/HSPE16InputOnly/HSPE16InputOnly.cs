@@ -13,6 +13,7 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
     {
         protected HSPE16InputOnlyAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
+
         }
 
         protected override async Task OnStarted(IContext context)

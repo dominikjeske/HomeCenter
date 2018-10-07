@@ -32,7 +32,7 @@ namespace HomeCenter.TestRunner
 
             NamespaceDeclarationSyntax oldNamespace = classToDecorate[0].Parent as NamespaceDeclarationSyntax;
             NamespaceDeclarationSyntax newNamespace = oldNamespace;
-            List<ClassDeclarationSyntax> classList = new List<ClassDeclarationSyntax>();
+            var classList = new List<MemberDeclarationSyntax>();
 
             foreach (var classModel in classToDecorate)
             {
@@ -42,13 +42,16 @@ namespace HomeCenter.TestRunner
                 {
                     // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
 
-                    var proxy = new TransformationContext(classModel, semanticModel, null, "", null, null);
-                    var proxyClass = generator.Generate(proxy);
+                    var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
+                    var result = generator.Generate(proxy);
 
-                    ConsoleWriter.WriteOK($"{classSemantic.Name}:");
-                    ConsoleWriter.Write($"{proxyClass.NormalizeWhitespace().ToFullString()}");
+                    foreach(var res in result.Members)
+                    {
+                        ConsoleWriter.WriteOK($"{classSemantic.Name}:");
+                        ConsoleWriter.Write($"{res.NormalizeWhitespace().ToFullString()}");
 
-                    classList.Add(proxyClass);
+                        classList.Add(res);
+                    }
                 }
             }
 
@@ -110,7 +113,7 @@ namespace HomeCenter.TestRunner
             }
         }
 
-        private async Task<(CompilationUnitSyntax syntaxTree, SemanticModel semanticModel)> GetModels(string code)
+        private async Task<(CompilationUnitSyntax syntaxTree, SemanticModel semanticModel, CSharpCompilation compilation)> GetModels(string code)
         {
             var tree = CSharpSyntaxTree.ParseText(code);
             var syntaxTree = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
@@ -121,7 +124,7 @@ namespace HomeCenter.TestRunner
 
             var semanticModel = comp.GetSemanticModel(tree);
 
-            return (syntaxTree, semanticModel);
+            return (syntaxTree, semanticModel, comp);
         }
     }
 }

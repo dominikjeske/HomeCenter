@@ -111,7 +111,6 @@ namespace HomeCenter.TestRunner
     //{
     //}
 
-
     public abstract class HSREL8Adapter : CCToolsBaseAdapter
     {
         protected HSREL8Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
@@ -121,7 +120,12 @@ namespace HomeCenter.TestRunner
 
         protected override async Task OnStarted(IContext context)
         {
-            
+            var address = (IntValue)this[AdapterProperties.I2cAddress];
+            //_portExpanderDriver = new MAX7311Driver(new I2CSlaveAddress(address.Value), _i2CBusService);
+
+            await base.OnStarted(context).ConfigureAwait(false);
+
+            SetState(new byte[] { 0x00, 255 }, true);
         }
 
         public void TurnOn(TurnOnCommand message)
@@ -249,7 +253,7 @@ namespace HomeCenter.TestRunner
 
         private void SetPortState(int pinNumber, bool state, bool commit)
         {
-         //   _state.SetBit(pinNumber, state);
+            //_state.SetBit(pinNumber, state);
 
             if (commit) CommitChanges();
         }

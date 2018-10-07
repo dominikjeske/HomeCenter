@@ -5,11 +5,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Validation;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace HomeCenter.CodeGeneration
 {
-    public class ProxyCodeGenerator : ICodeGenerator
+    public class ProxyCodeGenerator : IRichCodeGenerator
     {
         private readonly AttributeData _attributeData;
 
@@ -21,11 +20,13 @@ namespace HomeCenter.CodeGeneration
 
         public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
-            var results = List<MemberDeclarationSyntax>();
-            var proxy = new ProxyGenerator().Generate(context);
-            results = results.Add(proxy);
+            throw new NotImplementedException();
+        }
 
-            return Task.FromResult(results);
+        public Task<RichGenerationResult> GenerateRichAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
+        {
+            var proxy = new ProxyGenerator().Generate(context);
+            return Task.FromResult(proxy);
         }
     }
 }
