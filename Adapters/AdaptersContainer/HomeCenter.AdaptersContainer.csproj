@@ -14,6 +14,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview2-35157" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Proto.Actor" Version="0.2.0" />
+    <PackageReference Include="Proto.Router" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,9 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Actor.dll</HintPath>
-    </Reference>
     <Reference Include="Proto.Mailbox">
       <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
     </Reference>
