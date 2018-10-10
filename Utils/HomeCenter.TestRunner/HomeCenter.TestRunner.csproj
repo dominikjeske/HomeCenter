@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.74" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.74">
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.88">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

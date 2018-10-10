@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.74">
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.88">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.74" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
   </ItemGroup>
 
 </Project>
