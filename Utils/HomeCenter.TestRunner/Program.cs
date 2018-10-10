@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
 {
     internal static class Program
     {
-        private static readonly bool autorun = false;
+        private static readonly bool autorun = true;
 
         private static async Task Main(string[] args)
         {
@@ -36,20 +37,28 @@ namespace HomeCenter.TestRunner
 
                 case 2:
                     await StartCluster().ConfigureAwait(false);
+                    Console.ReadLine();
                     break;
 
                 case 3:
                     await GenerateDebuging().ConfigureAwait(false);
+                    Console.ReadLine();
                     break;
             }
 
-            Console.ReadLine();
+            
         }
 
-        private static Task StartController()
+        private static async Task StartController()
         {
-            var runner = new WirehomeRunner();
-            return runner.Run();
+            Runner[] runners = new[]
+            {
+                new DenonRunner()
+            };
+
+            var runner = new WirehomeRunner(runners.ToList());
+            await runner.Initialize().ConfigureAwait(false);
+            await runner.Run().ConfigureAwait(false);
         }
 
         private static Task StartCluster()
