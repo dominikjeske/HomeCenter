@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Model.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 
@@ -8,11 +9,13 @@ namespace HomeCenter.Services.DI
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
+        private readonly ILogger<ActorFactory> _logger;
 
-        public ActorFactory(IServiceProvider serviceProvider, ActorPropsRegistry actorPropsRegistry)
+        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry)
         {
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;
+            _logger = logger;
         }
 
         public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)
@@ -65,6 +68,8 @@ namespace HomeCenter.Services.DI
 
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)
         {
+            _logger.LogInformation($"Creating actor {id}");
+
             if (!_actorPropsRegistry.RegisteredProps.TryGetValue(actorType, out var props))
             {
                 props = x => x;

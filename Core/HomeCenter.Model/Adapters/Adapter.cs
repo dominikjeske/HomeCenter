@@ -13,7 +13,7 @@ namespace HomeCenter.Model.Adapters
         protected readonly IScheduler _scheduler;
         protected readonly List<string> _requierdProperties = new List<string>();
 
-        public IList<string> RequierdProperties() => _requierdProperties;
+        protected IList<string> RequierdProperties() => _requierdProperties;
 
         protected Adapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory.GetEventAggregator())
         {

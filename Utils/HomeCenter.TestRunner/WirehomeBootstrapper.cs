@@ -1,7 +1,9 @@
 ﻿using HomeCenter.Model.Native;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.DI;
+using Microsoft.Extensions.Logging;
 using Moq;
+using Proto;
 using SimpleInjector;
 
 namespace HomeCenter.TestRunner
@@ -54,6 +56,19 @@ namespace HomeCenter.TestRunner
                 AdapterMode = AdapterMode.Embedded,
                 HttpServerPort = 8080,
             });
+        }
+
+        protected override void RegisterLogging()
+        {
+            var loggerFactory = new LoggerFactory()
+                                  .AddDebug(LogLevel.Information) //TODO configure
+                                  .AddEventSourceLogger();
+            loggerFactory.AddProvider(new CustomLoggerProvider());
+
+            Log.SetLoggerFactory(loggerFactory);
+
+            _container.RegisterInstance(loggerFactory);
+            _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
         }
     }
 }

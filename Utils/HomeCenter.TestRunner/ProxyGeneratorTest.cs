@@ -47,8 +47,8 @@ namespace HomeCenter.TestRunner
 
                     foreach(var res in result.Members)
                     {
-                        ConsoleWriter.WriteOK($"{classSemantic.Name}:");
-                        ConsoleWriter.Write($"{res.NormalizeWhitespace().ToFullString()}");
+                        ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
+                        ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
 
                         classList.Add(res);
                     }
@@ -102,13 +102,13 @@ namespace HomeCenter.TestRunner
 
             if (result.Success)
             {
-                ConsoleWriter.WriteOK("Success");
+                ConsoleEx.WriteOK("Success");
             }
             else
             {
                 foreach (var error in result.Diagnostics)
                 {
-                    ConsoleWriter.WriteError(error.ToString());
+                    ConsoleEx.WriteError(error.ToString());
                 }
             }
         }

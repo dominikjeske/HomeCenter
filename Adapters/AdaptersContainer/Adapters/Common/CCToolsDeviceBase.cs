@@ -26,14 +26,12 @@ namespace HomeCenter.Adapters.Common
         private byte[] _committedState;
         private byte[] _state;
 
-        protected readonly ILogger<CCToolsBaseAdapter> _log;
         protected readonly II2CBusService _i2CBusService;
         protected II2CPortExpanderDriver _portExpanderDriver;
 
         protected CCToolsBaseAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
         {
             _i2CBusService = adapterServiceFactory.GetI2CService();
-            _log = adapterServiceFactory.GetLogger<CCToolsBaseAdapter>();
 
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
@@ -112,12 +110,12 @@ namespace HomeCenter.Adapters.Common
 
                 await PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 
-                _log.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
+                _logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
             {
-                _log.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
+                _logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
             }
         }
 
@@ -128,7 +126,7 @@ namespace HomeCenter.Adapters.Common
             _portExpanderDriver.Write(_state);
             Buffer.BlockCopy(_state, 0, _committedState, 0, _state.Length);
 
-            _log.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
+            _logger.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
         }
 
         private bool GetPortState(int id) => _state.GetBit(id);

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.DI
 {
-    public abstract partial class Bootstrapper : IBootstrapper
+    public abstract class Bootstrapper : IBootstrapper
     {
         protected Container _container = new Container();
 
