@@ -1,5 +1,4 @@
-﻿using HomeCenter.Adapters.PC.Messages;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Extensions;
@@ -7,7 +6,6 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.ValueTypes;
-using HomeCenter.Adapters.PC.Model;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -29,10 +27,6 @@ namespace HomeCenter.Adapters.PC
         private BooleanValue _mute;
         private StringValue _input;
 
-        protected PcAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
-        {
-        }
-
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
@@ -47,18 +41,18 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Refresh(RefreshCommand message)
         {
-            var state = await _eventAggregator.QueryAsync<ComputerControlCommand, ComputerStatus>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Port = _port,
-                Service = "Status",
-                RequestType = "GET"
-            }).ConfigureAwait(false);
+            //var state = await _eventAggregator.QueryAsync<ComputerControlCommand, ComputerStatus>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Port = _port,
+            //    Service = "Status",
+            //    RequestType = "GET"
+            //}).ConfigureAwait(false);
 
-            _input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
-            _volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
-            _mute = await UpdateState<BooleanValue>(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
-            _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
+            //_input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
+            //_volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
+            //_mute = await UpdateState<BooleanValue>(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
+            //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -82,12 +76,12 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task TurnOf(TurnOffCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Power",
-                Message = new PowerPost { State = 0 } //Hibernate
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Power",
+            //    Message = new PowerPost { State = 0 } //Hibernate
+            //}).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
@@ -95,12 +89,12 @@ namespace HomeCenter.Adapters.PC
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Volume",
-                Message = new VolumePost { Volume = volume }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Volume",
+            //    Message = new VolumePost { Volume = volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
@@ -108,12 +102,12 @@ namespace HomeCenter.Adapters.PC
         protected async Task VolumeDown(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Volume",
-                Message = new VolumePost { Volume = volume }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Volume",
+            //    Message = new VolumePost { Volume = volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
@@ -121,36 +115,36 @@ namespace HomeCenter.Adapters.PC
         protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Volume",
-                Message = new VolumePost { Volume = volume }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Volume",
+            //    Message = new VolumePost { Volume = volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Mute",
-                Message = new MutePost { Mute = true }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Mute",
+            //    Message = new MutePost { Mute = true }
+            //}).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
         protected async Task UnMute(UnmuteCommand message)
         {
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "Mute",
-                Message = new MutePost { Mute = false }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "Mute",
+            //    Message = new MutePost { Mute = false }
+            //}).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
@@ -159,12 +153,12 @@ namespace HomeCenter.Adapters.PC
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
 
-            await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
-            {
-                Address = _hostname,
-                Service = "InputSource",
-                Message = new InputSourcePost { Input = inputName }
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<ComputerControlCommand, string>(new ComputerControlCommand
+            //{
+            //    Address = _hostname,
+            //    Service = "InputSource",
+            //    Message = new InputSourcePost { Input = inputName }
+            //}).ConfigureAwait(false);
 
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }

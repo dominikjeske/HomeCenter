@@ -1,4 +1,3 @@
-using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@ namespace HomeCenter.Services.Networking
         private readonly string _busId;
         private readonly II2cBus _nativeI2CBus;
 
-        public I2CBusService(II2cBus nativeI2CBus, IEventAggregator eventAggregator) : base(eventAggregator)
+        public I2CBusService(II2cBus nativeI2CBus)
         {
             _nativeI2CBus = nativeI2CBus ?? throw new ArgumentNullException(nameof(nativeI2CBus));
             _busId = _nativeI2CBus.GetBusId();
@@ -59,7 +58,7 @@ namespace HomeCenter.Services.Networking
 
                     if (result.Status != I2cTransferStatus.FullTransfer)
                     {
-                        _logger.LogWarning($"Transfer failed. Address={address.Value} Status={result.Status} TransferredBytes={result.BytesTransferred}");
+                        Logger.LogWarning($"Transfer failed. Address={address.Value} Status={result.Status} TransferredBytes={result.BytesTransferred}");
                     }
 
                     return WrapResult(result);
@@ -67,7 +66,7 @@ namespace HomeCenter.Services.Networking
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    _logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
+                    Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
                     return new I2cTransferResult() { Status = I2cTransferStatus.UnknownError, BytesTransferred = 0 };
                 }
                 finally
@@ -135,6 +134,5 @@ namespace HomeCenter.Services.Networking
         {
             return Task.CompletedTask;
         }
-
     }
 }

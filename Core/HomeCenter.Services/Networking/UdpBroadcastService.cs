@@ -1,7 +1,5 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -10,12 +8,6 @@ namespace HomeCenter.Services.Networking
 {
     public class UdpBroadcastService : Service
     {
-
-        public UdpBroadcastService(IEventAggregator eventAggregator) : base(eventAggregator)
-        {
-
-        }
-
         [Subscibe]
         protected async Task SendMessage(UdpCommand udpCommand)
         {

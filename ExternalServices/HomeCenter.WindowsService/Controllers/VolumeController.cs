@@ -1,5 +1,5 @@
-﻿using HomeCenter.WindowsService.Core.Interfaces;
-using HomeCenter.Adapters.PC.Model;
+﻿using HomeCenter.Adapters.PC.Model;
+using HomeCenter.WindowsService.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeCenter.WindowsService.Controllers

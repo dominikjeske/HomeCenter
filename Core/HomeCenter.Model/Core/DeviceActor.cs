@@ -1,16 +1,12 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Model.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
+using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
@@ -18,18 +14,14 @@ namespace HomeCenter.Model.Core
     public abstract class DeviceActor : BaseObject, IDisposable, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
+        [DI] protected IActorMessageBroker MessageBroker { get; set; }
+        [DI] protected IScheduler Scheduler { get; set; }
+        [DI] protected ILogger Logger { get; set; }
 
-        protected PID Self { get; private set; }
         protected readonly DisposeContainer _disposables = new DisposeContainer();
-        protected readonly IEventAggregator _eventAggregator;
-        protected ILogger _logger;
+        protected PID Self { get; private set; }
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
-
-        protected DeviceActor(IEventAggregator eventAggregator)
-        {
-            _eventAggregator = eventAggregator;
-        }
 
         protected virtual Task UnhandledMessage(IContext context)
         {
@@ -51,7 +43,7 @@ namespace HomeCenter.Model.Core
             // If actor is disabled we are ignoring all messages
             if (!IsEnabled)
             {
-                _logger.LogInformation($"Device '{Uid}' is disabled and message type '{context.Message.GetType().Name}' will be ignored");
+                Logger.LogInformation($"Device '{Uid}' is disabled and message type '{context.Message.GetType().Name}' will be ignored");
                 return true;
             }
 
@@ -133,45 +125,10 @@ namespace HomeCenter.Model.Core
             return Task.CompletedTask;
         }
 
-        protected void SubscribeForMessage<T>(RoutingFilter filter = null, IContext parent = null) where T : ActorMessage
+        protected void Subscribe<T>(RoutingFilter filter = null) where T : ActorMessage
         {
-            _disposables.Add
-            (
-                _eventAggregator.Subscribe<T>(message => (parent ?? (IContext)RootContext.Empty).Send(Self, message.Message), filter)
-            );
+            _disposables.Add(MessageBroker.SubscribeForMessage<Event>(Self, filter));
         }
-               
-
-        protected Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
-                                                                                   where R : class
-        {
-            if (query is IFormatableMessage<T> formatableMessage)
-            {
-                query = formatableMessage.FormatMessage();
-            }
-
-            return _eventAggregator.QueryAsync<T, R>(query, filter);
-        }
-
-        protected async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
-                                                                                                                           where Q : class
-                                                                                                                           where R : class
-        {
-            var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
-            return query.Verify(result, expectedResult);
-        }
-
-        protected Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes = null) where T : Event
-        {
-            return _eventAggregator.Publish(message, message.GetRoutingFilter(routerAttributes));
-        }
-
-        protected void Send(ActorMessage message, PID destination = null)
-        {
-            RootContext.Empty.Send(destination ?? Self, message);
-        }
-
-        protected Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => RootContext.Empty.RequestAsync<R>(actor, message);
 
         //TODO invoke in proxy
         //private void AssertActorState()

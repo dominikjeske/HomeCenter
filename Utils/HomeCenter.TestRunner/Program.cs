@@ -7,7 +7,7 @@ namespace HomeCenter.TestRunner
 {
     internal static class Program
     {
-        private static readonly bool autorun = true;
+        private static readonly bool autorun = false;
 
         private static async Task Main(string[] args)
         {
@@ -45,8 +45,6 @@ namespace HomeCenter.TestRunner
                     Console.ReadLine();
                     break;
             }
-
-            
         }
 
         private static async Task StartController()

@@ -17,7 +17,7 @@ namespace HomeCenter.Adapters.CurrentBridge
     {
         private readonly Dictionary<IntValue, IntValue> _state = new Dictionary<IntValue, IntValue>();
 
-        protected CurrentBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected CurrentBridgeAdapter()
         {
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
@@ -38,6 +38,8 @@ namespace HomeCenter.Adapters.CurrentBridge
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(byte), "Current")
             });
+
+            
             //TODO Send
         }
 

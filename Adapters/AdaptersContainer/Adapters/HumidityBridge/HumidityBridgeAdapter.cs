@@ -17,7 +17,7 @@ namespace HomeCenter.Adapters.HumidityBridge
     {
         private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
 
-        protected HumidityBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected HumidityBridgeAdapter()
         {
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }

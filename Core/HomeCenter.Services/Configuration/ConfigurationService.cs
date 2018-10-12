@@ -5,7 +5,6 @@ using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.DI;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,20 +20,17 @@ namespace HomeCenter.Services.Configuration
     public class ConfigurationService : IConfigurationService
     {
         private readonly IMapper _mapper;
-        private readonly IAdapterServiceFactory _adapterServiceFactory;
         private readonly ILogger<ConfigurationService> _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
-        private readonly IActorFactory _actorFactory;
+        private readonly IActorFactory _actorManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public ConfigurationService(IMapper mapper, IAdapterServiceFactory adapterServiceFactory, ILogger<ConfigurationService> logger,
-            IResourceLocatorService resourceLocatorService, IActorFactory actorFactory, IServiceProvider serviceProvider)
+        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService, IActorFactory actorManager, IServiceProvider serviceProvider)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _adapterServiceFactory = adapterServiceFactory ?? throw new ArgumentNullException(nameof(adapterServiceFactory));
             _resourceLocatorService = resourceLocatorService;
             _logger = logger;
-            _actorFactory = actorFactory;
+            _actorManager = actorManager;
             _serviceProvider = serviceProvider;
         }
 
@@ -106,10 +102,10 @@ namespace HomeCenter.Services.Configuration
 
             foreach (var componentConfig in result.HomeCenter.Components)
             {
-               // fill adapter actor reference
-               componentConfig.Adapters.ForEach(a => a.ID = adapters[a.Uid]);
+                // fill adapter actor reference
+                componentConfig.Adapters.ForEach(a => a.ID = adapters[a.Uid]);
 
-               var component = _actorFactory.GetActor(() => (Component)_mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
+                var component = _actorManager.GetActor(() => (Component)_mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
                 components.Add(componentConfig.Uid, component);
             }
 
@@ -145,7 +141,7 @@ namespace HomeCenter.Services.Configuration
                 {
                     var adapterType = types.Find(t => t.Name == $"{adapterConfig.Type}Proxy");
                     if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
-                    var adapter = _actorFactory.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
+                    var adapter = _actorManager.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
 
                     adapters.Add(adapterConfig.Uid, adapter);
                 }
@@ -158,6 +154,4 @@ namespace HomeCenter.Services.Configuration
             return adapters;
         }
     }
-
-
 }

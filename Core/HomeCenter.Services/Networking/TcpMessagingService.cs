@@ -1,7 +1,5 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +10,6 @@ namespace HomeCenter.Services.Networking
 {
     public class TcpMessagingService : Service
     {
-
-        public TcpMessagingService( IEventAggregator eventAggregator) : base(eventAggregator)
-        {
-
-        }
-
         //TODO query?
 
         [Subscibe]

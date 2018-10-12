@@ -7,7 +7,6 @@ using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
@@ -23,13 +22,11 @@ namespace HomeCenter.Adapters.InfraredBridge
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
 
-        private readonly II2CBusService _i2cServiceBus;
         private readonly Dictionary<IntValue, BooleanValue> _state = new Dictionary<IntValue, BooleanValue>();
 
-        protected InfraredBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected InfraredBridgeAdapter()
         {
             //TODO register handler
-            _i2cServiceBus = adapterServiceFactory.GetI2CService();
         }
 
         protected override async Task OnStarted(IContext context)
@@ -72,7 +69,7 @@ namespace HomeCenter.Adapters.InfraredBridge
             package.AddRange(BitConverter.GetBytes(commandCode));
             var code = package.ToArray();
 
-            _i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package.ToArray());
+            //_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package.ToArray());
 
             return Task.CompletedTask;
         }

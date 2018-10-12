@@ -58,7 +58,7 @@ namespace HomeCenter.Utils
             return referenced.Select(assembly => Array.Find(allAsseblies, a => a.FullName == assembly)?.Location).Where(x => !string.IsNullOrWhiteSpace(x));
         }
 
-        public static IEnumerable<Type> GetTypesWithAttribute<T>(bool inherit = false) 
+        public static IEnumerable<Type> GetTypesWithAttribute<T>(bool inherit = false)
         {
             var assembiles = GetProjectAssemblies();
             foreach (Type type in assembiles.SelectMany(a => a.GetTypes()))

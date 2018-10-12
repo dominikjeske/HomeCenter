@@ -4,14 +4,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TestHelper;
-using HomeCenter.Analyzer;
 
 namespace HomeCenter.Analyzer.Test
 {
     [TestClass]
     public class UnitTest : CodeFixVerifier
     {
-
         //No diagnostics expected to show up
         [TestMethod]
         public void TestMethod1()
@@ -36,7 +34,7 @@ namespace HomeCenter.Analyzer.Test
     namespace ConsoleApplication1
     {
         class TypeName
-        {   
+        {
         }
     }";
             var expected = new DiagnosticResult
@@ -63,7 +61,7 @@ namespace HomeCenter.Analyzer.Test
     namespace ConsoleApplication1
     {
         class TYPENAME
-        {   
+        {
         }
     }";
             VerifyCSharpFix(test, fixtest);

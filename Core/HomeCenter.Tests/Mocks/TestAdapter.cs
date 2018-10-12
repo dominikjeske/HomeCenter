@@ -13,7 +13,7 @@ namespace HomeCenter.Tests.Mocks
 
         public DiscoveryResponse DiscoveryResponse { get; set; }
 
-        public TestAdapter(string uid, IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        public TestAdapter(string uid)
         {
             Uid = uid;
             DiscoveryResponse = new DiscoveryResponse(new PowerState());

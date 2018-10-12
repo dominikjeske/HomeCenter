@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Broker;
-using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Native;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.DI;
@@ -16,7 +16,7 @@ namespace HomeCenter.Tests.ComponentModel
         private readonly string _repositoryPath;
         private readonly string _configuration;
 
-        public MockBootstrapper(string repositoryPath, string configuration)
+        public MockBootstrapper(Container container, string repositoryPath, string configuration) : base(container)
         {
             _repositoryPath = repositoryPath;
             _configuration = configuration;
@@ -45,7 +45,6 @@ namespace HomeCenter.Tests.ComponentModel
 
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
         }
 

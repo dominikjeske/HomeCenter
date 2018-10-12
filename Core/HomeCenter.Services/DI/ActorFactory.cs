@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;
@@ -10,12 +11,14 @@ namespace HomeCenter.Services.DI
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
         private readonly ILogger<ActorFactory> _logger;
+        private readonly IActorMessageBroker _actorMessageBroker;
 
-        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry)
+        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry, IActorMessageBroker actorMessageBroker)
         {
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;
             _logger = logger;
+            _actorMessageBroker = actorMessageBroker;
         }
 
         public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)
@@ -78,7 +81,7 @@ namespace HomeCenter.Services.DI
             var props2 = props(producer());
             if (parent == null)
             {
-                return RootContext.Empty.SpawnNamed(props2, id);
+                return _actorMessageBroker.CreateActor(props2, id);
             }
             return parent.SpawnNamed(props2, id);
         }

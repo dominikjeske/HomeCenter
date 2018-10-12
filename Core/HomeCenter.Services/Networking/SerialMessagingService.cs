@@ -1,5 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Native;
@@ -21,8 +20,7 @@ namespace HomeCenter.Services.Networking
         private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
-
-        public SerialMessagingService(ISerialDevice serialDevice, IEventAggregator eventAggregator) : base(eventAggregator)
+        public SerialMessagingService(ISerialDevice serialDevice)
         {
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
         }
@@ -61,7 +59,7 @@ namespace HomeCenter.Services.Networking
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Exception while listening for Serial device");
+                    Logger.LogError(ex, "Exception while listening for Serial device");
                 }
             }
         }
@@ -90,7 +88,7 @@ namespace HomeCenter.Services.Networking
                         if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
                         var result = ReadData(registration);
 
-                        Proto.RootContext.Empty.Send(registration.Actor, result);
+                        MessageBroker.Send(result, registration.Actor);
                     }
                 }
             }

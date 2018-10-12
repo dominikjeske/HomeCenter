@@ -17,7 +17,7 @@ namespace HomeCenter.Adapters.TemperatureBridge
     {
         private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
 
-        protected TemperatureBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected TemperatureBridgeAdapter()
         {
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }

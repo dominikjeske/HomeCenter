@@ -32,7 +32,7 @@ namespace HomeCenter.Model.Extensions
         public static IActor GetActorProxy(this IServiceProvider container, Type actorType)
         {
             var proxyType = AssemblyHelper.GetAllTypes(actorType).Single();
-            
+
             var proxy = container.GetService(proxyType);
             return proxy as IActor;
         }

@@ -47,10 +47,7 @@ namespace HomeCenter.CodeGeneration
                 Members = List<MemberDeclarationSyntax>().Add(namespaveDeclaration)
             };
 
-            if (_usingSyntax.Count > 0)
-            {
-                result.Usings = GenerateUsingStatements();
-            }
+            result.Usings = GenerateUsingStatements();
 
             return result;
         }
@@ -58,6 +55,11 @@ namespace HomeCenter.CodeGeneration
         private SyntaxList<UsingDirectiveSyntax> GenerateUsingStatements()
         {
             var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
+
+            _usingSyntax.Add(UsingDirective(IdentifierName("Quartz")));
+            _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
+            _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging"))));
+
             foreach (var usingSyntax in _usingSyntax)
             {
                 // if using is not exists in current class or we already not added it to generated
@@ -128,19 +130,27 @@ namespace HomeCenter.CodeGeneration
 
         private ClassDeclarationSyntax AddConstructor(ClassDeclarationSyntax classDeclaration, INamedTypeSymbol classSemantic, string className)
         {
-            //TODO select constructor
-            var baseConstructor = classSemantic.Constructors.FirstOrDefault(p => p.Parameters.Length > 0);
-
-            if (baseConstructor != null)
+            IMethodSymbol baseConstructor;
+            if (classSemantic.Constructors.Length == 1)
             {
-                var constructorDecclaration = BenerateConstructor(className, baseConstructor);
-                classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
+                baseConstructor = classSemantic.Constructors.FirstOrDefault();
             }
+            else if (classSemantic.Constructors.Count(p => p.Parameters.Length > 0) == 1)
+            {
+                baseConstructor = classSemantic.Constructors.FirstOrDefault(p => p.Parameters.Length > 0);
+            }
+            else
+            {
+                throw new Exception("Unsupported constructor count");
+            }
+
+            var constructorDecclaration = GenerateConstructor(className, baseConstructor);
+            classDeclaration = classDeclaration.AddMembers(constructorDecclaration);
 
             return classDeclaration;
         }
 
-        private ConstructorDeclarationSyntax BenerateConstructor(string className, IMethodSymbol baseConstructor)
+        private ConstructorDeclarationSyntax GenerateConstructor(string className, IMethodSymbol baseConstructor)
         {
             var parList = new List<SyntaxNodeOrToken>();
             var baseList = new List<SyntaxNodeOrToken>();
@@ -169,14 +179,43 @@ namespace HomeCenter.CodeGeneration
                 baseList.Add(Token(SyntaxKind.CommaToken));
             }
 
+            var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
+
             var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
 
-            parameters = parameters.AddParameters(Parameter(Identifier("logger")).WithType(QualifiedName(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging")), GenericName(Identifier("ILogger")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(className)))))));
+            if (!CheckIfExists(parList, "IScheduler"))
+            {
+                parameters = parameters.AddParameters(Parameter(Identifier("scheduler")).WithType(IdentifierName("IScheduler")));
+            }
+            if (!CheckIfExists(parList, "IActorMessageBroker"))
+            {
+                parameters = parameters.AddParameters(Parameter(Identifier("messageBroker")).WithType(IdentifierName("IActorMessageBroker")));
+            }
+            if (!CheckIfExists(parList, "ILogger"))
+            {
+                parameters = parameters.AddParameters(Parameter(Identifier("logger")).WithType(GenericName(Identifier("ILogger")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(className))))));
+                
+            }
 
-            var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
+            constructorDecclaration = constructorDecclaration.WithParameterList(parameters);
 
-            var constructorDecclaration = ConstructorDeclaration(Identifier(className)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword))).WithParameterList(parameters).WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments)).WithBody(Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("_logger"), IdentifierName("logger"))))));
+            if (baseList.Count > 0)
+            {
+                var arguments = ArgumentList(SeparatedList<ArgumentSyntax>(baseList.Take(baseList.Count - 1)));
+                constructorDecclaration = constructorDecclaration.WithInitializer(ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments));
+            }
+
+            var logger = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Logger"), IdentifierName("logger")));
+            var broker = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("MessageBroker"), IdentifierName("messageBroker")));
+            var scheduler = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Scheduler"), IdentifierName("scheduler")));
+
+            constructorDecclaration = constructorDecclaration.WithBody(Block(logger, broker, scheduler));
             return constructorDecclaration;
+        }
+
+        private static bool CheckIfExists(List<SyntaxNodeOrToken> parList, string parameter)
+        {
+            return parList.Any(x => x.ToString().IndexOf(parameter) > -1);
         }
 
         public StatementSyntax GenerateSystemMessagesHandler()

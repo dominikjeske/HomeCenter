@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace HomeCenter.Analyzer
 {
@@ -35,12 +32,11 @@ namespace HomeCenter.Analyzer
         {
             var method = (MethodDeclarationSyntax)context.Node;
 
-            var parent = (ClassDeclarationSyntax) method.Parent;
-     
+            var parent = (ClassDeclarationSyntax)method.Parent;
+
             var baseType = parent.BaseList?.Types;
 
             context.ReportDiagnostic(Diagnostic.Create(RuleError, context.Node.GetLocation()));
-
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)

@@ -2,11 +2,9 @@
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -26,13 +24,10 @@ namespace HomeCenter.Adapters.Common
         private byte[] _committedState;
         private byte[] _state;
 
-        protected readonly II2CBusService _i2CBusService;
         protected II2CPortExpanderDriver _portExpanderDriver;
 
-        protected CCToolsBaseAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
+        protected CCToolsBaseAdapter()
         {
-            _i2CBusService = adapterServiceFactory.GetI2CService();
-
             _requierdProperties.Add(AdapterProperties.PinNumber);
         }
 
@@ -40,14 +35,14 @@ namespace HomeCenter.Adapters.Common
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
+            //var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
 
-            _poolDurationWarning = (IntValue)this[AdapterProperties.PollDurationWarningThreshold];
+            //_poolDurationWarning = (IntValue)this[AdapterProperties.PollDurationWarningThreshold];
 
-            _state = new byte[_portExpanderDriver.StateSize];
-            _committedState = new byte[_portExpanderDriver.StateSize];
+            //_state = new byte[_portExpanderDriver.StateSize];
+            //_committedState = new byte[_portExpanderDriver.StateSize];
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
+            // await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
         }
 
         protected Task Refresh(RefreshCommand message) => FetchState();
@@ -75,9 +70,9 @@ namespace HomeCenter.Adapters.Common
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            Buffer.BlockCopy(state, 0, _state, 0, state.Length);
+            //Buffer.BlockCopy(state, 0, _state, 0, state.Length);
 
-            if (commit) CommitChanges();
+            //if (commit) CommitChanges();
         }
 
         private async Task FetchState()
@@ -108,14 +103,14 @@ namespace HomeCenter.Adapters.Common
                 var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, new BooleanValue(oldPinState),
                                             new BooleanValue(newPinState), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(i) } });
 
-                await PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
+                await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 
-                _logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
+                Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
             {
-                _logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
+                Logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
             }
         }
 
@@ -126,7 +121,7 @@ namespace HomeCenter.Adapters.Common
             _portExpanderDriver.Write(_state);
             Buffer.BlockCopy(_state, 0, _committedState, 0, _state.Length);
 
-            _logger.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
+            Logger.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
         }
 
         private bool GetPortState(int id) => _state.GetBit(id);

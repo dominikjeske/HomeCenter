@@ -45,7 +45,7 @@ namespace HomeCenter.TestRunner
                     var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
                     var result = generator.Generate(proxy);
 
-                    foreach(var res in result.Members)
+                    foreach (var res in result.Members)
                     {
                         ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
                         ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
@@ -85,8 +85,6 @@ namespace HomeCenter.TestRunner
             var model = MetadataReference.CreateFromFile(typeof(Query).Assembly.Location);
             var eventAggregator = MetadataReference.CreateFromFile(typeof(IEventAggregator).Assembly.Location);
             var logger = MetadataReference.CreateFromFile(typeof(ILogger).Assembly.Location);
-
-            
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
 

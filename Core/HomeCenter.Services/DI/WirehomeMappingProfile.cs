@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Conditions;
@@ -9,7 +8,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

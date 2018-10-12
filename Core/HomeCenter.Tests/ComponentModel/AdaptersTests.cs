@@ -1,8 +1,5 @@
-﻿using HomeCenter.Model.Adapters;
-using HomeCenter.Tests.Mocks;
-using Microsoft.Reactive.Testing;
+﻿using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.ComponentModel
@@ -17,11 +14,10 @@ namespace HomeCenter.Tests.ComponentModel
                                                                        .BuildAndRun()
                                                                        .ConfigureAwait(false);
 
-
             await Task.Delay(1000000);
 
-            var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
-            var adapter = new TestAdapter("adapter1", adapterServiceFactory);
+            //var adapterServiceFactory = container.GetInstance<IAdapterServiceFactory>();
+            //var adapter = new TestAdapter("adapter1", adapterServiceFactory);
             //   await adapter.Initialize().ConfigureAwait(false);
 
             //TODO Test

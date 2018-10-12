@@ -11,23 +11,18 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
     [ProxyCodeGenerator]
     public abstract class HSPE16InputOnlyAdapter : CCToolsBaseAdapter
     {
-        protected HSPE16InputOnlyAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
-        {
-
-        }
-
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
             var address = (IntValue)this[AdapterProperties.I2cAddress];
             var i2cAddress = new I2CSlaveAddress(address.Value);
-            _portExpanderDriver = new MAX7311Driver(i2cAddress, _i2CBusService);
+            //  _portExpanderDriver = new MAX7311Driver(i2cAddress, _i2CBusService);
 
             await base.OnStarted(context).ConfigureAwait(false);
 
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
-            _i2CBusService.Write(i2cAddress, setupAsInputs);
+            // _i2CBusService.Write(i2cAddress, setupAsInputs);
 
             //TODO
             //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);

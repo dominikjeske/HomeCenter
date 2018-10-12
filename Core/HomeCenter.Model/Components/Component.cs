@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    public class Component : DeviceActor
+    public abstract class Component : DeviceActor
     {
         private readonly IScheduler _scheduler;
         private List<string> _tagCache = new List<string>();
@@ -32,11 +32,6 @@ namespace HomeCenter.Model.Components
         [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
-
-        public Component(IEventAggregator eventAggregator, IScheduler scheduler) : base(eventAggregator)
-        {
-            _scheduler = scheduler;
-        }
 
         protected override async Task OnStarted(IContext context)
         {
@@ -61,7 +56,7 @@ namespace HomeCenter.Model.Components
             {
                 trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
 
-                SubscribeForMessage<Event>(trigger.Event.GetRoutingFilter());
+                Subscribe<Event>(trigger.Event.GetRoutingFilter());
             }
         }
 
@@ -90,7 +85,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var adapterRef in _adapters)
             {
-                var capabilities = await Request<DiscoverQuery, DiscoveryResponse>(adapterRef.ID, DiscoverQuery.Default).ConfigureAwait(false);
+                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(adapterRef.ID, DiscoverQuery.Default).ConfigureAwait(false);
                 if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
                 MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
@@ -123,13 +118,13 @@ namespace HomeCenter.Model.Components
         private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
         {
             var routingFilter = adapter.GetRoutingFilter(requierdProperties);
-            SubscribeForMessage<Event>(routingFilter);
+            Subscribe<Event>(routingFilter);
         }
 
         /// <summary>
         /// Subscribe for commands addressed to this component via event aggregator
         /// </summary>
-        private void SubscribeForRemoteCommands() => SubscribeForMessage<Command>(new RoutingFilter(Uid));
+        private void SubscribeForRemoteCommands() => Subscribe<Command>(new RoutingFilter(Uid));
 
         protected async Task DeviceTriggerHandler(Event ev)
         {
@@ -145,7 +140,7 @@ namespace HomeCenter.Model.Components
                         continue;
                     }
 
-                    Send(command);
+                    MessageBroker.Send(command, Self);
                 }
             }
 
@@ -163,7 +158,7 @@ namespace HomeCenter.Model.Components
 
                 state[StateProperties.Value] = newValue;
 
-                await PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+                await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
             }
         }
 
@@ -180,7 +175,7 @@ namespace HomeCenter.Model.Components
                 {
                     var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
                     var adapterCommand = adapter.GetDeviceCommand(command);
-                    Send(adapterCommand, adapter.ID);
+                    MessageBroker.Send(adapterCommand, adapter.ID);
                     handled = true;
                 }
             }
@@ -233,5 +228,4 @@ namespace HomeCenter.Model.Components
             return Maybe<IValue>.From(value);
         }
     }
-
 }

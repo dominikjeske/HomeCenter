@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Device;
 using Proto;
 using Quartz;
@@ -8,20 +9,34 @@ namespace HomeCenter.Model.Adapters
 {
     public class RefreshStateJob : IJob
     {
+        private readonly IActorMessageBroker _actorMessageBroker;
+
+        public RefreshStateJob(IActorMessageBroker actorMessageBroker)
+        {
+            _actorMessageBroker = actorMessageBroker;
+        }
+
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<PID>();
-            RootContext.Empty.Send(adapter, RefreshCommand.Default);
+            _actorMessageBroker.Send(RefreshCommand.Default, adapter);
             return Task.CompletedTask;
         }
     }
 
     public class RefreshLightStateJob : IJob
     {
+        private readonly IActorMessageBroker _actorMessageBroker;
+
+        public RefreshLightStateJob(IActorMessageBroker actorMessageBroker)
+        {
+            _actorMessageBroker = actorMessageBroker;
+        }
+
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<PID>();
-            RootContext.Empty.Send(adapter, RefreshLightCommand.Default);
+            _actorMessageBroker.Send(RefreshLightCommand.Default, adapter);
             return Task.CompletedTask;
         }
     }

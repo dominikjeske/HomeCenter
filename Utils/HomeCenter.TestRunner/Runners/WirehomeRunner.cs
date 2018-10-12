@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCenter.Broker;
+using SimpleInjector;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,8 +17,11 @@ namespace HomeCenter.TestRunner
 
         public async Task Initialize()
         {
-            var bootstrapper = new WirehomeBootstrapper("componentConfiguration");
+            var container = new Container();
+            var bootstrapper = new WirehomeBootstrapper(container, "componentConfiguration");
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
+
+            var ev = container.GetInstance<IEventAggregator>();
 
             await Task.Delay(1000).ConfigureAwait(false);
         }

@@ -12,7 +12,7 @@ namespace HomeCenter.TestRunner
     {
         private readonly string _configuration;
 
-        public WirehomeBootstrapper(string configuration)
+        public WirehomeBootstrapper(Container container, string configuration) : base(container)
         {
             _configuration = configuration;
 

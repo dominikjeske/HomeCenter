@@ -31,7 +31,7 @@ namespace HomeCenter.Model.Triggers
             Actor = actor,
             // TODO DNF
             //Command = Command,
-           // FinishCommand = FinishCommand,
+            // FinishCommand = FinishCommand,
             FinishCommandTime = Schedule.WorkingTime
         };
     }

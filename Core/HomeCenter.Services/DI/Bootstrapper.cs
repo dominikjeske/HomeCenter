@@ -2,7 +2,7 @@
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Quartz;
@@ -20,7 +20,12 @@ namespace HomeCenter.Services.DI
 {
     public abstract class Bootstrapper : IBootstrapper
     {
-        protected Container _container = new Container();
+        public Bootstrapper(Container container)
+        {
+            _container = container;
+        }
+
+        protected Container _container;
 
         public async Task<PID> BuildController()
         {
@@ -54,8 +59,8 @@ namespace HomeCenter.Services.DI
 
         private PID CreateController()
         {
-            var actorFactory = _container.GetInstance<IActorFactory>();
-            return actorFactory.GetActor<Controller>();
+            var actorManager = _container.GetInstance<IActorFactory>();
+            return actorManager.GetActor<Controller>();
         }
 
         protected virtual void RegisterBaseDependencies()
@@ -71,10 +76,8 @@ namespace HomeCenter.Services.DI
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
-            _container.RegisterSingleton<IAdapterServiceFactory, AdapterServiceFactory>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
             _container.RegisterSingleton<IHttpServerService, HttpServerService>();
-            
         }
 
         private async Task RegisterQuartz()

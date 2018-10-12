@@ -1,5 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
@@ -12,10 +11,6 @@ namespace HomeCenter.Services.Networking
 {
     public class HttpMessagingService : Service
     {
-        public HttpMessagingService(IEventAggregator eventAggregator) : base(eventAggregator)
-        {
-        }
-
         [Subscibe]
         private async Task<string> SendGetRequest(HttpQuery httpMessage)
         {

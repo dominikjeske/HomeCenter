@@ -9,7 +9,6 @@ using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Proto;
@@ -26,14 +25,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
 
-        private readonly II2CBusService _i2cServiceBus;
-
         private readonly Dictionary<StringValue, StringValue> _state = new Dictionary<StringValue, StringValue>();
-
-        protected RemoteSocketBridgeAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
-        {
-            _i2cServiceBus = adapterServiceFactory.GetI2CService();
-        }
 
         protected override async Task OnStarted(IContext context)
         {
@@ -66,20 +58,20 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
 
-            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue((byte)_I2cAddress.Value), package).Status == I2cTransferStatus.FullTransfer)
-            {
-                await UpdateState(dipswitchCode).ConfigureAwait(false);
-            }
+            //if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue((byte)_I2cAddress.Value), package).Status == I2cTransferStatus.FullTransfer)
+            //{
+            //    await UpdateState(dipswitchCode).ConfigureAwait(false);
+            //}
         }
 
         protected async Task TurnOff(TurnOffCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
 
-            if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package).Status == I2cTransferStatus.FullTransfer)
-            {
-                await UpdateState(dipswitchCode).ConfigureAwait(false);
-            }
+            //if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package).Status == I2cTransferStatus.FullTransfer)
+            //{
+            //    await UpdateState(dipswitchCode).ConfigureAwait(false);
+            //}
         }
 
         private byte[] PreparePackage(Command message, string commandName, out DipswitchCode dipswitchCode)

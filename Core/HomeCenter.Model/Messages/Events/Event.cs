@@ -31,7 +31,6 @@ namespace HomeCenter.Model.Messages.Events
 
             var routingKey = attributes[MessageProperties.MessageSource];
             return new RoutingFilter(routingKey, attributes);
-
         }
 
         public RoutingFilter GetRoutingFilter(IEnumerable<string> routerAttributes)
@@ -42,6 +41,5 @@ namespace HomeCenter.Model.Messages.Events
 
             return new RoutingFilter(routingKey, attributes);
         }
-             
     }
 }

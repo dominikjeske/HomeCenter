@@ -3,10 +3,11 @@ using System;
 
 namespace HomeCenter.TestRunner
 {
-
     public class CustomLoggerProvider : ILoggerProvider
     {
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
 
         public ILogger CreateLogger(string categoryName)
         {

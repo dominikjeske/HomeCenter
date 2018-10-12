@@ -1,5 +1,4 @@
-﻿using HomeCenter.Adapters.Kodi.Messages;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Extensions;
@@ -31,10 +30,6 @@ namespace HomeCenter.Adapters.Kodi
 
         //TODO read this value in refresh?
         private int? PlayerId { get; }
-
-        protected KodiAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
-        {
-        }
 
         protected override async Task OnStarted(IContext context)
         {
@@ -78,30 +73,30 @@ namespace HomeCenter.Adapters.Kodi
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.Quit"
-            }).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            //var result = await MessageBroker.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.Quit"
+            //}).ConfigureAwait(false);
+            //_powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
         protected async Task VolumeUp(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.SetVolume",
-                Parameters = new { volume = (int)volume }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.SetVolume",
+            //    Parameters = new { volume = (int)volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
@@ -110,15 +105,15 @@ namespace HomeCenter.Adapters.Kodi
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
 
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.SetVolume",
-                Parameters = new { volume = (int)volume }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.SetVolume",
+            //    Parameters = new { volume = (int)volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
@@ -126,45 +121,45 @@ namespace HomeCenter.Adapters.Kodi
         protected async Task VolumeSet(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.SetVolume",
-                Parameters = new { volume = volume }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.SetVolume",
+            //    Parameters = new { volume = volume }
+            //}).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
         protected async Task Mute(MuteCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.SetMute",
-                Parameters = new { mute = true }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.SetMute",
+            //    Parameters = new { mute = true }
+            //}).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
         protected async Task Unmute(UnmuteCommand message)
         {
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Application.SetMute",
-                Parameters = new { mute = false }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Application.SetMute",
+            //    Parameters = new { mute = false }
+            //}).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
@@ -174,15 +169,15 @@ namespace HomeCenter.Adapters.Kodi
             if (_speed != 0) return;
 
             //{"jsonrpc": "2.0", "method": "Player.PlayPause", "params": { "playerid": 1 }, "id": 1}
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Player.PlayPause",
-                Parameters = new { playerid = PlayerId.GetValueOrDefault() }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Player.PlayPause",
+            //    Parameters = new { playerid = PlayerId.GetValueOrDefault() }
+            //}).ConfigureAwait(false);
 
             _speed = await UpdateState(PlaybackState.StateName, _speed, new DoubleValue(1.0)).ConfigureAwait(false);
         }
@@ -192,15 +187,15 @@ namespace HomeCenter.Adapters.Kodi
             if (_speed != 0) return;
 
             //{ "jsonrpc": "2.0", "method": "Player.Stop", "id": "libMovies", "params": { "playerid": 1 } }
-            var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
-            {
-                Address = _hostname,
-                UserName = _userName,
-                Password = _Password,
-                Port = _port,
-                Method = "Player.Stop",
-                Parameters = new { playerid = PlayerId.GetValueOrDefault() }
-            }).ConfigureAwait(false);
+            //var result = await _eventAggregator.QueryAsync<KodiCommand, string>(new KodiCommand
+            //{
+            //    Address = _hostname,
+            //    UserName = _userName,
+            //    Password = _Password,
+            //    Port = _port,
+            //    Method = "Player.Stop",
+            //    Parameters = new { playerid = PlayerId.GetValueOrDefault() }
+            //}).ConfigureAwait(false);
 
             _speed = await UpdateState(PlaybackState.StateName, _speed, new DoubleValue(1.0)).ConfigureAwait(false);
         }

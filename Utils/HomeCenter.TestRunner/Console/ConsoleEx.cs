@@ -20,13 +20,11 @@ namespace HomeCenter.TestRunner
 
         public static void WriteTitleLine(string text) => Write(text, ConsoleColor.DarkMagenta);
 
-
         public static void WriteOK(string text) => Write(text, ConsoleColor.Green, false);
 
         public static void WriteError(string text) => Write(text, ConsoleColor.Red, false);
 
         public static void WriteWarning(string text) => Write(text, ConsoleColor.Yellow, false);
-
 
         public static void Write(string text, ConsoleColor color = ConsoleColor.White, bool withNewLine = true)
         {

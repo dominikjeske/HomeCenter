@@ -1,5 +1,4 @@
-﻿using HomeCenter.Adapters.Samsung.Messages;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
@@ -24,10 +23,6 @@ namespace HomeCenter.Adapters.Samsung
         private BooleanValue _mute;
 
         private StringValue _input;
-
-        protected SamsungAdapter(IAdapterServiceFactory adapterServiceFactory) : base(adapterServiceFactory)
-        {
-        }
 
         protected override async Task OnStarted(IContext context)
         {
@@ -54,39 +49,39 @@ namespace HomeCenter.Adapters.Samsung
 
         protected async Task TurnOff(TurnOffCommand message)
         {
-            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            {
-                Address = _hostname,
-                Code = "KEY_POWEROFF"
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
+            //{
+            //    Address = _hostname,
+            //    Code = "KEY_POWEROFF"
+            //}).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected Task VolumeUp(VolumeUpCommand command)
+        protected async Task VolumeUp(VolumeUpCommand command)
         {
-            return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            {
-                Address = _hostname,
-                Code = "KEY_VOLUP"
-            });
+            //return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
+            //{
+            //    Address = _hostname,
+            //    Code = "KEY_VOLUP"
+            //});
         }
 
-        protected Task VolumeDown(VolumeDownCommand command)
+        protected async Task VolumeDown(VolumeDownCommand command)
         {
-            return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            {
-                Address = _hostname,
-                Code = "KEY_VOLDOWN"
-            });
+            //return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
+            //{
+            //    Address = _hostname,
+            //    Code = "KEY_VOLDOWN"
+            //});
         }
 
         protected async Task Mute(MuteCommand message)
         {
-            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            {
-                Address = _hostname,
-                Code = "KEY_MUTE"
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
+            //{
+            //    Address = _hostname,
+            //    Code = "KEY_MUTE"
+            //}).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(!_mute)).ConfigureAwait(false);
         }
@@ -115,11 +110,11 @@ namespace HomeCenter.Adapters.Samsung
 
             if (source?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on Samsung available device input sources");
 
-            await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            {
-                Address = _hostname,
-                Code = source
-            }).ConfigureAwait(false);
+            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
+            //{
+            //    Address = _hostname,
+            //    Code = source
+            //}).ConfigureAwait(false);
 
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
