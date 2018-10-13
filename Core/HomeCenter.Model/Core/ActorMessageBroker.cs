@@ -12,34 +12,33 @@ namespace HomeCenter.Model.Core
     public class ActorMessageBroker : IActorMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
-        private RootContext Context { get; } = new RootContext();
+        private readonly IActorFactory _actorFactory;
 
-        public ActorMessageBroker(IEventAggregator eventAggregator)
+        public ActorMessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory)
         {
             _eventAggregator = eventAggregator;
+            _actorFactory = actorFactory;
         }
 
         public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
         {
-            return _eventAggregator.Subscribe<T>(message => Context.Send(subscriber, message.Message), filter);
+            return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
         }
 
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
-                                                                                   where R : class
+                                                                                where R : class
         {
             if (query is IFormatableMessage<T> formatableMessage)
             {
                 query = formatableMessage.FormatMessage();
             }
 
-           
-
             return _eventAggregator.QueryAsync<T, R>(query, filter);
         }
 
         public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
-                                                                                                                           where Q : class
-                                                                                                                           where R : class
+                                                                                                                        where Q : class
+                                                                                                                        where R : class
         {
             var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
             return query.Verify(result, expectedResult);
@@ -52,11 +51,15 @@ namespace HomeCenter.Model.Core
 
         public void Send(ActorMessage message, PID destination)
         {
-            Context.Send(destination, message);
+            _actorFactory.Context.Send(destination, message);
         }
 
-        public Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => Context.RequestAsync<R>(actor, message);
+        public void Send(ActorMessage message, string uid)
+        {
+            var pid = _actorFactory.GetActor(uid);
+            _actorFactory.Context.Send(pid, message);
+        }
 
-        public PID CreateActor(Props props, string name) => Context.SpawnNamed(props, name);
+        public Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
     }
 }

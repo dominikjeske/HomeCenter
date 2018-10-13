@@ -74,6 +74,7 @@ namespace HomeCenter.Services.DI
             //TODO add some special configuration for props per actor type on actorRegistry
 
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
+            _container.RegisterSingleton<IActorMessageBroker, ActorMessageBroker>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();

@@ -1,15 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using HomeCenter.Model.Messages.Commands.Device;
+using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
 {
     public class DenonRunner : Runner
     {
-        public DenonRunner() : base(new string[] { "VolumeUp", "VolumeDown" })
+        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown" })
         {
         }
 
         public override Task RunTask(int taskId)
         {
+            switch (taskId)
+            {
+                case 0:
+                    MessageBroker.Send(VolumeUpCommand.Default, Uid);
+                    break;
+            }
+
             return Task.CompletedTask;
         }
     }

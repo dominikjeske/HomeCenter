@@ -5,6 +5,8 @@ namespace HomeCenter.Model.Core
 {
     public interface IActorFactory
     {
+        RootContext Context { get; }
+
         /// <summary>
         /// Get or Create a Local Actor by Type
         /// </summary>

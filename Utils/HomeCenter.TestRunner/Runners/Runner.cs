@@ -1,18 +1,31 @@
-﻿using System;
+﻿using HomeCenter.Model.Core;
+using SimpleInjector;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
 {
-    public abstract class Runner
+    public abstract class Runner 
     {
         private readonly string[] _tasks;
+        protected Container Container;
+        protected IActorMessageBroker MessageBroker;
 
-        internal Runner(string[] tasks)
+        internal Runner(string uid, string[] tasks)
         {
             _tasks = tasks;
+            Uid = uid;
         }
 
+        public string Uid { get; }
+
         public abstract Task RunTask(int taskId);
+
+        public void SetContainer(Container container)
+        {
+            Container = container;
+            MessageBroker = container.GetInstance<IActorMessageBroker>();
+        }
 
         public async Task Run()
         {

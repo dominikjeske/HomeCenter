@@ -127,7 +127,7 @@ namespace HomeCenter.Model.Core
 
         protected void Subscribe<T>(RoutingFilter filter = null) where T : ActorMessage
         {
-            _disposables.Add(MessageBroker.SubscribeForMessage<Event>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, filter));
         }
 
         //TODO invoke in proxy

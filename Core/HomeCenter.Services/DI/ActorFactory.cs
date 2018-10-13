@@ -11,14 +11,13 @@ namespace HomeCenter.Services.DI
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
         private readonly ILogger<ActorFactory> _logger;
-        private readonly IActorMessageBroker _actorMessageBroker;
+        public RootContext Context { get; } = new RootContext();
 
-        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry, IActorMessageBroker actorMessageBroker)
+        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry)
         {
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;
             _logger = logger;
-            _actorMessageBroker = actorMessageBroker;
         }
 
         public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)
@@ -47,14 +46,14 @@ namespace HomeCenter.Services.DI
             return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
         }
 
-        public PID GetActor(string id, string address, IContext parent, Func<PID> create)
+        public PID GetActor(string uid, string address, IContext parent, Func<PID> create)
         {
             address = address ?? "nonhost";
 
-            var pidId = id;
+            var pidId = uid;
             if (parent != null)
             {
-                pidId = $"{parent.Self.Id}/{id}";
+                pidId = $"{parent.Self.Id}/{uid}";
             }
 
             var pid = new PID(address, pidId);
@@ -81,7 +80,7 @@ namespace HomeCenter.Services.DI
             var props2 = props(producer());
             if (parent == null)
             {
-                return _actorMessageBroker.CreateActor(props2, id);
+                return Context.SpawnNamed(props2, id);
             }
             return parent.SpawnNamed(props2, id);
         }

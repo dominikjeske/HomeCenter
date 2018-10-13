@@ -47,6 +47,18 @@
     ],
     "Components": [
       {
+        "Uid": "DenonComponent",
+        "IsEnabled": true,
+        "Properties": {
+          "FriendlyName": "Denon"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "Denon"
+          }
+        ]
+      },
+      {
         "Uid": "Lamp1",
         "IsEnabled": true,
         "Properties": {

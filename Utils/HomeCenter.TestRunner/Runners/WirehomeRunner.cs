@@ -1,4 +1,4 @@
-﻿using HomeCenter.Broker;
+﻿using HomeCenter.Model.Core;
 using SimpleInjector;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace HomeCenter.TestRunner
     {
         private List<Runner> _Runners = new List<Runner>();
 
-        public WirehomeRunner(List<Runner> runners) : base(runners.Select(r => r.GetType().Name).ToArray())
+        public WirehomeRunner(List<Runner> runners) : base(nameof(WirehomeRunner), runners.Select(r => r.GetType().Name).ToArray())
         {
             _Runners = runners;
         }
@@ -21,7 +21,10 @@ namespace HomeCenter.TestRunner
             var bootstrapper = new WirehomeBootstrapper(container, "componentConfiguration");
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
 
-            var ev = container.GetInstance<IEventAggregator>();
+            foreach(var runner in _Runners)
+            {
+                runner.SetContainer(container);
+            }
 
             await Task.Delay(1000).ConfigureAwait(false);
         }
