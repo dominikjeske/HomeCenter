@@ -66,6 +66,7 @@ namespace HomeCenter.Services.Configuration
         {
             var allUids = configuration.HomeCenter.Adapters.Select(a => a.Uid).ToList();
             allUids.AddRange(configuration.HomeCenter.Components.Select(c => c.Uid));
+            allUids.AddRange(configuration.HomeCenter.Services.Select(c => c.Uid));
 
             var duplicateKeys = allUids.GroupBy(x => x)
                                        .Where(group => group.Count() > 1)
@@ -125,14 +126,14 @@ namespace HomeCenter.Services.Configuration
                 try
                 {
                     var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
-                    if (actorType == null) throw new MissingTypeException($"Could not find adapter {actorType}");
+                    if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
                     var adapter = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid);
 
                     actors.Add(actorConfig.Uid, adapter);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Exception {ex.Message} while initializing adapter {actorConfig.Type}");
+                    _logger.LogError($"Exception {ex.Message} while initializing actor {actorConfig.Type}");
                 }
             }
             return actors;
