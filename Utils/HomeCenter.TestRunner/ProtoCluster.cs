@@ -22,24 +22,6 @@ namespace HomeCenter.TestRunner
         {
             var context = new RootContext();
 
-            var container = new Container();
-            var di = new SimpleInjectorServiceProvider(container);
-            var loggerFactory = new LoggerFactory().AddConsole();
-            var logger = loggerFactory.CreateLogger<ActorFactory>();
-            var lp = loggerFactory.CreateLogger<ComponentProxy>();
-            var registry = new ActorPropsRegistry();
-            var factory = new ActorFactory(di, logger, new ActorPropsRegistry());
-
-            var jobFactory = new SimpleInjectorJobFactory(container);
-            var jobSchedulerFactory = new SimpleInjectorSchedulerFactory(jobFactory);
-            var scheduler = await jobSchedulerFactory.GetScheduler().ConfigureAwait(false);
-            var ea = new EventAggregator();
-            var mb = new ActorMessageBroker(ea, factory);
-
-            var a = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "a");
-            var b = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "b");
-            var c = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "c");
-            var d = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "d");
 
             //var a = factory.GetActor<A>("a");
             //var b = factory.GetActor<A>("b");
@@ -50,7 +32,6 @@ namespace HomeCenter.TestRunner
             //var a = context.SpawnNamed(props, "a");
             //var b = context.SpawnNamed(props, "b");
 
-            factory.Context.Send(a, new TurnOnCommand());
             //context.Send(c, new TurnOnCommand());
 
             //var props = Props.FromProducer(() => new DeviceProxy()).WithChildSupervisorStrategy(new OneForOneStrategy(Decider.Decide, 10, null));

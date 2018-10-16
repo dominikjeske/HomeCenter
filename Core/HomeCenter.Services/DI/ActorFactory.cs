@@ -2,6 +2,7 @@
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
+using Proto.Router;
 using System;
 
 namespace HomeCenter.Services.DI
@@ -20,11 +21,6 @@ namespace HomeCenter.Services.DI
             _logger = logger;
         }
 
-        public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)  where T : IActor
-        {
-            id = id ?? typeof(T).FullName;
-            return GetActor(id, address, parent, () => CreateActor<T>(id, parent, () => new Props().WithProducer(() => actor)));
-        }
 
         public PID GetActor(string id, string address = default, IContext parent = default)
         {
@@ -39,10 +35,15 @@ namespace HomeCenter.Services.DI
             return GetActor(id, address, parent, () => CreateActor(actorType, id, parent, () => new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType))));
         }
 
-        public PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default)
+        public PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default, int routing = 0)
         {
-            
-            return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
+            if(routing == 0)
+            {
+                return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
+            }
+            return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => Router.NewRoundRobinPool(Props.FromProducer(actorProducer), routing)));
+
+
         }
 
         public PID GetActor(string uid, string address, IContext parent, Func<PID> create)
@@ -64,8 +65,6 @@ namespace HomeCenter.Services.DI
             return pid;
         }
 
-        private PID CreateActor<T>(string id, IContext parent, Func<Props> producer) where T : IActor => CreateActor(typeof(T), id, parent, producer);
-
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)
         {
             _logger.LogInformation($"Creating actor {id}");
@@ -82,5 +81,7 @@ namespace HomeCenter.Services.DI
             }
             return parent.SpawnNamed(props2, id);
         }
+
+        //Router.NewRoundRobinPool(Props.FromProducer(() => new ServiceActor()), 5)
     }
 }

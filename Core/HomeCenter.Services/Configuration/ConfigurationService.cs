@@ -4,6 +4,7 @@ using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
@@ -118,16 +119,18 @@ namespace HomeCenter.Services.Configuration
         }
 
         private Dictionary<string, PID> CreataActors<T, Q>(IEnumerable<T> config, List<Type> types) where T : BaseDTO
-                                                                           where Q : IActor
+                                                                                                    where Q : IActor
         {
             Dictionary<string, PID> actors = new Dictionary<string, PID>();
             foreach (var actorConfig in config)
             {
                 try
                 {
+                    var routing = GetRouting(actorConfig);
+
                     var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
                     if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
-                    var adapter = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid);
+                    var adapter = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
 
                     actors.Add(actorConfig.Uid, adapter);
                 }
@@ -137,6 +140,16 @@ namespace HomeCenter.Services.Configuration
                 }
             }
             return actors;
+        }
+
+        private int GetRouting<T>(T actorConfig) where T : BaseDTO
+        {
+            if (actorConfig.Properties.ContainsKey("Routing"))
+            {
+                return actorConfig.Properties["Routing"].Value.AsInt();
+            }
+
+            return 0;
         }
 
         private Dictionary<Type, List<Type>> RegisterTypesInAutomapper(AdapterMode adapterMode)
