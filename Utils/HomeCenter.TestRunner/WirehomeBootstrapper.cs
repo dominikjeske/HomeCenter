@@ -36,13 +36,13 @@ namespace HomeCenter.TestRunner
             var transferResult = new I2cTransferResult() { Status = I2cTransferStatus.FullTransfer, BytesTransferred = 0 };
             var i2cBus = Mock.Of<II2cBus>();
             var i2cNativeDevice = Mock.Of<II2cDevice>();
-            var i2c = Mock.Of<II2CBusService>();
+
             Mock.Get(i2cBus).Setup(s => s.CreateDevice(It.IsAny<string>(), It.IsAny<int>())).Returns(i2cNativeDevice);
             Mock.Get(i2cNativeDevice).Setup(s => s.WritePartial(It.IsAny<byte[]>())).Returns(transferResult);
             Mock.Get(i2cNativeDevice).Setup(s => s.ReadPartial(It.IsAny<byte[]>())).Returns(transferResult);
 
             _container.RegisterInstance(i2cBus);
-            _container.RegisterInstance(i2c);
+
             _container.RegisterInstance(Mock.Of<IGpioController>());
             _container.RegisterInstance(Mock.Of<ISerialDevice>());
             _container.RegisterInstance(Mock.Of<ISoundPlayer>());

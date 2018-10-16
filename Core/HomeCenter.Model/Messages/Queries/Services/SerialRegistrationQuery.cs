@@ -1,17 +1,18 @@
-﻿using Proto;
+﻿using HomeCenter.Model.Messages.Commands.Service;
+using Proto;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.Model.Messages.Commands.Service
+namespace HomeCenter.Model.Messages.Queries.Service
 {
-    public class SerialRegistrationCommand : Command
+    public class SerialRegistrationQuery : Query
     {
         public Format[] ResultFormat { get; }
         public byte MessageType { get; }
         public int MessageSize { get; }
         public PID Actor { get; }
 
-        public SerialRegistrationCommand(PID actor, byte messageType, Format[] resultFormat)
+        public SerialRegistrationQuery(PID actor, byte messageType, Format[] resultFormat)
         {
             Actor = actor;
             MessageType = messageType;

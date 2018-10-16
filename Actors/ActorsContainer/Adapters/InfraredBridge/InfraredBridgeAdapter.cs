@@ -7,6 +7,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
@@ -36,7 +37,7 @@ namespace HomeCenter.Adapters.InfraredBridge
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
-            var registration = new SerialRegistrationCommand(Self, 3, new Format[]
+            var registration = new SerialRegistrationQuery(Self, 3, new Format[]
                {
                 new Format(1, typeof(byte), "System"),
                 new Format(2, typeof(uint), "Code"),

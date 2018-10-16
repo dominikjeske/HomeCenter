@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
+    [ProxyCodeGenerator]
     public class TcpMessagingService : Service
     {
         //TODO query?

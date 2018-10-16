@@ -5,7 +5,7 @@ namespace HomeCenter.Adapters.Common
 {
     internal sealed class MAX7311Driver : II2CPortExpanderDriver
     {
-        private readonly II2CBusService _i2CBus;
+        //private readonly II2CBusService _i2CBus;
         private readonly I2CSlaveAddress _address;
 
         // Byte 0 = Offset
@@ -20,11 +20,11 @@ namespace HomeCenter.Adapters.Common
         private readonly byte[] _outputWriteBuffer = { 2, 0, 0 };
         private readonly byte[] _configurationWriteBuffer = { 6, 0, 0 };
 
-        internal MAX7311Driver(I2CSlaveAddress address, II2CBusService i2CBus)
-        {
-            _address = address;
-            _i2CBus = i2CBus ?? throw new ArgumentNullException(nameof(i2CBus));
-        }
+        //internal MAX7311Driver(I2CSlaveAddress address, II2CBusService i2CBus)
+        //{
+        //    _address = address;
+        //    _i2CBus = i2CBus ?? throw new ArgumentNullException(nameof(i2CBus));
+        //}
 
         public int StateSize => 2;
 
@@ -33,19 +33,19 @@ namespace HomeCenter.Adapters.Common
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
 
-            // Set configuration to output.
-            _i2CBus.Write(_address, _configurationWriteBuffer);
+            //// Set configuration to output.
+            //_i2CBus.Write(_address, _configurationWriteBuffer);
 
-            // Update the output registers only.
-            _outputWriteBuffer[1] = state[0];
-            _outputWriteBuffer[2] = state[1];
+            //// Update the output registers only.
+            //_outputWriteBuffer[1] = state[0];
+            //_outputWriteBuffer[2] = state[1];
 
-            _i2CBus.Write(_address, _outputWriteBuffer);
+            //_i2CBus.Write(_address, _outputWriteBuffer);
         }
 
         public byte[] Read()
         {
-            _i2CBus.WriteRead(_address, _inputWriteBuffer, _inputReadBuffer);
+            //_i2CBus.WriteRead(_address, _inputWriteBuffer, _inputReadBuffer);
             return _inputReadBuffer;
         }
     }

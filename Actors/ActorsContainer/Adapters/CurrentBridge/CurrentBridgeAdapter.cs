@@ -5,6 +5,7 @@ using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
@@ -33,13 +34,12 @@ namespace HomeCenter.Adapters.CurrentBridge
                 _state.Add(IntValue.FromString(val), 0);
             }
 
-            var registration = new SerialRegistrationCommand(Self, 5, new Format[]
+            var registration = new SerialRegistrationQuery(Self, 5, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(byte), "Current")
             });
 
-            
             //TODO Send
         }
 

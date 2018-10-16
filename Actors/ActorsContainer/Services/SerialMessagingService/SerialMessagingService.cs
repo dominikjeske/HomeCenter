@@ -1,6 +1,8 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
 using Microsoft.Extensions.Logging;
@@ -12,12 +14,13 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
-    public class SerialMessagingService : Service
+    [ProxyCodeGenerator]
+    public abstract class SerialMessagingService : Service
     {
         private IBinaryReader _dataReader;
 
         private readonly ISerialDevice _serialDevice;
-        private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
+        private readonly Dictionary<int, SerialRegistrationQuery> _messageHandlers = new Dictionary<int, SerialRegistrationQuery>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
         public SerialMessagingService(ISerialDevice serialDevice)
@@ -37,7 +40,7 @@ namespace HomeCenter.Services.Networking
         }
 
         [Subscibe]
-        protected Task Handle(SerialRegistrationCommand registration)
+        protected Task Handle(SerialRegistrationQuery registration)
         {
             if (_messageHandlers.ContainsKey(registration.MessageType))
             {
@@ -80,7 +83,7 @@ namespace HomeCenter.Services.Networking
 
                     if (bodyBytesReaded > 0)
                     {
-                        if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
+                        if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationQuery registration))
                         {
                             throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
                         }
@@ -94,7 +97,7 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        private SerialResultCommand ReadData(SerialRegistrationCommand registration)
+        protected SerialResultCommand ReadData(SerialRegistrationQuery registration)
         {
             var result = new SerialResultCommand();
 

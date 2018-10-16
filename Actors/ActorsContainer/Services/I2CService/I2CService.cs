@@ -1,3 +1,4 @@
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
@@ -7,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
-    public sealed class I2CBusService : Service, II2CBusService
+    [ProxyCodeGenerator]
+    public abstract class I2CService : Service
     {
         private readonly Dictionary<int, II2cDevice> _deviceCache = new Dictionary<int, II2cDevice>();
         private readonly string _busId;
         private readonly II2cBus _nativeI2CBus;
 
-        public I2CBusService(II2cBus nativeI2CBus)
+        public I2CService(II2cBus nativeI2CBus)
         {
             _nativeI2CBus = nativeI2CBus ?? throw new ArgumentNullException(nameof(nativeI2CBus));
             _busId = _nativeI2CBus.GetBusId();

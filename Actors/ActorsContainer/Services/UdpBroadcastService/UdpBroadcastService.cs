@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using System;
 using System.Net.Sockets;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
+    [ProxyCodeGenerator]
     public class UdpBroadcastService : Service
     {
         [Subscibe]
