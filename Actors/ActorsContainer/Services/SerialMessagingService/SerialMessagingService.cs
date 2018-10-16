@@ -39,18 +39,18 @@ namespace HomeCenter.Services.Networking
             var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
-        [Subscibe]
-        protected Task Handle(SerialRegistrationQuery registration)
-        {
-            if (_messageHandlers.ContainsKey(registration.MessageType))
-            {
-                throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialMessagingService)}");
-            }
+        //[Subscibe]
+        //protected Task Handle(SerialRegistrationQuery registration)
+        //{
+        //    if (_messageHandlers.ContainsKey(registration.MessageType))
+        //    {
+        //        throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialMessagingService)}");
+        //    }
 
-            _messageHandlers.Add(registration.MessageType, registration);
+        //    _messageHandlers.Add(registration.MessageType, registration);
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
 
         private async Task Listen()
         {

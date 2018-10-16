@@ -15,17 +15,20 @@ namespace HomeCenter.TestRunner
 
         }
 
+        [Subscibe]
         protected Task Invoke(TurnOnCommand command)
         {
             return Task.CompletedTask;
         }
 
+        [Subscibe]
         protected Task Invoke(TurnOffCommand command)
         {
             return Task.CompletedTask;
         }
 
-        protected Task<int> Get(CapabilitiesQuery query)
+        [Subscibe]
+        protected Task<int> Get(InputSetCommand query)
         {
             return Task.FromResult(1);
         }

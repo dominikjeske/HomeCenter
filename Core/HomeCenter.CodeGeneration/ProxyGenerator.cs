@@ -110,12 +110,14 @@ namespace HomeCenter.CodeGeneration
             {
                 var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
 
-                List<StatementSyntax> statementSyntaxes = new List<StatementSyntax>();
-                statementSyntaxes.Add(baseClassInvoke);
+                List<StatementSyntax> statementSyntaxes = new List<StatementSyntax>
+                {
+                    baseClassInvoke
+                };
 
                 foreach (var method in methods)
                 {
-                    var registration = ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("MessageBroker"), GenericName(Identifier("SubscribeForMessage")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))))).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("Self"))))));
+                    var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
 
                     statementSyntaxes.Add(registration);
                 }
@@ -183,6 +185,7 @@ namespace HomeCenter.CodeGeneration
 
             var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
 
+            // TODO add this basing on DI attribute
             if (!CheckIfExists(parList, "IScheduler"))
             {
                 parameters = parameters.AddParameters(Parameter(Identifier("scheduler")).WithType(IdentifierName("IScheduler")));
