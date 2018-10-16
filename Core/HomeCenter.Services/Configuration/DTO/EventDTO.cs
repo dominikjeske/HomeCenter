@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
