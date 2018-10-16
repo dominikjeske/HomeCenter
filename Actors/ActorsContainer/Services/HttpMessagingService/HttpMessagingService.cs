@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
+    [ProxyCodeGenerator]
     public class HttpMessagingService : Service
     {
         [Subscibe]
-        private async Task<string> SendGetRequest(HttpQuery httpMessage)
+        protected async Task<string> SendGetRequest(HttpQuery httpMessage)
         {
             using (var httpClient = new HttpClient())
             {
@@ -24,7 +26,7 @@ namespace HomeCenter.Services.Networking
         }
 
         [Subscibe]
-        private async Task<string> SendPostRequest(HttpCommand httpMessage)
+        protected async Task<string> SendPostRequest(HttpCommand httpMessage)
         {
             var httpClientHandler = new HttpClientHandler();
             if (httpMessage.Cookies != null)

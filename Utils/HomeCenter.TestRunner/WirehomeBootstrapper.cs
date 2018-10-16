@@ -26,7 +26,7 @@ namespace HomeCenter.TestRunner
             base.RegisterBaseDependencies();
 
             var resourceLocator = Mock.Of<IResourceLocatorService>();
-            Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(@"..\..\..\..\..\Adapters\AdaptersContainer\Adapters");
+            Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(@"..\..\..\..\..\Actors\ActorsContainer\Adapters");
             Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns($@"..\..\..\..\..\Configurations\{_configuration}.json");
             _container.RegisterInstance(resourceLocator);
         }

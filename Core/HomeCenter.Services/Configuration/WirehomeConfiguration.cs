@@ -8,6 +8,8 @@ namespace HomeCenter.Services.Configuration
     {
         public IDictionary<string, PID> Components { get; set; }
         public IDictionary<string, PID> Adapters { get; set; }
+        public IDictionary<string, PID> Services { get; set; }
         public IList<Area> Areas { get; set; }
+
     }
 }

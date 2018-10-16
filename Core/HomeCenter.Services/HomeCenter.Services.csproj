@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Adapters\AdaptersContainer\HomeCenter.AdaptersContainer.csproj" />
+    <ProjectReference Include="..\..\Actors\ActorsContainer\HomeCenter.Actors.csproj" />
     <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 

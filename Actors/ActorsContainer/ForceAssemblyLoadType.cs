@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.AdaptersContainer
+﻿namespace HomeCenter.Actors
 {
     public class ForceAssemblyLoadType
     {

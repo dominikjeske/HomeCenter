@@ -5,7 +5,6 @@ using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.DI;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -45,15 +44,19 @@ namespace HomeCenter.Services.Configuration
 
             CheckForDuplicateUid(result);
 
-            var adapters = MapAdapters(result.HomeCenter.Adapters, adapterMode);
-            var components = MapComponents(result, adapters);
+            var types = RegisterTypesInAutomapper(adapterMode);
+
+            var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
+            var components = MapComponents(result);
             var areas = MapAreas(result, components);
+            var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
 
             var configuration = new HomeCenterConfiguration
             {
                 Adapters = adapters,
                 Components = components,
-                Areas = areas
+                Areas = areas,
+                Services = services
             };
 
             return configuration;
@@ -97,7 +100,7 @@ namespace HomeCenter.Services.Configuration
             }
         }
 
-        private IDictionary<string, PID> MapComponents(HomeCenterConfigDTO result, IDictionary<string, PID> adapters)
+        private IDictionary<string, PID> MapComponents(HomeCenterConfigDTO result)
         {
             var components = new Dictionary<string, PID>();
             List<ComponentProxy> comp = new List<ComponentProxy>();
@@ -113,46 +116,55 @@ namespace HomeCenter.Services.Configuration
             return components;
         }
 
-        private IDictionary<string, PID> MapAdapters(IList<AdapterDTO> adapterConfigs, AdapterMode adapterMode)
+        private Dictionary<string, PID> CreataActors<T, Q>(IEnumerable<T> config, List<Type> types) where T : BaseDTO
+                                                                           where Q : IActor
         {
-            var adapters = new Dictionary<string, PID>();
+            Dictionary<string, PID> actors = new Dictionary<string, PID>();
+            foreach (var actorConfig in config)
+            {
+                try
+                {
+                    var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
+                    if (actorType == null) throw new MissingTypeException($"Could not find adapter {actorType}");
+                    var adapter = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid);
 
-            // force to load HomeCenter.AdaptersContainer into memory
+                    actors.Add(actorConfig.Uid, adapter);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception {ex.Message} while initializing adapter {actorConfig.Type}");
+                }
+            }
+            return actors;
+        }
+
+        private Dictionary<Type, List<Type>> RegisterTypesInAutomapper(AdapterMode adapterMode)
+        {
+            Dictionary<Type, List<Type>> types = new Dictionary<Type, List<Type>>();
+
+            // force to load HomeCenter.ActorsContainer into memory
             if (adapterMode == AdapterMode.Embedded)
             {
-                var testAdapter = typeof(AdaptersContainer.ForceAssemblyLoadType);
+                var testAdapter = typeof(Actors.ForceAssemblyLoadType);
             }
 
-            var types = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>(true));
+            types[typeof(AdapterDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>(true));
+            types[typeof(ServiceDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Service>(true));
 
             Mapper.Initialize(p =>
             {
-                foreach (var adapterType in types)
+                foreach (var type in types.Keys)
                 {
-                    p.CreateMap(typeof(AdapterDTO), adapterType).ConstructUsingServiceLocator();
+                    foreach (var actorType in types[type])
+                    {
+                        p.CreateMap(type, actorType).ConstructUsingServiceLocator();
+                    }
                 }
 
                 p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
                 p.ConstructServicesUsing(_serviceProvider.GetService);
             });
-
-            foreach (var adapterConfig in adapterConfigs)
-            {
-                try
-                {
-                    var adapterType = types.Find(t => t.Name == $"{adapterConfig.Type}Proxy");
-                    if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
-                    var adapter = _actorFactory.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
-
-                    adapters.Add(adapterConfig.Uid, adapter);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Exception {ex.Message} while initializing adapter {adapterConfig.Type}");
-                }
-            }
-
-            return adapters;
+            return types;
         }
     }
 }

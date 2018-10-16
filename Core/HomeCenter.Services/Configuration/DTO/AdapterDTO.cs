@@ -5,7 +5,13 @@ using System.ComponentModel;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
-    public class AdapterDTO
+    public class AdapterDTO : BaseDTO
+    {
+
+    }
+
+
+    public class BaseDTO
     {
         [JsonProperty("Uid")]
         public string Uid { get; set; }

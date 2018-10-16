@@ -32,7 +32,7 @@ namespace HomeCenter.Adapters.Denon
 
         protected DenonAdapter()
         {
-            
+
         }
 
         protected override async Task OnStarted(IContext context)

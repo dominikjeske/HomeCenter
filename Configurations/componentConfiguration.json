@@ -278,6 +278,18 @@
         }
       }
 
+    ],
+
+    "Services": [
+      {
+        "Uid": "HttpService",
+        "Type": "HttpMessagingService",
+        "IsEnabled": true,
+        "Properties": {
+          "Routing": 5
+        }
+      }
     ]
+
   }
 }

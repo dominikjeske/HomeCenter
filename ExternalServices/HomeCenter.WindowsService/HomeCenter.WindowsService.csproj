@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\AudioDeviceInfo.cs" Link="Model\AudioDeviceInfo.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\ComputerStatus.cs" Link="Model\ComputerStatus.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\InputSourcePost.cs" Link="Model\InputSourcePost.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\MutePost.cs" Link="Model\MutePost.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\PowerPost.cs" Link="Model\PowerPost.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\ProcessPost.cs" Link="Model\ProcessPost.cs" />
-    <Compile Include="..\..\Adapters\AdaptersContainer\Adapters\PC\Model\VolumePost.cs" Link="Model\VolumePost.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\AudioDeviceInfo.cs" Link="Model\AudioDeviceInfo.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\ComputerStatus.cs" Link="Model\ComputerStatus.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\InputSourcePost.cs" Link="Model\InputSourcePost.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\MutePost.cs" Link="Model\MutePost.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\PowerPost.cs" Link="Model\PowerPost.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\ProcessPost.cs" Link="Model\ProcessPost.cs" />
+    <Compile Include="..\..\Actors\ActorsContainer\Adapters\PC\Model\VolumePost.cs" Link="Model\VolumePost.cs" />
   </ItemGroup>
 
   <ItemGroup>
