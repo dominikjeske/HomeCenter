@@ -61,5 +61,12 @@ namespace HomeCenter.Model.Core
         }
 
         public Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
+
+        public Task<R> Request<T, R>(string uid, T message) where T : ActorMessage
+        {
+            var pid = _actorFactory.GetActor(uid);
+
+            return Request<T, R>(pid, message);
+        }
     }
 }

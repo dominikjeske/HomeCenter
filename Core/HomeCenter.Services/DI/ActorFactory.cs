@@ -20,8 +20,7 @@ namespace HomeCenter.Services.DI
             _logger = logger;
         }
 
-        public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)
-            where T : IActor
+        public PID RegisterActor<T>(T actor, string id = default, string address = default, IContext parent = default)  where T : IActor
         {
             id = id ?? typeof(T).FullName;
             return GetActor(id, address, parent, () => CreateActor<T>(id, parent, () => new Props().WithProducer(() => actor)));
@@ -32,8 +31,7 @@ namespace HomeCenter.Services.DI
             return GetActor(id, address, parent, () => throw new InvalidOperationException($"Actor not created {id}"));
         }
 
-        public PID GetActor<T>(string id = default, string address = default, IContext parent = default)
-            where T : class, IActor => GetActor(typeof(T), id, address, parent);
+        public PID GetActor<T>(string id = default, string address = default, IContext parent = default)  where T : class, IActor => GetActor(typeof(T), id, address, parent);
 
         public PID GetActor(Type actorType, string id = default, string address = default, IContext parent = default)
         {
@@ -43,6 +41,7 @@ namespace HomeCenter.Services.DI
 
         public PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default)
         {
+            
             return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
         }
 
@@ -65,8 +64,7 @@ namespace HomeCenter.Services.DI
             return pid;
         }
 
-        private PID CreateActor<T>(string id, IContext parent, Func<Props> producer)
-            where T : IActor => CreateActor(typeof(T), id, parent, producer);
+        private PID CreateActor<T>(string id, IContext parent, Func<Props> producer) where T : IActor => CreateActor(typeof(T), id, parent, producer);
 
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)
         {

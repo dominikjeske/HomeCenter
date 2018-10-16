@@ -5,6 +5,7 @@ using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.DI;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -22,15 +23,15 @@ namespace HomeCenter.Services.Configuration
         private readonly IMapper _mapper;
         private readonly ILogger<ConfigurationService> _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
-        private readonly IActorFactory _actorManager;
+        private readonly IActorFactory _actorFactory;
         private readonly IServiceProvider _serviceProvider;
 
-        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService, IActorFactory actorManager, IServiceProvider serviceProvider)
+        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService, IActorFactory actorFactory, IServiceProvider serviceProvider)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _resourceLocatorService = resourceLocatorService;
             _logger = logger;
-            _actorManager = actorManager;
+            _actorFactory = actorFactory;
             _serviceProvider = serviceProvider;
         }
 
@@ -90,7 +91,7 @@ namespace HomeCenter.Services.Configuration
                 {
                     foreach (var component in areInConfig?.Components)
                     {
-                        area.AddComponent(component.Uid, components[component.Uid]);
+                        //area.AddComponent(component.Uid, components[component.Uid]);
                     }
                 }
             }
@@ -99,14 +100,14 @@ namespace HomeCenter.Services.Configuration
         private IDictionary<string, PID> MapComponents(HomeCenterConfigDTO result, IDictionary<string, PID> adapters)
         {
             var components = new Dictionary<string, PID>();
+            List<ComponentProxy> comp = new List<ComponentProxy>();
 
             foreach (var componentConfig in result.HomeCenter.Components)
             {
-                // fill adapter actor reference
-                componentConfig.Adapters.ForEach(a => a.ID = adapters[a.Uid]);
+                var localConfigCopy = componentConfig; // prevents override of componentConfig when executed in multi thread
 
-                var component = _actorManager.GetActor(() => (Component)_mapper.Map(componentConfig, typeof(ComponentDTO), typeof(Component)), componentConfig.Uid);
-                components.Add(componentConfig.Uid, component);
+                var component = _actorFactory.GetActor(() => _mapper.Map<ComponentProxy>(localConfigCopy), localConfigCopy.Uid);
+                components.Add(localConfigCopy.Uid, component);
             }
 
             return components;
@@ -141,7 +142,7 @@ namespace HomeCenter.Services.Configuration
                 {
                     var adapterType = types.Find(t => t.Name == $"{adapterConfig.Type}Proxy");
                     if (adapterType == null) throw new MissingAdapterException($"Could not find adapter {adapterType}");
-                    var adapter = _actorManager.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
+                    var adapter = _actorFactory.GetActor(() => (Adapter)Mapper.Map(adapterConfig, typeof(AdapterDTO), adapterType), adapterConfig.Uid);
 
                     adapters.Add(adapterConfig.Uid, adapter);
                 }

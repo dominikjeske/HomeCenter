@@ -11,8 +11,6 @@ namespace HomeCenter.Model.Components
 {
     public class AdapterReference : BaseObject
     {
-        public PID ID { get; set; }
-
         public RoutingFilter GetRoutingFilter(IList<string> requierdProperties)
         {
             var routerAttributes = new Dictionary<string, string>();

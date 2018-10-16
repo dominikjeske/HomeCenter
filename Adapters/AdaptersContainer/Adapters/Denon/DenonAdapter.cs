@@ -32,6 +32,7 @@ namespace HomeCenter.Adapters.Denon
 
         protected DenonAdapter()
         {
+            
         }
 
         protected override async Task OnStarted(IContext context)
@@ -50,27 +51,27 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Refresh(RefreshCommand message)
         {
-            _fullState = await MessageBroker.QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
-            var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
-            _fullState.FriendlyName = mapping.FriendlyName;
-            _fullState.InputMap = mapping.InputMap;
-            _surround = _fullState.Surround;
+            //_fullState = await MessageBroker.QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
+            //var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
+            //_fullState.FriendlyName = mapping.FriendlyName;
+            //_fullState.InputMap = mapping.InputMap;
+            //_surround = _fullState.Surround;
         }
 
         protected async Task RefreshLight(RefreshLightCommand message)
         {
-            var statusQuery = new DenonStatusLightQuery
-            {
-                Address = _hostName,
-                Zone = _zone.ToString()
-            };
+            //var statusQuery = new DenonStatusLightQuery
+            //{
+            //    Address = _hostName,
+            //    Zone = _zone.ToString()
+            //};
 
-            var state = await MessageBroker.QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery).ConfigureAwait(false);
+            //var state = await MessageBroker.QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery).ConfigureAwait(false);
 
-            _input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
-            _volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
-            _mute = await UpdateState<BooleanValue>(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
-            _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
+            //_input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
+            //_volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
+            //_mute = await UpdateState<BooleanValue>(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
+            //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

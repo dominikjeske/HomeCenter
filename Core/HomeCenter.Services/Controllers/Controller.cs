@@ -4,6 +4,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
@@ -85,6 +86,11 @@ namespace HomeCenter.Services.Controllers
         private void InitializeConfiguration()
         {
             _homeConfiguration = _configurationService.ReadConfiguration(_controllerOptions.AdapterMode);
+        }
+
+        protected HomeCenterConfiguration Handle(StateQuery state)
+        {
+            return _homeConfiguration;
         }
 
         //private void RegisterRestCommandHanler()

@@ -23,10 +23,7 @@
                 "Uid": "Livingroom",
                 "Components": [
                   {
-                    "Uid": "Lamp1"
-                  },
-                  {
-                    "Uid": "RemoteLamp"
+                    "Uid": "DenonComponent"
                   }
                 ]
               },
@@ -77,7 +74,7 @@
             "Event": {
               "Type": "PropertyChanged",
               "Properties": {
-                "SourceDeviceUid": "HSPE16InputOnly_1",
+                "MessageSource": "HSPE16InputOnly_1",
                 "PinNumber": 2
               }
             },
@@ -151,7 +148,7 @@
       },
       {
         "Uid": "RemoteLamp2",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Triggers": [
           {
             // Add custom c# scheduler
@@ -188,6 +185,7 @@
         ]
       }
 
+
     ],
 
     "Adapters": [
@@ -204,7 +202,7 @@
       {
         "Uid": "HSPE16InputOnly_1",
         "Type": "HSPE16InputOnlyAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "I2cAddress": 101,
           "PoolInterval": 500,
@@ -214,7 +212,7 @@
       {
         "Uid": "Denon",
         "Type": "DenonAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.101",
           "PoolInterval": 500,
@@ -224,7 +222,7 @@
       {
         "Uid": "Kodi",
         "Type": "KodiAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -236,7 +234,7 @@
       {
         "Uid": "PC",
         "Type": "PcAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -247,7 +245,7 @@
       {
         "Uid": "Samsung",
         "Type": "SamsungAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102"
         }
@@ -255,7 +253,7 @@
       {
         "Uid": "Sony",
         "Type": "SonyBraviaAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102",
           "AuthKey": "344fb7d28691ba43c9045e9d38fa3c83a0587620fc14a79a958db4ff5d30e0e7"
@@ -272,7 +270,7 @@
       },
       {
         "Uid": "RemoteIR",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Type": "InfraredBridgeAdapter",
         "Properties": {
           "I2cAddress": 101,

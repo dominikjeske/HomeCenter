@@ -24,9 +24,12 @@ namespace HomeCenter.Model.Core
 
         Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage;
 
+        Task<R> Request<T, R>(string uid, T message) where T : ActorMessage;
+
         void Send(ActorMessage message, PID destination);
 
-        SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
         void Send(ActorMessage message, string uid);
+
+        SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
     }
 }

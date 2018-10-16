@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Broker;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
@@ -13,17 +14,19 @@ using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using Quartz;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    public abstract class Component : DeviceActor
+    [ProxyCodeGenerator]
+    public class Component : DeviceActor
     {
-        private readonly IScheduler _scheduler;
         private List<string> _tagCache = new List<string>();
 
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
@@ -68,14 +71,14 @@ namespace HomeCenter.Model.Components
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    await _scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(Self), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    await Scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(Self), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        await _scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await Scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await Scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
                 }
             }
@@ -85,7 +88,8 @@ namespace HomeCenter.Model.Components
         {
             foreach (var adapterRef in _adapters)
             {
-                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(adapterRef.ID, DiscoverQuery.Default).ConfigureAwait(false);
+
+                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(adapterRef.Uid, DiscoverQuery.Default).ConfigureAwait(false);
                 if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
                 MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
@@ -136,7 +140,7 @@ namespace HomeCenter.Model.Components
                     if (command.ContainsProperty(CommandProperties.ExecutionDelay))
                     {
                         var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
-                        await _scheduler.DelayExecution<DelayCommandJob>(command[CommandProperties.ExecutionDelay].AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+                        await Scheduler.DelayExecution<DelayCommandJob>(command[CommandProperties.ExecutionDelay].AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
                         continue;
                     }
 
@@ -175,7 +179,7 @@ namespace HomeCenter.Model.Components
                 {
                     var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
                     var adapterCommand = adapter.GetDeviceCommand(command);
-                    MessageBroker.Send(adapterCommand, adapter.ID);
+                    MessageBroker.Send(adapterCommand, adapter.Uid);
                     handled = true;
                 }
             }

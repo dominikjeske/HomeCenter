@@ -1,7 +1,15 @@
-﻿using HomeCenter.Model.Messages.Commands;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Components;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Services.DI;
+using HomeCenter.Services.Quartz;
+using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Router;
+using SimpleInjector;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,11 +18,40 @@ namespace HomeCenter.TestRunner
 {
     public static class ProtoCluster
     {
-        public static Task Start()
+        public async static Task Start()
         {
             var context = new RootContext();
 
-            //var props = Props.FromProducer(() => new HttpServiceProxy());
+            var container = new Container();
+            var di = new SimpleInjectorServiceProvider(container);
+            var loggerFactory = new LoggerFactory().AddConsole();
+            var logger = loggerFactory.CreateLogger<ActorFactory>();
+            var lp = loggerFactory.CreateLogger<ComponentProxy>();
+            var registry = new ActorPropsRegistry();
+            var factory = new ActorFactory(di, logger, new ActorPropsRegistry());
+
+            var jobFactory = new SimpleInjectorJobFactory(container);
+            var jobSchedulerFactory = new SimpleInjectorSchedulerFactory(jobFactory);
+            var scheduler = await jobSchedulerFactory.GetScheduler().ConfigureAwait(false);
+            var ea = new EventAggregator();
+            var mb = new ActorMessageBroker(ea, factory);
+
+            var a = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "a");
+            var b = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "b");
+            var c = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "c");
+            var d = factory.GetActor(() => new ComponentProxy(scheduler, mb, lp), "d");
+
+            //var a = factory.GetActor<A>("a");
+            //var b = factory.GetActor<A>("b");
+
+            //var props = Props.FromProducer(() => new ClientActor());
+            //var props2 = Props.FromProducer(() => new ClientActor());
+
+            //var a = context.SpawnNamed(props, "a");
+            //var b = context.SpawnNamed(props, "b");
+
+            factory.Context.Send(a, new TurnOnCommand());
+            //context.Send(c, new TurnOnCommand());
 
             //var props = Props.FromProducer(() => new DeviceProxy()).WithChildSupervisorStrategy(new OneForOneStrategy(Decider.Decide, 10, null));
 
@@ -43,7 +80,7 @@ namespace HomeCenter.TestRunner
 
             Console.ReadLine();
 
-            return Task.CompletedTask;
+           // return Task.CompletedTask;
         }
 
         internal static class Decider
@@ -60,6 +97,25 @@ namespace HomeCenter.TestRunner
                         return SupervisorDirective.Escalate;
                 }
             }
+        }
+    }
+
+    public class A : IActor
+    {
+        public string Test { get; }
+
+        public virtual async Task ReceiveAsync(IContext context)
+        {
+            if(context.Message is Started)
+            {
+
+            }
+            else
+            {
+
+            }
+
+            return;
         }
     }
 

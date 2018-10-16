@@ -2,6 +2,7 @@
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
@@ -13,6 +14,7 @@ using Proto;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
+using SimpleInjector.Diagnostics;
 using System;
 using System.Threading.Tasks;
 
@@ -52,15 +54,20 @@ namespace HomeCenter.Services.DI
         {
             foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())
             {
-                var registration = Lifestyle.Singleton.CreateRegistration(actorProxy, _container);
+                var registration = Lifestyle.Transient.CreateRegistration(actorProxy, _container);
+
                 _container.AddRegistration(actorProxy, registration);
+
+                registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposed by app");
+
+                _container.Register(actorProxy);
             }
         }
 
         private PID CreateController()
         {
-            var actorManager = _container.GetInstance<IActorFactory>();
-            return actorManager.GetActor<Controller>();
+            var actorFactory = _container.GetInstance<IActorFactory>();
+            return actorFactory.GetActor<Controller>();
         }
 
         protected virtual void RegisterBaseDependencies()
@@ -79,6 +86,7 @@ namespace HomeCenter.Services.DI
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
             _container.RegisterSingleton<IHttpServerService, HttpServerService>();
+
         }
 
         private async Task RegisterQuartz()

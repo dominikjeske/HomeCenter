@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Model.Components;
+using HomeCenter.Model.Messages.Commands.Device;
 using System.Threading.Tasks;
 
 namespace HomeCenter.TestRunner
@@ -20,5 +21,7 @@ namespace HomeCenter.TestRunner
 
             return Task.CompletedTask;
         }
+
+        
     }
 }

@@ -18,6 +18,7 @@ namespace HomeCenter.Model.Core
         [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
+
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
 
@@ -33,6 +34,7 @@ namespace HomeCenter.Model.Core
             {
                 throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {context.Message.GetType().Name} is not ActorMessage");
             }
+            
         }
 
         //TODO kill actor and clean subscriptions ?
@@ -89,6 +91,7 @@ namespace HomeCenter.Model.Core
 
         protected virtual Task OnStarted(IContext context)
         {
+            Logger.LogInformation($"Device '{Uid}' started with id '{context.Self.Id}'");
             Self = context.Self;
             return Task.CompletedTask;
         }

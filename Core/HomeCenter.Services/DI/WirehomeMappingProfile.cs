@@ -19,7 +19,7 @@ namespace HomeCenter.Services.DI
         {
             ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
 
-            CreateMap<ComponentDTO, Component>().ConstructUsingServiceLocator();
+            CreateMap<ComponentDTO, ComponentProxy>().ConstructUsingServiceLocator();
             CreateMap<AdapterReferenceDTO, AdapterReference>();
             CreateMap<TriggerDTO, Trigger>().ForMember(s => s.Commands, d => d.ResolveUsing<CommandResolver>()).ConstructUsingServiceLocator();
             CreateMap<EventDTO, Event>();
@@ -34,6 +34,7 @@ namespace HomeCenter.Services.DI
             }
         }
     }
+
 
     public class CommandResolver : IValueResolver<TriggerDTO, Trigger, IList<Command>>
     {

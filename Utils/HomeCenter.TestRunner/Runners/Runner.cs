@@ -29,7 +29,7 @@ namespace HomeCenter.TestRunner
 
         public async Task Run()
         {
-            Console.Clear();
+           // Console.Clear();
 
             while (true)
             {
