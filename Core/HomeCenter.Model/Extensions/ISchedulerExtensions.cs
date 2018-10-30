@@ -87,6 +87,23 @@ namespace HomeCenter.Model.Extensions
             }
         }
 
+        public static async Task<JobKey> DelayExecution<T, D>(this IScheduler scheduler, TimeSpan delay, D data, string uid, CancellationToken token = default) where T : IJob
+        {
+            
+            var job = JobBuilder.Create<T>()
+                                .WithIdentity(GetUniqueName(uid))
+                                .SetJobData(WrapJobData(data))
+                                .Build();
+
+            var tb = TriggerBuilder.Create()
+                                   .WithIdentity(GetUniqueName(uid))
+                                   .WithSimpleSchedule(s => s.WithInterval(delay));
+
+            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+
+            return job.Key;
+        }
+
         public static async Task<JobKey> DelayExecution<T>(this IScheduler scheduler, TimeSpan delay, Command command, string uid, bool cancelExisting = true, CancellationToken token = default) where T : IJob
         {
             if (cancelExisting) await scheduler.CancelJob(uid).ConfigureAwait(false);

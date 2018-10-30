@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
@@ -23,13 +24,12 @@ namespace HomeCenter.Model.Core
             where R : class;
 
         Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage;
-
         Task<R> Request<T, R>(string uid, T message) where T : ActorMessage;
 
         void Send(ActorMessage message, PID destination);
-
         void Send(ActorMessage message, string uid);
 
-        SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
+        SubscriptionToken SubscribeForCommand<T>(PID subscriber, RoutingFilter filter = null) where T : Command;
+        SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
     }
 }

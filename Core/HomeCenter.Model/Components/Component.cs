@@ -59,7 +59,8 @@ namespace HomeCenter.Model.Components
             {
                 trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
 
-                Subscribe<Event>(trigger.Event.GetRoutingFilter());
+                //TODO
+                //Subscribe<Event>(trigger.Event.GetRoutingFilter());
             }
         }
 
@@ -122,7 +123,8 @@ namespace HomeCenter.Model.Components
         private void SubscribeToAdapterEvents(AdapterReference adapter, IList<string> requierdProperties)
         {
             var routingFilter = adapter.GetRoutingFilter(requierdProperties);
-            Subscribe<Event>(routingFilter);
+            //TODO
+            //Subscribe<Event>(routingFilter);
         }
 
         /// <summary>
@@ -175,7 +177,8 @@ namespace HomeCenter.Model.Components
             if (message is Command command)
             {
                 // TODO use value converter before publish and maybe queue?
-                foreach (var state in _capabilities.Values.Where(capability => capability.IsCommandSupported(message)))
+                var supportedCapabilities = _capabilities.Values.Where(capability => capability.IsCommandSupported(message));
+                foreach (var state in supportedCapabilities)
                 {
                     var adapter = _adapterStateMap[state[StateProperties.StateName].ToString()];
                     var adapterCommand = adapter.GetDeviceCommand(command);

@@ -17,6 +17,9 @@ namespace HomeCenter.TestRunner
                 case 0:
                     MessageBroker.Send(VolumeUpCommand.Default, Uid);
                     break;
+                case 1:
+                    MessageBroker.Send(VolumeDownCommand.Default, Uid);
+                    break;
             }
 
             return Task.CompletedTask;

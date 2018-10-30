@@ -42,8 +42,18 @@ namespace HomeCenter.Services.DI
                 return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
             }
             return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => Router.NewRoundRobinPool(Props.FromProducer(actorProducer), routing)));
+        }
 
-
+        public PID GetRootActor(PID actor)
+        {
+            var rootSeparator = actor.Id.IndexOf("/");
+            if(rootSeparator > -1)
+            {
+                var rootId = actor.Id.Substring(0, rootSeparator);
+                var pid = new PID(actor.Address, rootId);
+               return pid;
+            }
+            return actor;
         }
 
         public PID GetActor(string uid, string address, IContext parent, Func<PID> create)

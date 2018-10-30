@@ -86,6 +86,7 @@ namespace HomeCenter.Services.Controllers
         private void InitializeConfiguration()
         {
             _homeConfiguration = _configurationService.ReadConfiguration(_controllerOptions.AdapterMode);
+
         }
 
         protected HomeCenterConfiguration Handle(StateQuery state)

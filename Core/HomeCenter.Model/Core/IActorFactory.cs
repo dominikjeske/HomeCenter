@@ -15,5 +15,6 @@ namespace HomeCenter.Model.Core
         PID GetActor(Type actorType, string id = default, string address = default, IContext parent = default);
 
         PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default, int routing = 0);
+        PID GetRootActor(PID actor);
     }
 }

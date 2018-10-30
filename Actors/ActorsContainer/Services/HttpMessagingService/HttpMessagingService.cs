@@ -14,15 +14,23 @@ namespace HomeCenter.Services.Networking
     public class HttpMessagingService : Service
     {
         [Subscibe]
-        protected async Task<string> SendGetRequest(HttpQuery httpMessage)
+        protected async Task<object> SendGetRequest(HttpQuery httpMessage)
         {
-            using (var httpClient = new HttpClient())
+            try
             {
-                var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
-                httpResponse.EnsureSuccessStatusCode();
-                var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return responseBody;
+                using (var httpClient = new HttpClient())
+                {
+                    var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
+                    httpResponse.EnsureSuccessStatusCode();
+                    var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return httpMessage.Parse(responseBody);
+                }
             }
+            catch (System.Exception ee)
+            {
+                return "";
+            }
+          
         }
 
         [Subscibe]

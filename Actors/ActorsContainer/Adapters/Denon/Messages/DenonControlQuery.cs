@@ -6,24 +6,24 @@ using System.Xml.Linq;
 
 namespace HomeCenter.Adapters.Denon.Messages
 {
-    internal class DenonControlQuery : HttpQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, string>
+    internal class DenonControlQuery : HttpQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, object>
     {
         public string Command { get; set; }
         public string Api { get; set; }
         public string ReturnNode { get; set; }
         public string Zone { get; set; }
 
-        public bool Verify(string input, string expectedResult)
+        public bool Verify(string input, object expectedResult)
         {
             var parsed = Parse(input);
             return expectedResult == parsed;
         }
 
-        public string Parse(string input)
+        public override object Parse(string rawHttpResult)
         {
-            using (var reader = new StringReader(input))
+            using (var reader = new StringReader(rawHttpResult))
             {
-                if (input?.Length == 0 && ReturnNode?.Length == 0) return "";
+                if (rawHttpResult?.Length == 0 && ReturnNode?.Length == 0) return "";
 
                 var xml = XDocument.Load(reader);
                 var returnNode = xml.Descendants(ReturnNode).FirstOrDefault();

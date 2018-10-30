@@ -1,7 +1,6 @@
 ﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
-using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -13,20 +12,17 @@ namespace HomeCenter.Adapters.Denon.Messages
 
         private float? NormalizeVolume(float? volume) => volume == null ? null : volume + 80.0f;
 
-        public DenonStatus ParseResult(string responseData)
+        public override object Parse(string rawHttpResult)
         {
-            using (var reader = new StringReader(responseData))
-            {
-                var xml = XDocument.Parse(responseData);
+            var xml = XDocument.Parse(rawHttpResult);
 
-                return new DenonStatus
-                {
-                    ActiveInput = xml.Descendants("InputFuncSelect").FirstOrDefault()?.Value?.Trim(),
-                    PowerStatus = xml.Descendants("Power").FirstOrDefault()?.Value?.Trim().ToLower() == "on" ? true : false,
-                    MasterVolume = NormalizeVolume(xml.Descendants("MasterVolume").FirstOrDefault()?.Value?.Trim().ToFloat()),
-                    Mute = xml.Descendants("Mute").FirstOrDefault()?.Value?.Trim().ToLower() == "on"
-                };
-            }
+            return new DenonStatus
+            {
+                ActiveInput = xml.Descendants("InputFuncSelect").FirstOrDefault()?.Value?.Trim(),
+                PowerStatus = xml.Descendants("Power").FirstOrDefault()?.Value?.Trim().ToLower() == "on" ? true : false,
+                MasterVolume = NormalizeVolume(xml.Descendants("MasterVolume").FirstOrDefault()?.Value?.Trim().ToFloat()),
+                Mute = xml.Descendants("Mute").FirstOrDefault()?.Value?.Trim().ToLower() == "on"
+            };
         }
 
         public DenonStatusLightQuery FormatMessage()

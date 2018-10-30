@@ -130,9 +130,10 @@ namespace HomeCenter.Services.Configuration
 
                     var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
                     if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
-                    var adapter = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
+                    var actor = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
 
-                    actors.Add(actorConfig.Uid, adapter);
+
+                    actors.Add(actorConfig.Uid, actor);
                 }
                 catch (Exception ex)
                 {

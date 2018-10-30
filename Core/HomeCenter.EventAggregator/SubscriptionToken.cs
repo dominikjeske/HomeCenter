@@ -4,7 +4,11 @@ namespace HomeCenter.Broker
 {
     public class SubscriptionToken : IDisposable
     {
+        public static SubscriptionToken Empty = new SubscriptionToken();
+
         private readonly IEventAggregator _eventAggregator;
+
+        private SubscriptionToken() { }
 
         public SubscriptionToken(Guid token, IEventAggregator eventAggregator)
         {
@@ -16,6 +20,8 @@ namespace HomeCenter.Broker
 
         public void Dispose()
         {
+            if (this == Empty) return;
+
             _eventAggregator.UnSubscribe(Token);
         }
     }

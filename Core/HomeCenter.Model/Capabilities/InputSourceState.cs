@@ -13,7 +13,7 @@ namespace HomeCenter.Model.Capabilities
             this[StateProperties.Value] = new StringListValue();
             this[StateProperties.StateName] = new StringValue(nameof(InputSourceState));
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.InputController);
-            this[StateProperties.SupportedCommands] = new StringListValue(nameof(VolumeUpCommand));
+            this[StateProperties.SupportedCommands] = new StringListValue(nameof(InputSetCommand));
         }
     }
 }

@@ -57,6 +57,7 @@ namespace HomeCenter.CodeGeneration
             var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
 
             _usingSyntax.Add(UsingDirective(IdentifierName("Quartz")));
+            _usingSyntax.Add(UsingDirective(IdentifierName("System")));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging"))));
 
@@ -104,9 +105,10 @@ namespace HomeCenter.CodeGeneration
 
         private ClassDeclarationSyntax AddSubscriptions(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
         {
-            var methods = GetMethodList(classSyntax, model, "Command", "Subscibe");
-
-            if (methods.Count > 0)
+            var commands = GetMethodList(classSyntax, model, "Command", "Subscibe");
+            var queries = GetMethodList(classSyntax, model, "Query", "Subscibe");
+            
+            if(commands.Count + queries.Count > 0)
             {
                 var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
 
@@ -115,9 +117,27 @@ namespace HomeCenter.CodeGeneration
                     baseClassInvoke
                 };
 
-                foreach (var method in methods)
+                foreach (var method in commands)
                 {
                     var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
+
+                    statementSyntaxes.Add(registration);
+                }
+
+                foreach (var method in queries)
+                {
+                    ExpressionStatementSyntax registration;
+                    if (method.ReturnType is INamedTypeSymbol namedSymbol)
+                    {
+                        var arg = namedSymbol.TypeArguments[0];
+
+                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(arg.Name) })))));
+                    }
+                    else
+                    {
+                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) })))));
+                    }
+ 
 
                     statementSyntaxes.Add(registration);
                 }
@@ -125,6 +145,7 @@ namespace HomeCenter.CodeGeneration
                 var subscriptions = MethodDeclaration(IdentifierName("Task"), Identifier("OnStarted")).WithModifiers(TokenList(new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.OverrideKeyword), Token(SyntaxKind.AsyncKeyword) })).WithParameterList(ParameterList(SingletonSeparatedList<ParameterSyntax>(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext")))))).WithBody(Block(statementSyntaxes));
 
                 classDeclaration = classDeclaration.AddMembers(subscriptions);
+
             }
 
             return classDeclaration;

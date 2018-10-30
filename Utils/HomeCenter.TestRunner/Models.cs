@@ -28,7 +28,7 @@ namespace HomeCenter.TestRunner
         }
 
         [Subscibe]
-        protected Task<int> Get(InputSetCommand query)
+        protected Task<int> Get(SunriseQuery query)
         {
             return Task.FromResult(1);
         }

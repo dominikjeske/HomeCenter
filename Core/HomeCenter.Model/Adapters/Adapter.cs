@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Events.Device;
+using Proto;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace HomeCenter.Model.Adapters
             return newValue;
         }
 
-        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => Scheduler.ScheduleInterval<T, Proto.PID>(interval, Self, Uid, _disposables.Token);
+        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => Scheduler.ScheduleInterval<T, PID>(interval, Self, Uid, _disposables.Token);
+
+        protected Task DelayDeviceRefresh<T>(TimeSpan interval) where T : IJob => Scheduler.DelayExecution<T, PID>(interval, Self, Uid, _disposables.Token);
     }
 }

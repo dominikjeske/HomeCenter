@@ -1,5 +1,7 @@
-﻿using HomeCenter.Broker;
+﻿using ConcurrentCollections;
+using HomeCenter.Broker;
 using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
@@ -9,10 +11,13 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
+
     public class ActorMessageBroker : IActorMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IActorFactory _actorFactory;
+
+        private readonly ConcurrentHashSet<SubscriptionCache> _subscriptionCahce = new ConcurrentHashSet<SubscriptionCache>();
 
         public ActorMessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory)
         {
@@ -20,9 +25,29 @@ namespace HomeCenter.Model.Core
             _actorFactory = actorFactory;
         }
 
-        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
+        public SubscriptionToken SubscribeForCommand<T>(PID subscriber, RoutingFilter filter = null) where T : Command
         {
+            var sub = GetSubscription<T>(subscriber);
+
+            if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;
+
             return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
+        }
+
+        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query
+        {
+            var sub = GetSubscription<T>(subscriber);
+
+            if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;
+
+            return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message).ConfigureAwait(false), filter);
+        }
+
+        private SubscriptionCache GetSubscription<T>(PID subscriber)
+        {
+            var rootActor = _actorFactory.GetRootActor(subscriber);
+            var sub = new SubscriptionCache(rootActor, typeof(T));
+            return sub;
         }
 
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
