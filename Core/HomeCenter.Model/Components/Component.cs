@@ -55,7 +55,7 @@ namespace HomeCenter.Model.Components
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
                 trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
-                
+
                 //TODO
                 //Subscribe<Event>(trigger.Event.GetRoutingFilter());
             }
@@ -126,7 +126,6 @@ namespace HomeCenter.Model.Components
         /// </summary>
         private void SubscribeForRemoteCommands() => Subscribe<Command>(new RoutingFilter(Uid));
 
-        
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters
         /// </summary>
@@ -226,5 +225,7 @@ namespace HomeCenter.Model.Components
 
             return Maybe<IValue>.From(value);
         }
+
+        protected IReadOnlyCollection<State> Handle(StatusQuery command) => _capabilities.Values.ToList().AsReadOnly();
     }
 }

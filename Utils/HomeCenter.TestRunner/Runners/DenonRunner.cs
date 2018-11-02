@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace HomeCenter.TestRunner
 {
     public class DenonRunner : Runner
     {
-        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags" })
+        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status" })
         {
         }
 
@@ -63,6 +64,10 @@ namespace HomeCenter.TestRunner
                 case 11:
                     var tags = await MessageBroker.Request<TagsQuery, IReadOnlyCollection<string>>(TagsQuery.Default, Uid);
                     ConsoleEx.WriteOKLine($"Tags: {tags.ToFormatedString()}");
+                    break;
+                case 12:
+                    var status = await MessageBroker.Request<StatusQuery, IReadOnlyCollection<State>>(StatusQuery.Default, Uid);
+                    ConsoleEx.WriteOKLine($"Status: {status.ToFormatedString(" | ")}");
                     break;
 
             }

@@ -2,13 +2,14 @@
 {
     public static class Capabilities
     {
-        public const string PowerController = "PowerController";
-        public const string BrightnessController = "BrightnessController";
-        public const string SpeakerController = "SpeakerController";
-        public const string InputController = "InputController";
-        public const string PlaybackController = "PlaybackController";
-        public const string TemperatureController = "TemperatureController";
-        public const string HimadityController = "HimadityController";
-        public const string CurrentController = "CurrentController";
+        public const string PowerController = nameof(PowerController);
+        public const string BrightnessController = nameof(BrightnessController);
+        public const string SpeakerController = nameof(SpeakerController);
+        public const string InputController = nameof(InputController);
+        public const string PlaybackController = nameof(PlaybackController);
+        public const string TemperatureController = nameof(TemperatureController);
+        public const string HimadityController = nameof(HimadityController);
+        public const string CurrentController = nameof(CurrentController);
+        public const string InfoController = nameof(InfoController);
     }
 }

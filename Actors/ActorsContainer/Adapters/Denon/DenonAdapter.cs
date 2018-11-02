@@ -2,7 +2,6 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
@@ -28,6 +27,8 @@ namespace HomeCenter.Adapters.Denon
         private StringValue _input;
         private StringValue _surround;
         private DenonDeviceInfo _fullState;
+        private StringValue _description;
+
         private string _hostName;
         private int _zone;
         private TimeSpan _poolInterval;
@@ -51,8 +52,13 @@ namespace HomeCenter.Adapters.Denon
             var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
             _fullState.FriendlyName = mapping.FriendlyName;
             _fullState.InputMap = mapping.InputMap;
-            _surround = _fullState.Surround;
+            
+            _surround = await UpdateState<StringValue>(SurroundSoundState.StateName, _surround, _fullState.Surround).ConfigureAwait(false);
+            _description = await UpdateState<StringValue>(DescriptionState.StateName, _description, GetDescription()).ConfigureAwait(false);
         }
+
+        private string GetDescription() => $"{_fullState.FriendlyName} [Model: {_fullState.Model}, Zone: {_zone}, Address: {_hostName}]";
+        
 
         protected async Task RefreshLight(RefreshLightCommand message)
         {
@@ -76,7 +82,8 @@ namespace HomeCenter.Adapters.Denon
                                                                new VolumeState(),
                                                                new MuteState(),
                                                                new InputSourceState(),
-                                                               new SurroundSoundState()
+                                                               new SurroundSoundState(),
+                                                               new DescriptionState()
                                           );
         }
 

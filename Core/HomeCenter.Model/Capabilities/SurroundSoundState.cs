@@ -10,7 +10,7 @@ namespace HomeCenter.Model.Capabilities
 
         public SurroundSoundState(StringValue ReadWriteMode = default) : base(ReadWriteMode)
         {
-            this[StateProperties.Value] = new StringListValue();
+            this[StateProperties.Value] = new StringValue();
             this[StateProperties.StateName] = new StringValue(nameof(SurroundSoundState));
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.SpeakerController);
             this[StateProperties.SupportedCommands] = new StringListValue(nameof(ModeSetCommand));

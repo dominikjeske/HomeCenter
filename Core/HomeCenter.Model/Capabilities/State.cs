@@ -27,5 +27,8 @@ namespace HomeCenter.Model.Capabilities
             get => this[StateProperties.Value];
             set => this[StateProperties.Value] = value;
         }
+
+        public override string ToString() => $"{Name}: {Value} [{CapabilityName}]";
+        
     }
 }
