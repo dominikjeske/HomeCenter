@@ -2,6 +2,7 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
@@ -46,13 +47,11 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Refresh(RefreshCommand message)
         {
-
             _fullState = await MessageBroker.QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
             var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
             _fullState.FriendlyName = mapping.FriendlyName;
             _fullState.InputMap = mapping.InputMap;
             _surround = _fullState.Surround;
- 
         }
 
         protected async Task RefreshLight(RefreshLightCommand message)

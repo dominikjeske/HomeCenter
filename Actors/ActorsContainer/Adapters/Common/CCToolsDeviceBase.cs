@@ -49,9 +49,9 @@ namespace HomeCenter.Adapters.Common
 
         protected void UpdateState(UpdateStateCommand message)
         {
-            var state = message[PowerState.StateName] as StringValue;
+            var state = message[PowerState.StateName] as BooleanValue;
             var pinNumber = message[AdapterProperties.PinNumber] as IntValue;
-            SetPortState(pinNumber.Value, PowerStateValue.ToBinaryState(state), true);
+            SetPortState(pinNumber.Value, state, true);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)

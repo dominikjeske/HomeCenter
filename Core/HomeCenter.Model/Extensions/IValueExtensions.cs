@@ -28,6 +28,9 @@ namespace HomeCenter.Model.Extensions
         public static TimeSpan AsTimeSpan(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is TimeSpanValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(TimeSpan).Name}");
 
+        public static DateTimeOffset AsDate(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is DateTimeValue val ? val.Value :
+                   throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(DateTimeOffset).Name}");
+
         public static IEnumerable<string> AsStringList(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is StringListValue val ? val.Value :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(IEnumerable<string>).Name}");
 

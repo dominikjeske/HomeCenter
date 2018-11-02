@@ -25,7 +25,7 @@ namespace HomeCenter.Model.Core
             _actorFactory = actorFactory;
         }
 
-        public SubscriptionToken SubscribeForCommand<T>(PID subscriber, RoutingFilter filter = null) where T : Command
+        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
         {
             var sub = GetSubscription<T>(subscriber);
 
@@ -33,6 +33,8 @@ namespace HomeCenter.Model.Core
 
             return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
         }
+
+        
 
         public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query
         {
@@ -85,13 +87,13 @@ namespace HomeCenter.Model.Core
             _actorFactory.Context.Send(pid, message);
         }
 
-        public Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
+        public Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
 
-        public Task<R> Request<T, R>(string uid, T message) where T : ActorMessage
+        public Task<R> Request<T, R>(T message, string uid) where T : ActorMessage
         {
             var pid = _actorFactory.GetActor(uid);
 
-            return Request<T, R>(pid, message);
+            return Request<T, R>(message, pid);
         }
     }
 }

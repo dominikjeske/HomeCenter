@@ -2,5 +2,6 @@
 {
     public class CapabilitiesQuery : Query
     {
+        public static CapabilitiesQuery Default = new CapabilitiesQuery();
     }
 }

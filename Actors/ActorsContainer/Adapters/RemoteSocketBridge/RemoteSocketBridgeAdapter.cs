@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
 
-        private readonly Dictionary<StringValue, StringValue> _state = new Dictionary<StringValue, StringValue>();
+        private readonly Dictionary<StringValue, BooleanValue> _state = new Dictionary<StringValue, BooleanValue>();
 
         protected override async Task OnStarted(IContext context)
         {
@@ -96,7 +96,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         private async Task UpdateState(DipswitchCode code)
         {
-            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, _state.ElementAtOrNull(code.ToShortCode()), new StringValue(PowerStateValue.ON)).ConfigureAwait(false);
+            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, _state.ElementAtOrNull(code.ToShortCode()), new BooleanValue(true)).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

@@ -47,11 +47,11 @@ namespace HomeCenter.Services.Configuration
 
             var types = RegisterTypesInAutomapper(adapterMode);
 
+            var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
             var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
             var components = MapComponents(result);
             var areas = MapAreas(result, components);
-            var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
-
+            
             var configuration = new HomeCenterConfiguration
             {
                 Adapters = adapters,

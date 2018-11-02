@@ -2,5 +2,6 @@
 {
     public class StateQuery : Query
     {
+        public static StateQuery Default = new StateQuery();
     }
 }

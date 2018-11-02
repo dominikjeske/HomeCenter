@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.ValueTypes;
 using System.Linq;
@@ -17,5 +18,14 @@ namespace HomeCenter.Model.Capabilities
         }
 
         public bool IsCommandSupported(ActorMessage command) => ((StringListValue)this[StateProperties.SupportedCommands]).Value.Contains(command.Type);
+
+        public string Name => this[StateProperties.StateName].AsString();
+        public string CapabilityName => this[StateProperties.CapabilityName].AsString();
+
+        public IValue Value
+        {
+            get => this[StateProperties.Value];
+            set => this[StateProperties.Value] = value;
+        }
     }
 }

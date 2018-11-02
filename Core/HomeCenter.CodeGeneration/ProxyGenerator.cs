@@ -96,6 +96,7 @@ namespace HomeCenter.CodeGeneration
                                                        FillContextData(),
                                                        GenerateCommandHandlers(classSyntax, model),
                                                        GenerateQueryHandlers(classSyntax, model),
+                                                       GenerateEventdHandlers(classSyntax, model),
                                                        GetUnsupportedMessage())
                                                     );
 
@@ -304,6 +305,31 @@ namespace HomeCenter.CodeGeneration
             return EmptyStatement();
         }
 
+        private StatementSyntax GenerateEventdHandlers(ClassDeclarationSyntax classSyntax, SemanticModel model)
+        {
+            int param_num = 0;
+
+            var methods = GetMethodList(classSyntax, model, "Event");
+
+            if (methods.Count > 0)
+            {
+                var list = new List<IfStatementSyntax>();
+                foreach (var method in methods)
+                {
+                    list.Add(GetIfEvent(ref param_num, method));
+                }
+
+                return GenerateIfStatement(list);
+            }
+
+            return EmptyStatement();
+        }
+
+        private IfStatementSyntax GetIfEvent(ref int param_num, MethodDescription method)
+        {
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName(method.Parameter.Type.Name), SingleVariableDesignation(Identifier($"{"event_"}{param_num}")))), GetCommandInvocationBody(method.Method.Identifier.ValueText, $"{"event_"}{param_num++}", method.ReturnType.Name));
+        }
+
         private static IfStatementSyntax GenerateIfStatement(List<IfStatementSyntax> list)
         {
             if (list.Count == 1) return list[0];
@@ -375,13 +401,13 @@ namespace HomeCenter.CodeGeneration
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));
             }
-
+            
             var result = filter.Select(c => new MethodDescription
             {
                 Method = c,
                 Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
                 ReturnType = model.GetTypeInfo(c.ReturnType).Type
-            }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType).ToList();
+            }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType || x.Parameter.Type.Name == parameterType).ToList();
 
             return result;
         }

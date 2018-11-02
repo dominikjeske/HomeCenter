@@ -20,11 +20,9 @@ namespace HomeCenter.Model.Components
                 routerAttributes.Add(adapterProperty, this[adapterProperty].ToString());
             }
             routerAttributes.Add(MessageProperties.MessageSource, Uid);
-
-            var routingKey = routerAttributes[MessageProperties.MessageSource];
             routerAttributes.Add(EventProperties.EventType, EventType.PropertyChanged);
 
-            return new RoutingFilter(routingKey, routerAttributes);
+            return new RoutingFilter(Uid, routerAttributes);
         }
 
         public Command GetDeviceCommand(Command command)

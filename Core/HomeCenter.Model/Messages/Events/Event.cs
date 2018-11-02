@@ -12,32 +12,17 @@ namespace HomeCenter.Model.Messages.Events
             SupressPropertyChangeEvent = true;
         }
 
-        public bool Equals(Event other)
-        {
-            if (other == null || Type.Compare(other.Type) != 0 || !ToProperiesList().LeftEqual(other.ToProperiesList())) return false;
-
-            return true;
-        }
+        public bool Equals(Event other) => other != null && Type.Compare(other.Type) == 0 && ToProperiesList().LeftEqual(other.ToProperiesList());
 
         public virtual IEnumerable<string> RoutingAttributes() => GetPropetiesKeys();
 
-        public RoutingFilter GetRoutingFilter()
-        {
-            var attributes = GetPropertiesStrings();
-            if (!attributes.ContainsKey(EventProperties.EventType))
-            {
-                attributes.Add(EventProperties.EventType, EventType.PropertyChanged);
-            }
-
-            var routingKey = attributes[MessageProperties.MessageSource];
-            return new RoutingFilter(routingKey, attributes);
-        }
-
+        
         public RoutingFilter GetRoutingFilter(IEnumerable<string> routerAttributes)
         {
-            var attributes = routerAttributes.ToDictionary(k => k, v => this[v].ToString());
+            var attributes = routerAttributes?.ToDictionary(k => k, v => this[v].ToString()) ?? new Dictionary<string, string>();
             attributes[EventProperties.EventType] = Type;
             var routingKey = this[MessageProperties.MessageSource].ToString();
+            attributes[MessageProperties.MessageSource] = routingKey;
 
             return new RoutingFilter(routingKey, attributes);
         }

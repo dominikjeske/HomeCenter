@@ -130,20 +130,15 @@ namespace HomeCenter.Model.Core
             return Task.CompletedTask;
         }
 
-        protected void Subscribe<T>(RoutingFilter filter = null) where T : Command
+        protected void Subscribe<T>(RoutingFilter filter = null) where T : ActorMessage
         {
-            _disposables.Add(MessageBroker.SubscribeForCommand<T>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, filter));
         }
 
         protected void Subscribe<T, R>(RoutingFilter filter = null) where T : Query
         {
             _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, filter));
         }
-
-        //TODO invoke in proxy
-        //private void AssertActorState()
-        //{
-        //    if (!IsEnabled) throw new UnsupportedStateException($"Component {Uid} is disabled");
-        //}
+ 
     }
 }

@@ -2,5 +2,6 @@
 {
     public class SupportedStatesQuery : Query
     {
+        public static SupportedStatesQuery Default = new SupportedStatesQuery();
     }
 }

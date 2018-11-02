@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
 using Quartz;
 using System.Threading.Tasks;
@@ -15,23 +16,13 @@ namespace HomeCenter.TestRunner
 
         }
 
-        [Subscibe]
-        protected Task Invoke(TurnOnCommand command)
+
+        protected Task Invoke(Event command)
         {
             return Task.CompletedTask;
         }
 
-        [Subscibe]
-        protected Task Invoke(TurnOffCommand command)
-        {
-            return Task.CompletedTask;
-        }
-
-        [Subscibe]
-        protected Task<int> Get(SunriseQuery query)
-        {
-            return Task.FromResult(1);
-        }
+        
     }
 
     //[ProxyCodeGenerator]

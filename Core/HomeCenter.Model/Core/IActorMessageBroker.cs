@@ -23,13 +23,13 @@ namespace HomeCenter.Model.Core
             where Q : class
             where R : class;
 
-        Task<R> Request<T, R>(PID actor, T message) where T : ActorMessage;
-        Task<R> Request<T, R>(string uid, T message) where T : ActorMessage;
+        Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage;
+        Task<R> Request<T, R>(T message, string uid) where T : ActorMessage;
 
         void Send(ActorMessage message, PID destination);
         void Send(ActorMessage message, string uid);
 
-        SubscriptionToken SubscribeForCommand<T>(PID subscriber, RoutingFilter filter = null) where T : Command;
+        SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.ValueTypes;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,10 @@ namespace HomeCenter.Model.Messages.Events.Device
             }
         }
 
-        public string PropertyChangedName => (StringValue)this[StateProperties.StateName];
+        public string PropertyChangedName => this[StateProperties.StateName].AsString();
         public IValue NewValue => this[EventProperties.NewValue];
         public IValue OldValue => this[EventProperties.OldValue];
-        public DateTimeOffset EventTime => (DateTimeValue)this[EventProperties.EventTime];
-        public string SourceDeviceUid => (StringValue)this[MessageProperties.MessageSource];
+        public DateTimeOffset EventTime => this[EventProperties.EventTime].AsDate();
+        public string SourceDeviceUid => this[MessageProperties.MessageSource].AsString();
     }
 }

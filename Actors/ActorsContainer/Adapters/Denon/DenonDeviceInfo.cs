@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Adapters.Denon
 {
-    internal class DenonDeviceInfo
+    public class DenonDeviceInfo
     {
         public string Surround { get; set; }
         public string Model { get; set; }

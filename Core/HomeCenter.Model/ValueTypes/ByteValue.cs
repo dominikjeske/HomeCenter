@@ -8,7 +8,7 @@ namespace HomeCenter.Model.ValueTypes
     {
         public ByteValue(byte value = 0) => Value = value;
 
-        public ByteValue Value
+        public byte Value
         {
             get;
         }

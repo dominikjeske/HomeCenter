@@ -12,8 +12,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = new StringValue(nameof(PowerState));
             this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.PowerController);
-            this[StateProperties.Value] = new StringValue();
-            this[StateProperties.ValueList] = new StringListValue(PowerStateValue.ON, PowerStateValue.OFF);
+            this[StateProperties.Value] = new BooleanValue();
             this[StateProperties.SupportedCommands] = new StringListValue(nameof(TurnOnCommand), nameof(TurnOffCommand));
         }
     }

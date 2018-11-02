@@ -13,11 +13,11 @@ namespace HomeCenter.Adapters.Denon.Messages
         public string ReturnNode { get; set; }
         public string Zone { get; set; }
 
-        public bool Verify(string input, object expectedResult)
-        {
-            var parsed = Parse(input);
-            return expectedResult == parsed;
-        }
+        public bool Verify(string input, object expectedResult) => (string)expectedResult == input;
+        
+
+       // public override object Parse(string rawHttpResult) => rawHttpResult;
+
 
         public override object Parse(string rawHttpResult)
         {
