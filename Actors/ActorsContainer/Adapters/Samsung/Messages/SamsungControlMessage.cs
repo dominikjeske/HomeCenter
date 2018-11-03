@@ -11,34 +11,43 @@ namespace HomeCenter.Adapters.Samsung.Messages
         public string Code { get; set; }
         public int Port { get; set; } = 55000;
 
-        private readonly string AppKey = "HomeCenter";
-        private readonly string NullValue = char.ToString((char)0x00);
-        private readonly string AppString = "samsung.remote";
+        private readonly string _appKey = "HomeCenter";
+        private readonly string _nullValue = char.ToString((char)0x00);
+        private readonly string _appString = "samsung.remote";
+
+        public SamsungControlCommand FormatMessage()
+        {
+            Address = $"{Address}:{Port}";
+            Body = Serialize();
+
+            return this;
+        }
 
         private byte[] CreateIdentifier()
         {
+            //TODO check is this correct?
             var myIpBase64 = Base64Encode("192.168.1.35");
             var myMacBase64 = Base64Encode("0C-89-10-CD-43-28");
-            var nameBase64 = Base64Encode(AppKey);
+            var nameBase64 = Base64Encode(_appKey);
 
             var message =
                 char.ToString((char)0x64) +
-                NullValue +
+                _nullValue +
                 Format(myIpBase64.Length) +
-                NullValue +
+                _nullValue +
                 myIpBase64 +
                 Format(myMacBase64.Length) +
-                NullValue +
+                _nullValue +
                 myMacBase64 +
                 Format(nameBase64.Length) +
-                NullValue +
+                _nullValue +
                 nameBase64;
-            var wrappedMessage = NullValue + Format(AppString.Length) + NullValue + AppString + Format(message.Length) + NullValue + message;
+            var wrappedMessage = _nullValue + Format(_appString.Length) + _nullValue + _appString + Format(message.Length) + _nullValue + message;
 
             return ConvertToBytes(wrappedMessage);
         }
 
-        public byte[] Serialize()
+        private byte[] Serialize()
         {
             var identifier = CreateIdentifier();
             var secondParameter = CreateSecondParameter();
@@ -51,17 +60,12 @@ namespace HomeCenter.Adapters.Samsung.Messages
 
             return binaryMessage.ToArray();
         }
-
-        public string MessageAddress()
-        {
-            return $"{Address}:{Port}";
-        }
-
+        
         private byte[] CreateSecondParameter()
         {
             var message = ((char)0xc8) + ((char)0x00) + string.Empty;
 
-            var wrappedMessage = NullValue + Format(AppString.Length) + NullValue + AppString + Format(message.Length) + NullValue + message;
+            var wrappedMessage = _nullValue + Format(_appString.Length) + _nullValue + _appString + Format(message.Length) + _nullValue + message;
             return ConvertToBytes(wrappedMessage);
         }
 
@@ -69,8 +73,8 @@ namespace HomeCenter.Adapters.Samsung.Messages
         {
             var encodedCommand = Base64Encode(command);
 
-            var message = NullValue + NullValue + NullValue + char.ToString((char)encodedCommand.Length) + NullValue + encodedCommand;
-            var wrappedMessage = NullValue + Format(AppString.Length) + NullValue + AppString + Format(message.Length) + NullValue + message;
+            var message = _nullValue + _nullValue + _nullValue + char.ToString((char)encodedCommand.Length) + _nullValue + encodedCommand;
+            var wrappedMessage = _nullValue + Format(_appString.Length) + _nullValue + _appString + Format(message.Length) + _nullValue + message;
 
             return ConvertToBytes(wrappedMessage);
         }
@@ -91,9 +95,6 @@ namespace HomeCenter.Adapters.Samsung.Messages
             return char.ToString((char)value);
         }
 
-        public SamsungControlCommand FormatMessage()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

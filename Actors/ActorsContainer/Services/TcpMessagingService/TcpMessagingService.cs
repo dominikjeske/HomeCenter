@@ -12,10 +12,22 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class TcpMessagingService : Service
     {
-        //TODO query?
+        [Subscibe]
+        protected async Task Handle(TcpCommand tcpCommand)
+        {
+            using (var socket = new TcpClient())
+            {
+                var uri = new Uri($"tcp://{tcpCommand.Address}");
+                await socket.ConnectAsync(uri.Host, uri.Port).ConfigureAwait(false);
+                using (var stream = socket.GetStream())
+                {
+                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length).ConfigureAwait(false);
+                }
+            }
+        }
 
         [Subscibe]
-        protected async Task<string> Handle(TcpCommand tcpCommand)
+        protected async Task<string> Handle(TcpQuery tcpCommand)
         {
             using (var socket = new TcpClient())
             {

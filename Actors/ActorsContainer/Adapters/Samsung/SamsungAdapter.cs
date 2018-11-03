@@ -1,6 +1,8 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.Samsung.Messages;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
@@ -18,10 +20,6 @@ namespace HomeCenter.Adapters.Samsung
         private string _hostname;
 
         private BooleanValue _powerState;
-
-        //private DoubleValue _volume;
-        private BooleanValue _mute;
-
         private StringValue _input;
 
         protected override async Task OnStarted(IContext context)
@@ -33,60 +31,55 @@ namespace HomeCenter.Adapters.Samsung
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            //TODO Add read only state
-            return new DiscoveryResponse(RequierdProperties(), new PowerState(),
-                                                               new VolumeState(),
-                                                               new MuteState(),
-                                                               new InputSourceState()
+            return new DiscoveryResponse(RequierdProperties(), new PowerState(ReadWriteModeValues.Write),
+                                                               new VolumeState(ReadWriteModeValues.Write),
+                                                               new MuteState(ReadWriteModeValues.Write),
+                                                               new InputSourceState(ReadWriteModeValues.Write)
                                           );
         }
 
-        protected Task TurnOn(TurnOnCommand message)
+        private SamsungControlCommand GetCommand(string code)
+        {
+            return new SamsungControlCommand
+            {
+                Address = _hostname,
+                Code = code
+            };
+        }
+
+        protected Task Handle(TurnOnCommand message)
         {
             //TODO ADD infrared message
             return Task.CompletedTask;
         }
 
-        protected async Task TurnOff(TurnOffCommand message)
+        protected async Task Handle(TurnOffCommand message)
         {
-            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            //{
-            //    Address = _hostname,
-            //    Code = "KEY_POWEROFF"
-            //}).ConfigureAwait(false);
+            var cmd = GetCommand("KEY_POWEROFF");
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUp(VolumeUpCommand command)
+        protected Task Handle(VolumeUpCommand command)
         {
-            //return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            //{
-            //    Address = _hostname,
-            //    Code = "KEY_VOLUP"
-            //});
+            var cmd = GetCommand("KEY_VOLUP");
+            return MessageBroker.SendToService(cmd);
         }
 
-        protected async Task VolumeDown(VolumeDownCommand command)
+        protected Task Handle(VolumeDownCommand command)
         {
-            //return _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            //{
-            //    Address = _hostname,
-            //    Code = "KEY_VOLDOWN"
-            //});
+            var cmd = GetCommand("KEY_VOLDOWN");
+            return MessageBroker.SendToService(cmd);
         }
 
-        protected async Task Mute(MuteCommand message)
+        protected Task Handle(MuteCommand message)
         {
-            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            //{
-            //    Address = _hostname,
-            //    Code = "KEY_MUTE"
-            //}).ConfigureAwait(false);
-
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(!_mute)).ConfigureAwait(false);
+            var cmd = GetCommand("KEY_MUTE");
+            return MessageBroker.SendToService(cmd);
         }
 
-        protected async Task InputSet(InputSetCommand message)
+        protected async Task Handle(InputSetCommand message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
 
@@ -110,11 +103,8 @@ namespace HomeCenter.Adapters.Samsung
 
             if (source?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on Samsung available device input sources");
 
-            //await _eventAggregator.QueryAsync<SamsungControlCommand, string>(new SamsungControlCommand
-            //{
-            //    Address = _hostname,
-            //    Code = source
-            //}).ConfigureAwait(false);
+            var cmd = GetCommand(source);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
