@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.Model.Capabilities.Constants
 {
-    public static class ReadWriteModeValues
+    public static class ReadWriteMode
     {
         public const string Read = "Read";
         public const string Write = "Write";

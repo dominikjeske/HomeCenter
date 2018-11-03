@@ -1,8 +1,9 @@
 ﻿using HomeCenter.Adapters.Common;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.ValueTypes;
+using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
 using System.Threading.Tasks;
 
@@ -15,20 +16,14 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var address = (IntValue)this[AdapterProperties.I2cAddress];
-            byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
-            var cmd = I2cCommand.Create(address, setupAsInputs);
-
-            //TODO
-            //await ExecuteCommand(RefreshCommand.Default).ConfigureAwait(false);
+            byte[] setupInputs = { 0x06, 0xFF, 0xFF };
+            var cmd = I2cCommand.Create(_i2cAddress, setupInputs);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
         }
 
-        //public IBinaryInput GetInput(int number)
-        //{
-        //    // All ports have a pullup resistor.
-        //    return ((IBinaryInput)GetPort(number)).WithInvertedState();
-        //}
-
-        //public IBinaryInput this[HSPE16Pin pin] => GetInput((int)pin);
+        protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)
+        {
+            return new DiscoveryResponse(RequierdProperties(), new PowerState(ReadWriteMode.Read));
+        }
     }
 }

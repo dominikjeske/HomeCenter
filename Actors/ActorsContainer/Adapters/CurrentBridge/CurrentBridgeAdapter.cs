@@ -54,7 +54,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         
         protected DiscoveryResponse DeviceDiscoveryQuery(DiscoverQuery message)
         {
-            return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteModeValues.Read));
+            return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteMode.Read));
         }
     }
 }

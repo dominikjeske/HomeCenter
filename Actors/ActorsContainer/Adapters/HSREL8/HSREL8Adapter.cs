@@ -1,9 +1,13 @@
 ﻿using HomeCenter.Adapters.Common;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
+using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.ValueTypes;
+using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.HSREL8
@@ -15,15 +19,33 @@ namespace HomeCenter.Adapters.HSREL8
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            SetState(new byte[] { 0x00, 255 }, true);
+            await SetState(new byte[] { 0x00, 255 }, true).ConfigureAwait(false);
         }
 
-        public void TurnOn(TurnOnCommand message)
+        protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)
         {
+            return new DiscoveryResponse(RequierdProperties(), new PowerState());
         }
 
-        public void TurnOff(TurnOffCommand message)
+        public Task TurnOn(TurnOnCommand message)
         {
+            int pinNumber = GetPin(message);
+
+            return SetPortState(pinNumber, true, true);
+        }
+
+        public Task TurnOff(TurnOffCommand message)
+        {
+            int pinNumber = GetPin(message);
+
+            return SetPortState(pinNumber, false, true);
+        }
+
+        private int GetPin(Command message)
+        {
+            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
+            if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
+            return pinNumber;
         }
     }
 }

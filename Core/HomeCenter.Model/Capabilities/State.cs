@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public State(StringValue ReadWriteMode = default)
         {
-            if (ReadWriteMode == null) ReadWriteMode = ReadWriteModeValues.ReadWrite;
+            if (ReadWriteMode == null) ReadWriteMode = Constants.ReadWriteMode.ReadWrite;
 
             this[StateProperties.TimeOfValue] = new DateTimeValue();
             this[StateProperties.ReadWriteMode] = ReadWriteMode;

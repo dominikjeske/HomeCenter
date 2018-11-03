@@ -17,12 +17,17 @@ namespace HomeCenter.TestRunner
         }
 
 
-        protected Task Invoke(Event command)
+        //protected Task Invoke(Event command)
+        //{
+        //    return Task.CompletedTask;
+        //}
+
+        private Task Invoke(TurnOnCommand command)
         {
             return Task.CompletedTask;
         }
 
-        
+
     }
 
     //[ProxyCodeGenerator]

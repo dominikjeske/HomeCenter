@@ -31,10 +31,10 @@ namespace HomeCenter.Adapters.Samsung
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            return new DiscoveryResponse(RequierdProperties(), new PowerState(ReadWriteModeValues.Write),
-                                                               new VolumeState(ReadWriteModeValues.Write),
-                                                               new MuteState(ReadWriteModeValues.Write),
-                                                               new InputSourceState(ReadWriteModeValues.Write)
+            return new DiscoveryResponse(RequierdProperties(), new PowerState(ReadWriteMode.Write),
+                                                               new VolumeState(ReadWriteMode.Write),
+                                                               new MuteState(ReadWriteMode.Write),
+                                                               new InputSourceState(ReadWriteMode.Write)
                                           );
         }
 

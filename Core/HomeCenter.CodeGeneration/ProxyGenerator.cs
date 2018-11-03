@@ -396,8 +396,8 @@ namespace HomeCenter.CodeGeneration
         {
             var filter = classSyntax.DescendantNodes()
                                 .OfType<MethodDeclarationSyntax>()
-                                .Where(m => m.ParameterList.Parameters.Count == 1);
-
+                                .Where(m => m.ParameterList.Parameters.Count == 1 && !m.Modifiers.Any(x => x.ValueText == "private"));
+            
             if (attributeType != null)
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));

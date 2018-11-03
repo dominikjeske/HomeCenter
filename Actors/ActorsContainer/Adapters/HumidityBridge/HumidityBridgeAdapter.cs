@@ -53,7 +53,7 @@ namespace HomeCenter.Adapters.HumidityBridge
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            return new DiscoveryResponse(RequierdProperties(), new HumidityState(ReadWriteModeValues.Read));
+            return new DiscoveryResponse(RequierdProperties(), new HumidityState(ReadWriteMode.Read));
         }
     }
 }

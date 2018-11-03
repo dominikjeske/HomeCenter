@@ -2,15 +2,15 @@
 {
     public static class StateProperties
     {
-        public const string Value = "Value";
-        public const string StateName = "StateName";
-        public const string CapabilityName = "CapabilityName";
-        public const string MaxValue = "MaxValue";
-        public const string MinValue = "MinValue";
-        public const string ValueList = "ValueList";
-        public const string ValueUnit = "ValueUnit";
-        public const string SupportedCommands = "SupportedCommands";
-        public const string TimeOfValue = "TimeOfValue";
-        public const string ReadWriteMode = "ReadWriteMode";
+        public const string Value = nameof(Value);
+        public const string StateName = nameof(StateName);
+        public const string CapabilityName = nameof(CapabilityName);
+        public const string MaxValue = nameof(MaxValue);
+        public const string MinValue = nameof(MinValue);
+        public const string ValueList = nameof(ValueList);
+        public const string ValueUnit = nameof(ValueUnit);
+        public const string SupportedCommands = nameof(SupportedCommands);
+        public const string TimeOfValue = nameof(TimeOfValue);
+        public const string ReadWriteMode = nameof(ReadWriteMode);
     }
 }

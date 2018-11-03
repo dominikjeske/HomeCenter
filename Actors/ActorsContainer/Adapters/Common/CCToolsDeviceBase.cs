@@ -23,12 +23,11 @@ namespace HomeCenter.Adapters.Common
     public abstract class CCToolsBaseAdapter : Adapter
     {
         private const int StateSize = 2;
-        
         private readonly byte[] _outputWriteBuffer = { 2, 0, 0 };
         private readonly byte[] _configurationWriteBuffer = { 6, 0, 0 };
 
         private int _poolDurationWarning;
-        private int _i2cAddress;
+        protected int _i2cAddress;
         private byte[] _committedState;
         private byte[] _state;
 
@@ -50,25 +49,23 @@ namespace HomeCenter.Adapters.Common
 
             await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
         }
-
-        protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)
-        {
-            return new DiscoveryResponse(RequierdProperties(), new PowerState());
-        }
-
+        
         protected Task Refresh(RefreshCommand message) => FetchState();
-
-        protected Task UpdateState(UpdateStateCommand message)
-        {
-            var state = message[PowerState.StateName].AsBool();
-            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
-            return SetPortState(pinNumber, state, true);
-        }
-
+        
         protected bool QueryState(StateQuery message)
         {
             var pinNumber = message[AdapterProperties.PinNumber].AsInt();
             return GetPortState(pinNumber);
+        }
+
+        protected async Task SetPortState(int pinNumber, bool state, bool commit)
+        {
+            _state.SetBit(pinNumber, state);
+
+            if (commit)
+            {
+                await CommitChanges().ConfigureAwait(false);
+            }
         }
 
         protected async Task SetState(byte[] state, bool commit)
@@ -134,16 +131,6 @@ namespace HomeCenter.Adapters.Common
 
         private bool GetPortState(int id) => _state.GetBit(id);
 
-        private async Task SetPortState(int pinNumber, bool state, bool commit)
-        {
-            _state.SetBit(pinNumber, state);
-
-            if (commit)
-            {
-                await CommitChanges().ConfigureAwait(false);
-            }
-        }
-
         private async Task WriteToBus(byte[] state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
@@ -161,7 +148,7 @@ namespace HomeCenter.Adapters.Common
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> ReadFromBus()
+        private async Task<byte[]> ReadFromBus()
         {
             var query = I2cQuery.Create(_i2cAddress, StateSize);
             var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query).ConfigureAwait(false);
