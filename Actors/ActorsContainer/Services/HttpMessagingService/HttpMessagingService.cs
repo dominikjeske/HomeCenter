@@ -14,27 +14,19 @@ namespace HomeCenter.Services.Networking
     public class HttpMessagingService : Service
     {
         [Subscibe]
-        protected async Task<object> SendGetRequest(HttpQuery httpMessage)
+        protected async Task<object> SendGetRequest(HttpGetQuery httpMessage)
         {
-            try
+            using (var httpClient = new HttpClient())
             {
-                using (var httpClient = new HttpClient())
-                {
-                    var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
-                    httpResponse.EnsureSuccessStatusCode();
-                    var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    return httpMessage.Parse(responseBody);
-                }
+                var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
+                httpResponse.EnsureSuccessStatusCode();
+                var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return httpMessage.Parse(responseBody);
             }
-            catch (System.Exception ee)
-            {
-                return "";
-            }
-          
         }
 
         [Subscibe]
-        protected async Task<string> SendPostRequest(HttpCommand httpMessage)
+        protected async Task<object> SendPostRequest(HttpPostQuery httpMessage)
         {
             var httpClientHandler = new HttpClientHandler();
             if (httpMessage.Cookies != null)
@@ -69,9 +61,8 @@ namespace HomeCenter.Services.Networking
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);
 
-                return responseBody;
+                return httpMessage.Parse(responseBody);
             }
         }
-
     }
 }

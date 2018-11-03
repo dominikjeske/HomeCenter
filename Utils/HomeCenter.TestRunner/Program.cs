@@ -49,9 +49,10 @@ namespace HomeCenter.TestRunner
 
         private static async Task StartController()
         {
-            Runner[] runners = new[]
+            var runners = new Runner[]
             {
-                new DenonRunner("DenonComponent")
+                new DenonRunner("DenonComponent"),
+                new KodiRunner("KodiComponent")
             };
 
             var runner = new WirehomeRunner(runners.ToList());

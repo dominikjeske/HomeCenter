@@ -12,7 +12,7 @@ namespace HomeCenter.Adapters.Kodi.Messages
     //http://kodi.wiki/view/JSON-RPC_API/Examples
     //http://kodi.wiki/view/JSON-RPC_API/v8#Notifications_2
 
-    public class KodiCommand : HttpCommand, IFormatableMessage<KodiCommand>
+    public class KodiCommand : HttpPostQuery, IFormatableMessage<KodiCommand>
     {
         public string UserName { get; set; }
         public string Password { get; set; }
@@ -40,14 +40,12 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
             return this;
         }
-
-        public string ParseResult(string responseData, Type responseType = null)
+    
+        public override object Parse(string rawHttpResult)
         {
-            var result = JsonConvert.DeserializeObject<JsonRpcResponse>(responseData);
+            var result = JsonConvert.DeserializeObject<JsonRpcResponse>(rawHttpResult);
 
-            if (result.Error != null) throw new UnsupportedResultException(result.Error.ToString());
-
-            return result.Result.ToString();
+            return result;
         }
     }
 }

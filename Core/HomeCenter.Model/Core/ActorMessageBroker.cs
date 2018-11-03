@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
+using Newtonsoft.Json;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -55,12 +56,29 @@ namespace HomeCenter.Model.Core
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
                                                                                 where R : class
         {
-            if (query is IFormatableMessage<T> formatableMessage)
-            {
-                query = formatableMessage.FormatMessage();
-            }
+            query = FormatMessage(query);
 
             return _eventAggregator.QueryAsync<T, R>(query, filter);
+        }
+
+        
+
+        public async Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) where T : Query
+                                                                                          where R : class
+        {
+            query = FormatMessage(query);
+
+            var json = await _eventAggregator.QueryAsync<T, string>(query, filter).ConfigureAwait(false);
+            var result = JsonConvert.DeserializeObject<R>(json);
+            return result;
+
+        }
+
+        public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
+        {
+            command = FormatMessage(command);
+
+            return _eventAggregator.Publish(command, filter);
         }
 
         public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
@@ -94,6 +112,16 @@ namespace HomeCenter.Model.Core
             var pid = _actorFactory.GetActor(uid);
 
             return Request<T, R>(message, pid);
+        }
+
+        private static T FormatMessage<T>(T query) where T : ActorMessage
+        {
+            if (query is IFormatableMessage<T> formatableMessage)
+            {
+                query = formatableMessage.FormatMessage();
+            }
+
+            return query;
         }
     }
 }

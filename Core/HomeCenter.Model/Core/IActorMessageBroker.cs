@@ -14,7 +14,13 @@ namespace HomeCenter.Model.Core
     {
         Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes = null) where T : Event;
 
+        Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
+
         Task<R> QueryService<T, R>(T query, RoutingFilter filter = null)
+            where T : Query
+            where R : class;
+
+        Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) 
             where T : Query
             where R : class;
 
@@ -24,12 +30,16 @@ namespace HomeCenter.Model.Core
             where R : class;
 
         Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage;
+
         Task<R> Request<T, R>(T message, string uid) where T : ActorMessage;
 
         void Send(ActorMessage message, PID destination);
+
         void Send(ActorMessage message, string uid);
 
         SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
+
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
+        
     }
 }

@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace HomeCenter.Adapters.Denon.Messages
 {
-    internal class DenonControlQuery : HttpQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, object>
+    internal class DenonControlQuery : HttpGetQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, object>
     {
         public string Command { get; set; }
         public string Api { get; set; }
@@ -14,10 +14,6 @@ namespace HomeCenter.Adapters.Denon.Messages
         public string Zone { get; set; }
 
         public bool Verify(string input, object expectedResult) => (string)expectedResult == input;
-        
-
-       // public override object Parse(string rawHttpResult) => rawHttpResult;
-
 
         public override object Parse(string rawHttpResult)
         {

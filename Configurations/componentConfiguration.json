@@ -56,6 +56,18 @@
         ]
       },
       {
+        "Uid": "KodiComponent",
+        "IsEnabled": true,
+        "Properties": {
+          "FriendlyName": "Kodi"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "Kodi"
+          }
+        ]
+      },
+      {
         "Uid": "Lamp1",
         "IsEnabled": true,
         "Properties": {

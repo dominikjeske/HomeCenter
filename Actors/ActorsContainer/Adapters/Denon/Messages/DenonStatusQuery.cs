@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace HomeCenter.Adapters.Denon.Messages
 {
-    internal class DenonStatusQuery : HttpQuery, IFormatableMessage<DenonStatusQuery>
+    internal class DenonStatusQuery : HttpGetQuery, IFormatableMessage<DenonStatusQuery>
     {
         public DenonStatusQuery FormatMessage()
         {

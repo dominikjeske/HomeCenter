@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace HomeCenter.Adapters.Denon.Messages
 {
-    internal class DenonStatusLightQuery : HttpQuery, IFormatableMessage<DenonStatusLightQuery>
+    internal class DenonStatusLightQuery : HttpGetQuery, IFormatableMessage<DenonStatusLightQuery>
     {
         public string Zone { get; set; } = "1";
 

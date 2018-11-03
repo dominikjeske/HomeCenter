@@ -4,20 +4,18 @@ using Newtonsoft.Json;
 
 namespace HomeCenter.Adapters.PC.Messages
 {
-    public class ComputerControlCommand : HttpCommand, IFormatableMessage<ComputerControlCommand>
+    public class ComputerCommand : HttpCommand, IFormatableMessage<ComputerCommand>
     {
         public int Port { get; set; } = 5000;
         public string Service { get; set; }
         public object Message { get; set; }
 
-        public ComputerControlCommand()
+        public ComputerCommand()
         {
             ContentType = "application/json";
         }
 
-        public T ParseResult<T>(string responseData) => JsonConvert.DeserializeObject<T>(responseData);
-
-        public ComputerControlCommand FormatMessage()
+        public ComputerCommand FormatMessage()
         {
             Address = $"http://{Address}:{Port}/api/{Service}";
             Body = JsonConvert.SerializeObject(Message);

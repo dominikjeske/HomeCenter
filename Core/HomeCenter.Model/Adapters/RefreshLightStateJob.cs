@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Adapters
 {
-    public class RefreshStateJob : IJob
+
+    public class RefreshLightStateJob : IJob
     {
         private readonly IActorMessageBroker _actorMessageBroker;
 
-        public RefreshStateJob(IActorMessageBroker actorMessageBroker)
+        public RefreshLightStateJob(IActorMessageBroker actorMessageBroker)
         {
             _actorMessageBroker = actorMessageBroker;
         }
@@ -19,7 +20,7 @@ namespace HomeCenter.Model.Adapters
         public Task Execute(IJobExecutionContext context)
         {
             var adapter = context.GetDataContext<PID>();
-            _actorMessageBroker.Send(RefreshCommand.Default, adapter);
+            _actorMessageBroker.Send(RefreshLightCommand.Default, adapter);
             return Task.CompletedTask;
         }
     }
