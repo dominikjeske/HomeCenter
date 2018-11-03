@@ -4,6 +4,7 @@ using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
@@ -34,20 +35,23 @@ namespace HomeCenter.Adapters.CurrentBridge
                 _state.Add(IntValue.FromString(val), 0);
             }
 
-            var registration = new SerialRegistrationQuery(Self, 5, new Format[]
+            var registration = new SerialRegistrationCommand(Self, 5, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(byte), "Current")
             });
 
-            //TODO Send
+            await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
-        protected void Handle(SerialResultCommand serialResultCommand)
+        protected async Task Handle(SerialResultEvent serialResult)
         {
-            //_state[pin] = await UpdateState(CurrentState.StateName, pin, (IntValue)currentExists).ConfigureAwait(false);
-        }
+            var pin = serialResult["Pin"].AsByte();
+            var currentExists = serialResult["Current"].AsByte();
 
+            _state[pin] = await UpdateState(HumidityState.StateName, pin, (IntValue)currentExists).ConfigureAwait(false);
+        }
+        
         protected DiscoveryResponse DeviceDiscoveryQuery(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteModeValues.Read));

@@ -1,17 +1,18 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Codes;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.RemoteSocketBridge
 {
+    //TODO reset state of all devices on start?
+
     [ProxyCodeGenerator]
     public abstract class RemoteSocketBridgeAdapter : Adapter
     {
@@ -35,44 +38,43 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
-            var registration = new SerialRegistrationQuery(Self, 2, new Format[]
+            var registration = new SerialRegistrationCommand(Self, 2, new Format[]
              {
                     new Format(1, typeof(uint), "Code"),
                     new Format(2, typeof(byte), "Bits"),
                     new Format(3, typeof(byte), "Protocol")
              });
-            //TODO Send
-            //TODO count size??
+            await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
-        protected void Handle(SerialResultCommand serialResultCommand)
+        protected async Task Handle(SerialResultEvent serialResultCommand)
         {
-            //var dipswitchCode = DipswitchCode.ParseCode(code);
+            var code = serialResultCommand["Code"].AsUInt();
+            var dipswitchCode = DipswitchCode.ParseCode(code);
 
-            //if (dipswitchCode != null)
-            //{
-            //    await _eventAggregator.PublishDeviceEvent(new DipswitchEvent(Uid, dipswitchCode)).ConfigureAwait(false);
-            //}
+            if (dipswitchCode == null)
+            {
+                Logger.LogWarning($"Unrecognized command parsed from code {code}");
+                return;
+            }
+
+            await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode)).ConfigureAwait(false);
         }
 
         protected async Task TurnOn(TurnOnCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
-
-            //if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue((byte)_I2cAddress.Value), package).Status == I2cTransferStatus.FullTransfer)
-            //{
-            //    await UpdateState(dipswitchCode).ConfigureAwait(false);
-            //}
+            var cmd = I2cCommand.Create(_I2cAddress, package);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await UpdateState(dipswitchCode).ConfigureAwait(false);
         }
 
         protected async Task TurnOff(TurnOffCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
-
-            //if (_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package).Status == I2cTransferStatus.FullTransfer)
-            //{
-            //    await UpdateState(dipswitchCode).ConfigureAwait(false);
-            //}
+            var cmd = I2cCommand.Create(_I2cAddress, package);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await UpdateState(dipswitchCode).ConfigureAwait(false);
         }
 
         private byte[] PreparePackage(Command message, string commandName, out DipswitchCode dipswitchCode)

@@ -6,6 +6,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
@@ -23,39 +24,42 @@ namespace HomeCenter.Adapters.InfraredBridge
         private IntValue _pinNumber;
         private IntValue _I2cAddress;
 
-        private readonly Dictionary<IntValue, BooleanValue> _state = new Dictionary<IntValue, BooleanValue>();
-
-        protected InfraredBridgeAdapter()
-        {
-            //TODO register handler
-        }
-
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
             _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
+
+            //TODO register pin number?
             _pinNumber = this[AdapterProperties.PinNumber].AsInt();
 
-            var registration = new SerialRegistrationQuery(Self, 3, new Format[]
+            var registration = new SerialRegistrationCommand(Self, 3, new Format[]
                {
                 new Format(1, typeof(byte), "System"),
                 new Format(2, typeof(uint), "Code"),
                 new Format(3, typeof(byte), "Bits")
-               });
-            //TODO Send
-            //TODO count size??
+               }
+            );
+            await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
-        protected void Handle(SerialResultCommand serialResultCommand)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            //await _eventAggregator.PublishDeviceEvent(new InfraredEvent(Uid, system, (int)code)).ConfigureAwait(false);
+            return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.InfraredCode, EventDirections.Recieving),
+                                                                 new EventSource(EventType.InfraredCode, EventDirections.Sending)}, new PowerState());
         }
 
-        protected Task SendCode(SendCodeCommand message)
+        protected Task Handle(SerialResultEvent serialResultCommand)
         {
-            //TODO uint?
-            var commandCode = message[CommandProperties.Code].AsInt();
+            var system = serialResultCommand["System"].AsByte();
+            var code = serialResultCommand["Code"].AsInt();
+
+            return MessageBroker.PublisEvent(new InfraredEvent(Uid, system, code));
+        }
+
+        protected Task Handle(SendCodeCommand message)
+        {
+            var commandCode = message[CommandProperties.Code].AsUInt();
             var system = message[CommandProperties.System].AsInt();
             var bits = message[CommandProperties.Bits].AsInt();
             var repeat = base.GetPropertyValue(CommandProperties.Repeat, new IntValue(DEAFULT_REPEAT)).AsInt();
@@ -70,15 +74,8 @@ namespace HomeCenter.Adapters.InfraredBridge
             package.AddRange(BitConverter.GetBytes(commandCode));
             var code = package.ToArray();
 
-            //_i2cServiceBus.Write(I2CSlaveAddress.FromValue(_I2cAddress), package.ToArray());
-
-            return Task.CompletedTask;
-        }
-
-        protected DiscoveryResponse Discover(DiscoverQuery message)
-        {
-            return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.InfraredCode, EventDirections.Recieving),
-                                                                 new EventSource(EventType.InfraredCode, EventDirections.Sending)}, new PowerState());
+            var cmd = I2cCommand.Create(_I2cAddress, package.ToArray());
+            return MessageBroker.SendToService(cmd);
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using HomeCenter.Adapters.Kodi.Messages.JsonModels;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
-using System;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {
@@ -40,7 +38,7 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
             return this;
         }
-    
+
         public override object Parse(string rawHttpResult)
         {
             var result = JsonConvert.DeserializeObject<JsonRpcResponse>(rawHttpResult);

@@ -2,6 +2,7 @@
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.Native;
 using HomeCenter.Model.ValueTypes;
@@ -18,12 +19,11 @@ namespace HomeCenter.Services.Networking
     public abstract class SerialMessagingService : Service
     {
         private IBinaryReader _dataReader;
-
         private readonly ISerialDevice _serialDevice;
-        private readonly Dictionary<int, SerialRegistrationQuery> _messageHandlers = new Dictionary<int, SerialRegistrationQuery>();
+        private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
-        public SerialMessagingService(ISerialDevice serialDevice)
+        protected SerialMessagingService(ISerialDevice serialDevice)
         {
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
         }
@@ -39,18 +39,18 @@ namespace HomeCenter.Services.Networking
             var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
-        //[Subscibe]
-        //protected Task Handle(SerialRegistrationQuery registration)
-        //{
-        //    if (_messageHandlers.ContainsKey(registration.MessageType))
-        //    {
-        //        throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialMessagingService)}");
-        //    }
+        [Subscibe]
+        protected Task Handle(SerialRegistrationCommand registration)
+        {
+            if (_messageHandlers.ContainsKey(registration.MessageType))
+            {
+                throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialMessagingService)}");
+            }
 
-        //    _messageHandlers.Add(registration.MessageType, registration);
+            _messageHandlers.Add(registration.MessageType, registration);
 
-        //    return Task.CompletedTask;
-        //}
+            return Task.CompletedTask;
+        }
 
         private async Task Listen()
         {
@@ -83,13 +83,13 @@ namespace HomeCenter.Services.Networking
 
                     if (bodyBytesReaded > 0)
                     {
-                        if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationQuery registration))
+                        if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
                         {
                             throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
                         }
 
                         if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
-                        var result = ReadData(registration);
+                        var result = ReadData(registration.ResultFormat);
 
                         MessageBroker.Send(result, registration.Actor);
                     }
@@ -97,11 +97,11 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        protected SerialResultCommand ReadData(SerialRegistrationQuery registration)
+        private SerialResultEvent ReadData(Format[] registration)
         {
-            var result = new SerialResultCommand();
+            var result = new SerialResultEvent();
 
-            foreach (var format in registration.ResultFormat.OrderBy(l => l.Lp))
+            foreach (var format in registration.OrderBy(l => l.Lp))
             {
                 if (format.ValueType == typeof(byte))
                 {

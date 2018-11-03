@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace HomeCenter.Model.Messages.Commands.Service
+namespace HomeCenter.Model.Messages.Queries.Services
 {
     public abstract class HttpPostQuery : Query
     {

@@ -55,9 +55,10 @@ namespace HomeCenter.CodeGeneration
         private SyntaxList<UsingDirectiveSyntax> GenerateUsingStatements()
         {
             var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
-
+            
             _usingSyntax.Add(UsingDirective(IdentifierName("Quartz")));
             _usingSyntax.Add(UsingDirective(IdentifierName("System")));
+            _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Threading")), IdentifierName("Tasks"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging"))));
 

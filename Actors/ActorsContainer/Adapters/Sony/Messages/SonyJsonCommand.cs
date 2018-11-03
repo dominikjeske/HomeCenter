@@ -1,7 +1,6 @@
 ﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 
@@ -9,12 +8,10 @@ namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyAudioResult
     {
-
     }
 
     public class SonyPowerResult
     {
-
     }
 
     public class SonyJsonQuery : HttpPostQuery, IFormatableMessage<SonyJsonQuery>
@@ -43,7 +40,7 @@ namespace HomeCenter.Adapters.Sony.Messages
         }
 
         public override object Parse(string rawHttpResult) => rawHttpResult;
-        
+
         //public object ParseResult(string responseData, Type responseType = null)
         //{
         //    var response = (JObject)JsonConvert.DeserializeObject(responseData);
@@ -83,7 +80,5 @@ namespace HomeCenter.Adapters.Sony.Messages
         //        //}
         //    }
         //}
-
-
     }
 }

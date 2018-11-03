@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
 
 namespace HomeCenter.Adapters.PC.Messages

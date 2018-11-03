@@ -1,10 +1,11 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
@@ -15,104 +16,21 @@ namespace HomeCenter.Services.Networking
         private readonly string _busId;
         private readonly II2cBus _nativeI2CBus;
 
-        public I2CService(II2cBus nativeI2CBus)
+        // Byte 0 = Offset
+        // Register 0-1=Input
+        // Register 2-3=Output
+        // Register 4-5=Inversion
+        // Register 6-7=Configuration
+        // Register 8=Timeout
+        private readonly byte[] _inputWriteBuffer = { 0 };
+
+        protected I2CService(II2cBus nativeI2CBus)
         {
             _nativeI2CBus = nativeI2CBus ?? throw new ArgumentNullException(nameof(nativeI2CBus));
             _busId = _nativeI2CBus.GetBusId();
         }
 
-        private II2cDevice CreateDevice(int slaveAddress)
-        {
-            return _nativeI2CBus.CreateDevice(_busId, slaveAddress);
-        }
-
-        public I2cTransferResult Write(I2CSlaveAddress address, byte[] buffer, bool useCache = true)
-        {
-            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
-            return Execute(address, d => d.WritePartial(buffer), useCache);
-        }
-
-        public I2cTransferResult Read(I2CSlaveAddress address, byte[] buffer, bool useCache = true)
-        {
-            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
-            return Execute(address, d => d.ReadPartial(buffer), useCache);
-        }
-
-        public I2cTransferResult WriteRead(I2CSlaveAddress address, byte[] writeBuffer, byte[] readBuffer, bool useCache = true)
-        {
-            if (writeBuffer == null) throw new ArgumentNullException(nameof(writeBuffer));
-            if (readBuffer == null) throw new ArgumentNullException(nameof(readBuffer));
-
-            return Execute(address, d => d.WriteReadPartial(writeBuffer, readBuffer), useCache);
-        }
-
-        private I2cTransferResult Execute(I2CSlaveAddress address, Func<II2cDevice, I2cTransferResult> action, bool useCache = true)
-        {
-            lock (_deviceCache)
-            {
-                II2cDevice device = null;
-                try
-                {
-                    device = GetDevice(address.Value, useCache);
-                    var result = action(device);
-
-                    if (result.Status != I2cTransferStatus.FullTransfer)
-                    {
-                        Logger.LogWarning($"Transfer failed. Address={address.Value} Status={result.Status} TransferredBytes={result.BytesTransferred}");
-                    }
-
-                    return WrapResult(result);
-                }
-                catch (Exception exception)
-                {
-                    // Ensure that the application will not crash if some devices are currently not available etc.
-                    Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
-                    return new I2cTransferResult() { Status = I2cTransferStatus.UnknownError, BytesTransferred = 0 };
-                }
-                finally
-                {
-                    if (!useCache)
-                    {
-                        device?.Dispose();
-                    }
-                }
-            }
-        }
-
-        private static I2cTransferResult WrapResult(I2cTransferResult result)
-        {
-            var status = I2cTransferStatus.UnknownError;
-            switch (result.Status)
-            {
-                case I2cTransferStatus.FullTransfer:
-                    {
-                        status = I2cTransferStatus.FullTransfer;
-                        break;
-                    }
-
-                case I2cTransferStatus.PartialTransfer:
-                    {
-                        status = I2cTransferStatus.PartialTransfer;
-                        break;
-                    }
-
-                case I2cTransferStatus.ClockStretchTimeout:
-                    {
-                        status = I2cTransferStatus.ClockStretchTimeout;
-                        break;
-                    }
-
-                case I2cTransferStatus.SlaveAddressNotAcknowledged:
-                    {
-                        status = I2cTransferStatus.SlaveAddressNotAcknowledged;
-                        break;
-                    }
-            }
-
-            return new I2cTransferResult() { Status = status, BytesTransferred = result.BytesTransferred };
-        }
+        private II2cDevice CreateDevice(int slaveAddress) => _nativeI2CBus.CreateDevice(_busId, slaveAddress);
 
         private II2cDevice GetDevice(int address, bool useCache)
         {
@@ -132,9 +50,66 @@ namespace HomeCenter.Services.Networking
             return device;
         }
 
-        public Task Initialize()
+        protected void Handle(I2cCommand command)
         {
-            return Task.CompletedTask;
+            var address = I2CSlaveAddress.FromValue(command.Address);
+            var useCache = command.UseCache;
+            var data = command.Body;
+
+            II2cDevice device = null;
+            try
+            {
+                device = GetDevice(address.Value, useCache);
+                var result = device.WritePartial(data);
+
+                if (result.Status != I2cTransferStatus.FullTransfer)
+                {
+                    Logger.LogWarning($"Transfer failed. Address={address.Value} Status={result.Status} TransferredBytes={result.BytesTransferred}");
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
+            }
+            finally
+            {
+                if (!useCache)
+                {
+                    device?.Dispose();
+                }
+            }
+        }
+
+        protected byte[] Handle(I2cQuery query)
+        {
+            var address = I2CSlaveAddress.FromValue(query.Address);
+            var useCache = query.UseCache;
+            byte[] _inputReadBuffer = new byte[query.Size];
+            II2cDevice device = null;
+
+            try
+            {
+                device = GetDevice(address.Value, useCache);
+                var result = device.WriteReadPartial(_inputWriteBuffer, _inputReadBuffer);
+
+                if (result.Status != I2cTransferStatus.FullTransfer)
+                {
+                    Logger.LogWarning($"Transfer failed. Address={address.Value} Status={result.Status} TransferredBytes={result.BytesTransferred}");
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
+            }
+            finally
+            {
+                if (!useCache)
+                {
+                    device?.Dispose();
+                }
+            }
+
+            return _inputReadBuffer;
         }
     }
 }

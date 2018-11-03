@@ -1,10 +1,12 @@
 ﻿using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -20,11 +22,15 @@ namespace HomeCenter.Adapters.Common
 {
     public abstract class CCToolsBaseAdapter : Adapter
     {
+        private const int StateSize = 2;
+        
+        private readonly byte[] _outputWriteBuffer = { 2, 0, 0 };
+        private readonly byte[] _configurationWriteBuffer = { 6, 0, 0 };
+
         private int _poolDurationWarning;
+        private int _i2cAddress;
         private byte[] _committedState;
         private byte[] _state;
-
-        protected II2CPortExpanderDriver _portExpanderDriver;
 
         protected CCToolsBaseAdapter()
         {
@@ -35,23 +41,14 @@ namespace HomeCenter.Adapters.Common
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            //var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
+            var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
+            _poolDurationWarning = this[AdapterProperties.PollDurationWarningThreshold].AsInt();
+            _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
 
-            //_poolDurationWarning = (IntValue)this[AdapterProperties.PollDurationWarningThreshold];
+            _state = new byte[StateSize];
+            _committedState = new byte[StateSize];
 
-            //_state = new byte[_portExpanderDriver.StateSize];
-            //_committedState = new byte[_portExpanderDriver.StateSize];
-
-            // await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
-        }
-
-        protected Task Refresh(RefreshCommand message) => FetchState();
-
-        protected void UpdateState(UpdateStateCommand message)
-        {
-            var state = message[PowerState.StateName] as BooleanValue;
-            var pinNumber = message[AdapterProperties.PinNumber] as IntValue;
-            SetPortState(pinNumber.Value, state, true);
+            await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)
@@ -59,27 +56,38 @@ namespace HomeCenter.Adapters.Common
             return new DiscoveryResponse(RequierdProperties(), new PowerState());
         }
 
+        protected Task Refresh(RefreshCommand message) => FetchState();
+
+        protected Task UpdateState(UpdateStateCommand message)
+        {
+            var state = message[PowerState.StateName].AsBool();
+            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
+            return SetPortState(pinNumber, state, true);
+        }
+
         protected bool QueryState(StateQuery message)
         {
-            var state = message[PowerState.StateName] as StringValue;
-            var pinNumber = message[AdapterProperties.PinNumber] as IntValue;
+            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
             return GetPortState(pinNumber);
         }
 
-        protected void SetState(byte[] state, bool commit)
+        protected async Task SetState(byte[] state, bool commit)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            //Buffer.BlockCopy(state, 0, _state, 0, state.Length);
+            Buffer.BlockCopy(state, 0, _state, 0, state.Length);
 
-            //if (commit) CommitChanges();
+            if (commit)
+            {
+                await CommitChanges().ConfigureAwait(false);
+            }
         }
 
         private async Task FetchState()
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var newState = _portExpanderDriver.Read();
+            var newState = await ReadFromBus();
 
             stopwatch.Stop();
 
@@ -98,7 +106,7 @@ namespace HomeCenter.Adapters.Common
                 var oldPinState = oldStateBits.Get(i);
                 var newPinState = newStateBits.Get(i);
 
-                if (oldPinState == newPinState) return;
+                if (oldPinState == newPinState) continue;
 
                 var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, new BooleanValue(oldPinState),
                                             new BooleanValue(newPinState), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(i) } });
@@ -114,11 +122,11 @@ namespace HomeCenter.Adapters.Common
             }
         }
 
-        private void CommitChanges(bool force = false)
+        private async Task CommitChanges(bool force = false)
         {
             if (!force && _state.SequenceEqual(_committedState)) return;
 
-            _portExpanderDriver.Write(_state);
+            await WriteToBus(_state).ConfigureAwait(false);
             Buffer.BlockCopy(_state, 0, _committedState, 0, _state.Length);
 
             Logger.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
@@ -126,11 +134,38 @@ namespace HomeCenter.Adapters.Common
 
         private bool GetPortState(int id) => _state.GetBit(id);
 
-        private void SetPortState(int pinNumber, bool state, bool commit)
+        private async Task SetPortState(int pinNumber, bool state, bool commit)
         {
             _state.SetBit(pinNumber, state);
 
-            if (commit) CommitChanges();
+            if (commit)
+            {
+                await CommitChanges().ConfigureAwait(false);
+            }
+        }
+
+        private async Task WriteToBus(byte[] state)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+            if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
+
+            // Set configuration to output.
+            var cmd = I2cCommand.Create(_i2cAddress, _configurationWriteBuffer);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+
+            // Update the output registers only.
+            _outputWriteBuffer[1] = state[0];
+            _outputWriteBuffer[2] = state[1];
+
+            cmd = I2cCommand.Create(_i2cAddress, _outputWriteBuffer);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+        }
+
+        public async Task<byte[]> ReadFromBus()
+        {
+            var query = I2cQuery.Create(_i2cAddress, StateSize);
+            var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query).ConfigureAwait(false);
+            return result;
         }
     }
 }

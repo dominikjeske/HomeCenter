@@ -4,6 +4,7 @@ using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
@@ -16,7 +17,7 @@ namespace HomeCenter.Adapters.TemperatureBridge
     [ProxyCodeGenerator]
     public abstract class TemperatureBridgeAdapter : Adapter
     {
-        private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
+        private readonly Dictionary<int, double> _state = new Dictionary<int, double>();
 
         protected TemperatureBridgeAdapter()
         {
@@ -31,20 +32,22 @@ namespace HomeCenter.Adapters.TemperatureBridge
 
             foreach (var val in this[AdapterProperties.UsedPins].AsStringList())
             {
-                _state.Add(IntValue.FromString(val), 0);
+                _state.Add(int.Parse(val), 0);
             }
-            var registration = new SerialRegistrationQuery(Self, 1, new Format[]
+            var registration = new SerialRegistrationCommand(Self, 1, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(float), "Temperature")
             });
-            //TODO Send
-            //TODO count size??
+            await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
-        protected void Handle(SerialResultCommand serialResultCommand)
+        protected async Task Handle(SerialResultEvent serialResult)
         {
-            // _state[pin] = await UpdateState(TemperatureState.StateName, pin, (DoubleValue)temperature).ConfigureAwait(false);
+            var pin = serialResult["Pin"].AsByte();
+            var temperature = serialResult["Temperature"].AsDouble();
+
+            _state[pin] = await UpdateState(TemperatureState.StateName, pin, (DoubleValue)temperature).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

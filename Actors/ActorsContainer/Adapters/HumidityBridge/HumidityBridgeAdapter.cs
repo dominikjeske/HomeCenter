@@ -4,6 +4,7 @@ using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.ValueTypes;
@@ -16,7 +17,7 @@ namespace HomeCenter.Adapters.HumidityBridge
     [ProxyCodeGenerator]
     public abstract class HumidityBridgeAdapter : Adapter
     {
-        private readonly Dictionary<IntValue, DoubleValue> _state = new Dictionary<IntValue, DoubleValue>();
+        private readonly Dictionary<int, double> _state = new Dictionary<int, double>();
 
         protected HumidityBridgeAdapter()
         {
@@ -34,17 +35,20 @@ namespace HomeCenter.Adapters.HumidityBridge
                 _state.Add(IntValue.FromString(val), 0);
             }
 
-            var registration = new SerialRegistrationQuery(Self, 6, new Format[]
+            var registration = new SerialRegistrationCommand(Self, 6, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(float), "Humidity")
             });
-            //TODO Send
+            await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
-        protected void Handle(SerialResultCommand serialResultCommand)
+        protected async Task Handle(SerialResultEvent serialResult)
         {
-            // _state[pin] = await UpdateState(HumidityState.StateName, pin, (DoubleValue)humidity).ConfigureAwait(false);
+            var pin = serialResult["Pin"].AsByte();
+            var humidity = serialResult["Humidity"].AsDouble();
+
+            _state[pin] = await UpdateState(HumidityState.StateName, pin, (DoubleValue)humidity).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

@@ -231,6 +231,19 @@
             }
           }
         ]
+      },
+      {
+        "Uid": "RemoteLamp3",
+        "IsEnabled": true,
+        "AdapterRefs": [
+          {
+            "Uid": "RemoteSocket",
+            "Properties": {
+              "System": "AllOn",
+              "Unit": "D"
+            }
+          }
+        ]
       }
 
 
@@ -352,6 +365,16 @@
         "Properties": {
           "Routing": 3
         }
+      },
+      {
+        "Uid": "I2CService",
+        "Type": "I2CService",
+        "IsEnabled": true
+      },
+      {
+        "Uid": "SerialService",
+        "Type": "SerialMessagingService",
+        "IsEnabled": true
       }
     ]
 

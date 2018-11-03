@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

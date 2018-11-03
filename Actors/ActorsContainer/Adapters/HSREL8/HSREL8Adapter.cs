@@ -13,9 +13,6 @@ namespace HomeCenter.Adapters.HSREL8
     {
         protected override async Task OnStarted(IContext context)
         {
-            var address = (IntValue)this[AdapterProperties.I2cAddress];
-            //_portExpanderDriver = new MAX7311Driver(new I2CSlaveAddress(address.Value), _i2CBusService);
-
             await base.OnStarted(context).ConfigureAwait(false);
 
             SetState(new byte[] { 0x00, 255 }, true);

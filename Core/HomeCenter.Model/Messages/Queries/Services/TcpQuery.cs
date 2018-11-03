@@ -1,10 +1,5 @@
-﻿using HomeCenter.Model.Messages.Queries;
-using System.Collections.Generic;
-using System.Net;
-
-namespace HomeCenter.Model.Messages.Commands.Service
+﻿namespace HomeCenter.Model.Messages.Queries.Services
 {
-
     public class TcpQuery : Query
     {
         public string Address { get; set; }
