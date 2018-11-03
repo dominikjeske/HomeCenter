@@ -52,7 +52,10 @@ namespace HomeCenter.TestRunner
             var runners = new Runner[]
             {
                 new DenonRunner("DenonComponent"),
-                new KodiRunner("KodiComponent")
+                new KodiRunner("KodiComponent"),
+                new PcRunner("PcComponent"),
+                new SamsungRunner("KodiComponent"),
+                new SonyRunner("SonyComponent")
             };
 
             var runner = new WirehomeRunner(runners.ToList());

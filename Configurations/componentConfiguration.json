@@ -68,6 +68,42 @@
         ]
       },
       {
+        "Uid": "PcComponent",
+        "IsEnabled": false,
+        "Properties": {
+          "FriendlyName": "PC"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "PC"
+          }
+        ]
+      },
+      {
+        "Uid": "SamsungComponent",
+        "IsEnabled": true,
+        "Properties": {
+          "FriendlyName": "Samsung"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "Samsung"
+          }
+        ]
+      },
+      {
+        "Uid": "SonyComponent",
+        "IsEnabled": true,
+        "Properties": {
+          "FriendlyName": "Sony"
+        },
+        "AdapterRefs": [
+          {
+            "Uid": "Sony"
+          }
+        ]
+      },
+      {
         "Uid": "Lamp1",
         "IsEnabled": true,
         "Properties": {
@@ -246,7 +282,7 @@
       {
         "Uid": "PC",
         "Type": "PcAdapter",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -265,7 +301,7 @@
       {
         "Uid": "Sony",
         "Type": "SonyBraviaAdapter",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "AuthKey": "344fb7d28691ba43c9045e9d38fa3c83a0587620fc14a79a958db4ff5d30e0e7"
@@ -299,6 +335,22 @@
         "IsEnabled": true,
         "Properties": {
           "Routing": 5
+        }
+      },
+      {
+        "Uid": "TcpService",
+        "Type": "TcpMessagingService",
+        "IsEnabled": true,
+        "Properties": {
+          "Routing": 3
+        }
+      },
+      {
+        "Uid": "UdpService",
+        "Type": "UdpBroadcastService",
+        "IsEnabled": true,
+        "Properties": {
+          "Routing": 3
         }
       }
     ]

@@ -11,7 +11,7 @@ namespace HomeCenter.Services.Networking
     public class UdpBroadcastService : Service
     {
         [Subscibe]
-        protected async Task SendMessage(UdpCommand udpCommand)
+        protected async Task Handle(UdpCommand udpCommand)
         {
             using (var socket = new UdpClient())
             {

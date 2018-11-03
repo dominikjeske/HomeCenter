@@ -53,6 +53,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(RefreshCommand message)
         {
+            if (!IsEnabled) return;
+
             var cmd = new ComputerQuery
             {
                 Address = _hostname,

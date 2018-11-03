@@ -1,4 +1,5 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.Sony.Messages;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
@@ -45,29 +46,29 @@ namespace HomeCenter.Adapters.Sony
             _authorisationKey = this[AdapterProperties.AuthKey].AsString();
             _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
+            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
-        protected async Task Refresh(RefreshCommand message)
+        private SonyControlCommand GetControlCommand(string code)
         {
-            //var power = await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "system",
-            //    Method = "getPowerStatus"
-            //}).ConfigureAwait(false);
+            return new SonyControlCommand
+            {
+                Address = _hostname,
+                AuthorisationKey = _authorisationKey,
+                Code = code
+            };
+        }
 
-            //TODO
-            //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
-
-            //var audio = await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "getVolumeInformation"
-            //}).ConfigureAwait(false);
+        private SonyJsonQuery GetJsonCommand(string path, string method, object parameters = null)
+        {
+            return new SonyJsonQuery
+            {
+                Address = _hostname,
+                AuthorisationKey = _authorisationKey,
+                Path = path,
+                Method = method,
+                Params = parameters
+            };
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -79,114 +80,85 @@ namespace HomeCenter.Adapters.Sony
                                           );
         }
 
-        protected async Task TurnOn(TurnOnCommand message)
+        protected async Task Handle(RefreshCommand message)
         {
-            //var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Code = "AAAAAQAAAAEAAAAuAw=="
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("system", "getPowerStatus");
+            var power = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyPowerResult>(cmd).ConfigureAwait(false);
+
+            cmd = GetJsonCommand("audio", "getVolumeInformation");
+            var audio = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+
+            //TODO save autio and power state
+            //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
+        }
+
+        protected async Task Handle(TurnOnCommand message)
+        {
+            var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task TurnOff(TurnOffCommand message)
+        protected async Task Handle(TurnOffCommand message)
         {
-            //var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Code = "AAAAAQAAAAEAAAAvAw=="
-            //}).ConfigureAwait(false);
+            var cmd = GetControlCommand("AAAAAQAAAAEAAAAvAw==");
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeUp(VolumeUpCommand command)
+        protected async Task Handle(VolumeUpCommand command)
         {
             var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
-            //await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "setAudioVolume",
-            //    Params = new SonyAudioVolumeRequest("speaker", ((int)volume).ToString())
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeDown(VolumeDownCommand command)
+        protected async Task Handle(VolumeDownCommand command)
         {
             var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
-            //await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "setAudioVolume",
-            //    Params = new SonyAudioVolumeRequest("speaker", ((int)volume).ToString())
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task VolumeSer(VolumeSetCommand command)
+        protected async Task Handle(VolumeSetCommand command)
         {
             var volume = command[CommandProperties.Value].AsDouble();
-            //await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "setAudioVolume",
-            //    Params = new SonyAudioVolumeRequest("speaker", ((int)volume).ToString())
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
             _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
         }
 
-        protected async Task Mute(MuteCommand message)
+        protected async Task Handle(MuteCommand message)
         {
-            //await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "setAudioMute",
-            //    Params = new SonyAudioMuteRequest(true)
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(true));
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
         }
 
-        protected async Task UnMute(UnmuteCommand message)
+        protected async Task Handle(UnmuteCommand message)
         {
-            //await _eventAggregator.QueryAsync<SonyJsonCommand, string>(new SonyJsonCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Path = "audio",
-            //    Method = "setAudioMute",
-            //    Params = new SonyAudioMuteRequest(false)
-            //}).ConfigureAwait(false);
+            var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(false));
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
             _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
         }
 
-        protected async Task InputSet(InputSetCommand message)
+        protected async Task Handle(InputSetCommand message)
         {
             var inputName = (StringValue)message[CommandProperties.InputSource];
             if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
-            var cmd = _inputSourceMap[inputName];
+            var code = _inputSourceMap[inputName];
 
-            //var result = await _eventAggregator.QueryAsync<SonyControlCommand, string>(new SonyControlCommand
-            //{
-            //    Address = _hostname,
-            //    AuthorisationKey = _authorisationKey,
-            //    Code = cmd
-            //}).ConfigureAwait(false);
+            var cmd = GetControlCommand(code);
+            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
     }
