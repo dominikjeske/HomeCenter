@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Extensions;
 using Quartz;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +8,13 @@ namespace HomeCenter.Model.Triggers
 {
     public class TriggerJob : IJob
     {
+        private readonly IActorMessageBroker _actorMessageBroker;
+
+        public TriggerJob(IActorMessageBroker actorMessageBroker)
+        {
+            _actorMessageBroker = actorMessageBroker;
+        }
+
         public async Task Execute(IJobExecutionContext context)
         {
             var trigger = context.GetDataContext<TriggerJobDataDTO>();
@@ -14,23 +22,25 @@ namespace HomeCenter.Model.Triggers
 
             if (await trigger.Condition.Validate().ConfigureAwait(false))
             {
-                //TODO DNF
-                //await trigger.Actor.ExecuteCommand(trigger.Command).ConfigureAwait(false);
+                foreach(var cmd in trigger.Commands)
+                {
+                    _actorMessageBroker.Send(cmd, trigger.Actor);
+                }
             }
 
-            if (trigger.FinishCommand != null)
+            if (trigger.FinishCommands?.Count > 0)
             {
                 await ScheduleFinishJob(trigger, time, context.Scheduler).ConfigureAwait(false);
             }
         }
 
-        private static Task ScheduleFinishJob(TriggerJobDataDTO trigger, DateTimeOffset time, IScheduler scheduler)
+        private Task ScheduleFinishJob(TriggerJobDataDTO trigger, DateTimeOffset time, IScheduler scheduler)
         {
             var triggerData = new TriggerJobDataDTO
             {
                 Condition = trigger.Condition,
                 Actor = trigger.Actor,
-                Command = trigger.FinishCommand
+                Commands = trigger.FinishCommands
             };
 
             var job = JobBuilder.Create<TriggerJob>()

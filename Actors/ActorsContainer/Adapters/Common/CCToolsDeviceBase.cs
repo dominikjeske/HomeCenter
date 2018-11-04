@@ -28,6 +28,8 @@ namespace HomeCenter.Adapters.Common
 
         private int _poolDurationWarning;
         protected int _i2cAddress;
+        protected TimeSpan _poolInterval;
+
         private byte[] _committedState;
         private byte[] _state;
 
@@ -40,14 +42,12 @@ namespace HomeCenter.Adapters.Common
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
+            _poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
             _poolDurationWarning = this[AdapterProperties.PollDurationWarningThreshold].AsInt();
             _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
 
             _state = new byte[StateSize];
             _committedState = new byte[StateSize];
-
-            await ScheduleDeviceRefresh<RefreshStateJob>(poolInterval).ConfigureAwait(false);
         }
         
         protected Task Refresh(RefreshCommand message) => FetchState();
@@ -84,7 +84,7 @@ namespace HomeCenter.Adapters.Common
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var newState = await ReadFromBus();
+            var newState = await ReadFromBus().ConfigureAwait(false);
 
             stopwatch.Stop();
 

@@ -36,5 +36,8 @@ namespace HomeCenter.Model.Extensions
 
         public static TimeSpan AsIntTimeSpan(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is IntValue val ? TimeSpan.FromMilliseconds(val.Value) :
                    throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(double).Name}");
+
+        public static byte[] AsByteArray(this IValue value) => (value ?? throw new ArgumentNullException(nameof(value))) is ByteArrayValue val ? val.Value :
+                   throw new InvalidCastException($"Cannot cast from type {value.GetType().Name} to {typeof(byte[]).Name}");
     }
 }

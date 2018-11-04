@@ -1,34 +1,24 @@
-﻿using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.ValueTypes;
+﻿using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace HomeCenter.Model.Core
 {
     public class BaseObject
     {
-        //TODO do we need this?
-        private readonly Subject<Event> _events = new Subject<Event>();
-
         [Map] private Dictionary<string, Property> _properties { get; set; } = new Dictionary<string, Property>();
         protected bool SupressPropertyChangeEvent { get; set; }
         public string Uid { get; protected set; }
         public string Type { get; set; }
         public List<string> Tags { get; private set; } = new List<string>();
-        public IObservable<Event> Events => _events.AsObservable();
 
         public IReadOnlyDictionary<string, Property> ToProperiesList() => _properties.AsReadOnly();
 
         public BaseObject()
         {
         }
-
-        public override string ToString() => $"Type: [{Type}] | Uid: [{Uid}] | Properties: [{GetPropertiesStrings()?.ToFormatedString()}] | Tags: [{Tags.ToFormatedString()}]";
 
         public BaseObject(params Property[] properties)
         {
@@ -37,6 +27,8 @@ namespace HomeCenter.Model.Core
                 SetPropertyValue(property.Key, property.Value);
             }
         }
+
+        public override string ToString() => $"Type: [{Type}] | Uid: [{Uid}] | Properties: [{GetPropertiesStrings()?.ToFormatedString()}] | Tags: [{Tags.ToFormatedString()}]";
 
         public IValue this[string propertyName]
         {
@@ -51,7 +43,7 @@ namespace HomeCenter.Model.Core
 
         public bool ContainsProperty(string propertyName) => _properties.ContainsKey(propertyName);
 
-        public virtual IValue GetPropertyValue(string propertyName, IValue defaultValue = null)
+        public IValue GetPropertyValue(string propertyName, IValue defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName))
             {
@@ -63,7 +55,21 @@ namespace HomeCenter.Model.Core
             }
         }
 
-        public virtual void SetPropertyValue(string propertyName, IValue value)
+        public bool TryGetPropertyValue(string propertyName, out IValue propertyValue)
+        {
+            if (!_properties.ContainsKey(propertyName))
+            {
+                propertyValue = NullValue.Value;
+                return false;
+            }
+            else
+            {
+                propertyValue = _properties[propertyName].Value;
+                return true;
+            }
+        }
+
+        public void SetPropertyValue(string propertyName, IValue value)
         {
             Property property;
             if (!_properties.ContainsKey(propertyName))
@@ -82,8 +88,6 @@ namespace HomeCenter.Model.Core
             property.Value = value;
 
             if (SupressPropertyChangeEvent || value.Equals(oldValue)) return;
-
-            _events.OnNext(new PropertyChangedEvent(Uid, property.Key, oldValue, value));
         }
 
         public IDictionary<string, string> GetPropertiesStrings() => _properties.Values.ToDictionary(k => k.Key, v => v.Value?.ToString());

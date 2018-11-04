@@ -56,8 +56,7 @@ namespace HomeCenter.Model.Components
             {
                 trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
 
-                //TODO
-                //Subscribe<Event>(trigger.Event.GetRoutingFilter());
+                Subscribe<Event>(trigger.Event.GetRoutingFilter());
             }
         }
 
@@ -137,7 +136,7 @@ namespace HomeCenter.Model.Components
 
             if (message is Command command)
             {
-                // TODO use value converter before publish and maybe queue?
+                // TODO use value converter before publish
                 var supportedCapabilities = _capabilities.Values.Where(capability => capability.IsCommandSupported(message));
                 foreach (var state in supportedCapabilities)
                 {
@@ -157,23 +156,24 @@ namespace HomeCenter.Model.Components
         protected async Task Handle(Event ev)
         {
             var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(ev));
-            if (trigger != null && await trigger.ValidateCondition().ConfigureAwait(false))
+            if (trigger != null)
             {
-                foreach (var command in trigger.Commands)
+                if (await trigger.ValidateCondition().ConfigureAwait(false))
                 {
-                    if (command.ContainsProperty(CommandProperties.ExecutionDelay))
+                    foreach (var command in trigger.Commands)
                     {
-                        var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
-                        await Scheduler.DelayExecution<DelayCommandJob>(command[CommandProperties.ExecutionDelay].AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
-                        continue;
-                    }
+                        if(command.TryGetPropertyValue(CommandProperties.ExecutionDelay, out IValue executionDelay))
+                        {
+                            var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
+                            await Scheduler.DelayExecution<DelayCommandJob>(executionDelay.AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+                            continue;
+                        }
 
-                    MessageBroker.Send(command, Self);
+                        MessageBroker.Send(command, Self);
+                    }
                 }
             }
-
-            //TODO distinct trigger and property change from adapter
-            if (ev is PropertyChangedEvent propertyChanged)
+            else if (ev is PropertyChangedEvent propertyChanged)
             {
                 var propertyName = propertyChanged.PropertyChangedName;
                 if (!_capabilities.ContainsKey(propertyName)) return;

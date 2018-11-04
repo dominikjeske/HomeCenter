@@ -16,6 +16,17 @@ namespace HomeCenter.Model.Messages.Events
 
         public virtual IEnumerable<string> RoutingAttributes() => GetPropetiesKeys();
 
+        public RoutingFilter GetRoutingFilter()
+        {
+            var attributes = GetPropertiesStrings();
+            if (!attributes.ContainsKey(EventProperties.EventType))
+            {
+                attributes.Add(EventProperties.EventType, EventType.PropertyChanged);
+            }
+
+            var routingKey = attributes[MessageProperties.MessageSource];
+            return new RoutingFilter(routingKey, attributes);
+        }
         
         public RoutingFilter GetRoutingFilter(IEnumerable<string> routerAttributes)
         {

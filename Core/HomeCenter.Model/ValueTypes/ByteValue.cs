@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Model.Core;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.ValueTypes

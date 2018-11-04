@@ -2,7 +2,6 @@
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
@@ -22,7 +21,7 @@ namespace HomeCenter.Services.DI
 {
     public abstract class Bootstrapper : IBootstrapper
     {
-        public Bootstrapper(Container container)
+        protected Bootstrapper(Container container)
         {
             _container = container;
         }
@@ -77,16 +76,12 @@ namespace HomeCenter.Services.DI
             _container.RegisterInstance(actorRegistry);
             _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
             _container.RegisterSingleton<IActorFactory, ActorFactory>();
-
-            //TODO add some special configuration for props per actor type on actorRegistry
-
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IActorMessageBroker, ActorMessageBroker>();
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
             _container.RegisterSingleton<IHttpServerService, HttpServerService>();
-
         }
 
         private async Task RegisterQuartz()
@@ -132,9 +127,6 @@ namespace HomeCenter.Services.DI
 
         protected abstract void RegisterControllerOptions();
 
-        public void Dispose()
-        {
-            _container.Dispose();
-        }
+        public void Dispose() => _container.Dispose();
     }
 }

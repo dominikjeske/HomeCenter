@@ -145,7 +145,7 @@ namespace HomeCenter.Services.Configuration
 
         private int GetRouting<T>(T actorConfig) where T : BaseDTO
         {
-            if (actorConfig.Properties.ContainsKey("Routing"))
+            if (actorConfig?.Properties?.ContainsKey("Routing") ?? false)
             {
                 return actorConfig.Properties["Routing"].Value.AsInt();
             }

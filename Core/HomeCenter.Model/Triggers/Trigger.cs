@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Events;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace HomeCenter.Model.Triggers
 {
@@ -21,17 +22,15 @@ namespace HomeCenter.Model.Triggers
         {
             Condition = Condition,
             Actor = actor,
-            //TODO DNF
-            //Command = Command
+            Commands = Commands.Where(x => !x.ContainsProperty(CommandProperties.IsFinishComand)).ToList()
         };
 
         public TriggerJobDataDTO ToJobDataWithFinish(PID actor) => new TriggerJobDataDTO
         {
             Condition = Condition,
             Actor = actor,
-            // TODO DNF
-            //Command = Command,
-            // FinishCommand = FinishCommand,
+            Commands = Commands.Where(x => !x.ContainsProperty(CommandProperties.IsFinishComand)).ToList(),
+            FinishCommands = Commands.Where(x => x.ContainsProperty(CommandProperties.IsFinishComand)).ToList(),
             FinishCommandTime = Schedule.WorkingTime
         };
     }

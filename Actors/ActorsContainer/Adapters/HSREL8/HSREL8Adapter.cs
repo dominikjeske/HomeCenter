@@ -20,6 +20,8 @@ namespace HomeCenter.Adapters.HSREL8
             await base.OnStarted(context).ConfigureAwait(false);
 
             await SetState(new byte[] { 0x00, 255 }, true).ConfigureAwait(false);
+
+            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)

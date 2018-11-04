@@ -39,7 +39,6 @@ namespace HomeCenter.Adapters.Denon
 
             _hostName = this[AdapterProperties.Hostname].AsString();
             _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
-            //TODO make zone as required parameter
             _zone = this[AdapterProperties.Zone].AsInt();
 
             await DelayDeviceRefresh<RefreshStateJob>(TimeSpan.FromSeconds(1)).ConfigureAwait(false);

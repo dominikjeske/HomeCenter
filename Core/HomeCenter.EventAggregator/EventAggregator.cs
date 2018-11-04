@@ -9,12 +9,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-// 1. Direct message
-// 2. Publish to all
-// 3. Filter xxx.yyy.zz
-// 4. Filter key-value
-
-//TODO: Add dynamic handlers - types that are not registered as singleton to make instance of that type and invoke on publish
 namespace HomeCenter.Broker
 {
     public sealed class EventAggregator : IEventAggregator, IDisposable

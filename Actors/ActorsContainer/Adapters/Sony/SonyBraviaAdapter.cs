@@ -88,7 +88,7 @@ namespace HomeCenter.Adapters.Sony
             cmd = GetJsonCommand("audio", "getVolumeInformation");
             var audio = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            //TODO save autio and power state
+            //TODO save audio and power state
             //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
         }
 

@@ -19,20 +19,6 @@ namespace HomeCenter.Tests.Mocks
             DiscoveryResponse = new DiscoveryResponse(new PowerState());
         }
 
-        //public override Task Initialize()
-        //{
-        //    //TODO
-        //    //_disposables.Add(_eventAggregator.SubscribeForDeviceQuery<DeviceCommand>(DeviceCommandHandler, Uid));
-
-        //    return base.Initialize();
-        //}
-
-        //TODO
-        //private Task<object> DeviceCommandHandler(IMessageEnvelope<DeviceCommand> messageEnvelope)
-        //{
-        //    return ExecuteCommand(messageEnvelope.Message);
-        //}
-
         protected async Task RefreshCommandHandler(Command messageEnvelope)
         {
             lock (locki)

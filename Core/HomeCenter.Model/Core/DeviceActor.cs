@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public abstract class DeviceActor : BaseObject, IDisposable, IActor
+    public abstract class DeviceActor : BaseObject, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
         [DI] protected IActorMessageBroker MessageBroker { get; set; }
@@ -39,9 +39,7 @@ namespace HomeCenter.Model.Core
             
         }
 
-        //TODO kill actor and clean subscriptions ?
-        public void Dispose() => _disposables.Dispose();
-
+     
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
             // If actor is disabled we are ignoring all messages

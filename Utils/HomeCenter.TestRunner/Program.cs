@@ -55,8 +55,7 @@ namespace HomeCenter.TestRunner
                 new KodiRunner("KodiComponent"),
                 new PcRunner("PcComponent"),
                 new SamsungRunner("KodiComponent"),
-                new SonyRunner("SonyComponent"),
-                new RemoteLampRunner("RemoteLamp3")
+                new SonyRunner("SonyComponent")
             };
 
             var runner = new WirehomeRunner(runners.ToList());
