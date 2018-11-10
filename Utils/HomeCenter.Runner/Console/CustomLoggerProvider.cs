@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public class CustomLoggerProvider : ILoggerProvider
     {

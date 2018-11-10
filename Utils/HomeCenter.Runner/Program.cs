@@ -3,15 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     internal static class Program
     {
-        private static readonly bool autorun = false;
-
         private static async Task Main(string[] args)
         {
-            int programNumber = 1;
+            int programNumber = 3;
             string input = "";
 
             Console.WriteLine("HomeCenter TestRunner:");
@@ -19,14 +17,13 @@ namespace HomeCenter.TestRunner
             Console.WriteLine("2. ProtoCluster Playground");
             Console.WriteLine("3. Code generation");
 
-            if (!autorun)
+            if (programNumber == 0)
             {
                 input = Console.ReadLine();
-            }
-
-            if (!int.TryParse(input, out programNumber))
-            {
-                programNumber = 1;
+                if (!int.TryParse(input, out programNumber))
+                {
+                    programNumber = 1;
+                }
             }
 
             switch (programNumber)

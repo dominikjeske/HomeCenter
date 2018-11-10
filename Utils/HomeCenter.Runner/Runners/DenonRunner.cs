@@ -5,7 +5,7 @@ using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public class DenonRunner : Runner
     {

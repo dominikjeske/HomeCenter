@@ -3,7 +3,7 @@ using SimpleInjector;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public abstract class Runner 
     {

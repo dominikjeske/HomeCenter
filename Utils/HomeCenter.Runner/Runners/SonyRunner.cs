@@ -1,11 +1,11 @@
 ﻿using HomeCenter.Model.Messages.Commands.Device;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
-    public class PcRunner : Runner
+    public class SonyRunner : Runner
     {
-        public PcRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSelect" })
+        public SonyRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet" })
         {
         }
 
@@ -42,10 +42,8 @@ namespace HomeCenter.TestRunner
                     break;
 
                 case 7:
-                    MessageBroker.Send(InputSetCommand.Create("TODO"), Uid);
+                    MessageBroker.Send(InputSetCommand.Create("HDMI1"), Uid);
                     break;
-
-
             }
 
             return Task.CompletedTask;

@@ -6,7 +6,7 @@ using HomeCenter.Model.Messages.Queries.Device;
 using Quartz;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     [ProxyCodeGenerator]
     public class Device : DeviceActor
@@ -27,6 +27,11 @@ namespace HomeCenter.TestRunner
             return Task.CompletedTask;
         }
 
+
+    }
+
+    public class Command
+    {
 
     }
 

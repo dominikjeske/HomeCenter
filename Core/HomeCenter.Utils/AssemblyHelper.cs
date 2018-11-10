@@ -50,6 +50,19 @@ namespace HomeCenter.Utils
             return types;
         }
 
+        public static Type GetType(string name) => GetProjectAssemblies().SelectMany(s => s.GetTypes()).First(t => t.FullName == name);
+        
+
+        public static IEnumerable<Type> GetInheritedTypes(Type baseType)
+        {
+
+            var types = GetProjectAssemblies().SelectMany(s => s.GetTypes())
+                                              .Where(t => t.IsSubclassOf(baseType) && !t.IsAbstract);
+
+
+            return types;
+        }
+
         public static IEnumerable<string> GetReferencedAssemblies(Type sourceType)
         {
             var allAsseblies = AppDomain.CurrentDomain.GetAssemblies();

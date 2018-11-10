@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public interface IRunner
     {

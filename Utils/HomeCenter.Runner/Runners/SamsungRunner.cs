@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Messages.Commands.Device;
 using System.Threading.Tasks;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public class SamsungRunner : Runner
     {

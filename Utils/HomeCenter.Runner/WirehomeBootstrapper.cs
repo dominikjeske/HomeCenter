@@ -6,7 +6,7 @@ using Moq;
 using Proto;
 using SimpleInjector;
 
-namespace HomeCenter.TestRunner
+namespace HomeCenter.Runner
 {
     public class WirehomeBootstrapper : Bootstrapper
     {

@@ -8,4 +8,8 @@
     <PackageReference Include="CodeGeneration.Roslyn" Version="0.4.88" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
+  </ItemGroup>
+
 </Project>

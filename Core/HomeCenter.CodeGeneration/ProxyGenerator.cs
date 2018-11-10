@@ -1,4 +1,5 @@
 ﻿using CodeGeneration.Roslyn;
+using HomeCenter.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,6 +27,17 @@ namespace HomeCenter.CodeGeneration
 
             try
             {
+                try
+                {
+                    var baseType = AssemblyHelper.GetType("HomeCenter.Model.Messages.Commands.Command");
+                    var test = AssemblyHelper.GetInheritedTypes(baseType);
+                }
+                catch (Exception ee)
+                {
+                    
+                }
+
+
                 classDeclaration = GenerateClass(classSemantic, className);
 
                 classDeclaration = AddReciveMapMethod(classSyntax, model, classDeclaration);
