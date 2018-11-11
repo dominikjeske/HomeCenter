@@ -94,12 +94,12 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.Publish(message, message.GetRoutingFilter(routerAttributes));
         }
 
-        public void Send(ActorMessage message, PID destination)
+        public void Send(object message, PID destination)
         {
             _actorFactory.Context.Send(destination, message);
         }
 
-        public void Send(ActorMessage message, string uid)
+        public void Send(object message, string uid)
         {
             var pid = _actorFactory.GetActor(uid);
             _actorFactory.Context.Send(pid, message);

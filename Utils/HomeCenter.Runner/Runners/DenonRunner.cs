@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Capabilities;
+﻿using HomeCenter.Messages;
+using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.Extensions;
@@ -9,7 +10,7 @@ namespace HomeCenter.Runner
 {
     public class DenonRunner : Runner
     {
-        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status" })
+        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" })
         {
         }
 
@@ -68,6 +69,11 @@ namespace HomeCenter.Runner
                 case 12:
                     var status = await MessageBroker.Request<StatusQuery, IReadOnlyCollection<State>>(StatusQuery.Default, Uid);
                     ConsoleEx.WriteOKLine($"Status: {status.ToFormatedString(" | ")}");
+                    break;
+                case 13:
+                    var command = new ProtoCommand { Type = "TurnOnCommand" };
+                    command.Properties.Add("XXX", "YYY");
+                    MessageBroker.Send(command, Uid);
                     break;
 
             }

@@ -127,9 +127,9 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters
         /// </summary>
-        protected override async Task UnhandledMessage(IContext context)
+        protected override async Task UnhandledMessage(object actorMessage)
         {
-            var message = context.Message as ActorMessage;
+            var message = actorMessage as ActorMessage;
 
             bool handled = false;
 
@@ -148,7 +148,7 @@ namespace HomeCenter.Model.Components
 
             if (!handled)
             {
-                await base.UnhandledMessage(context).ConfigureAwait(false);
+                await base.UnhandledMessage(actorMessage).ConfigureAwait(false);
             }
         }
 

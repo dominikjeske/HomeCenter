@@ -8,27 +8,36 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    [ProxyCodeGenerator]
-    public class Device : DeviceActor
+    //[ProxyCodeGenerator]
+    //public class Device : DeviceActor
+    //{
+    //    public Device(IScheduler scheduler)
+    //    {
+
+    //    }
+
+
+    //    //protected Task Invoke(Event command)
+    //    //{
+    //    //    return Task.CompletedTask;
+    //    //}
+
+    //    private Task Invoke(TurnOnCommand command)
+    //    {
+    //        return Task.CompletedTask;
+    //    }
+
+
+    //}
+
+   
+
+    //[CommandBuilder]
+    public class CommandBuilder : Command
     {
-        public Device(IScheduler scheduler)
-        {
-
-        }
-
-
-        //protected Task Invoke(Event command)
-        //{
-        //    return Task.CompletedTask;
-        //}
-
-        private Task Invoke(TurnOnCommand command)
-        {
-            return Task.CompletedTask;
-        }
-
 
     }
+
 
     public class Command
     {

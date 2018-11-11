@@ -4,7 +4,7 @@ using System.Net;
 
 namespace HomeCenter.Model.Messages.Commands.Service
 {
-    public abstract class HttpCommand : Command
+    public class HttpCommand : Command
     {
         public virtual string Address { get; set; }
         public virtual string Body { get; set; }

@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Broker;
+using HomeCenter.Messages;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
@@ -23,22 +24,32 @@ namespace HomeCenter.Model.Core
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
+        private CommandBuilder _commandBuilder = new CommandBuilder();
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
 
-        protected virtual Task UnhandledMessage(IContext context)
+        protected virtual Task UnhandledMessage(object message)
         {
-            if (context.Message is ActorMessage actorMessage)
+            if (message is ActorMessage actorMessage)
             {
                 throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type ?? actorMessage.GetType().Name}]");
             }
             else
             {
-                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {context.Message.GetType().Name} is not ActorMessage");
+                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {message.GetType().Name} is not ActorMessage");
             }
             
         }
 
+        protected object FormatMessage(object rawMessage)
+        {
+            if(rawMessage is ProtoCommand protoCommand)
+            {
+                return _commandBuilder.Build(protoCommand);
+            }
+
+            return rawMessage;
+        }
      
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {

@@ -1,5 +1,4 @@
 ﻿using CodeGeneration.Roslyn;
-using HomeCenter.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,17 +26,6 @@ namespace HomeCenter.CodeGeneration
 
             try
             {
-                try
-                {
-                    var baseType = AssemblyHelper.GetType("HomeCenter.Model.Messages.Commands.Command");
-                    var test = AssemblyHelper.GetInheritedTypes(baseType);
-                }
-                catch (Exception ee)
-                {
-                    
-                }
-
-
                 classDeclaration = GenerateClass(classSemantic, className);
 
                 classDeclaration = AddReciveMapMethod(classSyntax, model, classDeclaration);
@@ -105,7 +93,7 @@ namespace HomeCenter.CodeGeneration
                                                    .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext"))))))
                                                    .WithBody(Block(
                                                        GenerateSystemMessagesHandler(),
-                                                       LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("msg")).WithInitializer(EqualsValueClause(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Message"))))))),
+                                                       FormatMessage(),
                                                        FillContextData(),
                                                        GenerateCommandHandlers(classSyntax, model),
                                                        GenerateQueryHandlers(classSyntax, model),
@@ -115,6 +103,11 @@ namespace HomeCenter.CodeGeneration
 
             classDeclaration = classDeclaration.AddMembers(methodDeclaration);
             return classDeclaration;
+        }
+
+        private static LocalDeclarationStatementSyntax FormatMessage()
+        {
+            return LocalDeclarationStatement(VariableDeclaration(IdentifierName("var")).WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(VariableDeclarator(Identifier("msg")).WithInitializer(EqualsValueClause(InvocationExpression(IdentifierName("FormatMessage")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("context"), IdentifierName("Message")))))))))));
         }
 
         private ClassDeclarationSyntax AddSubscriptions(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
@@ -427,7 +420,7 @@ namespace HomeCenter.CodeGeneration
 
         private static StatementSyntax GetUnsupportedMessage()
         {
-            return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledMessage")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context")))))));
+            return ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName("UnhandledMessage")).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("msg")))))));
         }
 
         private class MethodDescription
@@ -437,4 +430,5 @@ namespace HomeCenter.CodeGeneration
             public ITypeSymbol ReturnType { get; set; }
         }
     }
+
 }

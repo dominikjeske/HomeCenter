@@ -25,7 +25,7 @@ namespace HomeCenter.Adapters.InfraredBridge
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
-
+            
             _I2cAddress = AsInt(AdapterProperties.I2cAddress);
 
             //TODO register pin number?

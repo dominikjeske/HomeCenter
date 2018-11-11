@@ -6,10 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="CodeGeneration.Roslyn" Version="0.4.88" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.9.0" />
   </ItemGroup>
 
 </Project>

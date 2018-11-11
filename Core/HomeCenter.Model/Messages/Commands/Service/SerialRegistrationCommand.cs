@@ -13,6 +13,11 @@ namespace HomeCenter.Model.Messages.Queries.Service
         public int MessageSize { get; }
         public PID Actor { get; }
 
+        public SerialRegistrationCommand()
+        {
+
+        }
+
         public SerialRegistrationCommand(PID actor, byte messageType, Format[] resultFormat)
         {
             Actor = actor;
