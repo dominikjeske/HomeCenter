@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.ValueTypes;
 
 namespace HomeCenter.Model.Capabilities
 {
@@ -7,11 +6,11 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(CurrentState);
 
-        public CurrentState(StringValue ReadWriteMode = default) : base(ReadWriteMode)
+        public CurrentState(string? ReadWriteMode = default) : base(ReadWriteMode)
         {
-            this[StateProperties.StateName] = new StringValue(nameof(CurrentState));
-            this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.CurrentController);
-            this[StateProperties.Value] = new IntValue();
+            this[StateProperties.StateName] = nameof(CurrentState);
+            this[StateProperties.CapabilityName] = Constants.Capabilities.CurrentController;
+
             //this[StateProperties.SupportedCommands] = new StringListValue(CommandType.TurnOnCommand, CommandType.TurnOffCommand);
         }
     }

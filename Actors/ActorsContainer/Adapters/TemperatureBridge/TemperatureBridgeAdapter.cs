@@ -2,12 +2,10 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,9 +26,9 @@ namespace HomeCenter.Adapters.TemperatureBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
+            var _i2cAddress = AsInt(AdapterProperties.I2cAddress);
 
-            foreach (var val in this[AdapterProperties.UsedPins].AsStringList())
+            foreach (var val in AsList(AdapterProperties.UsedPins))
             {
                 _state.Add(int.Parse(val), 0);
             }
@@ -44,10 +42,10 @@ namespace HomeCenter.Adapters.TemperatureBridge
 
         protected async Task Handle(SerialResultEvent serialResult)
         {
-            var pin = serialResult["Pin"].AsByte();
-            var temperature = serialResult["Temperature"].AsDouble();
+            var pin = serialResult.AsByte("Pin");
+            var temperature = serialResult.AsDouble("Temperature");
 
-            _state[pin] = await UpdateState(TemperatureState.StateName, pin, (DoubleValue)temperature).ConfigureAwait(false);
+            _state[pin] = await UpdateState(TemperatureState.StateName, pin, temperature).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

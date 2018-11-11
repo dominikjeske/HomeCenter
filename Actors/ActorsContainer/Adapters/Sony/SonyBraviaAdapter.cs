@@ -3,11 +3,9 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -21,10 +19,10 @@ namespace HomeCenter.Adapters.Sony
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 
-        private BooleanValue _powerState;
-        private DoubleValue _volume;
-        private BooleanValue _mute;
-        private StringValue _input;
+        private bool _powerState;
+        private double _volume;
+        private bool _mute;
+        private string _input;
 
         private TimeSpan _poolInterval;
         private string _hostname;
@@ -42,9 +40,9 @@ namespace HomeCenter.Adapters.Sony
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = this[AdapterProperties.Hostname].AsString();
-            _authorisationKey = this[AdapterProperties.AuthKey].AsString();
-            _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
+            _hostname = AsString(AdapterProperties.Hostname);
+            _authorisationKey = AsString(AdapterProperties.AuthKey);
+            _poolInterval = AsIntTime(AdapterProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
@@ -96,41 +94,41 @@ namespace HomeCenter.Adapters.Sony
         {
             var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
         }
 
         protected async Task Handle(TurnOffCommand message)
         {
             var cmd = GetControlCommand("AAAAAQAAAAEAAAAvAw==");
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeUpCommand command)
         {
-            var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
+            var volume = _volume + command.AsDouble(CommandProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeDownCommand command)
         {
-            var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
+            var volume = _volume - command.AsDouble(CommandProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            var volume = command[CommandProperties.Value].AsDouble();
+            var volume = command.AsDouble(CommandProperties.Value);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(MuteCommand message)
@@ -138,7 +136,7 @@ namespace HomeCenter.Adapters.Sony
             var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(true));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
         }
 
         protected async Task Handle(UnmuteCommand message)
@@ -146,12 +144,12 @@ namespace HomeCenter.Adapters.Sony
             var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(false));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
         }
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = (StringValue)message[CommandProperties.InputSource];
+            var inputName = message.AsString(CommandProperties.InputSource);
             if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
             var code = _inputSourceMap[inputName];

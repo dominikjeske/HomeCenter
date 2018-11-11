@@ -1,6 +1,4 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -9,8 +7,8 @@ namespace HomeCenter.Model.Conditions.Specific
 {
     public class TimeRangeCondition : Condition
     {
-        private Func<Task<TimeSpan?>> _startValueProvider;
-        private Func<Task<TimeSpan?>> _endValueProvider;
+        private Func<Task<TimeSpan?>> _startValueProvider = null;
+        private Func<Task<TimeSpan?>> _endValueProvider = null;
 
         public TimeRangeCondition WithStart(Func<Task<TimeSpan?>> start)
         {
@@ -26,40 +24,37 @@ namespace HomeCenter.Model.Conditions.Specific
 
         public TimeRangeCondition WithStart(TimeSpan start)
         {
-            this[ConditionProperies.StartTime] = new TimeSpanValue(start);
+            SetProperty(ConditionProperies.StartTime, start);
             return this;
         }
 
         public TimeRangeCondition WithEnd(TimeSpan end)
         {
-            this[ConditionProperies.EndTime] = new TimeSpanValue(end);
+            SetProperty(ConditionProperies.EndTime, end);
             return this;
         }
 
         public TimeRangeCondition WithStartAdjustment(TimeSpan value)
         {
-            this[ConditionProperies.StartAdjustment] = new TimeSpanValue(value);
+            SetProperty(ConditionProperies.StartAdjustment, value);
             return this;
         }
 
         public TimeRangeCondition WithEndAdjustment(TimeSpan value)
         {
-            this[ConditionProperies.EndAdjustment] = new TimeSpanValue(value);
+            SetProperty(ConditionProperies.EndAdjustment, value);
             return this;
         }
 
         public override async Task<bool> Validate()
         {
-            var start = GetPropertyValue(ConditionProperies.StartTime);
-            var end = GetPropertyValue(ConditionProperies.EndTime);
-
-            var startValue = start.HasValue ? start.AsTimeSpan() : (await _startValueProvider().ConfigureAwait(false));
-            var endValue = end.HasValue ? end.AsTimeSpan() : (await _endValueProvider().ConfigureAwait(false));
+            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? AsTime(ConditionProperies.StartTime) : await _startValueProvider().ConfigureAwait(false);
+            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? AsTime(ConditionProperies.EndTime) : await _endValueProvider().ConfigureAwait(false);
 
             if (!startValue.HasValue || !endValue.HasValue) return false;
 
-            startValue += GetPropertyValue(ConditionProperies.StartAdjustment, (TimeSpanValue)TimeSpan.Zero).AsTimeSpan();
-            endValue += GetPropertyValue(ConditionProperies.EndAdjustment, (TimeSpanValue)TimeSpan.Zero).AsTimeSpan();
+            startValue += AsTime(ConditionProperies.StartAdjustment, TimeSpan.Zero);
+            endValue += AsTime(ConditionProperies.EndAdjustment, TimeSpan.Zero);
 
             return SystemTime.Now.TimeOfDay.IsTimeInRange(startValue.Value, endValue.Value);
         }

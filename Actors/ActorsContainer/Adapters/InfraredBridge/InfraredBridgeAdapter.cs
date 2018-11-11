@@ -1,7 +1,6 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -9,7 +8,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -21,17 +19,17 @@ namespace HomeCenter.Adapters.InfraredBridge
     public abstract class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
-        private IntValue _pinNumber;
-        private IntValue _I2cAddress;
+        private int _pinNumber;
+        private int _I2cAddress;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
+            _I2cAddress = AsInt(AdapterProperties.I2cAddress);
 
             //TODO register pin number?
-            _pinNumber = this[AdapterProperties.PinNumber].AsInt();
+            _pinNumber = AsInt(AdapterProperties.PinNumber);
 
             var registration = new SerialRegistrationCommand(Self, 3, new Format[]
                {
@@ -51,18 +49,18 @@ namespace HomeCenter.Adapters.InfraredBridge
 
         protected Task Handle(SerialResultEvent serialResultCommand)
         {
-            var system = serialResultCommand["System"].AsByte();
-            var code = serialResultCommand["Code"].AsInt();
+            var system = serialResultCommand.AsByte("System");
+            var code = serialResultCommand.AsInt("Code");
 
             return MessageBroker.PublisEvent(new InfraredEvent(Uid, system, code));
         }
 
         protected Task Handle(SendCodeCommand message)
         {
-            var commandCode = message[CommandProperties.Code].AsUInt();
-            var system = message[CommandProperties.System].AsInt();
-            var bits = message[CommandProperties.Bits].AsInt();
-            var repeat = base.GetPropertyValue(CommandProperties.Repeat, new IntValue(DEAFULT_REPEAT)).AsInt();
+            var commandCode = message.AsUint(CommandProperties.Code);
+            var system = message.AsInt(CommandProperties.System);
+            var bits = message.AsInt(CommandProperties.Bits);
+            var repeat = message.AsInt(CommandProperties.Repeat, DEAFULT_REPEAT);
 
             var package = new List<byte>
             {

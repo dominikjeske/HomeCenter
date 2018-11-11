@@ -147,7 +147,7 @@ namespace HomeCenter.Services.Configuration
         {
             if (actorConfig?.Properties?.ContainsKey("Routing") ?? false)
             {
-                return actorConfig.Properties["Routing"].Value.AsInt();
+                return int.Parse(actorConfig.Properties["Routing"]);
             }
 
             return 0;

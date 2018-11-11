@@ -4,7 +4,6 @@ using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
-using Proto;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.Components
@@ -17,7 +16,7 @@ namespace HomeCenter.Model.Components
             foreach (var adapterProperty in requierdProperties)
             {
                 if (!ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {Uid} in component {Uid} missing configuration property {adapterProperty}");
-                routerAttributes.Add(adapterProperty, this[adapterProperty].ToString());
+                routerAttributes.Add(adapterProperty, this[adapterProperty]);
             }
             routerAttributes.Add(MessageProperties.MessageSource, Uid);
             routerAttributes.Add(EventProperties.EventType, EventType.PropertyChanged);
@@ -28,9 +27,9 @@ namespace HomeCenter.Model.Components
         public Command GetDeviceCommand(Command command)
         {
             // add properties from adapter reference
-            foreach (var prop in ToProperiesList())
+            foreach (var prop in GetProperties())
             {
-                command.SetPropertyValue(prop.Key, prop.Value.Value);
+                command.SetProperty(prop.Key, prop.Value);
             }
 
             return command;

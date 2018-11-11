@@ -58,11 +58,6 @@ namespace HomeCenter.Utils.Extensions
             }
         }
 
-        public static K ElementAtOrNull<T, K>(this IDictionary<T, K> dictionary, T lookupValue) where K : class
-        {
-            return (dictionary?.ContainsKey(lookupValue) ?? false) ? dictionary[lookupValue] : null;
-        }
-
         public static void RemoveRange<TKey, TValue>(this IDictionary<TKey, TValue> dic, IEnumerable<TKey> toRemove)
         {
             foreach (var el in toRemove)
@@ -114,5 +109,8 @@ namespace HomeCenter.Utils.Extensions
             }
             return true;
         }
+
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dict) => dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        
     }
 }

@@ -45,7 +45,7 @@ namespace HomeCenter.Adapters.HSREL8
 
         private int GetPin(Command message)
         {
-            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
+            var pinNumber = message.AsInt(AdapterProperties.PinNumber);
             if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
             return pinNumber;
         }

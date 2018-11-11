@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.ValueTypes;
 
 namespace HomeCenter.Model.Capabilities
 {
@@ -7,11 +6,11 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(HumidityState);
 
-        public HumidityState(StringValue ReadWriteMode = default) : base(ReadWriteMode)
+        public HumidityState(string? ReadWriteMode = default) : base(ReadWriteMode)
         {
-            this[StateProperties.StateName] = new StringValue(nameof(HumidityState));
-            this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.TemperatureController);
-            this[StateProperties.Value] = new DoubleValue();
+            this[StateProperties.StateName] = nameof(HumidityState);
+            this[StateProperties.CapabilityName] = Constants.Capabilities.TemperatureController;
+
             //this[StateProperties.SupportedCommands] = new StringListValue(CommandType.TurnOnCommand, CommandType.TurnOffCommand);
         }
     }

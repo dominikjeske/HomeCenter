@@ -1,13 +1,10 @@
 ﻿using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -42,19 +39,19 @@ namespace HomeCenter.Adapters.Common
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _poolInterval = this[AdapterProperties.PoolInterval].AsIntTimeSpan();
-            _poolDurationWarning = this[AdapterProperties.PollDurationWarningThreshold].AsInt();
-            _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
+            _poolInterval = AsIntTime(AdapterProperties.PoolInterval);
+            _poolDurationWarning = AsInt(AdapterProperties.PollDurationWarningThreshold);
+            _i2cAddress = AsInt(AdapterProperties.I2cAddress);
 
             _state = new byte[StateSize];
             _committedState = new byte[StateSize];
         }
-        
+
         protected Task Refresh(RefreshCommand message) => FetchState();
-        
+
         protected bool QueryState(StateQuery message)
         {
-            var pinNumber = message[AdapterProperties.PinNumber].AsInt();
+            var pinNumber = AsInt(AdapterProperties.PinNumber);
             return GetPortState(pinNumber);
         }
 
@@ -105,8 +102,7 @@ namespace HomeCenter.Adapters.Common
 
                 if (oldPinState == newPinState) continue;
 
-                var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, new BooleanValue(oldPinState),
-                                            new BooleanValue(newPinState), new Dictionary<string, IValue>() { { AdapterProperties.PinNumber, new IntValue(i) } });
+                var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>() { [AdapterProperties.PinNumber] = i.ToString() });
 
                 await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 

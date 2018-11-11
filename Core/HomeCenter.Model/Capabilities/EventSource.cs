@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.ValueTypes;
 
 namespace HomeCenter.Model.Capabilities
 {
@@ -8,9 +7,10 @@ namespace HomeCenter.Model.Capabilities
     {
         public EventSource(string eventType, string direction)
         {
-            this[EventProperties.EventTime] = new DateTimeValue();
-            this[EventProperties.EventType] = new StringValue(eventType);
-            this[EventProperties.EventDirection] = new StringValue(direction);
+            SetEmptyProperty(EventProperties.EventTime);
+            
+            this[EventProperties.EventType] = eventType;
+            this[EventProperties.EventDirection] = direction;
         }
     }
 }

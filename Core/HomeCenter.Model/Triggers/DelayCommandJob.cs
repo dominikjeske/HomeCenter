@@ -19,7 +19,7 @@ namespace HomeCenter.Model.Triggers
         public Task Execute(IJobExecutionContext context)
         {
             var command = context.GetDataContext<Command>();
-            var uid = command[MessageProperties.MessageSource].AsString();
+            var uid = command.AsString(MessageProperties.MessageSource);
 
             _actorMessageBroker.Send(command, uid);
 

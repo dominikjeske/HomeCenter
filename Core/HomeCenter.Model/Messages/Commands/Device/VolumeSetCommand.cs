@@ -1,13 +1,11 @@
-﻿using HomeCenter.Model.ValueTypes;
-
-namespace HomeCenter.Model.Messages.Commands.Device
+﻿namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class VolumeSetCommand : Command
     {
         public static VolumeSetCommand Create(double volume)
         {
             var command = new VolumeSetCommand();
-            command[CommandProperties.Value] = new DoubleValue(volume);
+            command.SetProperty(CommandProperties.Value, volume);
             return command;
         }
     }

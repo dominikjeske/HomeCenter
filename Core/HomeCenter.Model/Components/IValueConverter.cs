@@ -4,8 +4,8 @@ namespace HomeCenter.Model.Components
 {
     public interface IValueConverter
     {
-        IValue Convert(IValue old);
+        string Convert(string old);
 
-        IValue ConvertBack(IValue old);
+        string ConvertBack(string old);
     }
 }

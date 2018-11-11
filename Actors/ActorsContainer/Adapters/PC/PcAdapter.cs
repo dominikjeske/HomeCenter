@@ -3,12 +3,10 @@ using HomeCenter.Adapters.PC.Model;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -25,19 +23,19 @@ namespace HomeCenter.Adapters.PC
         private string _mac;
         private TimeSpan _poolInterval;
 
-        private BooleanValue _powerState;
-        private DoubleValue _volume;
-        private BooleanValue _mute;
-        private StringValue _input;
+        private bool _powerState;
+        private double _volume;
+        private bool _mute;
+        private string _input;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = this[AdapterProperties.Hostname].AsString();
-            _port = this[AdapterProperties.Port].AsInt();
-            _mac = this[AdapterProperties.MAC].AsString();
-            _poolInterval = GetPropertyValue(AdapterProperties.PoolInterval, new IntValue(DEFAULT_POOL_INTERVAL)).AsIntTimeSpan();
+            _hostname = AsString(AdapterProperties.Hostname);
+            _port = AsInt(AdapterProperties.Port);
+            _mac = AsString(AdapterProperties.MAC);
+            _poolInterval = AsIntTime(AdapterProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
@@ -64,19 +62,19 @@ namespace HomeCenter.Adapters.PC
 
             var state = await MessageBroker.QueryJsonService<ComputerQuery, ComputerStatus>(cmd).ConfigureAwait(false);
 
-            _input = await UpdateState<StringValue>(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
-            _volume = await UpdateState<DoubleValue>(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
-            _mute = await UpdateState<BooleanValue>(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
-            _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume.Value).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
         }
-        
+
         protected async Task Handle(TurnOnCommand message)
         {
             var cmd = new WakeOnLanCommand(_mac);
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
             //TODO check state before update the state
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(true)).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
         }
 
         protected async Task Handle(TurnOffCommand message)
@@ -88,12 +86,12 @@ namespace HomeCenter.Adapters.PC
                 Message = new PowerPost { State = 0 } //Hibernate
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeUpCommand command)
         {
-            var volume = _volume + command[CommandProperties.ChangeFactor].AsDouble();
+            var volume = _volume + command.AsDouble(CommandProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -101,12 +99,12 @@ namespace HomeCenter.Adapters.PC
                 Message = new VolumePost { Volume = volume }
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeDownCommand command)
         {
-            var volume = _volume - command[CommandProperties.ChangeFactor].AsDouble();
+            var volume = _volume - command.AsDouble(CommandProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -115,12 +113,12 @@ namespace HomeCenter.Adapters.PC
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            var volume = command[CommandProperties.Value].AsDouble();
+            var volume = command.AsDouble(CommandProperties.Value);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -129,7 +127,7 @@ namespace HomeCenter.Adapters.PC
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, new DoubleValue(volume)).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
         }
 
         protected async Task Handle(MuteCommand message)
@@ -141,8 +139,8 @@ namespace HomeCenter.Adapters.PC
                 Message = new MutePost { Mute = true }
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
- 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(true)).ConfigureAwait(false);
+
+            _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
         }
 
         protected async Task Handle(UnmuteCommand message)
@@ -154,13 +152,13 @@ namespace HomeCenter.Adapters.PC
                 Message = new MutePost { Mute = false }
             };
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
- 
-            _mute = await UpdateState(MuteState.StateName, _mute, new BooleanValue(false)).ConfigureAwait(false);
+
+            _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
         }
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = (StringValue)message[CommandProperties.InputSource];
+            var inputName = message.AsString(CommandProperties.InputSource);
 
             var cmd = new ComputerCommand
             {

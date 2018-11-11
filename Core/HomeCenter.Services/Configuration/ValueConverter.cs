@@ -37,7 +37,7 @@ namespace HomeCenter.Services.Configuration
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
 
-        public override bool CanConvert(Type objectType) => typeof(IDictionary<string, Property>).IsAssignableFrom(objectType);
+        public override bool CanConvert(Type objectType) => typeof(IDictionary<string, string>).IsAssignableFrom(objectType);
 
         public override bool CanWrite => false;
     }

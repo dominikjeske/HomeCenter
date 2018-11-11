@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.ValueTypes;
 
 namespace HomeCenter.Model.Capabilities
 {
@@ -8,12 +7,11 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(MuteState);
 
-        public MuteState(StringValue ReadWriteMode = default) : base(ReadWriteMode)
+        public MuteState(string? ReadWriteMode = default) : base(ReadWriteMode)
         {
-            this[StateProperties.Value] = new BooleanValue();
-            this[StateProperties.StateName] = new StringValue(nameof(MuteState));
-            this[StateProperties.CapabilityName] = new StringValue(Constants.Capabilities.SpeakerController);
-            this[StateProperties.SupportedCommands] = new StringListValue(nameof(MuteCommand), nameof(UnmuteCommand));
+            this[StateProperties.StateName] = nameof(MuteState);
+            this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;
+            SetPropertyList(StateProperties.SupportedCommands, nameof(MuteCommand), nameof(UnmuteCommand));
         }
     }
 }

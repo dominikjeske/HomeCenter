@@ -5,7 +5,6 @@ using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.Native;
-using HomeCenter.Model.ValueTypes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -105,15 +104,15 @@ namespace HomeCenter.Services.Networking
             {
                 if (format.ValueType == typeof(byte))
                 {
-                    result[format.ValueName] = (ByteValue)_dataReader.ReadByte();
+                    result.SetProperty(format.ValueName, _dataReader.ReadByte());
                 }
                 else if (format.ValueType == typeof(uint))
                 {
-                    result[format.ValueName] = (UIntValue)_dataReader.ReadUInt32();
+                    result.SetProperty(format.ValueName, _dataReader.ReadUInt32());
                 }
                 else if (format.ValueType == typeof(float))
                 {
-                    result[format.ValueName] = (DoubleValue)_dataReader.ReadSingle();
+                    result.SetProperty(format.ValueName, _dataReader.ReadSingle());
                 }
                 else
                 {

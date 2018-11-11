@@ -2,12 +2,10 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,11 +26,11 @@ namespace HomeCenter.Adapters.HumidityBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = this[AdapterProperties.I2cAddress].AsInt();
+            var _i2cAddress = AsInt(AdapterProperties.I2cAddress);
 
-            foreach (var val in this[AdapterProperties.UsedPins].AsStringList())
+            foreach (var val in AsList(AdapterProperties.UsedPins))
             {
-                _state.Add(IntValue.FromString(val), 0);
+                _state.Add(int.Parse(val), 0);
             }
 
             var registration = new SerialRegistrationCommand(Self, 6, new Format[]
@@ -45,10 +43,12 @@ namespace HomeCenter.Adapters.HumidityBridge
 
         protected async Task Handle(SerialResultEvent serialResult)
         {
-            var pin = serialResult["Pin"].AsByte();
-            var humidity = serialResult["Humidity"].AsDouble();
+            var pin = serialResult.AsByte("Pin");
+            var humidity = serialResult.AsDouble("Humidity");
 
-            _state[pin] = await UpdateState(HumidityState.StateName, pin, (DoubleValue)humidity).ConfigureAwait(false);
+            var oldValue = _state[pin];
+
+            _state[pin] = await UpdateState(HumidityState.StateName, oldValue, humidity).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

@@ -6,26 +6,19 @@ namespace HomeCenter.Model.Messages.Queries
     {
         public CancellationToken CancellationToken { get; }
 
-        public Query()
-        {
-            SupressPropertyChangeEvent = true;
-        }
+        public Query() { }
+        
 
-        public Query(string commandType) : base()
+        public Query(string commandType)
         {
             Type = commandType;
         }
 
-        public Query(string commandType, string uid) : base()
+        public Query(string commandType, string uid)
         {
             Type = commandType;
             Uid = uid;
         }
-
-        //public Query(string commandType, params Property[] properties) : base(properties)
-        //{
-        //    Type = commandType;
-        //}
 
         public Query(string commandType, CancellationToken cancellationToken) : base()
         {

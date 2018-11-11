@@ -1,13 +1,11 @@
-﻿using HomeCenter.Model.ValueTypes;
-
-namespace HomeCenter.Model.Messages.Commands.Device
+﻿namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class InputSetCommand : Command
     {
         public static InputSetCommand Create(string input)
         {
             var command = new InputSetCommand();
-            command[CommandProperties.InputSource] = new StringValue(input);
+            command[CommandProperties.InputSource] = input;
             return command;
         }
     }

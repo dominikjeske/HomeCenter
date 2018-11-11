@@ -6,12 +6,12 @@ namespace HomeCenter.Model.Converters
 {
     public class PowerConverter : IValueConverter
     {
-        public IValue Convert(IValue old)
+        public string Convert(string old)
         {
             throw new NotImplementedException();
         }
 
-        public IValue ConvertBack(IValue old)
+        public string ConvertBack(string old)
         {
             throw new NotImplementedException();
         }

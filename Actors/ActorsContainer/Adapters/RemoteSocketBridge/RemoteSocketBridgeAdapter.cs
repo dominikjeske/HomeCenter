@@ -2,7 +2,6 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Codes;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -10,7 +9,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -26,17 +24,17 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
     public abstract class RemoteSocketBridgeAdapter : Adapter
     {
         private const int DEFAULT_REPEAT = 3;
-        private IntValue _pinNumber;
-        private IntValue _I2cAddress;
+        private int _pinNumber;
+        private int _I2cAddress;
 
-        private readonly Dictionary<StringValue, BooleanValue> _state = new Dictionary<StringValue, BooleanValue>();
+        private readonly Dictionary<string, bool> _state = new Dictionary<string, bool>();
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _I2cAddress = this[AdapterProperties.I2cAddress].AsInt();
-            _pinNumber = this[AdapterProperties.PinNumber].AsInt();
+            _I2cAddress = AsInt(AdapterProperties.I2cAddress);
+            _pinNumber = AsInt(AdapterProperties.PinNumber);
 
             var registration = new SerialRegistrationCommand(Self, 2, new Format[]
              {
@@ -49,7 +47,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         protected async Task Handle(SerialResultEvent serialResultCommand)
         {
-            var code = serialResultCommand["Code"].AsUInt();
+            var code = serialResultCommand.AsUint("Code");
             var dipswitchCode = DipswitchCode.ParseCode(code);
 
             if (dipswitchCode == null)
@@ -79,9 +77,9 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         private byte[] PreparePackage(Command message, string commandName, out DipswitchCode dipswitchCode)
         {
-            var system = message[CommandProperties.System].AsString();
-            var unit = message[CommandProperties.Unit].AsString();
-            var repeat = GetPropertyValue(CommandProperties.Repeat, new IntValue(DEFAULT_REPEAT)).AsInt();
+            var system = message.AsString(CommandProperties.System);
+            var unit = message.AsString(CommandProperties.Unit);
+            var repeat = message.AsInt(CommandProperties.Repeat, DEFAULT_REPEAT);
             dipswitchCode = DipswitchCode.ParseCode(system, unit, commandName);
             var package = new byte[8];
             package[0] = 2;
@@ -98,7 +96,15 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         private async Task UpdateState(DipswitchCode code)
         {
-            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, _state.ElementAtOrNull(code.ToShortCode()), new BooleanValue(true)).ConfigureAwait(false);
+            var codeShortValue = code.ToShortCode();
+            bool oldValue = false; //TODO
+            if(_state.ContainsKey(codeShortValue))
+            {
+                oldValue = _state[codeShortValue];
+            }
+            var newValue = code.Command == RemoteSocketCommand.TurnOn;
+
+            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, oldValue, newValue).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

@@ -9,7 +9,7 @@ namespace HomeCenter.Runner
     {
         private static async Task Main(string[] args)
         {
-            int programNumber = 3;
+            int programNumber = 1;
             string input = "";
 
             Console.WriteLine("HomeCenter TestRunner:");

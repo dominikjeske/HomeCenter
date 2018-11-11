@@ -12,7 +12,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
-using HomeCenter.Model.ValueTypes;
 using HomeCenter.Utils.Extensions;
 using Proto;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
+                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = Uid);
 
                 Subscribe<Event>(trigger.Event.GetRoutingFilter());
             }
@@ -64,7 +63,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule != null))
             {
-                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = (StringValue)Uid);
+                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = Uid);
 
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
@@ -107,7 +106,7 @@ namespace HomeCenter.Model.Components
 
         private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
         {
-            eventSources.ForEach(es => _eventSources[es[EventProperties.EventType].AsString()] = adapter);
+            eventSources.ForEach(es => _eventSources[es.AsString(EventProperties.EventType)] = adapter);
         }
 
         /// <summary>
@@ -162,10 +161,11 @@ namespace HomeCenter.Model.Components
                 {
                     foreach (var command in trigger.Commands)
                     {
-                        if(command.TryGetPropertyValue(CommandProperties.ExecutionDelay, out IValue executionDelay))
+                        if (command.ContainsProperty(CommandProperties.ExecutionDelay))
                         {
-                            var cancelPrevious = command.GetPropertyValue(CommandProperties.CancelPrevious).AsBool(false);
-                            await Scheduler.DelayExecution<DelayCommandJob>(executionDelay.AsTimeSpan(), command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+                            var executionDelay = command.AsTime(CommandProperties.ExecutionDelay);
+                            var cancelPrevious = command.AsBool(CommandProperties.CancelPrevious, false);
+                            await Scheduler.DelayExecution<DelayCommandJob>(executionDelay, command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
                             continue;
                         }
 
@@ -212,18 +212,18 @@ namespace HomeCenter.Model.Components
             return _tagCache.AsReadOnly();
         }
 
-        protected Maybe<IValue> Handle(StateQuery command)
+        protected string? Handle(StateQuery command)
         {
-            var stateName = command[CommandProperties.StateName].AsString();
+            var stateName = command.AsString(CommandProperties.StateName);
 
-            if (!_capabilities.ContainsKey(stateName)) return Maybe<IValue>.None;
+            if (!_capabilities.ContainsKey(stateName)) return null;
             var value = _capabilities[stateName][StateProperties.Value];
             if (_converters.ContainsKey(stateName))
             {
                 value = _converters[stateName].Convert(value);
             }
 
-            return Maybe<IValue>.From(value);
+            return value;
         }
 
         protected IReadOnlyCollection<State> Handle(StatusQuery command) => _capabilities.Values.ToList().AsReadOnly();

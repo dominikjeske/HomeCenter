@@ -18,8 +18,7 @@ namespace HomeCenter.Services.Configuration.DTO
         public bool IsEnabled { get; set; }
 
         [JsonProperty("Properties")]
-        [JsonConverter(typeof(PropertyDictionaryConverter))]
-        public Dictionary<string, Property> Properties { get; set; }
+        public Dictionary<string, string> Properties { get; set; }
 
         [JsonProperty("Tags")]
         public IDictionary<string, string> Tags { get; set; }

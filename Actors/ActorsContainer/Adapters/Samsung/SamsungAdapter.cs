@@ -4,11 +4,9 @@ using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.ValueTypes;
 using Proto;
 using System.Threading.Tasks;
 
@@ -19,14 +17,14 @@ namespace HomeCenter.Adapters.Samsung
     {
         private string _hostname;
 
-        private BooleanValue _powerState;
-        private StringValue _input;
+        private bool _powerState;
+        private string _input;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = this[AdapterProperties.Hostname].AsString();
+            _hostname = AsString(AdapterProperties.Hostname);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -58,7 +56,7 @@ namespace HomeCenter.Adapters.Samsung
             var cmd = GetCommand("KEY_POWEROFF");
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
-            _powerState = await UpdateState(PowerState.StateName, _powerState, new BooleanValue(false)).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
         }
 
         protected Task Handle(VolumeUpCommand command)
@@ -81,7 +79,7 @@ namespace HomeCenter.Adapters.Samsung
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = (StringValue)message[CommandProperties.InputSource];
+            var inputName = message.AsString(CommandProperties.InputSource);
 
             var source = "";
             if (inputName == "HDMI")

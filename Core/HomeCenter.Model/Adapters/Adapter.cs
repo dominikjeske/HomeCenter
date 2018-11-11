@@ -15,10 +15,11 @@ namespace HomeCenter.Model.Adapters
 
         protected IList<string> RequierdProperties() => _requierdProperties;
 
-        protected async Task<T> UpdateState<T>(string stateName, T oldValue, T newValue) where T : IValue
+        protected async Task<T> UpdateState<T>(string stateName, T oldValue, T newValue)
         {
-            if (newValue.Equals(oldValue)) return oldValue;
-            await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, stateName, oldValue, newValue), _requierdProperties).ConfigureAwait(false);
+            if (newValue == null || EqualityComparer<T>.Default.Equals(oldValue, newValue)) return oldValue;
+
+            await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, stateName, oldValue?.ToString(), newValue.ToString()), _requierdProperties).ConfigureAwait(false);
             return newValue;
         }
 

@@ -1,10 +1,7 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.ValueTypes;
-using System;
 
 namespace HomeCenter.Model.Conditions.Specific
 {
@@ -15,16 +12,16 @@ namespace HomeCenter.Model.Conditions.Specific
             WithStart(async () =>
             {
                 var value = await eventAggregator.QueryAsync<Query, BaseObject>(SunsetQuery.Default).ConfigureAwait(false);
-                var result = value?[ConditionProperies.StartTime] ?? NullValue.Value;
+                var result = value.AsTime(ConditionProperies.StartTime, null);
 
-                return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
+                return result;
             });
             WithEnd(async () =>
             {
                 var value = await eventAggregator.QueryAsync<Query, BaseObject>(SunsetQuery.Default).ConfigureAwait(false);
-                var result = value?[ConditionProperies.EndTime] ?? NullValue.Value;
+                var result = value.AsTime(ConditionProperies.EndTime, null);
 
-                return result.HasValue ? (TimeSpan?)result.AsTimeSpan() : null;
+                return result;
             });
         }
     }
