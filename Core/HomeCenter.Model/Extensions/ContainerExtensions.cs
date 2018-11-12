@@ -31,6 +31,8 @@ namespace HomeCenter.Model.Extensions
 
         public static IActor GetActorProxy(this IServiceProvider container, Type actorType)
         {
+            var xx = AssemblyHelper.GetAllTypes(actorType).ToList();
+
             var proxyType = AssemblyHelper.GetAllTypes(actorType).Single();
 
             var proxy = container.GetService(proxyType);

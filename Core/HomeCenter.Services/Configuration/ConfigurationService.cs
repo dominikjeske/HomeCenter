@@ -1,41 +1,53 @@
 ﻿using AutoMapper;
+using CSharpFunctionalExtensions;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Proto;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration
 {
-    public class ConfigurationService : IConfigurationService
+    [ProxyCodeGenerator]
+    public abstract class ConfigurationService : Service
     {
         private readonly IMapper _mapper;
         private readonly ILogger<ConfigurationService> _logger;
         private readonly IResourceLocatorService _resourceLocatorService;
         private readonly IActorFactory _actorFactory;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRoslynCompilerService _roslynCompilerService;
 
-        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService, IActorFactory actorFactory, IServiceProvider serviceProvider)
+        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService, IActorFactory actorFactory,
+                                    IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _resourceLocatorService = resourceLocatorService;
             _logger = logger;
             _actorFactory = actorFactory;
             _serviceProvider = serviceProvider;
+            _roslynCompilerService = roslynCompilerService;
         }
 
-        public HomeCenterConfiguration ReadConfiguration(AdapterMode adapterMode)
+        protected async Task Handle(StartSystemCommand startFromConfigCommand)
         {
             var configPath = _resourceLocatorService.GetConfigurationPath();
 
@@ -43,24 +55,20 @@ namespace HomeCenter.Services.Configuration
 
             var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
 
+            await LoadCalendars().ConfigureAwait(false);
+
+            LoadDynamicAdapters(startFromConfigCommand.AdapterMode);
+
             CheckForDuplicateUid(result);
 
-            var types = RegisterTypesInAutomapper(adapterMode);
+            var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
 
             var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
             var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
             var components = MapComponents(result);
             var areas = MapAreas(result, components);
-            
-            var configuration = new HomeCenterConfiguration
-            {
-                Adapters = adapters,
-                Components = components,
-                Areas = areas,
-                Services = services
-            };
 
-            return configuration;
+            MessageBroker.Send(SystemStartedEvent.Default, "Controller");
         }
 
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
@@ -132,7 +140,6 @@ namespace HomeCenter.Services.Configuration
                     if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
                     var actor = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
 
-
                     actors.Add(actorConfig.Uid, actor);
                 }
                 catch (Exception ex)
@@ -153,12 +160,12 @@ namespace HomeCenter.Services.Configuration
             return 0;
         }
 
-        private Dictionary<Type, List<Type>> RegisterTypesInAutomapper(AdapterMode adapterMode)
+        private Dictionary<Type, List<Type>> RegisterTypesInAutomapper(string adapterMode)
         {
             Dictionary<Type, List<Type>> types = new Dictionary<Type, List<Type>>();
 
             // force to load HomeCenter.ActorsContainer into memory
-            if (adapterMode == AdapterMode.Embedded)
+            if (adapterMode == "Embedded")
             {
                 var testAdapter = typeof(Actors.ForceAssemblyLoadType);
             }
@@ -180,6 +187,37 @@ namespace HomeCenter.Services.Configuration
                 p.ConstructServicesUsing(_serviceProvider.GetService);
             });
             return types;
+        }
+
+        //TODO move to separate service?
+        private void LoadDynamicAdapters(string adapterMode)
+        {
+            Logger.LogInformation($"Loading adapters in mode: {adapterMode}");
+
+            if (adapterMode == "Compiled")
+            {
+                var result = _roslynCompilerService.CompileAssemblies(_resourceLocatorService.GetRepositoyLocation());
+                var veryfy = Result.Combine(result.ToArray());
+                if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");
+
+                foreach (var adapter in result)
+                {
+                    Assembly.LoadFrom(adapter.Value);
+                }
+            }
+            else
+            {
+                Logger.LogInformation($"Using only build in adapters");
+            }
+        }
+
+        private async Task LoadCalendars()
+        {
+            foreach (var calendarType in AssemblyHelper.GetAllTypes<ICalendar>())
+            {
+                var cal = calendarType.CreateInstance<ICalendar>();
+                await Scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
+            }
         }
     }
 }

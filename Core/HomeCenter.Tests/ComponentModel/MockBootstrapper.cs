@@ -40,10 +40,8 @@ namespace HomeCenter.Tests.ComponentModel
             _container.RegisterInstance(actorRegistry);
             _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
             _container.RegisterSingleton<IActorFactory, ActorFactory>();
-
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
         }
 
         protected override void RegisterNativeServices()
