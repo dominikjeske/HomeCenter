@@ -9,6 +9,7 @@ using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
+using Proto.Remote;
 using Quartz;
 using System.Linq;
 using System.Reflection;
@@ -24,31 +25,31 @@ namespace HomeCenter.Services.Controllers
         private readonly IConfigurationService _configurationService;
         private readonly IResourceLocatorService _resourceLocatorService;
         private readonly IMapper _mapper;
-        private readonly IHttpServerService _httpServerService;
 
         private HomeCenterConfiguration _homeConfiguration;
 
-        protected Controller(IMapper mapper, IHttpServerService httpServerService, IRoslynCompilerService roslynCompilerService,
-            IResourceLocatorService resourceLocatorService, IConfigurationService configurationService, IControllerOptions controllerOptions)
+        protected Controller(IMapper mapper, IRoslynCompilerService roslynCompilerService, IResourceLocatorService resourceLocatorService, 
+            IConfigurationService configurationService, IControllerOptions controllerOptions)
         {
             _roslynCompilerService = roslynCompilerService;
             _controllerOptions = controllerOptions;
             _configurationService = configurationService;
             _resourceLocatorService = resourceLocatorService;
             _mapper = mapper;
-            _httpServerService = httpServerService;
         }
 
         protected override async Task OnStarted(Proto.IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            //RegisterRestCommandHanler();
+            //TODO Move to bootstrapper?
             LoadDynamicAdapters(_controllerOptions.AdapterMode);
 
             await LoadCalendars().ConfigureAwait(false);
             InitializeConfiguration();
             await RunScheduler().ConfigureAwait(false);
+
+            Remote.Start(_controllerOptions.RemoteActorAddress ?? "127.0.0.1", _controllerOptions.RemoteActorPort ?? 8000);
         }
 
         private async Task LoadCalendars()
@@ -93,57 +94,5 @@ namespace HomeCenter.Services.Controllers
         {
             return _homeConfiguration;
         }
-
-        //private void RegisterRestCommandHanler()
-        //{
-        //    _httpServerService.AddRequestHandler(new RestCommandHandler(_eventAggregator, _mapper));
-
-        //    if (_controllerOptions.HttpServerPort.HasValue)
-        //    {
-        //        _httpServerService.UpdateServerPort(_controllerOptions.HttpServerPort.Value);
-        //    }
-        //}
     }
-
-    //public class RestCommandHandler : IHttpContextPipelineHandler
-    //{
-    //    private readonly IEventAggregator _eventAggregator;
-    //    private readonly IMapper _mapper;
-
-    //    public RestCommandHandler(IEventAggregator eventAggregator, IMapper mapper)
-    //    {
-    //        _eventAggregator = eventAggregator;
-    //        _mapper = mapper;
-    //    }
-
-    //    public async Task ProcessRequestAsync(HttpContextPipelineHandlerContext context)
-    //    {
-    //        if (context.HttpContext.Request.Method.Equals(HttpMethod.Post.Method) && context.HttpContext.Request.Uri.Equals("/api"))
-    //        {
-    //            using (var reader = new StreamReader(context.HttpContext.Request.Body))
-    //            {
-    //                var rawCommandString = await reader.ReadToEndAsync().ConfigureAwait(false);
-    //                var result = JsonConvert.DeserializeObject<CommandDTO>(rawCommandString);
-
-    //                var command = _mapper.Map<Command>(result);
-
-    //                //TODO DNF
-    //                //await _eventAggregator.PublishDeviceCommnd(command).ConfigureAwait(false);
-    //            }
-
-    //            //context.HttpContext.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(s.ToUpperInvariant()));
-    //            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK; // OK is also default
-
-    //            context.BreakPipeline = true;
-    //            return;
-    //        }
-
-    //        return;
-    //    }
-
-    //    public Task ProcessResponseAsync(HttpContextPipelineHandlerContext context)
-    //    {
-    //        return Task.FromResult(0);
-    //    }
-    //}
 }

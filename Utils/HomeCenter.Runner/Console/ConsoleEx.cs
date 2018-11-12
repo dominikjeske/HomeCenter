@@ -16,6 +16,8 @@ namespace HomeCenter.Runner
 
         public static void WriteWarningLine(string text) => Write(text, ConsoleColor.Yellow);
 
+        public static void WriteDebugLine(string text) => Write(text, ConsoleColor.Blue);
+
         public static void WriteMenuLine(string text) => Write(text, ConsoleColor.Cyan);
 
         public static void WriteTitleLine(string text) => Write(text, ConsoleColor.DarkMagenta);
@@ -25,6 +27,8 @@ namespace HomeCenter.Runner
         public static void WriteError(string text) => Write(text, ConsoleColor.Red, false);
 
         public static void WriteWarning(string text) => Write(text, ConsoleColor.Yellow, false);
+
+        public static void WriteDebug(string text) => Write(text, ConsoleColor.Blue, false);
 
         public static void Write(string text, ConsoleColor color = ConsoleColor.White, bool withNewLine = true)
         {

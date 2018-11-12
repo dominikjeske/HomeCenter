@@ -2,6 +2,7 @@
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
+using HomeCenter.Messages;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
@@ -10,6 +11,7 @@ using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
 using Proto;
+using Proto.Remote;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
@@ -40,6 +42,8 @@ namespace HomeCenter.Services.DI
 
             RegisterAutomapper();
 
+            RegisterProtoActorMessages();
+
             await RegisterQuartz().ConfigureAwait(false);
 
             RegisterActorProxies();
@@ -47,6 +51,11 @@ namespace HomeCenter.Services.DI
             _container.Verify();
 
             return CreateController();
+        }
+
+        private void RegisterProtoActorMessages()
+        {
+            Serialization.RegisterFileDescriptor(ProtoMessagesReflection.Descriptor);
         }
 
         private void RegisterActorProxies()
@@ -66,7 +75,7 @@ namespace HomeCenter.Services.DI
         private PID CreateController()
         {
             var actorFactory = _container.GetInstance<IActorFactory>();
-            return actorFactory.GetActor<Controller>();
+            return actorFactory.GetActor<Controller>(nameof(Controller));
         }
 
         protected virtual void RegisterBaseDependencies()
@@ -81,7 +90,6 @@ namespace HomeCenter.Services.DI
             _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
             _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            _container.RegisterSingleton<IHttpServerService, HttpServerService>();
         }
 
         private async Task RegisterQuartz()

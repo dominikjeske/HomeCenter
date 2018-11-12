@@ -13,7 +13,7 @@ namespace HomeCenter.Runner
             Console.WriteLine("Start listening...");
 
             var context = new RootContext();
-            Serialization.RegisterFileDescriptor(TestReflection.Descriptor);
+            Serialization.RegisterFileDescriptor(ProtoMessagesReflection.Descriptor);
             Remote.Start("127.0.0.1", 8000);
 
             var props = Props.FromProducer(() => new A());
@@ -29,9 +29,6 @@ namespace HomeCenter.Runner
         public virtual async Task ReceiveAsync(IContext context)
         {
             if (context.Message is Started)
-            {
-            }
-            else if (context.Message is Messagge)
             {
             }
             else

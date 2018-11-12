@@ -44,6 +44,10 @@ namespace HomeCenter.Runner
                 {
                     ConsoleEx.WriteOK($"[I] {time}: ");
                 }
+                else if (logLevel == LogLevel.Debug)
+                {
+                    ConsoleEx.WriteDebug($"[D] {time}: ");
+                }
                 else
                 {
                     Console.Write($"{logLevel}: ");

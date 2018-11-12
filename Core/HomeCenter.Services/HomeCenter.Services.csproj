@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="2.2.0-preview3-35497" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
+    <PackageReference Include="Proto.Remote" Version="0.2.0" />
     <PackageReference Include="Proto.Router" Version="0.2.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="SimpleInjector" Version="4.4.0" />

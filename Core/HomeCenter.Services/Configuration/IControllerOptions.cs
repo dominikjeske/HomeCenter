@@ -3,6 +3,7 @@
     public interface IControllerOptions
     {
         AdapterMode AdapterMode { get; set; }
-        int? HttpServerPort { get; set; }
+        int? RemoteActorPort { get; set; }
+        string? RemoteActorAddress { get; set; }
     }
 }

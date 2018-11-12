@@ -54,7 +54,7 @@ namespace HomeCenter.Runner
             _container.RegisterInstance<IControllerOptions>(new ControllerOptions
             {
                 AdapterMode = AdapterMode.Embedded,
-                HttpServerPort = 8080,
+                RemoteActorPort = 8000,
             });
         }
 

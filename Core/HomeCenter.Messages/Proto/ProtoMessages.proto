@@ -2,11 +2,6 @@
 package messages;
 option csharp_namespace = "HomeCenter.Messages";
 
-message Messagge
-{
-    string Message = 1;
-}
-
 message ProtoCommand
 {
     string  Type = 1;
