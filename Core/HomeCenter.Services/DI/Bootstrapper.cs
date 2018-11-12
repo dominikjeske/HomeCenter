@@ -6,7 +6,6 @@ using HomeCenter.Messages;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
-using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;

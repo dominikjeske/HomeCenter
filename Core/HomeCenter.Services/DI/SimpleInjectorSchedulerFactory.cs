@@ -3,7 +3,7 @@ using Quartz.Core;
 using Quartz.Impl;
 using Quartz.Spi;
 
-namespace HomeCenter.Services.Quartz
+namespace HomeCenter.Services.DI
 {
     public class SimpleInjectorSchedulerFactory : StdSchedulerFactory
     {
