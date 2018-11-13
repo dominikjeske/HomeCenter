@@ -1,8 +1,8 @@
-﻿namespace HomeCenter.Services.Configuration
+﻿namespace HomeCenter.Services.Controllers
 {
     public interface IControllerOptions
     {
-        AdapterMode AdapterMode { get; set; }
+        string AdapterMode { get; set; }
         int? RemoteActorPort { get; set; }
         string? RemoteActorAddress { get; set; }
     }

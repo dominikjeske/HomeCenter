@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
 using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;

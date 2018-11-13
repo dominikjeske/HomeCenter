@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Actors;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Events.Device;
 using Proto;

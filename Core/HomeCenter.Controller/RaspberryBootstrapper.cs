@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Controller.NativeServices;
 using HomeCenter.Model.Native;
+using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Configuration;
-using HomeCenter.Services.DI;
 
 namespace HomeCenter.Controller
 {

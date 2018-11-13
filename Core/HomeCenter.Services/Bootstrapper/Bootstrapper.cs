@@ -3,9 +3,13 @@ using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Messages;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
+using HomeCenter.Services.DI;
+using HomeCenter.Services.Logging;
+using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
@@ -18,7 +22,7 @@ using SimpleInjector.Diagnostics;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.DI
+namespace HomeCenter.Services.Bootstrapper
 {
     public abstract class Bootstrapper : IBootstrapper
     {

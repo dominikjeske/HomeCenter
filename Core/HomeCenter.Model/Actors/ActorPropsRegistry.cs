@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace HomeCenter.Services.DI
+namespace HomeCenter.Model.Actors
 {
     public class ActorPropsRegistry
     {

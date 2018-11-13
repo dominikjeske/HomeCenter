@@ -4,7 +4,7 @@ using SimpleInjector;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.DI
+namespace HomeCenter.Services.Quartz
 {
     internal class JobWrapper : IJob
     {

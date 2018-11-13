@@ -5,7 +5,7 @@ using Proto;
 using Proto.Router;
 using System;
 
-namespace HomeCenter.Services.DI
+namespace HomeCenter.Model.Actors
 {
     public class ActorFactory : IActorFactory
     {

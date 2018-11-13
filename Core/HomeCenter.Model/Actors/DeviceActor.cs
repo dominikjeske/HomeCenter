@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Messages;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
@@ -12,7 +13,7 @@ using Quartz;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Core
+namespace HomeCenter.Model.Actors
 {
     public abstract class DeviceActor : BaseObject, IActor
     {

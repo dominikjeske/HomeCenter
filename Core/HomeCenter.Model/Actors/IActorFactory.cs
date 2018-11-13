@@ -1,7 +1,7 @@
 ﻿using Proto;
 using System;
 
-namespace HomeCenter.Model.Core
+namespace HomeCenter.Model.Actors
 {
     public interface IActorFactory
     {

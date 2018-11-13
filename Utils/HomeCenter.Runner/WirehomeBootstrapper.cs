@@ -1,6 +1,9 @@
 ﻿using HomeCenter.Model.Native;
+using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Configuration;
+using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
+using HomeCenter.Services.Logging;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Proto;
@@ -53,7 +56,7 @@ namespace HomeCenter.Runner
         {
             _container.RegisterInstance<IControllerOptions>(new ControllerOptions
             {
-                AdapterMode = AdapterMode.Embedded,
+                AdapterMode = "Embedded",
                 RemoteActorPort = 8000,
             });
         }

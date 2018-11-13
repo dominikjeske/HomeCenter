@@ -1,5 +1,6 @@
 ﻿using ConcurrentCollections;
 using HomeCenter.Broker;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
@@ -12,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-
     public class ActorMessageBroker : IActorMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
@@ -34,8 +34,6 @@ namespace HomeCenter.Model.Core
 
             return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
         }
-
-        
 
         public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query
         {
@@ -61,8 +59,6 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.QueryAsync<T, R>(query, filter);
         }
 
-        
-
         public async Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) where T : Query
                                                                                           where R : class
         {
@@ -71,7 +67,6 @@ namespace HomeCenter.Model.Core
             var json = await _eventAggregator.QueryAsync<T, string>(query, filter).ConfigureAwait(false);
             var result = JsonConvert.DeserializeObject<R>(json);
             return result;
-
         }
 
         public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command

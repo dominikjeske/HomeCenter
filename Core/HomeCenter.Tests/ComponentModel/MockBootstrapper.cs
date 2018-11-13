@@ -1,7 +1,9 @@
 ﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Native;
+using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Configuration;
+using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Roslyn;
 using Moq;
@@ -64,7 +66,7 @@ namespace HomeCenter.Tests.ComponentModel
         {
             _container.RegisterInstance<IControllerOptions>(new ControllerOptions
             {
-                AdapterMode = AdapterMode.Embedded,
+                AdapterMode = "Embedded",
                 RemoteActorPort = 8080,
             });
         }

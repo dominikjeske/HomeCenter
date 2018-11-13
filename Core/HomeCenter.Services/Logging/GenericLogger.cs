@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace HomeCenter.Services.DI
+namespace HomeCenter.Services.Logging
 {
     public class GenericLogger<T> : ILogger<T>
     {

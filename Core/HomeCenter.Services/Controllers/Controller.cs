@@ -1,5 +1,5 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Core;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration;
@@ -26,9 +26,7 @@ namespace HomeCenter.Services.Controllers
 
             StartSystemFromConfiguration();
         }
-
-        private Task RunScheduler() => Scheduler.Start(_disposables.Token);
-
+        
         private void StartSystemFromConfiguration()
         {
             var confService = _actorFactory.GetActor<ConfigurationService>(nameof(ConfigurationService));
@@ -41,5 +39,7 @@ namespace HomeCenter.Services.Controllers
 
             Remote.Start(_controllerOptions.RemoteActorAddress ?? "127.0.0.1", _controllerOptions.RemoteActorPort ?? 8000);
         }
+
+        private Task RunScheduler() => Scheduler.Start(_disposables.Token);
     }
 }
