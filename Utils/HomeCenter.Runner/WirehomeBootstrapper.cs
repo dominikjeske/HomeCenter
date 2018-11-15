@@ -54,7 +54,7 @@ namespace HomeCenter.Runner
 
         protected override void RegisterControllerOptions()
         {
-            _container.RegisterInstance<IControllerOptions>(new ControllerOptions
+            _container.RegisterInstance<ControllerOptions>(new ControllerOptions
             {
                 AdapterMode = "Embedded",
                 RemoteActorPort = 8000,

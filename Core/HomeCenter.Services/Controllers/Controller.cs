@@ -11,10 +11,10 @@ namespace HomeCenter.Services.Controllers
     [ProxyCodeGenerator]
     public abstract class Controller : DeviceActor
     {
-        private readonly IControllerOptions _controllerOptions;
+        private readonly ControllerOptions _controllerOptions;
         private readonly IActorFactory _actorFactory;
 
-        protected Controller(IControllerOptions controllerOptions, IActorFactory actorFactory)
+        protected Controller(ControllerOptions controllerOptions, IActorFactory actorFactory)
         {
             _actorFactory = actorFactory;
             _controllerOptions = controllerOptions;

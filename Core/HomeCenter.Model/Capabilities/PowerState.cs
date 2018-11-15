@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(PowerState);
 
-        public PowerState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public PowerState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(PowerState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PowerController;

@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(PlaybackState);
 
-        public PlaybackState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public PlaybackState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(PlaybackState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PlaybackController;

@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(MuteState);
 
-        public MuteState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public MuteState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(MuteState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;

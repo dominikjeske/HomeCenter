@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(VolumeState);
 
-        public VolumeState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public VolumeState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.MaxValue] = "100.0";
             this[StateProperties.MinValue] = "0.0";

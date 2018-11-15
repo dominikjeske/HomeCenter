@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(SurroundSoundState);
 
-        public SurroundSoundState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public SurroundSoundState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(SurroundSoundState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;

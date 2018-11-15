@@ -4,7 +4,7 @@ namespace HomeCenter.Model.Capabilities
 {
     public class BrightnessState : State
     {
-        public BrightnessState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public BrightnessState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             //StateName = nameof(BrightnessState);
             //Capability = Constants.Capabilities.BrightnessController;

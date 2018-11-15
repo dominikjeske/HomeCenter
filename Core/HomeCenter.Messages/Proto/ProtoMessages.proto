@@ -4,7 +4,8 @@ option csharp_namespace = "HomeCenter.Messages";
 
 message ProtoCommand
 {
-    string  Type = 1;
-    map<string, string> Properties = 2;
+    string Type = 1;
+    string Address = 2;
+    map<string, string> Properties = 10;
 }
 

@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(InputSourceState);
 
-        public InputSourceState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public InputSourceState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(InputSourceState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.InputController;

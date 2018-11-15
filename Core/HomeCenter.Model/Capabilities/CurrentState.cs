@@ -6,7 +6,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(CurrentState);
 
-        public CurrentState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public CurrentState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(CurrentState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.CurrentController;

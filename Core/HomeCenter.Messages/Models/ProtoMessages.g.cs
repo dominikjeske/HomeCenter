@@ -24,15 +24,15 @@ namespace HomeCenter.Messages {
     static ProtoMessagesReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChNQcm90b01lc3NhZ2VzLnByb3RvEghtZXNzYWdlcyKLAQoMUHJvdG9Db21t",
-            "YW5kEgwKBFR5cGUYASABKAkSOgoKUHJvcGVydGllcxgCIAMoCzImLm1lc3Nh",
-            "Z2VzLlByb3RvQ29tbWFuZC5Qcm9wZXJ0aWVzRW50cnkaMQoPUHJvcGVydGll",
-            "c0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFCFqoCE0hv",
-            "bWVDZW50ZXIuTWVzc2FnZXNiBnByb3RvMw=="));
+            "ChNQcm90b01lc3NhZ2VzLnByb3RvEghtZXNzYWdlcyKcAQoMUHJvdG9Db21t",
+            "YW5kEgwKBFR5cGUYASABKAkSDwoHQWRkcmVzcxgCIAEoCRI6CgpQcm9wZXJ0",
+            "aWVzGAogAygLMiYubWVzc2FnZXMuUHJvdG9Db21tYW5kLlByb3BlcnRpZXNF",
+            "bnRyeRoxCg9Qcm9wZXJ0aWVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVl",
+            "GAIgASgJOgI4AUIWqgITSG9tZUNlbnRlci5NZXNzYWdlc2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::HomeCenter.Messages.ProtoCommand), global::HomeCenter.Messages.ProtoCommand.Parser, new[]{ "Type", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::HomeCenter.Messages.ProtoCommand), global::HomeCenter.Messages.ProtoCommand.Parser, new[]{ "Type", "Address", "Properties" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
@@ -65,6 +65,7 @@ namespace HomeCenter.Messages {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ProtoCommand(ProtoCommand other) : this() {
       type_ = other.type_;
+      address_ = other.address_;
       properties_ = other.properties_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -85,10 +86,21 @@ namespace HomeCenter.Messages {
       }
     }
 
+    /// <summary>Field number for the "Address" field.</summary>
+    public const int AddressFieldNumber = 2;
+    private string address_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Address {
+      get { return address_; }
+      set {
+        address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "Properties" field.</summary>
-    public const int PropertiesFieldNumber = 2;
+    public const int PropertiesFieldNumber = 10;
     private static readonly pbc::MapField<string, string>.Codec _map_properties_codec
-        = new pbc::MapField<string, string>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForString(18), 18);
+        = new pbc::MapField<string, string>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForString(18), 82);
     private readonly pbc::MapField<string, string> properties_ = new pbc::MapField<string, string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::MapField<string, string> Properties {
@@ -109,6 +121,7 @@ namespace HomeCenter.Messages {
         return true;
       }
       if (Type != other.Type) return false;
+      if (Address != other.Address) return false;
       if (!Properties.Equals(other.Properties)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -117,6 +130,7 @@ namespace HomeCenter.Messages {
     public override int GetHashCode() {
       int hash = 1;
       if (Type.Length != 0) hash ^= Type.GetHashCode();
+      if (Address.Length != 0) hash ^= Address.GetHashCode();
       hash ^= Properties.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -135,6 +149,10 @@ namespace HomeCenter.Messages {
         output.WriteRawTag(10);
         output.WriteString(Type);
       }
+      if (Address.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Address);
+      }
       properties_.WriteTo(output, _map_properties_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -146,6 +164,9 @@ namespace HomeCenter.Messages {
       int size = 0;
       if (Type.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
+      }
+      if (Address.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
       size += properties_.CalculateSize(_map_properties_codec);
       if (_unknownFields != null) {
@@ -161,6 +182,9 @@ namespace HomeCenter.Messages {
       }
       if (other.Type.Length != 0) {
         Type = other.Type;
+      }
+      if (other.Address.Length != 0) {
+        Address = other.Address;
       }
       properties_.Add(other.properties_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -179,6 +203,10 @@ namespace HomeCenter.Messages {
             break;
           }
           case 18: {
+            Address = input.ReadString();
+            break;
+          }
+          case 82: {
             properties_.AddEntriesFrom(input, _map_properties_codec);
             break;
           }

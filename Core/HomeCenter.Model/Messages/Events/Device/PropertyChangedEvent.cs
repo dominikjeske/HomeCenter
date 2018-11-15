@@ -7,17 +7,17 @@ namespace HomeCenter.Model.Messages.Events.Device
 {
     public class PropertyChangedEvent : Event
     {
-        public PropertyChangedEvent(string deviceUID, string changedPropertyName, string? oldValue, string newValue, IDictionary<string, string>? additionalProperties = null)
+        public PropertyChangedEvent(string deviceUID, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties = null)
         {
             BuildEvent(deviceUID, changedPropertyName, oldValue, newValue, additionalProperties);
         }
 
-        public PropertyChangedEvent(string deviceUID, string changedPropertyName, bool oldValue, bool newValue, IDictionary<string, string>? additionalProperties = null)
+        public PropertyChangedEvent(string deviceUID, string changedPropertyName, bool oldValue, bool newValue, IDictionary<string, string> additionalProperties = null)
         {
             BuildEvent(deviceUID, changedPropertyName, oldValue.ToString(), newValue.ToString(), additionalProperties);
         }
 
-        private void BuildEvent(string deviceUID, string changedPropertyName, string? oldValue, string newValue, IDictionary<string, string>? additionalProperties)
+        private void BuildEvent(string deviceUID, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties)
         {
             Type = EventType.PropertyChanged;
             Uid = Guid.NewGuid().ToString();

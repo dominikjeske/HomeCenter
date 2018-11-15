@@ -172,21 +172,21 @@ namespace HomeCenter.Model.Core
             throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper uint value");
         }
 
-        public string AsString(string propertyName, string? defaultValue = null)
+        public string AsString(string propertyName, string defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
 
             return _properties[propertyName];
         }
 
-        public IList<string> AsList(string propertyName, IList<string>? defaultValue = null)
+        public IList<string> AsList(string propertyName, IList<string> defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
 
             return _properties[propertyName].Split(',').Select(x => x.Trim()).ToList();
         }
 
-        public byte[] AsByteArray(string propertyName, byte[]? defaultValue = null)
+        public byte[] AsByteArray(string propertyName, byte[] defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
 

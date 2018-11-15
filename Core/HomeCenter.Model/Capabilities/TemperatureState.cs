@@ -6,7 +6,7 @@ namespace HomeCenter.Model.Capabilities
     {
         public static string StateName { get; } = nameof(TemperatureState);
 
-        public TemperatureState(string? ReadWriteMode = default) : base(ReadWriteMode)
+        public TemperatureState(string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(TemperatureState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.TemperatureController;

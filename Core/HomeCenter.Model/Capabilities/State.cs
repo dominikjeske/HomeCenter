@@ -7,7 +7,7 @@ namespace HomeCenter.Model.Capabilities
 {
     public class State : BaseObject
     {
-        public State(string? ReadWriteMode = default)
+        public State(string ReadWriteMode = default)
         {
             if (ReadWriteMode == null) ReadWriteMode = Constants.ReadWriteMode.ReadWrite;
 
