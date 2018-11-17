@@ -35,7 +35,7 @@ namespace HomeCenter.Model.Core
 
         void Send(object message, PID destination);
 
-        void Send(object message, string uid);
+        void Send(object message, string uid, string address = null);
 
         SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
 

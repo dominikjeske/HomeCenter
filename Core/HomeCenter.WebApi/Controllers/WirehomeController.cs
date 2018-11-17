@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Messages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using HomeCenter.Model.Extensions;
 using Proto;
 
 namespace HomeCenter.WebApi.Controllers
@@ -20,8 +21,7 @@ namespace HomeCenter.WebApi.Controllers
         [HttpPost]
         public void Post([FromBody] ProtoCommand command)
         {
-            var address = new PID(_appSettings.Value.Address, command.Address);
-            _context.Send(address, command);
+            _context.Send(_appSettings.Value.Address, command.Address, command);
         }
     }
 }

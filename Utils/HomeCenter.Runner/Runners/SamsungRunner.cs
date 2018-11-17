@@ -5,7 +5,7 @@ namespace HomeCenter.Runner
 {
     public class SamsungRunner : Runner
     {
-        public SamsungRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff",  "Mute",  "InputSelect" })
+        public SamsungRunner(string uid, string address) : base(uid, address, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff",  "Mute",  "InputSelect" })
         {
         }
 

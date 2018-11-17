@@ -213,7 +213,7 @@ namespace HomeCenter.Model.Components
             return _tagCache.AsReadOnly();
         }
 
-        protected string? Handle(StateQuery command)
+        protected string Handle(StateQuery command)
         {
             var stateName = command.AsString(CommandProperties.StateName);
 

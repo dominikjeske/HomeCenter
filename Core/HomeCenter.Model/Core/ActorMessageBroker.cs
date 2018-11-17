@@ -94,11 +94,12 @@ namespace HomeCenter.Model.Core
             _actorFactory.Context.Send(destination, message);
         }
 
-        public void Send(object message, string uid)
+        public void Send(object message, string uid, string address = null)
         {
-            var pid = _actorFactory.GetActor(uid);
+            var pid = _actorFactory.GetActor(uid, address);
             _actorFactory.Context.Send(pid, message);
         }
+
 
         public Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
 

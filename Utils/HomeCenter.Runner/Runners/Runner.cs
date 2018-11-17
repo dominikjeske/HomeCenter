@@ -10,11 +10,13 @@ namespace HomeCenter.Runner
         private readonly string[] _tasks;
         protected Container Container;
         protected IActorMessageBroker MessageBroker;
+        protected readonly string _address;
 
-        internal Runner(string uid, string[] tasks)
+        internal Runner(string uid, string address, string[] tasks)
         {
             _tasks = tasks;
             Uid = uid;
+            _address = address;
         }
 
         public string Uid { get; }

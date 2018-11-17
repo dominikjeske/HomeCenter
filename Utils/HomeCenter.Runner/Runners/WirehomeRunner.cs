@@ -1,9 +1,4 @@
-﻿using HomeCenter.Model.Components;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Services.Configuration;
-using SimpleInjector;
+﻿using SimpleInjector;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,12 +9,9 @@ namespace HomeCenter.Runner
     {
         private readonly List<Runner> _runners = new List<Runner>();
 
-        public WirehomeRunner(List<Runner> runners) : base(nameof(WirehomeRunner), runners.Select(r => r.GetType().Name).ToArray())
+        public WirehomeRunner(List<Runner> runners, string address) : base(nameof(WirehomeRunner), address, runners.Select(r => r.GetType().Name).ToArray())
         {
             _runners = runners;
-
-
-
         }
 
         public async Task Initialize()

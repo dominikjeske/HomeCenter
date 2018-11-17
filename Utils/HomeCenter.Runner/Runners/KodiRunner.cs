@@ -5,7 +5,7 @@ namespace HomeCenter.Runner
 {
     public class KodiRunner : Runner
     {
-        public KodiRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "Play", "Stop" })
+        public KodiRunner(string uid, string address) : base(uid, address, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "Play", "Stop" })
         {
         }
 
