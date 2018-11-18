@@ -19,11 +19,11 @@ namespace HomeCenter.Services.Profiles
 
             CreateMap<ComponentDTO, ComponentProxy>().ConstructUsingServiceLocator();
             CreateMap<AdapterReferenceDTO, AdapterReference>();
-            CreateMap<TriggerDTO, Trigger>().ForMember(s => s.Commands, d => d.ResolveUsing<CommandResolver>()).ConstructUsingServiceLocator();
+            CreateMap<TriggerDTO, Trigger>().ForMember(s => s.Commands, d => d.MapFrom<CommandResolver>()).ConstructUsingServiceLocator();
             CreateMap<EventDTO, Event>();
             CreateMap<AreaDTO, Area>();
             CreateMap<ScheduleDTO, Schedule>();
-            CreateMap<ConditionContainerDTO, ConditionContainer>().ForMember(s => s.Conditions, d => d.ResolveUsing<ConditionResolver>()).ConstructUsingServiceLocator();
+            CreateMap<ConditionContainerDTO, ConditionContainer>().ForMember(s => s.Conditions, d => d.MapFrom<ConditionResolver>()).ConstructUsingServiceLocator();
 
             var commandTypes = AssemblyHelper.GetAllTypes<Command>();
             foreach (var commandType in commandTypes)
