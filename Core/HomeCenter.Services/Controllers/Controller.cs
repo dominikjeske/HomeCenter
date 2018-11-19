@@ -3,7 +3,9 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration;
+using HomeCenter.Utils;
 using Proto.Remote;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Controllers
@@ -37,8 +39,12 @@ namespace HomeCenter.Services.Controllers
         {
             await RunScheduler().ConfigureAwait(false);
 
-            Remote.Start(_controllerOptions.RemoteActorAddress ?? "127.0.0.1", _controllerOptions.RemoteActorPort ?? 8000);
+            var bindingAddress = _controllerOptions.RemoteActorAddress ?? GetAddressBinding();
+
+            Remote.Start(bindingAddress, _controllerOptions.RemoteActorPort ?? 8000);
         }
+
+        private string GetAddressBinding() =>  NetworkHelper.GetNetworkAddresses().Select(a => a?.ToString()).OrderByDescending(x => x).FirstOrDefault() ?? "127.0.0.1";
 
         private Task RunScheduler() => Scheduler.Start(_disposables.Token);
     }
