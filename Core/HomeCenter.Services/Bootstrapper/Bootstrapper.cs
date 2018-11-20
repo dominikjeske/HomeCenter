@@ -138,5 +138,23 @@ namespace HomeCenter.Services.Bootstrapper
         protected abstract void RegisterControllerOptions();
 
         public void Dispose() => _container.Dispose();
+
+
+        protected void RegisterUnhandledExceptions()
+        {
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            
+        }
     }
 }

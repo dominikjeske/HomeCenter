@@ -50,26 +50,35 @@ namespace HomeCenter.Services.Configuration
 
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
         {
-            var configPath = _resourceLocatorService.GetConfigurationPath();
+            try
+            {
+                var configPath = _resourceLocatorService.GetConfigurationPath();
 
-            var rawConfig = File.ReadAllText(configPath);
+                var rawConfig = File.ReadAllText(configPath);
 
-            var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
+                var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
 
-            await LoadCalendars().ConfigureAwait(false);
+                await LoadCalendars().ConfigureAwait(false);
 
-            LoadDynamicAdapters(startFromConfigCommand.AdapterMode);
+                LoadDynamicAdapters(startFromConfigCommand.AdapterMode);
 
-            CheckForDuplicateUid(result);
+                CheckForDuplicateUid(result);
 
-            var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
+                var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
 
-            var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
-            var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
-            var components = MapComponents(result);
-            var areas = MapAreas(result, components);
+                var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
+                var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
+                var components = MapComponents(result);
+                var areas = MapAreas(result, components);
 
-            MessageBroker.Send(SystemStartedEvent.Default, "Controller");
+                MessageBroker.Send(SystemStartedEvent.Default, "Controller");
+            }
+            catch (Exception ee)
+            {
+                _logger.LogError(ee, "error");
+                throw;
+            }
+           
         }
 
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
@@ -174,19 +183,34 @@ namespace HomeCenter.Services.Configuration
             types[typeof(AdapterDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>(true));
             types[typeof(ServiceDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Service>(true));
 
-            Mapper.Initialize(p =>
-            {
-                foreach (var type in types.Keys)
-                {
-                    foreach (var actorType in types[type])
-                    {
-                        p.CreateMap(type, actorType).ConstructUsingServiceLocator();
-                    }
-                }
+            _logger.LogInformation("before init");
 
-                p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
-                p.ConstructServicesUsing(_serviceProvider.GetService);
-            });
+            //Mapper.Initialize(p =>
+            //{
+            //    try
+            //    {
+            //        _logger.LogInformation("Start init");
+            //        foreach (var type in types.Keys)
+            //        {
+            //            foreach (var actorType in types[type])
+            //            {
+            //                _logger.LogInformation($"Map {type.Name} to {type.Name}");
+            //                p.CreateMap(type, actorType).ConstructUsingServiceLocator();
+            //            }
+            //        }
+            //        _logger.LogInformation("Start finishing");
+
+            //        p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
+            //        p.ConstructServicesUsing(_serviceProvider.GetService);
+
+            //        _logger.LogInformation("end");
+            //    }
+            //    catch (Exception ww)
+            //    {
+            //        _logger.LogError(ww, "error");
+            //    }
+
+            //});
             return types;
         }
 

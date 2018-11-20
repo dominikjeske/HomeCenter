@@ -1,4 +1,5 @@
 ﻿using SimpleInjector;
+using System;
 using Windows.ApplicationModel.Background;
 
 namespace HomeCenter.HomeController
@@ -17,7 +18,7 @@ namespace HomeCenter.HomeController
                 _bootstrapper = new RaspberryBootstrapper(container);
                 await _bootstrapper.BuildController().ConfigureAwait(false);
             }
-            catch (System.Exception)
+            catch (Exception e)
             {
                 deferral.Complete();
             }

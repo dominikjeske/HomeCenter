@@ -10,6 +10,7 @@ namespace HomeCenter.HomeController
     {
         internal RaspberryBootstrapper(Container container) : base(container)
         {
+            _container.Options.AllowOverridingRegistrations = true;
         }
 
         protected override void RegisterNativeServices()
