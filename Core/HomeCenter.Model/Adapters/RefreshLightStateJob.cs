@@ -19,9 +19,19 @@ namespace HomeCenter.Model.Adapters
 
         public Task Execute(IJobExecutionContext context)
         {
-            var adapter = context.GetDataContext<PID>();
-            _actorMessageBroker.Send(RefreshLightCommand.Default, adapter);
-            return Task.CompletedTask;
+            try
+            {
+                var adapter = context.GetDataContext<PID>();
+                _actorMessageBroker.Send(RefreshLightCommand.Default, adapter);
+                return Task.CompletedTask;
+            }
+            catch (System.Exception e)
+            {
+
+                throw;
+            }
+
+
         }
     }
 }

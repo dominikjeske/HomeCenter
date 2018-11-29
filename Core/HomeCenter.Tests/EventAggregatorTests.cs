@@ -286,72 +286,72 @@ namespace HomeCenter.Tests
             Assert.AreEqual(result.Count, 0);
         }
 
-        [TestMethod]
-        public void QueryWithResults_WhenSubscribed_ShouldReturnProperResult()
-        {
-            var aggregator = InitAggregator();
-            var expected = new List<string> { "Test", "Test2" };
+        //[TestMethod]
+        //public void QueryWithResults_WhenSubscribed_ShouldReturnProperResult()
+        //{
+        //    var aggregator = InitAggregator();
+        //    var expected = new List<string> { "Test", "Test2" };
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(10).ConfigureAwait(false);
-                return expected[0];
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(10).ConfigureAwait(false);
+        //        return expected[0];
+        //    });
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(30).ConfigureAwait(false);
-                return expected[1];
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(30).ConfigureAwait(false);
+        //        return expected[1];
+        //    });
 
-            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage());
+        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage());
 
-            subscription.AssertEqual(expected.ToObservable());
-        }
+        //    subscription.AssertEqual(expected.ToObservable());
+        //}
 
-        [TestMethod]
-        public void QueryWithResults_WhenLongRun_ShouldTimeOut()
-        {
-            var aggregator = InitAggregator();
-            var expected = new List<string> { "Test", "Test2" };
+        //[TestMethod]
+        //public void QueryWithResults_WhenLongRun_ShouldTimeOut()
+        //{
+        //    var aggregator = InitAggregator();
+        //    var expected = new List<string> { "Test", "Test2" };
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-                return expected[1];
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(100).ConfigureAwait(false);
+        //        return expected[1];
+        //    });
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-                return expected[0];
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(100).ConfigureAwait(false);
+        //        return expected[0];
+        //    });
 
-            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), behaviors: new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(10)));
+        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), behaviors: new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(10)));
 
-            AggregateExceptionHelper.AssertInnerException<TimeoutException>(subscription);
-        }
+        //    AggregateExceptionHelper.AssertInnerException<TimeoutException>(subscription);
+        //}
 
-        [TestMethod]
-        public void QueryWithResults_WhenCanceled_ShouldThrowOperationCanceledException()
-        {
-            var aggregator = InitAggregator();
-            var expected = new List<string> { "Test", "Test2" };
+        //[TestMethod]
+        //public void QueryWithResults_WhenCanceled_ShouldThrowOperationCanceledException()
+        //{
+        //    var aggregator = InitAggregator();
+        //    var expected = new List<string> { "Test", "Test2" };
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async message =>
-            {
-                message.CancellationToken.ThrowIfCancellationRequested();
-                await Task.Delay(100).ConfigureAwait(false);
-                return expected[1];
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async message =>
+        //    {
+        //        message.CancellationToken.ThrowIfCancellationRequested();
+        //        await Task.Delay(100).ConfigureAwait(false);
+        //        return expected[1];
+        //    });
 
-            var ts = new CancellationTokenSource();
-            ts.Cancel();
+        //    var ts = new CancellationTokenSource();
+        //    ts.Cancel();
 
-            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token);
+        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token);
 
-            AggregateExceptionHelper.AssertInnerException<TaskCanceledException>(subscription);
-        }
+        //    AggregateExceptionHelper.AssertInnerException<TaskCanceledException>(subscription);
+        //}
 
         [TestMethod]
         public async Task Publish_WhenSubscribed_ShouldInvokeSubscriber()
@@ -408,27 +408,27 @@ namespace HomeCenter.Tests
             Assert.AreEqual(true, isWorking);
         }
 
-        [TestMethod]
-        public async Task Observe_ShouldWorkUntilDispose()
-        {
-            var aggregator = InitAggregator();
-            int counter = 0;
+        //[TestMethod]
+        //public async Task Observe_ShouldWorkUntilDispose()
+        //{
+        //    var aggregator = InitAggregator();
+        //    int counter = 0;
 
-            var messages = aggregator.Observe<TestMessage>();
+        //    var messages = aggregator.Observe<TestMessage>();
 
-            var subscription = messages.Subscribe(x =>
-            {
-                counter++;
-            });
+        //    var subscription = messages.Subscribe(x =>
+        //    {
+        //        counter++;
+        //    });
 
-            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+        //    await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
 
-            subscription.Dispose();
+        //    subscription.Dispose();
 
-            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+        //    await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
 
-            Assert.AreEqual(1, counter);
-        }
+        //    Assert.AreEqual(1, counter);
+        //}
 
         //[TestMethod]
         //public async Task RegisterHandlers_ShouldReristerHandlersFromContainer()

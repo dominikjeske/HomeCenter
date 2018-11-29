@@ -11,6 +11,9 @@ namespace HomeCenter.Runner.Remote
     {
         private static async Task Main(string[] args)
         {
+            //string address = "192.168.0.159:8000";
+            string address = "127.0.0.1:8000";
+
             try
             {
                 Console.WriteLine("Start client");
@@ -25,7 +28,7 @@ namespace HomeCenter.Runner.Remote
 
                 Proto.Remote.Remote.Start("127.0.0.1", 0);
 
-                var server = new PID("127.0.0.1:8000", "DenonComponent");
+                var server = new PID(address, "DenonComponent");
                 var context = new RootContext();
                 context.Send(server, new ProtoCommand() { Type = "VolumeUpCommand" });
 
@@ -33,7 +36,7 @@ namespace HomeCenter.Runner.Remote
             }
             catch (Exception ee)
             {
-                throw;
+                Console.WriteLine(ee.ToString());
             }
         }
     }

@@ -7,6 +7,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace HomeCenter.Adapters.Denon
     [ProxyCodeGenerator]
     public class DenonAdapter : Adapter
     {
-        public const int DEFAULT_POOL_INTERVAL = 1000;
+        public const int DEFAULT_POOL_INTERVAL = 2000;
         public const int DEFAULT_VOLUME_CHANGE_FACTOR = 10;
 
         private bool _powerState;
@@ -80,8 +81,7 @@ namespace HomeCenter.Adapters.Denon
             _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
             _mute = await UpdateState(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
-            
+            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);            
         }
 
         protected async Task Handle(TurnOnCommand message)

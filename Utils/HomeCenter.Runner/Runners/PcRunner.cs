@@ -5,7 +5,7 @@ namespace HomeCenter.Runner
 {
     public class PcRunner : Runner
     {
-        public PcRunner(string uid, string address) : base(uid, address, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSelect" })
+        public PcRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSelect" })
         {
         }
 

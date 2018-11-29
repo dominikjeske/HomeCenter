@@ -1,5 +1,6 @@
 ﻿using SimpleInjector;
 using System;
+using System.Net.Http;
 using Windows.ApplicationModel.Background;
 
 namespace HomeCenter.HomeController
@@ -20,12 +21,14 @@ namespace HomeCenter.HomeController
             }
             catch (Exception e)
             {
+                _bootstrapper.LogException(e.ToString());
                 deferral.Complete();
             }
         }
 
         private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
+            _bootstrapper.LogException($"Application was canceled because of '{reason.ToString()}'");
             _bootstrapper.Dispose();
         }
     }

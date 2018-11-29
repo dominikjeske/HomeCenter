@@ -31,16 +31,32 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <Capability Name="codeGeneration" />
     <Capability Name="internetClientServer" />
+    <Capability Name="privateNetworkClientServer" />
+    <Capability Name="allJoyn" />
+    <Capability Name="codeGeneration" />
+    <uap:Capability Name="appointments" />
     <uap3:Capability Name="backgroundMediaPlayback" />
-    <iot:Capability Name="lowLevelDevices" />
-    <uap:Capability Name="userAccountInformation" />
-    <iot:Capability Name="systemManagement" />
+    <uap:Capability Name="blockedChatMessages" />
+    <uap:Capability Name="chat" />
+    <uap:Capability Name="contacts" />
+    <uap:Capability Name="enterpriseAuthentication" />
+    <uap:Capability Name="musicLibrary" />
+    <uap:Capability Name="objects3D" />
+    <uap:Capability Name="phoneCall" />
+    <uap:Capability Name="picturesLibrary" />
     <uap3:Capability Name="remoteSystem" />
-    <DeviceCapability Name="lowLevel" />
+    <uap:Capability Name="removableStorage" />
+    <uap:Capability Name="videosLibrary" />
+    <uap:Capability Name="userAccountInformation" />
+    <uap:Capability Name="sharedUserCertificates" />
+    <uap:Capability Name="voipCall" />
+    <uap3:Capability Name="userNotificationListener" />
+    <DeviceCapability Name="bluetooth" />
     <DeviceCapability Name="microphone" />
+    <DeviceCapability Name="location" />
     <DeviceCapability Name="proximity" />
+    <DeviceCapability Name="webcam" />
     <DeviceCapability Name="serialcommunication">
       <Device Id="any">
         <Function Type="name:serialPort" />

@@ -2,6 +2,7 @@
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Utils.ConsoleExtentions;
 using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace HomeCenter.Runner
 {
     public class DenonRunner : Runner
     {
-        public DenonRunner(string uid, string address) : base(uid, address, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" })
+        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" })
         {
         }
 

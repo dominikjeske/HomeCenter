@@ -12,10 +12,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="Proto.Router" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,17 +21,16 @@
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Proto.Mailbox">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Router">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

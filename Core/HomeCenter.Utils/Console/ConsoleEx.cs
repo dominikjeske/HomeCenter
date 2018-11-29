@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Utils.ConsoleExtentions
 {
     public static class ConsoleEx
     {

@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    public class WirehomeRunner : Runner
+
+    public class RemoteWirehomeRunner : Runner
     {
         private readonly List<Runner> _runners = new List<Runner>();
 
-        public WirehomeRunner(List<Runner> runners) : base(nameof(WirehomeRunner), runners.Select(r => r.GetType().Name).ToArray())
+        public RemoteWirehomeRunner(List<Runner> runners) : base(nameof(WirehomeRunner), runners.Select(r => r.GetType().Name).ToArray())
         {
             _runners = runners;
         }
@@ -17,7 +18,7 @@ namespace HomeCenter.Runner
         public async Task Initialize()
         {
             var container = new Container();
-            var bootstrapper = new WirehomeBootstrapper(container, $@"..\..\..\..\..\Configurations\componentConfiguration.json");
+            var bootstrapper = new WirehomeBootstrapper(container, $"componentConfiguration.json");
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
 
             foreach (var runner in _runners)
@@ -32,6 +33,5 @@ namespace HomeCenter.Runner
         {
             return _runners[taskId].Run();
         }
-     
     }
 }

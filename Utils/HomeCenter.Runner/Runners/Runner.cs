@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Model.Core;
+using HomeCenter.Utils.ConsoleExtentions;
 using SimpleInjector;
 using System;
 using System.Threading.Tasks;
@@ -10,13 +11,11 @@ namespace HomeCenter.Runner
         private readonly string[] _tasks;
         protected Container Container;
         protected IActorMessageBroker MessageBroker;
-        protected readonly string _address;
 
-        internal Runner(string uid, string address, string[] tasks)
+        internal Runner(string uid, string[] tasks)
         {
             _tasks = tasks;
             Uid = uid;
-            _address = address;
         }
 
         public string Uid { get; }

@@ -12,13 +12,13 @@ namespace HomeCenter.Runner
         {
             var configuration = GetConfiguration();
 
-            int programNumber = 1;
+            int programNumber = 0;
             string input = "";
             string remote = configuration.GetValue<string>("Address");
 
             Console.WriteLine("HomeCenter TestRunner:");
-            Console.WriteLine("1. Full controller configuration");
-            Console.WriteLine("2. Full controller configuration (REMOTE)");
+            Console.WriteLine("1. Full controller configuration (REMOTE)");
+            Console.WriteLine("2. Full controller configuration (LOCAL)");
             Console.WriteLine("3. ProtoCluster Playground");
             Console.WriteLine("4. Code generation");
 
@@ -33,12 +33,13 @@ namespace HomeCenter.Runner
 
             switch (programNumber)
             {
+
                 case 1:
-                    await StartController(null).ConfigureAwait(false);
+                    await StartRemoteController().ConfigureAwait(false);
                     break;
 
                 case 2:
-                    await StartController(remote).ConfigureAwait(false);
+                    await StartController().ConfigureAwait(false);
                     break;
 
                 case 3:
@@ -63,18 +64,34 @@ namespace HomeCenter.Runner
             return configuration;
         }
 
-        private static async Task StartController(string address)
+        private static async Task StartController()
         {
             var runners = new Runner[]
             {
-                new DenonRunner("DenonComponent", address),
-                new KodiRunner("KodiComponent", address),
-                new PcRunner("PcComponent", address),
-                new SamsungRunner("KodiComponent", address),
-                new SonyRunner("SonyComponent", address)
+                new DenonRunner("DenonComponent"),
+                new KodiRunner("KodiComponent"),
+                new PcRunner("PcComponent"),
+                new SamsungRunner("KodiComponent"),
+                new SonyRunner("SonyComponent")
             };
 
-            var runner = new WirehomeRunner(runners.ToList(), address);
+            var runner = new WirehomeRunner(runners.ToList());
+            await runner.Initialize().ConfigureAwait(false);
+            await runner.Run().ConfigureAwait(false);
+        }
+
+        private static async Task StartRemoteController()
+        {
+            var runners = new Runner[]
+            {
+                new DenonRunner("DenonComponent"),
+                new KodiRunner("KodiComponent"),
+                new PcRunner("PcComponent"),
+                new SamsungRunner("KodiComponent"),
+                new SonyRunner("SonyComponent")
+            };
+
+            var runner = new RemoteWirehomeRunner(runners.ToList());
             await runner.Initialize().ConfigureAwait(false);
             await runner.Run().ConfigureAwait(false);
         }

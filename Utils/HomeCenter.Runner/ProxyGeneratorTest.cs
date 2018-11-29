@@ -2,6 +2,7 @@
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Utils.ConsoleExtentions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

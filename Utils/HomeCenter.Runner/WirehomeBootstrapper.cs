@@ -4,6 +4,7 @@ using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Logging;
+using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Proto;
@@ -30,7 +31,7 @@ namespace HomeCenter.Runner
 
             var resourceLocator = Mock.Of<IResourceLocatorService>();
             Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(@"..\..\..\..\..\Actors\ActorsContainer\Adapters");
-            Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns($@"..\..\..\..\..\Configurations\{_configuration}.json");
+            Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(_configuration);
             _container.RegisterInstance(resourceLocator);
         }
 
@@ -54,19 +55,20 @@ namespace HomeCenter.Runner
 
         protected override void RegisterControllerOptions()
         {
-            _container.RegisterInstance<ControllerOptions>(new ControllerOptions
+            _container.RegisterInstance(new ControllerOptions
             {
                 AdapterMode = "Embedded",
                 RemoteActorPort = 8000,
+                RemoteActorAddress = "127.0.0.1"
             });
         }
 
         protected override void RegisterLogging()
         {
             var loggerFactory = new LoggerFactory()
-                                  .AddDebug(LogLevel.Information) //TODO configure
-                                  .AddEventSourceLogger();
-            loggerFactory.AddProvider(new CustomLoggerProvider());
+                                  .AddDebug(LogLevel.Information);
+
+            loggerFactory.AddProvider(new ConsoleLogProvider());
 
             Log.SetLoggerFactory(loggerFactory);
 

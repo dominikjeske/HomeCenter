@@ -5,6 +5,7 @@
     <Authors>HomeCenter</Authors>
     <Company>HomeCenter</Company>
     <Product>HomeCenter</Product>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,14 +20,10 @@
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="1.13.0" />
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="Proto.Remote" Version="0.2.0" />
-    <PackageReference Include="Proto.Router" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="SimpleInjector" Version="4.4.0" />
-    <PackageReference Include="System.Reactive" Version="4.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,17 +32,22 @@
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Proto.Mailbox">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Router">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Mailbox">
+      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Router">
+      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

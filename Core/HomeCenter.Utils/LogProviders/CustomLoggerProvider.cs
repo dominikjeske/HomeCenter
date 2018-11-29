@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HomeCenter.Utils.ConsoleExtentions;
+using Microsoft.Extensions.Logging;
 using System;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Utils.LogProviders
 {
-    public class CustomLoggerProvider : ILoggerProvider
+    public class ConsoleLogProvider : ILoggerProvider
     {
         public void Dispose()
         {

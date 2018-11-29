@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <RuntimeFrameworkVersion>2.1.6</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +16,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0-preview3-35497" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Moq" Version="4.10.0" />
-    <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="Proto.Remote" Version="0.2.0" />
-    <PackageReference Include="Proto.Router" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,16 +30,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
+    </Reference>
     <Reference Include="Proto.Mailbox">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Mailbox.dll</HintPath>
+      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Remote">
+      <HintPath>..\..\Dependencies\Proto.Remote.dll</HintPath>
     </Reference>
     <Reference Include="Proto.Router">
-      <HintPath>..\..\ProtoActor\src\Proto.Router\bin\Debug\netstandard2.0\Proto.Router.dll</HintPath>
+      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
     </Reference>
   </ItemGroup>
 
+
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="grpc_csharp_ext.x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -5,7 +5,7 @@ using HomeCenter.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
+//using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,8 +13,10 @@ namespace HomeCenter.Broker
 {
     public sealed class EventAggregator : IEventAggregator, IDisposable
     {
+        private const int DEFAULT_TIMEOUT = 20000;
+
         private readonly Subscriptions _subscriptions = new Subscriptions();
-        public Func<BehaviorChain> DefaultBehavior { get; set; } = () => new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(2000));
+        public Func<BehaviorChain> DefaultBehavior { get; set; } = () => new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(DEFAULT_TIMEOUT));
 
         public List<BaseCommandHandler> GetSubscriptors<T>(RoutingFilter filter = null)
         {
@@ -64,31 +66,31 @@ namespace HomeCenter.Broker
             return result;
         }
 
-        public IObservable<R> QueryWithResults<T, R>
-        (
-            T message,
-            RoutingFilter filter = null,
-            CancellationToken cancellationToken = default,
-            BehaviorChain behaviors = null
-        ) where R : class
-        {
-            var localSubscriptions = GetSubscriptors<T>(filter).OfType<IAsyncCommandHandler>();
+        //public IObservable<R> QueryWithResults<T, R>
+        //(
+        //    T message,
+        //    RoutingFilter filter = null,
+        //    CancellationToken cancellationToken = default,
+        //    BehaviorChain behaviors = null
+        //) where R : class
+        //{
+        //    var localSubscriptions = GetSubscriptors<T>(filter).OfType<IAsyncCommandHandler>();
 
-            if (!localSubscriptions.Any()) return Observable.Empty<R>();
+        //    if (!localSubscriptions.Any()) return Observable.Empty<R>();
 
-            var messageEnvelope = new MessageEnvelope<T>(message, cancellationToken, typeof(R));
+        //    var messageEnvelope = new MessageEnvelope<T>(message, cancellationToken, typeof(R));
 
-            return localSubscriptions.Select
-                                      (
-                                          x =>
-                                          {
-                                              var invokeChain = BuildBehaviorChain(behaviors, x);
-                                              return invokeChain.HandleAsync<T, R>(messageEnvelope);
-                                          }
-                                      )
-                                     .ToObservable()
-                                     .SelectMany(x => x);
-        }
+        //    return localSubscriptions.Select
+        //                              (
+        //                                  x =>
+        //                                  {
+        //                                      var invokeChain = BuildBehaviorChain(behaviors, x);
+        //                                      return invokeChain.HandleAsync<T, R>(messageEnvelope);
+        //                                  }
+        //                              )
+        //                             .ToObservable()
+        //                             .SelectMany(x => x);
+        //}
 
         public async Task QueryWithRepublishResult<T, R>
         (
@@ -162,10 +164,10 @@ namespace HomeCenter.Broker
             return new SubscriptionToken(_subscriptions.Register(messageType, actionFactory, filter), this);
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>()
-        {
-            return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext));
-        }
+        //public IObservable<IMessageEnvelope<T>> Observe<T>()
+        //{
+        //    return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext));
+        //}
 
         public void UnSubscribe(Guid token)
         {

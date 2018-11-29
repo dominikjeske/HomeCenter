@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
 using System.Net.Http;
@@ -13,6 +14,32 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class HttpMessagingService : Service
     {
+
+        //public async Task Handle(TurnOnCommand command)
+        //{
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var httpResponse = await httpClient.GetAsync("http://192.168.0.100/goform/formMainZone_MainZoneXmlStatusLite.xml").ConfigureAwait(false);
+        //        httpResponse.EnsureSuccessStatusCode();
+
+        //    }
+
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var httpResponse = await httpClient.GetAsync("http://192.168.0.100/goform/formMainZone_MainZoneXmlStatusLite.xml").ConfigureAwait(false);
+        //        httpResponse.EnsureSuccessStatusCode();
+
+        //    }
+
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var httpResponse = await httpClient.GetAsync("http://192.168.0.100/goform/formMainZone_MainZoneXmlStatusLite.xml").ConfigureAwait(false);
+        //        httpResponse.EnsureSuccessStatusCode();
+
+        //    }
+        //}
+
+
         [Subscibe]
         protected async Task<object> SendGetRequest(HttpGetQuery httpMessage)
         {

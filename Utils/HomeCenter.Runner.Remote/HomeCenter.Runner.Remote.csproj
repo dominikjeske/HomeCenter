@@ -1,22 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <RuntimeFrameworkVersion>2.1.6</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Polly" Version="6.1.1" />
-    <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="Proto.Remote" Version="0.2.0" />
-    <PackageReference Include="Proto.Router" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\HomeCenter.Messages\HomeCenter.Messages.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Proto.Actor">
+      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Mailbox">
+      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Remote">
+      <HintPath>..\..\Dependencies\Proto.Remote.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Router">
+      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="grpc_csharp_ext.x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
