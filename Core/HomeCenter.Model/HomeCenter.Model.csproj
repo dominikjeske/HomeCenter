@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="SimpleInjector" Version="4.4.0" />
+    <PackageReference Include="SimpleInjector" Version="4.4.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +39,9 @@
 
 
   <ItemGroup>
+    <Reference Include="Grpc.Core">
+      <HintPath>..\..\Dependencies\Grpc.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Proto.Actor">
       <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
     </Reference>

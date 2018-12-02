@@ -58,8 +58,8 @@ namespace HomeCenter.Runner
             _container.RegisterInstance(new ControllerOptions
             {
                 AdapterMode = "Embedded",
-                RemoteActorPort = 8000,
-                RemoteActorAddress = "127.0.0.1"
+                RemoteActorPort = 8000
+               // RemoteActorAddress = "127.0.0.1"
             });
         }
 

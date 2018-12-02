@@ -23,14 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
     <ProjectReference Include="..\HomeCenter.Services\HomeCenter.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 

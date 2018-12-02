@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="SimpleInjector" Version="4.4.0" />
+    <PackageReference Include="SimpleInjector" Version="4.4.2" />
     <PackageReference Include="System.Reflection.DispatchProxy" Version="4.5.1" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
@@ -40,11 +40,20 @@
 
  
   <ItemGroup>
+    <Reference Include="Grpc.Core">
+      <HintPath>..\..\Dependencies\Grpc.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Proto.Actor">
       <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
     </Reference>
+    <Reference Include="Proto.Mailbox">
+      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
+    </Reference>
     <Reference Include="Proto.Remote">
       <HintPath>..\..\Dependencies\Proto.Remote.dll</HintPath>
+    </Reference>
+    <Reference Include="Proto.Router">
+      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
     </Reference>
   </ItemGroup>
 

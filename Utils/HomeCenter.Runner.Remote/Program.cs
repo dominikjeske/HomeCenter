@@ -11,8 +11,8 @@ namespace HomeCenter.Runner.Remote
     {
         private static async Task Main(string[] args)
         {
-            //string address = "192.168.0.159:8000";
-            string address = "127.0.0.1:8000";
+            string address = "192.168.0.108:8000";
+            //string address = "127.0.0.1:8000";
 
             try
             {
@@ -30,7 +30,7 @@ namespace HomeCenter.Runner.Remote
 
                 var server = new PID(address, "DenonComponent");
                 var context = new RootContext();
-                context.Send(server, new ProtoCommand() { Type = "VolumeUpCommand" });
+                context.Send(server, new ProtoCommand() { Type = "TurnOnCommand" });
 
                 Console.ReadLine();
             }

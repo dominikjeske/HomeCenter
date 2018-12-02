@@ -51,7 +51,12 @@ namespace HomeCenter.Services.Controllers
 
             var bindingAddress = _controllerOptions.RemoteActorAddress ?? GetAddressBinding();
 
-            Remote.Start(bindingAddress, _controllerOptions.RemoteActorPort ?? 8000);
+            //Remote.Start(bindingAddress, _controllerOptions.RemoteActorPort ?? 8000);
+        }
+
+        protected Task Handle(TurnOnCommand systemStartedEvent)
+        {
+            return Task.CompletedTask;
         }
 
         private string GetAddressBinding() => NetworkHelper.GetNetworkAddresses().Select(a => a?.ToString()).OrderByDescending(x => x).FirstOrDefault() ?? "127.0.0.1";

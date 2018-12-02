@@ -16,16 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Remote">
-      <HintPath>..\..\Dependencies\Proto.Remote.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
