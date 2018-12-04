@@ -149,7 +149,7 @@
       <Version>6.2.2</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.10.0</Version>
+      <Version>4.10.1</Version>
     </PackageReference>
     <PackageReference Include="SimpleInjector">
       <Version>4.4.2</Version>

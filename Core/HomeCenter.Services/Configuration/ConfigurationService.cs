@@ -37,7 +37,7 @@ namespace HomeCenter.Services.Configuration
         private readonly IServiceProvider _serviceProvider;
         private readonly IRoslynCompilerService _roslynCompilerService;
 
-        public ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService,
+        protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService,
                                     IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -51,6 +51,11 @@ namespace HomeCenter.Services.Configuration
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
         {
             var configPath = _resourceLocatorService.GetConfigurationPath();
+
+            if(!File.Exists(configPath))
+            {
+                throw new ConfigurationException($"Configuration file not found at {configPath}");
+            }
 
             var rawConfig = File.ReadAllText(configPath);
 
