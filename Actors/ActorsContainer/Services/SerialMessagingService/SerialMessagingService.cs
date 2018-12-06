@@ -18,7 +18,6 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public abstract class SerialMessagingService : Service
     {
-        private IBinaryReader _dataReader;
         private readonly ISerialDevice _serialDevice;
         private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
@@ -32,11 +31,10 @@ namespace HomeCenter.Services.Networking
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            await _serialDevice.Init().ConfigureAwait(false);
-            _dataReader = _serialDevice.GetBinaryReader();
-            _disposeContainer.Add(_dataReader, _serialDevice);
+            _serialDevice.Init();
+            _disposeContainer.Add(_serialDevice);
 
-            var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
+            //var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
         [Subscibe]
@@ -52,76 +50,76 @@ namespace HomeCenter.Services.Networking
             return Task.CompletedTask;
         }
 
-        private async Task Listen()
-        {
-            while (true)
-            {
-                try
-                {
-                    await ReadAsync(_disposeContainer.Token).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Exception while listening for Serial device");
-                }
-            }
-        }
+        //private async Task Listen()
+        //{
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            await ReadAsync(_disposeContainer.Token).ConfigureAwait(false);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Logger.LogError(ex, "Exception while listening for Serial device");
+        //        }
+        //    }
+        //}
 
-        private async Task ReadAsync(CancellationToken cancellationToken)
-        {
-            const uint messageHeaderSize = 2;
-            cancellationToken.ThrowIfCancellationRequested();
+        //private async Task ReadAsync(CancellationToken cancellationToken)
+        //{
+        //    const uint messageHeaderSize = 2;
+        //    cancellationToken.ThrowIfCancellationRequested();
 
-            using (var childCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-            {
-                var headerBytesRead = await _dataReader.LoadAsync(messageHeaderSize, childCancellationTokenSource.Token).ConfigureAwait(false);
-                if (headerBytesRead > 0)
-                {
-                    var messageBodySize = _dataReader.ReadByte();
-                    var messageType = _dataReader.ReadByte();
-                    var bodyBytesReaded = await _dataReader.LoadAsync(messageBodySize, childCancellationTokenSource.Token).ConfigureAwait(false);
+        //    using (var childCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        //    {
+        //        var headerBytesRead = await _dataReader.LoadAsync(messageHeaderSize, childCancellationTokenSource.Token).ConfigureAwait(false);
+        //        if (headerBytesRead > 0)
+        //        {
+        //            var messageBodySize = _dataReader.ReadByte();
+        //            var messageType = _dataReader.ReadByte();
+        //            var bodyBytesReaded = await _dataReader.LoadAsync(messageBodySize, childCancellationTokenSource.Token).ConfigureAwait(false);
 
-                    if (bodyBytesReaded > 0)
-                    {
-                        if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
-                        {
-                            throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
-                        }
+        //            if (bodyBytesReaded > 0)
+        //            {
+        //                if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
+        //                {
+        //                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+        //                }
 
-                        if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
-                        var result = ReadData(registration.ResultFormat);
+        //                if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
+        //                var result = ReadData(registration.ResultFormat);
 
-                        MessageBroker.Send(result, registration.Actor);
-                    }
-                }
-            }
-        }
+        //                MessageBroker.Send(result, registration.Actor);
+        //            }
+        //        }
+        //    }
+        //}
 
-        private SerialResultEvent ReadData(Format[] registration)
-        {
-            var result = new SerialResultEvent();
+    //    private SerialResultEvent ReadData(Format[] registration)
+    //    {
+    //        var result = new SerialResultEvent();
 
-            foreach (var format in registration.OrderBy(l => l.Lp))
-            {
-                if (format.ValueType == typeof(byte))
-                {
-                    result.SetProperty(format.ValueName, _dataReader.ReadByte());
-                }
-                else if (format.ValueType == typeof(uint))
-                {
-                    result.SetProperty(format.ValueName, _dataReader.ReadUInt32());
-                }
-                else if (format.ValueType == typeof(float))
-                {
-                    result.SetProperty(format.ValueName, _dataReader.ReadSingle());
-                }
-                else
-                {
-                    throw new UnsupportedResultException($"Result of type {format.ValueType} is not supported");
-                }
-            }
+    //        foreach (var format in registration.OrderBy(l => l.Lp))
+    //        {
+    //            if (format.ValueType == typeof(byte))
+    //            {
+    //                result.SetProperty(format.ValueName, _dataReader.ReadByte());
+    //            }
+    //            else if (format.ValueType == typeof(uint))
+    //            {
+    //                result.SetProperty(format.ValueName, _dataReader.ReadUInt32());
+    //            }
+    //            else if (format.ValueType == typeof(float))
+    //            {
+    //                result.SetProperty(format.ValueName, _dataReader.ReadSingle());
+    //            }
+    //            else
+    //            {
+    //                throw new UnsupportedResultException($"Result of type {format.ValueType} is not supported");
+    //            }
+    //        }
 
-            return result;
-        }
+    //        return result;
+    //    }
     }
 }

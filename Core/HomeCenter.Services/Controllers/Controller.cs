@@ -9,7 +9,6 @@ using HomeCenter.Services.Configuration;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
 using Proto;
-using Proto.Remote;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -45,13 +44,12 @@ namespace HomeCenter.Services.Controllers
             MessageBroker.Send(StartSystemCommand.Create(), confService);
         }
 
-        protected async Task Handle(SystemStartedEvent systemStartedEvent)
+        //TODO send info to bootstrapper that is ready
+        protected Task Handle(SystemStartedEvent systemStartedEvent)
         {
-            await RunScheduler().ConfigureAwait(false);
+            return RunScheduler();
 
-            var bindingAddress = _controllerOptions.RemoteActorAddress ?? GetAddressBinding();
-
-            //Remote.Start(bindingAddress, _controllerOptions.RemoteActorPort ?? 8000);
+        //    //var bindingAddress = _controllerOptions.RemoteActorAddress ?? GetAddressBinding();
         }
 
         protected Task Handle(TurnOnCommand systemStartedEvent)
@@ -59,7 +57,7 @@ namespace HomeCenter.Services.Controllers
             return Task.CompletedTask;
         }
 
-        private string GetAddressBinding() => NetworkHelper.GetNetworkAddresses().Select(a => a?.ToString()).OrderByDescending(x => x).FirstOrDefault() ?? "127.0.0.1";
+        //private string GetAddressBinding() => NetworkHelper.GetNetworkAddresses().Select(a => a?.ToString()).OrderByDescending(x => x).FirstOrDefault() ?? "127.0.0.1";
 
         private Task RunScheduler() => Scheduler.Start(_disposables.Token);
     }

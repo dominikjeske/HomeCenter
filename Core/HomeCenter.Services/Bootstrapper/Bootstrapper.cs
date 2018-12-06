@@ -2,10 +2,8 @@
 using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Messages;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
-using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Logging;
@@ -14,7 +12,6 @@ using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using Microsoft.Extensions.Logging;
 using Proto;
-using Proto.Remote;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
@@ -45,8 +42,6 @@ namespace HomeCenter.Services.Bootstrapper
 
             RegisterAutomapper();
 
-            RegisterProtoActorMessages();
-
             await RegisterQuartz().ConfigureAwait(false);
 
             RegisterActorProxies();
@@ -54,11 +49,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.Verify();
 
             return CreateController();
-        }
-
-        private void RegisterProtoActorMessages()
-        {
-            Serialization.RegisterFileDescriptor(ProtoMessagesReflection.Descriptor);
         }
 
         private void RegisterActorProxies()
@@ -90,7 +80,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterSingleton<IActorFactory, ActorFactory>();
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IActorMessageBroker, ActorMessageBroker>();
-            _container.RegisterSingleton<IResourceLocatorService, ResourceLocatorService>();
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
         }
 
@@ -99,7 +88,6 @@ namespace HomeCenter.Services.Bootstrapper
             var jobFactory = new SimpleInjectorJobFactory(_container);
             var jobSchedulerFactory = new SimpleInjectorSchedulerFactory(jobFactory);
             var scheduler = await jobSchedulerFactory.GetScheduler().ConfigureAwait(false);
-            
 
             _container.RegisterInstance<IJobFactory>(jobFactory);
             _container.RegisterInstance<ISchedulerFactory>(jobSchedulerFactory);
@@ -135,6 +123,7 @@ namespace HomeCenter.Services.Bootstrapper
 
         protected abstract void RegisterNativeServices();
 
+        [Obsolete("Move all to json config")]
         protected abstract void RegisterControllerOptions();
 
         public void Dispose() => _container.Dispose();

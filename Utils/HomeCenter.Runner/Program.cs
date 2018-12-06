@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HomeCenter.Raspbian;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,11 @@ namespace HomeCenter.Runner
             string input = "";
             string remote = configuration.GetValue<string>("Address");
 
+            //var uart = new RaspberrySerialDevice();
+            //uart.Init();
+            //Console.ReadLine();
+
+            //return;
             Console.WriteLine("HomeCenter TestRunner:");
             Console.WriteLine("1. Full controller configuration (REMOTE)");
             Console.WriteLine("2. Full controller configuration (LOCAL)");
@@ -33,7 +39,6 @@ namespace HomeCenter.Runner
 
             switch (programNumber)
             {
-
                 case 1:
                     await StartRemoteController().ConfigureAwait(false);
                     break;

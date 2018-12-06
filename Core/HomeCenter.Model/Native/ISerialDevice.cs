@@ -5,8 +5,8 @@ namespace HomeCenter.Model.Native
 {
     public interface ISerialDevice : IDisposable
     {
-        Task Init();
-
-        IBinaryReader GetBinaryReader();
+        void Init();
+        void Send(byte[] data);
+        void Send(string data);
     }
 }

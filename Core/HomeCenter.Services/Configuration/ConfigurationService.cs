@@ -11,6 +11,7 @@ using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
@@ -32,25 +33,25 @@ namespace HomeCenter.Services.Configuration
     {
         private readonly IMapper _mapper;
         private readonly ILogger<ConfigurationService> _logger;
-        private readonly IResourceLocatorService _resourceLocatorService;
         private readonly IActorFactory _actorFactory;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRoslynCompilerService _roslynCompilerService;
+        private readonly ControllerOptions _controllerOptions;
 
-        protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IResourceLocatorService resourceLocatorService,
+        protected ConfigurationService(ControllerOptions controllerOptions, IMapper mapper, ILogger<ConfigurationService> logger,
                                     IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _resourceLocatorService = resourceLocatorService;
             _logger = logger;
             _actorFactory = actorFactory;
             _serviceProvider = serviceProvider;
             _roslynCompilerService = roslynCompilerService;
+            _controllerOptions = controllerOptions;
         }
 
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
         {
-            var configPath = _resourceLocatorService.GetConfigurationPath();
+            var configPath = _controllerOptions.Configuration;
 
             if(!File.Exists(configPath))
             {
@@ -202,7 +203,7 @@ namespace HomeCenter.Services.Configuration
 
             if (adapterMode == "Compiled")
             {
-                var result = _roslynCompilerService.CompileAssemblies(_resourceLocatorService.GetRepositoyLocation());
+                var result = _roslynCompilerService.CompileAssemblies(_controllerOptions.AdapterRepoName);
                 var veryfy = Result.Combine(result.ToArray());
                 if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");
 

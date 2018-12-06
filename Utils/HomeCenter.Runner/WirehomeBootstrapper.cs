@@ -25,16 +25,6 @@ namespace HomeCenter.Runner
 
         public Container Container => _container;
 
-        protected override void RegisterBaseDependencies()
-        {
-            base.RegisterBaseDependencies();
-
-            var resourceLocator = Mock.Of<IResourceLocatorService>();
-            Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(@"..\..\..\..\..\Actors\ActorsContainer\Adapters");
-            Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(_configuration);
-            _container.RegisterInstance(resourceLocator);
-        }
-
         protected override void RegisterNativeServices()
         {
             var transferResult = new I2cTransferResult() { Status = I2cTransferStatus.FullTransfer, BytesTransferred = 0 };
@@ -49,8 +39,6 @@ namespace HomeCenter.Runner
 
             _container.RegisterInstance(Mock.Of<IGpioController>());
             _container.RegisterInstance(Mock.Of<ISerialDevice>());
-            _container.RegisterInstance(Mock.Of<ISoundPlayer>());
-            _container.RegisterInstance(Mock.Of<IStorage>());
         }
 
         protected override void RegisterControllerOptions()
@@ -58,15 +46,15 @@ namespace HomeCenter.Runner
             _container.RegisterInstance(new ControllerOptions
             {
                 AdapterMode = "Embedded",
-                RemoteActorPort = 8000
-               // RemoteActorAddress = "127.0.0.1"
+                RemoteActorPort = 8000,
+                Configuration = _configuration
             });
         }
 
         protected override void RegisterLogging()
         {
             var loggerFactory = new LoggerFactory()
-                                  .AddDebug(LogLevel.Information);
+                                  .AddDebug();
 
             loggerFactory.AddProvider(new ConsoleLogProvider());
 

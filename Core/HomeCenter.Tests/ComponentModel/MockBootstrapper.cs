@@ -28,15 +28,6 @@ namespace HomeCenter.Tests.ComponentModel
 
         protected override void RegisterBaseDependencies()
         {
-            var resourceLocator = Mock.Of<IResourceLocatorService>();
-
-            var adaptersRepo = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Actors\ActorsContainer\Adapters");
-            var configFile = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json");
-            Mock.Get(resourceLocator).Setup(x => x.GetRepositoyLocation()).Returns(adaptersRepo);
-            Mock.Get(resourceLocator).Setup(x => x.GetConfigurationPath()).Returns(configFile);
-
-            _container.RegisterInstance(resourceLocator);
-
             var actorRegistry = new ActorPropsRegistry();
 
             _container.RegisterInstance(actorRegistry);
@@ -59,7 +50,6 @@ namespace HomeCenter.Tests.ComponentModel
             _container.RegisterInstance(Mock.Of<IGpioController>());
             _container.RegisterInstance(Mock.Of<ISerialDevice>());
             _container.RegisterInstance(Mock.Of<ISoundPlayer>());
-            _container.RegisterInstance(Mock.Of<IStorage>());
         }
 
         protected override void RegisterControllerOptions()
@@ -68,7 +58,9 @@ namespace HomeCenter.Tests.ComponentModel
             {
                 AdapterMode = "Embedded",
                 RemoteActorPort = 8080,
-            });
+                Configuration = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json"),
+                AdapterRepoName = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Actors\ActorsContainer\Adapters")
+        });
         }
     }
 }

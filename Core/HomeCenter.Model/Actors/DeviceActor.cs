@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Broker;
-using HomeCenter.Messages;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
@@ -25,7 +24,6 @@ namespace HomeCenter.Model.Actors
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
-        private CommandBuilder _commandBuilder = new CommandBuilder();
 
         public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
 
@@ -42,16 +40,17 @@ namespace HomeCenter.Model.Actors
             
         }
 
+        [Obsolete]
         protected object FormatMessage(object rawMessage)
         {
-            if(rawMessage is ProtoCommand protoCommand)
-            {
-                return _commandBuilder.Build(protoCommand);
-            }
+            //if (rawMessage is ProtoCommand protoCommand)
+            //{
+            //    return _commandBuilder.Build(protoCommand);
+            //}
 
             return rawMessage;
         }
-     
+
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
             // If actor is disabled we are ignoring all messages

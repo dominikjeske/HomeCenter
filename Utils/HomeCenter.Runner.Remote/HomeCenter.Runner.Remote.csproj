@@ -34,10 +34,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="grpc_csharp_ext.x64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

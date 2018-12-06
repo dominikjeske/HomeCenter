@@ -1,5 +1,4 @@
-﻿using HomeCenter.Messages;
-using HomeCenter.Model.Capabilities;
+﻿using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.ConsoleExtentions;
@@ -71,12 +70,6 @@ namespace HomeCenter.Runner
                     var status = await MessageBroker.Request<StatusQuery, IReadOnlyCollection<State>>(StatusQuery.Default, Uid);
                     ConsoleEx.WriteOKLine($"Status: {status.ToFormatedString(" | ")}");
                     break;
-                case 13:
-                    var command = new ProtoCommand { Type = "TurnOnCommand" };
-                    command.Properties.Add("XXX", "YYY");
-                    MessageBroker.Send(command, Uid);
-                    break;
-
             }
 
             return;

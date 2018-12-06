@@ -43,7 +43,7 @@ namespace HomeCenter.HomeController
             _container.RegisterInstance(Mock.Of<IGpioController>());
             _container.RegisterInstance(Mock.Of<ISerialDevice>());
             _container.RegisterInstance(Mock.Of<ISoundPlayer>());
-            _container.RegisterSingleton<IStorage, RaspberryStorage>();
+
         }
 
         protected override void RegisterControllerOptions()
@@ -61,7 +61,6 @@ namespace HomeCenter.HomeController
                                     .AddDebug(LogLevel.Information); //TODO configure
 
             loggerFactory.AddProvider(new ConsoleLogProvider());
-            loggerFactory.AddProvider(new EtwLogProvider());
 
             Log.SetLoggerFactory(loggerFactory);
 

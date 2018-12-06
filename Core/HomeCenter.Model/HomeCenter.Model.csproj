@@ -22,6 +22,8 @@
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Proto.Actor" Version="0.2.0" />
+    <PackageReference Include="Proto.Router" Version="0.2.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="SimpleInjector" Version="4.4.2" />
   </ItemGroup>
@@ -29,28 +31,11 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
-    <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
   </ItemGroup>
 
 
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="Grpc.Core">
-      <HintPath>..\..\Dependencies\Grpc.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Mailbox">
-      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Router">
-      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

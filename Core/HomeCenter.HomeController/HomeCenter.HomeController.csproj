@@ -95,15 +95,11 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NativeServices\EtwLogProvider.cs" />
-    <Compile Include="NativeServices\BinaryReader.cs" />
     <Compile Include="NativeServices\RaspberryGpio.cs" />
     <Compile Include="NativeServices\RaspberryGpioController.cs" />
     <Compile Include="NativeServices\RaspberryI2cBus.cs" />
     <Compile Include="NativeServices\RaspberryI2cDevice.cs" />
-    <Compile Include="NativeServices\RaspberrySerialDevice.cs" />
     <Compile Include="NativeServices\RaspberrySoundPlayer.cs" />
-    <Compile Include="NativeServices\RaspberryStorage.cs" />
     <Compile Include="RaspberryBootstrapper.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

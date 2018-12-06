@@ -14,6 +14,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Proto.Actor" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,13 +25,6 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

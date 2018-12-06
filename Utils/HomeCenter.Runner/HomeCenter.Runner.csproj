@@ -20,38 +20,19 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="Proto.Actor" Version="0.2.0" />
+    <PackageReference Include="Proto.Router" Version="0.2.0" />
     <PackageReference Include="System.Interactive.Async" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\HomeCenter.Messages\HomeCenter.Messages.csproj" />
+    <ProjectReference Include="..\..\Core\HomeCenter.Raspbian\HomeCenter.Raspbian.csproj" />
     <ProjectReference Include="..\..\Core\HomeCenter.Services\HomeCenter.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Grpc.Core">
-      <HintPath>..\..\Dependencies\Grpc.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Actor">
-      <HintPath>..\..\Dependencies\Proto.Actor.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Mailbox">
-      <HintPath>..\..\Dependencies\Proto.Mailbox.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Remote">
-      <HintPath>..\..\Dependencies\Proto.Remote.dll</HintPath>
-    </Reference>
-    <Reference Include="Proto.Router">
-      <HintPath>..\..\Dependencies\Proto.Router.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 
   <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="grpc_csharp_ext.x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

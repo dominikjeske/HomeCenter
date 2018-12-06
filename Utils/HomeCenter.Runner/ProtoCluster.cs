@@ -1,6 +1,5 @@
-﻿using HomeCenter.Messages;
+﻿
 using Proto;
-using Proto.Remote;
 using System;
 using System.Threading.Tasks;
 
@@ -13,9 +12,7 @@ namespace HomeCenter.Runner
             Console.WriteLine("Start listening...");
 
             var context = new RootContext();
-            Serialization.RegisterFileDescriptor(ProtoMessagesReflection.Descriptor);
-            Remote.Start("127.0.0.1", 8000);
-
+            
             var props = Props.FromProducer(() => new A());
             context.SpawnNamed(props, "chatserver");
 
