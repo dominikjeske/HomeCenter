@@ -50,12 +50,14 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             var code = serialResultCommand.AsUint("Code");
             var dipswitchCode = DipswitchCode.ParseCode(code);
 
+            
+
             if (dipswitchCode == null)
             {
                 Logger.LogWarning($"Unrecognized command parsed from code {code}");
                 return;
             }
-
+            Console.WriteLine($"{dipswitchCode?.Code}");
             await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode)).ConfigureAwait(false);
         }
 

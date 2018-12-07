@@ -65,6 +65,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Raspbian", "Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Host", "Core\HomeCenter.Host\HomeCenter.Host.csproj", "{1EBF25A3-DFD9-4808-8320-D4480BE7334F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{3E06D1AB-4882-41A7-928D-061BE57544DE}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\DeployToRaspberry.ps1 = Scripts\DeployToRaspberry.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

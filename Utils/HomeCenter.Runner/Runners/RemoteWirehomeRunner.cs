@@ -18,7 +18,7 @@ namespace HomeCenter.Runner
         public async Task Initialize()
         {
             var container = new Container();
-            var bootstrapper = new WirehomeBootstrapper(container, $"componentConfiguration.json");
+            var bootstrapper = new RemoteWirehomeBootstrapper(container, $"componentConfiguration.json");
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
 
             foreach (var runner in _runners)

@@ -1,15 +1,20 @@
 ﻿using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Native;
 using System;
-using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace HomeCenter.Raspbian
 {
     public class RaspberrySerialDevice : ISerialDevice
     {
         private SerialPort _serialPort;
+        private Subject<byte[]> _dataSink;
+
+        public IObservable<byte[]> DataSink => _dataSink.AsObservable();
+
 
         public void Dispose()
         {
@@ -34,13 +39,13 @@ namespace HomeCenter.Raspbian
             _serialPort.DataBits = 8;
             _serialPort.StopBits = StopBits.One;
             _serialPort.Handshake = Handshake.None;
-
             _serialPort.ReadTimeout = 500;
             _serialPort.WriteTimeout = 500;
-
             _serialPort.DataReceived += _serialPort_DataReceived;
 
             _serialPort.Open();
+
+            _dataSink = new Subject<byte[]>();
         }
 
         public void Send(byte[] data)
@@ -55,25 +60,10 @@ namespace HomeCenter.Raspbian
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            // Initialize a buffer to hold the received data
-            byte[] buffer = new byte[_serialPort.ReadBufferSize];
+            byte[] buffer = new byte[_serialPort.BytesToRead];
+            _serialPort.Read(buffer, 0, _serialPort.BytesToRead);
 
-            Console.WriteLine($"Buffer size {_serialPort.ReadBufferSize}");
-            Console.WriteLine($"Bytes to read {_serialPort.BytesToRead}");
-
-            // There is no accurate method for checking how many bytes are read
-            // unless you check the return from the Read method
-            int bytesRead = _serialPort.Read(buffer, 0, buffer.Length);
-
-            Console.WriteLine($"Bytes read {bytesRead}");
-
-            //byte[] buffer2 = new byte[_serialPort.BytesToRead];
-            //_serialPort.Read(buffer2, 0, _serialPort.BytesToRead);
-
-            using (var stream = new MemoryStream(buffer))
-            {
-                var reader = new BinaryReader(stream);
-            }
+            _dataSink.OnNext(buffer);
         }
     }
 }

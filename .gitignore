@@ -41,3 +41,4 @@ DNF/HA4IoT.Controller.Dnf/AppPackages/
 /DNF/HA4IoT.Firmwares/HA4IoT.Hardware.I2CHardwareBridge.Firmware
 /Controllers/HA4IoT.Controller
 *.dll
+/Scripts/password.txt

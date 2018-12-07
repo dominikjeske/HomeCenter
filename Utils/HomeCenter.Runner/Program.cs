@@ -17,11 +17,7 @@ namespace HomeCenter.Runner
             string input = "";
             string remote = configuration.GetValue<string>("Address");
 
-            //var uart = new RaspberrySerialDevice();
-            //uart.Init();
-            //Console.ReadLine();
-
-            //return;
+           
             Console.WriteLine("HomeCenter TestRunner:");
             Console.WriteLine("1. Full controller configuration (REMOTE)");
             Console.WriteLine("2. Full controller configuration (LOCAL)");

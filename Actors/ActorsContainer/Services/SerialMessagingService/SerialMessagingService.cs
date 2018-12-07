@@ -6,11 +6,11 @@ using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.Native;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
@@ -32,9 +32,8 @@ namespace HomeCenter.Services.Networking
             await base.OnStarted(context).ConfigureAwait(false);
 
             _serialDevice.Init();
+            _disposeContainer.Add(_serialDevice.DataSink.Subscribe(Handle));
             _disposeContainer.Add(_serialDevice);
-
-            //var task = Task.Run(async () => await Listen().ConfigureAwait(false), _disposeContainer.Token);
         }
 
         [Subscibe]
@@ -50,76 +49,55 @@ namespace HomeCenter.Services.Networking
             return Task.CompletedTask;
         }
 
-        //private async Task Listen()
-        //{
-        //    while (true)
-        //    {
-        //        try
-        //        {
-        //            await ReadAsync(_disposeContainer.Token).ConfigureAwait(false);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Logger.LogError(ex, "Exception while listening for Serial device");
-        //        }
-        //    }
-        //}
+        private void Handle(byte[] rawData)
+        {
+            using (var str = new MemoryStream(rawData))
+            using (var reader = new BinaryReader(str))
+            {
+                Console.WriteLine("Raw Data");
 
-        //private async Task ReadAsync(CancellationToken cancellationToken)
-        //{
-        //    const uint messageHeaderSize = 2;
-        //    cancellationToken.ThrowIfCancellationRequested();
+                var messageBodySize = reader.ReadByte();
+                var messageType = reader.ReadByte();
 
-        //    using (var childCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-        //    {
-        //        var headerBytesRead = await _dataReader.LoadAsync(messageHeaderSize, childCancellationTokenSource.Token).ConfigureAwait(false);
-        //        if (headerBytesRead > 0)
-        //        {
-        //            var messageBodySize = _dataReader.ReadByte();
-        //            var messageType = _dataReader.ReadByte();
-        //            var bodyBytesReaded = await _dataReader.LoadAsync(messageBodySize, childCancellationTokenSource.Token).ConfigureAwait(false);
+                Console.WriteLine($"{messageType}");
 
-        //            if (bodyBytesReaded > 0)
-        //            {
-        //                if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
-        //                {
-        //                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
-        //                }
+                if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
+                {
+                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+                }
 
-        //                if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
-        //                var result = ReadData(registration.ResultFormat);
+                if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
+                var result = ReadData(registration.ResultFormat, reader);
 
-        //                MessageBroker.Send(result, registration.Actor);
-        //            }
-        //        }
-        //    }
-        //}
+                MessageBroker.Send(result, registration.Actor);
+            }
+        }
 
-    //    private SerialResultEvent ReadData(Format[] registration)
-    //    {
-    //        var result = new SerialResultEvent();
+        private SerialResultEvent ReadData(Format[] registration, BinaryReader reader)
+        {
+            var result = new SerialResultEvent();
 
-    //        foreach (var format in registration.OrderBy(l => l.Lp))
-    //        {
-    //            if (format.ValueType == typeof(byte))
-    //            {
-    //                result.SetProperty(format.ValueName, _dataReader.ReadByte());
-    //            }
-    //            else if (format.ValueType == typeof(uint))
-    //            {
-    //                result.SetProperty(format.ValueName, _dataReader.ReadUInt32());
-    //            }
-    //            else if (format.ValueType == typeof(float))
-    //            {
-    //                result.SetProperty(format.ValueName, _dataReader.ReadSingle());
-    //            }
-    //            else
-    //            {
-    //                throw new UnsupportedResultException($"Result of type {format.ValueType} is not supported");
-    //            }
-    //        }
+            foreach (var format in registration.OrderBy(l => l.Lp))
+            {
+                if (format.ValueType == typeof(byte))
+                {
+                    result.SetProperty(format.ValueName, reader.ReadByte());
+                }
+                else if (format.ValueType == typeof(uint))
+                {
+                    result.SetProperty(format.ValueName, reader.ReadUInt32());
+                }
+                else if (format.ValueType == typeof(float))
+                {
+                    result.SetProperty(format.ValueName, reader.ReadSingle());
+                }
+                else
+                {
+                    throw new UnsupportedResultException($"Result of type {format.ValueType} is not supported");
+                }
+            }
 
-    //        return result;
-    //    }
+            return result;
+        }
     }
 }
