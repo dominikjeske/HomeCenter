@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Model.Native;
+using HomeCenter.Raspbian;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using Moq;
@@ -6,13 +7,14 @@ using SimpleInjector;
 
 namespace HomeCenter.Runner
 {
-    public class WirehomeBootstrapper : Bootstrapper
+    public class RemoteWirehomeBootstrapper : Bootstrapper
     {
         private readonly string _configuration;
 
-        public WirehomeBootstrapper(Container container, string configuration) : base(container)
+        public RemoteWirehomeBootstrapper(Container container, string configuration) : base(container)
         {
             _configuration = configuration;
+
             _container.Options.AllowOverridingRegistrations = true;
         }
 
@@ -31,7 +33,7 @@ namespace HomeCenter.Runner
             _container.RegisterInstance(i2cBus);
 
             _container.RegisterInstance(Mock.Of<IGpioController>());
-            _container.RegisterInstance(Mock.Of<ISerialDevice>());
+            _container.RegisterSingleton<ISerialDevice, RaspberrySerialDevice>();
         }
 
         protected override void RegisterControllerOptions()

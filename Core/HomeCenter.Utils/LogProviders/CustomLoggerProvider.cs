@@ -49,6 +49,10 @@ namespace HomeCenter.Utils.LogProviders
                 {
                     ConsoleEx.WriteDebug($"[D] {time}: ");
                 }
+                else if (logLevel == LogLevel.Trace)
+                {
+                    ConsoleEx.WriteTrace($"[T] {time}: ");
+                }
                 else
                 {
                     Console.Write($"{logLevel}: ");

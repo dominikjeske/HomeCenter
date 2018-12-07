@@ -10,6 +10,7 @@ using HomeCenter.Services.Logging;
 using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
+using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Quartz;
@@ -109,15 +110,19 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterInstance<IMapper>(mapper);
         }
 
-        protected virtual void RegisterLogging()
+        protected virtual ILoggerProvider[] GetLogProviders()
         {
-            var loggerFactory = new LoggerFactory()
-                                   .AddDebug(LogLevel.Information) //TODO configure
-                                   .AddConsole();
+            return new ILoggerProvider[] { new ConsoleLogProvider() };
+        }
+
+        protected void RegisterLogging()
+        {
+            var loggerOptions = new LoggerFilterOptions { MinLevel = LogLevel.Debug };
+            var loggerFactory = new LoggerFactory(GetLogProviders(), loggerOptions);
 
             Log.SetLoggerFactory(loggerFactory);
 
-            _container.RegisterInstance(loggerFactory);
+            _container.RegisterInstance<ILoggerFactory>(loggerFactory);
             _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
         }
 

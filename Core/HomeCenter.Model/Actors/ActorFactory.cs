@@ -91,7 +91,5 @@ namespace HomeCenter.Model.Actors
             }
             return parent.SpawnNamed(props2, id);
         }
-
-        //Router.NewRoundRobinPool(Props.FromProducer(() => new ServiceActor()), 5)
     }
 }

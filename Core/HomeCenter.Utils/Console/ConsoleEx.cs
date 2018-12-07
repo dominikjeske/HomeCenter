@@ -16,11 +16,12 @@ namespace HomeCenter.Utils.ConsoleExtentions
 
         public static void WriteWarningLine(string text) => Write(text, ConsoleColor.Yellow);
 
-        public static void WriteDebugLine(string text) => Write(text, ConsoleColor.Blue);
+        public static void WriteDebugLine(string text) => Write(text, ConsoleColor.DarkYellow);
 
         public static void WriteMenuLine(string text) => Write(text, ConsoleColor.Cyan);
 
         public static void WriteTitleLine(string text) => Write(text, ConsoleColor.DarkMagenta);
+
 
         public static void WriteOK(string text) => Write(text, ConsoleColor.Green, false);
 
@@ -28,7 +29,9 @@ namespace HomeCenter.Utils.ConsoleExtentions
 
         public static void WriteWarning(string text) => Write(text, ConsoleColor.Yellow, false);
 
-        public static void WriteDebug(string text) => Write(text, ConsoleColor.Blue, false);
+        public static void WriteDebug(string text) => Write(text, ConsoleColor.DarkYellow, false);
+
+        public static void WriteTrace(string text) => Write(text, ConsoleColor.Gray, false);
 
         public static void Write(string text, ConsoleColor color = ConsoleColor.White, bool withNewLine = true)
         {

@@ -3,5 +3,10 @@
     public class RefreshCommand : Command
     {
         public static RefreshCommand Default = new RefreshCommand();
+
+        public RefreshCommand()
+        {
+            DefaultLogLevel = Microsoft.Extensions.Logging.LogLevel.Trace;
+        }
     }
 }

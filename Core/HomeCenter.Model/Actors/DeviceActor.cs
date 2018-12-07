@@ -2,14 +2,11 @@
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
 using Quartz;
-using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Actors
@@ -20,7 +17,6 @@ namespace HomeCenter.Model.Actors
         [DI] protected IActorMessageBroker MessageBroker { get; set; }
         [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
-
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
@@ -37,16 +33,14 @@ namespace HomeCenter.Model.Actors
             {
                 throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {message.GetType().Name} is not ActorMessage");
             }
-            
         }
 
-        [Obsolete]
         protected object FormatMessage(object rawMessage)
         {
-            //if (rawMessage is ProtoCommand protoCommand)
-            //{
-            //    return _commandBuilder.Build(protoCommand);
-            //}
+            if (rawMessage is ActorMessage message)
+            {
+                Logger.Log(message.DefaultLogLevel, $"[{Uid}]: {message}");
+            }
 
             return rawMessage;
         }
@@ -148,6 +142,5 @@ namespace HomeCenter.Model.Actors
         {
             _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, filter));
         }
- 
     }
 }

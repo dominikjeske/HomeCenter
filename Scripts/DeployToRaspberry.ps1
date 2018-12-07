@@ -1,3 +1,4 @@
+#Script dependencies:
 #Install-Module -Name Posh-SSH
 
 $raspberry = '192.168.0.107'
