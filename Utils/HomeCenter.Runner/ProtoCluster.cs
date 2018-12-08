@@ -7,7 +7,7 @@ namespace HomeCenter.Runner
 {
     public static class ProtoCluster
     {
-        public async static Task Start()
+        public static Task Start()
         {
             Console.WriteLine("Start listening...");
 
@@ -17,13 +17,15 @@ namespace HomeCenter.Runner
             context.SpawnNamed(props, "chatserver");
 
             Console.ReadLine();
+
+            return Task.CompletedTask;
         }
     }
 
     public class A : IActor
     {
         
-        public virtual async Task ReceiveAsync(IContext context)
+        public virtual Task ReceiveAsync(IContext context)
         {
             if (context.Message is Started)
             {
@@ -32,7 +34,7 @@ namespace HomeCenter.Runner
             {
             }
 
-            return;
+            return Task.CompletedTask;
         }
     }
 }

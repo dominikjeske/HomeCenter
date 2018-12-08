@@ -10,9 +10,6 @@ $passwordFile  = Join-Path -Path $scriptDir -ChildPath password.txt
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
 
-Write-Host 'Build project' -ForegroundColor Green
-dotnet build $projectDir
-
 Write-Host 'Publish project' -ForegroundColor Green
 dotnet publish $projectDir --framework netcoreapp2.2 --runtime linux-arm
 
@@ -21,7 +18,7 @@ $password = Get-Content $passwordFile
 $securedPassword = ConvertTo-SecureString $password -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ('pi', $securedPassword)
 
-foreach ($file in (Get-ChildItem $publishDir HomeCenter*.dll)) 
+foreach ($file in (Get-ChildItem $publishDir HomeCenter*)) 
 {
     $filePath = Join-Path -Path $publishDir -ChildPath $file
     Write-Host "Copy $filePath => $remoteProjectPath" -ForegroundColor Green 

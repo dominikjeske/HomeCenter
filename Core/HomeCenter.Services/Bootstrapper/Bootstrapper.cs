@@ -128,7 +128,7 @@ namespace HomeCenter.Services.Bootstrapper
 
         protected abstract void RegisterNativeServices();
 
-        [Obsolete("Move all to json config")]
+        //TODO Move all to json config
         protected abstract void RegisterControllerOptions();
 
         public void Dispose() => _container.Dispose();

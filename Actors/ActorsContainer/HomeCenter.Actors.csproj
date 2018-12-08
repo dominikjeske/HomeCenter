@@ -5,6 +5,7 @@
     <Authors>HomeCenter</Authors>
     <Company>HomeCenter</Company>
     <Product>HomeCenter</Product>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <ItemGroup>

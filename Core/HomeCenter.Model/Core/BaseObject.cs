@@ -26,7 +26,25 @@ namespace HomeCenter.Model.Core
             }
         }
 
-        public override string ToString() => $"Type: [{Type}] | Uid: [{Uid}] | Properties: [{GetProperties()?.ToFormatedString()}] | Tags: [{Tags.ToFormatedString()}]";
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"Type: {Type}");
+            if(_properties.Count > 0)
+            {
+                sb.Append($" | Properties: {GetProperties()?.ToFormatedString()} ");
+            }
+            if (Tags.Count > 0)
+            {
+                sb.Append($" | Tags: {Tags.ToFormatedString()} ");
+            }
+            if(!string.IsNullOrWhiteSpace(Uid))
+            {
+                sb.Append($" | Uid: {Uid}");
+            }
+
+            return sb.ToString();
+        }
 
         public bool ContainsProperty(string propertyName) => _properties.ContainsKey(propertyName);
 

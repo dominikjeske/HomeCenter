@@ -2,14 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <Authors>HomeCenter</Authors>
-
     <Company>HomeCenter</Company>
-
     <Product>HomeCenter</Product>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +23,4 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Services\HomeCenter.Services.csproj" />
   </ItemGroup>
-
-
 </Project>

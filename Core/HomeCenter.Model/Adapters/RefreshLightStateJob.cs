@@ -25,7 +25,7 @@ namespace HomeCenter.Model.Adapters
                 _actorMessageBroker.Send(RefreshLightCommand.Default, adapter);
                 return Task.CompletedTask;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
                 throw;
