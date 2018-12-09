@@ -60,7 +60,7 @@ namespace HomeCenter.Model.Core
 
         public void SetProperty(string propertyName, bool value) => _properties[propertyName] = value.ToString(); //TODO check this
 
-        public void SetProperty(string propertyName, byte[] value) => _properties[propertyName] = BitConverter.ToString(value); //TODO check this
+        public void SetProperty(string propertyName, byte[] value) => _properties[propertyName] = value.ToHex(); //Convert.ToBase64String(value);
 
         public void SetPropertyList(string propertyName, params string[] values) => _properties[propertyName] = string.Join(", ", values);
 
@@ -207,7 +207,8 @@ namespace HomeCenter.Model.Core
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
 
-            return Encoding.UTF8.GetBytes(_properties[propertyName]);
+            return _properties[propertyName].ToBytes();
+            //return Convert.FromBase64String(_properties[propertyName]);
         }
     }
 }

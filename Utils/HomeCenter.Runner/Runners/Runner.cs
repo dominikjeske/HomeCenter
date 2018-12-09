@@ -28,10 +28,8 @@ namespace HomeCenter.Runner
             MessageBroker = container.GetInstance<IActorMessageBroker>();
         }
 
-        public async Task Run()
+        public virtual async Task Run()
         {
-           // Console.Clear();
-
             while (true)
             {
                 var taskId = Menu();

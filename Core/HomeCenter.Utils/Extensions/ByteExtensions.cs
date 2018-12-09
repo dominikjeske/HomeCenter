@@ -57,5 +57,16 @@ namespace HomeCenter.Utils.Extensions
             //       01010001
             return (byte)(~(0x1UL << index) & target);
         }
+
+        public static string ToHex(this byte[] the_bytes, char separator = '-')
+        {
+            var text = BitConverter.ToString(the_bytes, 0);
+
+            if (separator == '-')
+            {
+                return text;
+            }
+            return text.Replace('-', separator);
+        }
     }
 }

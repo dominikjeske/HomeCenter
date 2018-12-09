@@ -1,8 +1,8 @@
-﻿using HomeCenter.Raspbian;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
@@ -17,7 +17,11 @@ namespace HomeCenter.Runner
             string input = "";
             string remote = configuration.GetValue<string>("Address");
 
-           
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                programNumber = 1;
+            }
+
             Console.WriteLine("HomeCenter TestRunner:");
             Console.WriteLine("1. Full controller configuration (REMOTE)");
             Console.WriteLine("2. Full controller configuration (LOCAL)");
@@ -65,7 +69,7 @@ namespace HomeCenter.Runner
             return configuration;
         }
 
-        private static async Task StartController()
+        private static Task StartController()
         {
             var runners = new Runner[]
             {
@@ -73,15 +77,15 @@ namespace HomeCenter.Runner
                 new KodiRunner("KodiComponent"),
                 new PcRunner("PcComponent"),
                 new SamsungRunner("KodiComponent"),
-                new SonyRunner("SonyComponent")
+                new SonyRunner("SonyComponent"),
+                 new RemoteSocketRunner("RemoteLamp3")
             };
 
             var runner = new WirehomeRunner(runners.ToList());
-            await runner.Initialize().ConfigureAwait(false);
-            await runner.Run().ConfigureAwait(false);
+            return runner.Run();
         }
 
-        private static async Task StartRemoteController()
+        private static Task StartRemoteController()
         {
             var runners = new Runner[]
             {
@@ -89,12 +93,12 @@ namespace HomeCenter.Runner
                 new KodiRunner("KodiComponent"),
                 new PcRunner("PcComponent"),
                 new SamsungRunner("KodiComponent"),
-                new SonyRunner("SonyComponent")
+                new SonyRunner("SonyComponent"),
+                new RemoteSocketRunner("RemoteLamp3")
             };
 
             var runner = new RemoteWirehomeRunner(runners.ToList());
-            await runner.Initialize().ConfigureAwait(false);
-            await runner.Run().ConfigureAwait(false);
+            return runner.Run();
         }
 
         private static Task StartCluster()

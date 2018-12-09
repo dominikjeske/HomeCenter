@@ -50,7 +50,7 @@ void handleI2CWrite(int dataLength)
 
 	Wire.readBytes(package, packageLength);
 
-	SerialEx::SendMessage("I2C WRITE for action " + String(_lastAction));
+    SerialEx::SendMessage("I2C WRITE " + String(_lastAction) + "LEN: " + String(packageLength));
 
 	switch (_lastAction)
 	{

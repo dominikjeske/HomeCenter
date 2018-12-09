@@ -328,8 +328,8 @@
         "Type": "RemoteSocketBridgeAdapter",
         "IsEnabled": true,
         "Properties": {
-          "I2cAddress": 101,
-          "PinNumber": 12
+          "I2cAddress": 50,
+          "PinNumber": 7
         }
       },
       {
@@ -337,7 +337,7 @@
         "IsEnabled": true,
         "Type": "InfraredBridgeAdapter",
         "Properties": {
-          "I2cAddress": 101,
+          "I2cAddress": 50,
           "PinNumber": 13
         }
       }
@@ -372,7 +372,7 @@
       {
         "Uid": "I2CService",
         "Type": "I2CService",
-        "IsEnabled": false
+        "IsEnabled": true
       },
       {
         "Uid": "SerialService",

@@ -18,6 +18,7 @@ namespace HomeCenter.Utils.LogProviders
         public class CustomConsoleLogger : ILogger
         {
             private readonly string _categoryName;
+            private readonly object _locki = new object();
 
             public CustomConsoleLogger(string categoryName)
             {
@@ -31,33 +32,36 @@ namespace HomeCenter.Utils.LogProviders
                     return;
                 }
 
-                var time = DateTime.Now.ToString("HH:mm:ss.fff");
+                lock (_locki)
+                {
+                    var time = DateTime.Now.ToString("HH:mm:ss.fff");
 
-                if (logLevel == LogLevel.Error)
-                {
-                    ConsoleEx.WriteError($"[E] {time}: ");
+                    if (logLevel == LogLevel.Error)
+                    {
+                        ConsoleEx.WriteError($"[E] {time}: ");
+                    }
+                    else if (logLevel == LogLevel.Warning)
+                    {
+                        ConsoleEx.WriteWarning($"[W] {time}: ");
+                    }
+                    else if (logLevel == LogLevel.Information)
+                    {
+                        ConsoleEx.WriteOK($"[I] {time}: ");
+                    }
+                    else if (logLevel == LogLevel.Debug)
+                    {
+                        ConsoleEx.WriteDebug($"[D] {time}: ");
+                    }
+                    else if (logLevel == LogLevel.Trace)
+                    {
+                        ConsoleEx.WriteTrace($"[T] {time}: ");
+                    }
+                    else
+                    {
+                        Console.Write($"{logLevel}: ");
+                    }
+                    Console.WriteLine($"{formatter(state, exception)}");
                 }
-                else if (logLevel == LogLevel.Warning)
-                {
-                    ConsoleEx.WriteWarning($"[W] {time}: ");
-                }
-                else if (logLevel == LogLevel.Information)
-                {
-                    ConsoleEx.WriteOK($"[I] {time}: ");
-                }
-                else if (logLevel == LogLevel.Debug)
-                {
-                    ConsoleEx.WriteDebug($"[D] {time}: ");
-                }
-                else if (logLevel == LogLevel.Trace)
-                {
-                    ConsoleEx.WriteTrace($"[T] {time}: ");
-                }
-                else
-                {
-                    Console.Write($"{logLevel}: ");
-                }
-                Console.WriteLine($"{formatter(state, exception)}");
             }
 
             public bool IsEnabled(LogLevel logLevel)

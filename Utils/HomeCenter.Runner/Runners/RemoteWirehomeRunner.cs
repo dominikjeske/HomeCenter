@@ -1,4 +1,6 @@
-﻿using SimpleInjector;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Messages.Events.Service;
+using SimpleInjector;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,8 +17,9 @@ namespace HomeCenter.Runner
             _runners = runners;
         }
 
-        public async Task Initialize()
+        public override async Task Run()
         {
+            var tcs = new TaskCompletionSource<bool>();
             var container = new Container();
             var bootstrapper = new RemoteWirehomeBootstrapper(container, $"componentConfiguration.json");
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
@@ -26,7 +29,15 @@ namespace HomeCenter.Runner
                 runner.SetContainer(container);
             }
 
-            await Task.Delay(1000).ConfigureAwait(false);
+            var eventAggregator = container.GetInstance<IEventAggregator>();
+            eventAggregator.Subscribe<SystemStartedEvent>(async message =>
+            {
+                await Task.Delay(500).ConfigureAwait(false);
+                tcs.SetResult(true);
+            });
+
+            await tcs.Task.ConfigureAwait(false);
+            await base.Run().ConfigureAwait(false);
         }
 
         public override Task RunTask(int taskId)

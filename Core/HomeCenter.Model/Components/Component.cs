@@ -155,7 +155,7 @@ namespace HomeCenter.Model.Components
 
         protected async Task Handle(Event ev)
         {
-            var trigger = _triggers.FirstOrDefault(t => t.Event.Equals(ev));
+            var trigger = _triggers.FirstOrDefault(t => t?.Event?.Equals(ev) ?? false);
             if (trigger != null)
             {
                 if (await trigger.ValidateCondition().ConfigureAwait(false))

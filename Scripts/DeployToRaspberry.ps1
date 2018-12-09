@@ -18,7 +18,7 @@ $password = Get-Content $passwordFile
 $securedPassword = ConvertTo-SecureString $password -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ('pi', $securedPassword)
 
-foreach ($file in (Get-ChildItem $publishDir HomeCenter*)) 
+foreach ($file in (Get-ChildItem $publishDir HomeCenter*.dll)) 
 {
     $filePath = Join-Path -Path $publishDir -ChildPath $file
     Write-Host "Copy $filePath => $remoteProjectPath" -ForegroundColor Green 

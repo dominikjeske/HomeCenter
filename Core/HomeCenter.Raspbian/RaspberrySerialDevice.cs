@@ -12,9 +12,7 @@ namespace HomeCenter.Raspbian
     {
         private SerialPort _serialPort;
         private Subject<byte[]> _dataSink;
-
         public IObservable<byte[]> DataSink => _dataSink.AsObservable();
-
 
         public void Dispose()
         {
@@ -60,6 +58,8 @@ namespace HomeCenter.Raspbian
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            Console.WriteLine("RAW");
+
             byte[] buffer = new byte[_serialPort.BytesToRead];
             _serialPort.Read(buffer, 0, _serialPort.BytesToRead);
 

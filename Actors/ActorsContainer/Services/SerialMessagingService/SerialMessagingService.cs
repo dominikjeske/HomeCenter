@@ -6,11 +6,13 @@ using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using HomeCenter.Model.Native;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
@@ -54,12 +56,16 @@ namespace HomeCenter.Services.Networking
             using (var str = new MemoryStream(rawData))
             using (var reader = new BinaryReader(str))
             {
-                Console.WriteLine("Raw Data");
-
                 var messageBodySize = reader.ReadByte();
                 var messageType = reader.ReadByte();
 
-                Console.WriteLine($"{messageType}");
+                if(messageType == 10)
+                {
+                    var byteArray = reader.ReadBytes(rawData.Length - 2);
+                    string message = Encoding.UTF8.GetString(byteArray);
+                    Logger.LogInformation(message);
+                    return;
+                }
 
                 if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
                 {

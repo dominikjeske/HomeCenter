@@ -9,7 +9,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;
@@ -36,6 +35,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             _I2cAddress = AsInt(AdapterProperties.I2cAddress);
             _pinNumber = AsInt(AdapterProperties.PinNumber);
 
+
             var registration = new SerialRegistrationCommand(Self, 2, new Format[]
              {
                     new Format(1, typeof(uint), "Code"),
@@ -49,8 +49,6 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             var code = serialResultCommand.AsUint("Code");
             var dipswitchCode = DipswitchCode.ParseCode(code);
-
-            
 
             if (dipswitchCode == null)
             {
@@ -100,7 +98,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             var codeShortValue = code.ToShortCode();
             bool oldValue = false; //TODO
-            if(_state.ContainsKey(codeShortValue))
+            if (_state.ContainsKey(codeShortValue))
             {
                 oldValue = _state[codeShortValue];
             }
