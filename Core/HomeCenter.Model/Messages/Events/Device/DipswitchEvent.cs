@@ -15,7 +15,7 @@ namespace HomeCenter.Model.Messages.Events.Device
             this[EventProperties.Unit] = code.Unit.ToString();
             this[EventProperties.System] = code.System.ToString();
             this[EventProperties.CommandCode] = code.Command.ToString();
-            SetProperty(this[EventProperties.EventTime], SystemTime.Now);
+            SetProperty(EventProperties.EventTime, SystemTime.Now);
         }
 
         public override IEnumerable<string> RoutingAttributes() => new string[] { EventProperties.Unit, EventProperties.System };

@@ -55,7 +55,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                 Logger.LogWarning($"Unrecognized command parsed from code {code}");
                 return;
             }
-            Console.WriteLine($"{dipswitchCode?.Code}");
+
             await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode)).ConfigureAwait(false);
         }
 

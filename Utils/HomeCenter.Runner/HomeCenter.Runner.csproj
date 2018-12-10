@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\HomeCenter.Raspbian\HomeCenter.Raspbian.csproj" />
     <ProjectReference Include="..\..\Core\HomeCenter.Services\HomeCenter.Services.csproj" />
   </ItemGroup>
 

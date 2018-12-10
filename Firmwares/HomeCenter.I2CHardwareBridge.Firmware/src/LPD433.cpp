@@ -34,6 +34,7 @@ void LPD433::Send(uint8_t package[], uint8_t packageLength)
 
 void LPD433::ProcessLoop()
 {
+	
 	if (LPD433::mySwitch.available()) 
 	{
     	unsigned long value = LPD433::mySwitch.getReceivedValue();

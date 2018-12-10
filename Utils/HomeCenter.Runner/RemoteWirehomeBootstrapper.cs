@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Native;
-using HomeCenter.Raspbian;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
+using HomeCenter.Services.Devices;
 using SimpleInjector;
 
 namespace HomeCenter.Runner
@@ -20,8 +20,8 @@ namespace HomeCenter.Runner
 
         protected override void RegisterNativeServices()
         {
-            _container.RegisterSingleton<II2cBus, LinuxI2CBusAdapter>();
-            _container.RegisterSingleton<ISerialDevice, RaspberrySerialDevice>();
+            _container.RegisterSingleton<II2cBus, I2cBus>();
+            _container.RegisterSingleton<ISerialDevice, SerialDevice>();
         }
 
         protected override void RegisterControllerOptions()

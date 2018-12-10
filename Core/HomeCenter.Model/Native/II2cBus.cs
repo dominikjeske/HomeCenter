@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 
 namespace HomeCenter.Model.Native
 {
     public interface II2cBus
     {
-        Task Write(int address, byte[] data);
+        void Write(int address, Span<byte> data);
     }
 }

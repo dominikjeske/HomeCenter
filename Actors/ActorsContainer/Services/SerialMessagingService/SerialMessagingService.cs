@@ -59,6 +59,11 @@ namespace HomeCenter.Services.Networking
                 var messageBodySize = reader.ReadByte();
                 var messageType = reader.ReadByte();
 
+                if(messageType == 0)
+                {
+                    Logger.LogInformation("Test message from RC");
+                }
+
                 if(messageType == 10)
                 {
                     var byteArray = reader.ReadBytes(rawData.Length - 2);
@@ -69,7 +74,9 @@ namespace HomeCenter.Services.Networking
 
                 if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
                 {
-                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+                    Logger.LogInformation($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+                    return;
+                    //throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
                 }
 
                 if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");

@@ -337,8 +337,7 @@
         "IsEnabled": true,
         "Type": "InfraredBridgeAdapter",
         "Properties": {
-          "I2cAddress": 50,
-          "PinNumber": 13
+          "I2cAddress": 50
         }
       }
 

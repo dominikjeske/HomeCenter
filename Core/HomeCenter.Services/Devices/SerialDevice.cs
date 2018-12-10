@@ -6,9 +6,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace HomeCenter.Raspbian
+namespace HomeCenter.Services.Devices
 {
-    public class RaspberrySerialDevice : ISerialDevice
+    public class SerialDevice : ISerialDevice
     {
         private SerialPort _serialPort;
         private Subject<byte[]> _dataSink;
@@ -58,8 +58,6 @@ namespace HomeCenter.Raspbian
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Console.WriteLine("RAW");
-
             byte[] buffer = new byte[_serialPort.BytesToRead];
             _serialPort.Read(buffer, 0, _serialPort.BytesToRead);
 

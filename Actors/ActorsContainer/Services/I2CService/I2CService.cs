@@ -21,7 +21,7 @@ namespace HomeCenter.Services.Networking
         }
 
         [Subscibe]
-        protected async Task Handle(I2cCommand command)
+        protected void Handle(I2cCommand command)
         {
             var address = command.Address;
             var useCache = command.UseCache; //TODO
@@ -31,7 +31,7 @@ namespace HomeCenter.Services.Networking
 
             try
             {
-                await _nativeI2CBus.Write(address, data).ConfigureAwait(false);
+                _nativeI2CBus.Write(address, data);
             }
             catch (Exception exception)
             {

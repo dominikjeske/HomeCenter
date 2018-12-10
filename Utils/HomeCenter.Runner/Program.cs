@@ -11,6 +11,7 @@ namespace HomeCenter.Runner
     {
         private static async Task Main(string[] args)
         {
+
             var configuration = GetConfiguration();
 
             int programNumber = 0;
@@ -19,17 +20,18 @@ namespace HomeCenter.Runner
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
+                Console.WriteLine("Wait for system start...");
                 programNumber = 1;
             }
 
-            Console.WriteLine("HomeCenter TestRunner:");
-            Console.WriteLine("1. Full controller configuration (REMOTE)");
-            Console.WriteLine("2. Full controller configuration (LOCAL)");
-            Console.WriteLine("3. ProtoCluster Playground");
-            Console.WriteLine("4. Code generation");
-
             if (programNumber == 0)
             {
+                Console.WriteLine("HomeCenter TestRunner:");
+                Console.WriteLine("1. Full controller configuration (REMOTE)");
+                Console.WriteLine("2. Full controller configuration (LOCAL)");
+                Console.WriteLine("3. ProtoCluster Playground");
+                Console.WriteLine("4. Code generation");
+
                 input = Console.ReadLine();
                 if (!int.TryParse(input, out programNumber))
                 {

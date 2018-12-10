@@ -4,7 +4,7 @@ namespace HomeCenter.Model.Messages.Events.Device
 {
     public class InfraredEvent : Event
     {
-        public InfraredEvent(string deviceUID, int system, int commandCode)
+        public InfraredEvent(string deviceUID, int system, uint commandCode)
         {
             Type = EventType.InfraredCode;
             Uid = Guid.NewGuid().ToString();

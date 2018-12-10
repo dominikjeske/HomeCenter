@@ -19,7 +19,6 @@ namespace HomeCenter.Adapters.InfraredBridge
     public abstract class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
-        private int _pinNumber;
         private int _I2cAddress;
 
         protected override async Task OnStarted(IContext context)
@@ -27,9 +26,6 @@ namespace HomeCenter.Adapters.InfraredBridge
             await base.OnStarted(context).ConfigureAwait(false);
             
             _I2cAddress = AsInt(AdapterProperties.I2cAddress);
-
-            //TODO register pin number?
-            _pinNumber = AsInt(AdapterProperties.PinNumber);
 
             var registration = new SerialRegistrationCommand(Self, 3, new Format[]
                {
@@ -44,13 +40,13 @@ namespace HomeCenter.Adapters.InfraredBridge
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.InfraredCode, EventDirections.Recieving),
-                                                                 new EventSource(EventType.InfraredCode, EventDirections.Sending)}, new PowerState());
+                                                                 new EventSource(EventType.InfraredCode, EventDirections.Sending)});
         }
 
         protected Task Handle(SerialResultEvent serialResultCommand)
         {
             var system = serialResultCommand.AsByte("System");
-            var code = serialResultCommand.AsInt("Code");
+            var code = serialResultCommand.AsUint("Code");
 
             return MessageBroker.PublisEvent(new InfraredEvent(Uid, system, code));
         }
