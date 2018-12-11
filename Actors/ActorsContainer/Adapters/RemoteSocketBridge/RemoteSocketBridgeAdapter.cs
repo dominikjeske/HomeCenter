@@ -2,6 +2,7 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Codes;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -32,8 +33,8 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _I2cAddress = AsInt(AdapterProperties.I2cAddress);
-            _pinNumber = AsInt(AdapterProperties.PinNumber);
+            _I2cAddress = AsInt(MessageProperties.I2cAddress);
+            _pinNumber = AsInt(MessageProperties.PinNumber);
 
 
             var registration = new SerialRegistrationCommand(Self, 2, new Format[]
@@ -77,9 +78,9 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         private byte[] PreparePackage(Command message, string commandName, out DipswitchCode dipswitchCode)
         {
-            var system = message.AsString(CommandProperties.System);
-            var unit = message.AsString(CommandProperties.Unit);
-            var repeat = message.AsInt(CommandProperties.Repeat, DEFAULT_REPEAT);
+            var system = message.AsString(MessageProperties.System);
+            var unit = message.AsString(MessageProperties.Unit);
+            var repeat = message.AsInt(MessageProperties.Repeat, DEFAULT_REPEAT);
             dipswitchCode = DipswitchCode.ParseCode(system, unit, commandName);
             var package = new byte[8];
             package[0] = 2;

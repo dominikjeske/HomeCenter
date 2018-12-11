@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
@@ -32,16 +33,16 @@ namespace HomeCenter.Adapters.Common
 
         protected CCToolsBaseAdapter()
         {
-            _requierdProperties.Add(AdapterProperties.PinNumber);
+            _requierdProperties.Add(MessageProperties.PinNumber);
         }
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _poolInterval = AsIntTime(AdapterProperties.PoolInterval);
-            _poolDurationWarning = AsInt(AdapterProperties.PollDurationWarningThreshold);
-            _i2cAddress = AsInt(AdapterProperties.I2cAddress);
+            _poolInterval = AsIntTime(MessageProperties.PoolInterval);
+            _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold);
+            _i2cAddress = AsInt(MessageProperties.I2cAddress);
 
             _state = new byte[StateSize];
             _committedState = new byte[StateSize];
@@ -51,7 +52,7 @@ namespace HomeCenter.Adapters.Common
 
         protected bool QueryState(StateQuery message)
         {
-            var pinNumber = AsInt(AdapterProperties.PinNumber);
+            var pinNumber = AsInt(MessageProperties.PinNumber);
             return GetPortState(pinNumber);
         }
 
@@ -102,7 +103,7 @@ namespace HomeCenter.Adapters.Common
 
                 if (oldPinState == newPinState) continue;
 
-                var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>() { [AdapterProperties.PinNumber] = i.ToString() });
+                var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>() { [MessageProperties.PinNumber] = i.ToString() });
 
                 await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
 

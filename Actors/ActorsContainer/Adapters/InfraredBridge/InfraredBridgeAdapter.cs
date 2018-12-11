@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -25,7 +26,7 @@ namespace HomeCenter.Adapters.InfraredBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
             
-            _I2cAddress = AsInt(AdapterProperties.I2cAddress);
+            _I2cAddress = AsInt(MessageProperties.I2cAddress);
 
             var registration = new SerialRegistrationCommand(Self, 3, new Format[]
                {
@@ -53,10 +54,10 @@ namespace HomeCenter.Adapters.InfraredBridge
 
         protected Task Handle(SendCodeCommand message)
         {
-            var commandCode = message.AsUint(CommandProperties.Code);
-            var system = message.AsInt(CommandProperties.System);
-            var bits = message.AsInt(CommandProperties.Bits);
-            var repeat = message.AsInt(CommandProperties.Repeat, DEAFULT_REPEAT);
+            var commandCode = message.AsUint(MessageProperties.Code);
+            var system = message.AsInt(MessageProperties.System);
+            var bits = message.AsInt(MessageProperties.Bits);
+            var repeat = message.AsInt(MessageProperties.Repeat, DEAFULT_REPEAT);
 
             var package = new List<byte>
             {

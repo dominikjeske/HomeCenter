@@ -5,7 +5,7 @@
         public static VolumeSetCommand Create(double volume)
         {
             var command = new VolumeSetCommand();
-            command.SetProperty(CommandProperties.Value, volume);
+            command.SetProperty(MessageProperties.Value, volume);
             return command;
         }
     }

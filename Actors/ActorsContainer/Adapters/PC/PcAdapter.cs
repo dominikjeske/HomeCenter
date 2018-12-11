@@ -3,6 +3,7 @@ using HomeCenter.Adapters.PC.Model;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -32,10 +33,10 @@ namespace HomeCenter.Adapters.PC
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = AsString(AdapterProperties.Hostname);
-            _port = AsInt(AdapterProperties.Port);
-            _mac = AsString(AdapterProperties.MAC);
-            _poolInterval = AsIntTime(AdapterProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _hostname = AsString(MessageProperties.Hostname);
+            _port = AsInt(MessageProperties.Port);
+            _mac = AsString(MessageProperties.MAC);
+            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
@@ -91,7 +92,7 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeUpCommand command)
         {
-            var volume = _volume + command.AsDouble(CommandProperties.ChangeFactor);
+            var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -104,7 +105,7 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeDownCommand command)
         {
-            var volume = _volume - command.AsDouble(CommandProperties.ChangeFactor);
+            var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -118,7 +119,7 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            var volume = command.AsDouble(CommandProperties.Value);
+            var volume = command.AsDouble(MessageProperties.Value);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -158,7 +159,7 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = message.AsString(CommandProperties.InputSource);
+            var inputName = message.AsString(MessageProperties.InputSource);
 
             var cmd = new ComputerCommand
             {

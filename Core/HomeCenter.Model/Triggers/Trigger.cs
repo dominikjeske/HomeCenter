@@ -1,11 +1,12 @@
 ﻿using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using Proto;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Triggers
 {
@@ -22,15 +23,15 @@ namespace HomeCenter.Model.Triggers
         {
             Condition = Condition,
             Actor = actor,
-            Commands = Commands.Where(x => !x.ContainsProperty(CommandProperties.IsFinishComand)).ToList()
+            Commands = Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToList()
         };
 
         public TriggerJobDataDTO ToJobDataWithFinish(PID actor) => new TriggerJobDataDTO
         {
             Condition = Condition,
             Actor = actor,
-            Commands = Commands.Where(x => !x.ContainsProperty(CommandProperties.IsFinishComand)).ToList(),
-            FinishCommands = Commands.Where(x => x.ContainsProperty(CommandProperties.IsFinishComand)).ToList(),
+            Commands = Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToList(),
+            FinishCommands = Commands.Where(x => x.ContainsProperty(MessageProperties.IsFinishComand)).ToList(),
             FinishCommandTime = Schedule.WorkingTime
         };
     }

@@ -3,7 +3,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
@@ -40,9 +40,9 @@ namespace HomeCenter.Adapters.Sony
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = AsString(AdapterProperties.Hostname);
-            _authorisationKey = AsString(AdapterProperties.AuthKey);
-            _poolInterval = AsIntTime(AdapterProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _hostname = AsString(MessageProperties.Hostname);
+            _authorisationKey = AsString(MessageProperties.AuthKey);
+            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
             await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
@@ -106,7 +106,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(VolumeUpCommand command)
         {
-            var volume = _volume + command.AsDouble(CommandProperties.ChangeFactor);
+            var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
@@ -115,7 +115,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(VolumeDownCommand command)
         {
-            var volume = _volume - command.AsDouble(CommandProperties.ChangeFactor);
+            var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
@@ -124,7 +124,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            var volume = command.AsDouble(CommandProperties.Value);
+            var volume = command.AsDouble(MessageProperties.Value);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
             await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
 
@@ -149,7 +149,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = message.AsString(CommandProperties.InputSource);
+            var inputName = message.AsString(MessageProperties.InputSource);
             if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
             var code = _inputSourceMap[inputName];

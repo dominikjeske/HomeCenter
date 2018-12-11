@@ -14,9 +14,9 @@ namespace HomeCenter.Model.Messages.Events
         public RoutingFilter GetRoutingFilter()
         {
             var attributes = GetProperties().ToDictionary();
-            if (!attributes.ContainsKey(EventProperties.EventType))
+            if (!attributes.ContainsKey(MessageProperties.EventType))
             {
-                attributes.Add(EventProperties.EventType, EventType.PropertyChanged);
+                attributes.Add(MessageProperties.EventType, EventType.PropertyChanged);
             }
 
             var routingKey = attributes[MessageProperties.MessageSource];
@@ -28,7 +28,7 @@ namespace HomeCenter.Model.Messages.Events
             if (!ContainsProperty(MessageProperties.MessageSource) && routerAttributes == null) return null;
 
             var attributes = routerAttributes?.ToDictionary(k => k, v => this[v]) ?? new Dictionary<string, string>();
-            attributes[EventProperties.EventType] = Type;
+            attributes[MessageProperties.EventType] = Type;
             var routingKey = this[MessageProperties.MessageSource];
             attributes[MessageProperties.MessageSource] = routingKey;
 

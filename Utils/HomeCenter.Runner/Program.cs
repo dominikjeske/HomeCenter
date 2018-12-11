@@ -96,7 +96,8 @@ namespace HomeCenter.Runner
                 new PcRunner("PcComponent"),
                 new SamsungRunner("KodiComponent"),
                 new SonyRunner("SonyComponent"),
-                new RemoteSocketRunner("RemoteLamp3")
+                new RemoteSocketRunner("RemoteLamp3"),
+                new RaspberryRunner("RaspberryLed")
             };
 
             var runner = new RemoteWirehomeRunner(runners.ToList());

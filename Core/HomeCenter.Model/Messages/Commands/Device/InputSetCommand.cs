@@ -5,7 +5,7 @@
         public static InputSetCommand Create(string input)
         {
             var command = new InputSetCommand();
-            command[CommandProperties.InputSource] = input;
+            command[MessageProperties.InputSource] = input;
             return command;
         }
     }

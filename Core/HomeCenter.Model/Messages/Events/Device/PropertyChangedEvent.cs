@@ -23,13 +23,13 @@ namespace HomeCenter.Model.Messages.Events.Device
             Uid = Guid.NewGuid().ToString();
             this[StateProperties.StateName] = changedPropertyName;
             this[MessageProperties.MessageSource] = deviceUID;
-            this[EventProperties.NewValue] = newValue;
+            this[MessageProperties.NewValue] = newValue;
             
-            SetProperty(EventProperties.EventTime, SystemTime.Now);
+            SetProperty(MessageProperties.EventTime, SystemTime.Now);
 
             if(oldValue != null)
             {
-                this[EventProperties.OldValue] = oldValue;
+                this[MessageProperties.OldValue] = oldValue;
             }
 
             if (additionalProperties != null)
@@ -42,9 +42,9 @@ namespace HomeCenter.Model.Messages.Events.Device
         }
 
         public string PropertyChangedName => AsString(StateProperties.StateName);
-        public string NewValue => this[EventProperties.NewValue];
-        public string OldValue => this[EventProperties.OldValue];
-        public DateTimeOffset EventTime => AsDate(EventProperties.EventTime);
+        public string NewValue => this[MessageProperties.NewValue];
+        public string OldValue => this[MessageProperties.OldValue];
+        public DateTimeOffset EventTime => AsDate(MessageProperties.EventTime);
         public string SourceDeviceUid => AsString(MessageProperties.MessageSource);
     }
 }

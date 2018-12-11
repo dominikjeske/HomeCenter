@@ -2,7 +2,7 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
@@ -45,7 +45,7 @@ namespace HomeCenter.Adapters.HSREL8
 
         private int GetPin(Command message)
         {
-            var pinNumber = message.AsInt(AdapterProperties.PinNumber);
+            var pinNumber = message.AsInt(MessageProperties.PinNumber);
             if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
             return pinNumber;
         }

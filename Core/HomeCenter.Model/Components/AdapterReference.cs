@@ -19,7 +19,7 @@ namespace HomeCenter.Model.Components
                 routerAttributes.Add(adapterProperty, this[adapterProperty]);
             }
             routerAttributes.Add(MessageProperties.MessageSource, Uid);
-            routerAttributes.Add(EventProperties.EventType, EventType.PropertyChanged);
+            routerAttributes.Add(MessageProperties.EventType, EventType.PropertyChanged);
 
             return new RoutingFilter(Uid, routerAttributes);
         }

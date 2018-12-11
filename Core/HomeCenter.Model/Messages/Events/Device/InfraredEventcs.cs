@@ -9,8 +9,8 @@ namespace HomeCenter.Model.Messages.Events.Device
             Type = EventType.InfraredCode;
             Uid = Guid.NewGuid().ToString();
             this[MessageProperties.MessageSource] = deviceUID;
-            SetProperty(EventProperties.System, system);
-            SetProperty(EventProperties.CommandCode, commandCode);
+            SetProperty(MessageProperties.System, system);
+            SetProperty(MessageProperties.CommandCode, commandCode);
         }
     }
 }

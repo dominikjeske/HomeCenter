@@ -4,7 +4,7 @@ using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
@@ -24,7 +24,7 @@ namespace HomeCenter.Adapters.Samsung
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostname = AsString(AdapterProperties.Hostname);
+            _hostname = AsString(MessageProperties.Hostname);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -79,7 +79,7 @@ namespace HomeCenter.Adapters.Samsung
 
         protected async Task Handle(InputSetCommand message)
         {
-            var inputName = message.AsString(CommandProperties.InputSource);
+            var inputName = message.AsString(MessageProperties.InputSource);
 
             var source = "";
             if (inputName == "HDMI")

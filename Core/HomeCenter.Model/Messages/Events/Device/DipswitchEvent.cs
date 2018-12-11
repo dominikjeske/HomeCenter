@@ -12,14 +12,14 @@ namespace HomeCenter.Model.Messages.Events.Device
             Type = EventType.DipswitchCode;
             Uid = Guid.NewGuid().ToString();
             this[MessageProperties.MessageSource] = deviceUID;
-            this[EventProperties.Unit] = code.Unit.ToString();
-            this[EventProperties.System] = code.System.ToString();
-            this[EventProperties.CommandCode] = code.Command.ToString();
-            SetProperty(EventProperties.EventTime, SystemTime.Now);
+            this[MessageProperties.Unit] = code.Unit.ToString();
+            this[MessageProperties.System] = code.System.ToString();
+            this[MessageProperties.CommandCode] = code.Command.ToString();
+            SetProperty(MessageProperties.EventTime, SystemTime.Now);
         }
 
-        public override IEnumerable<string> RoutingAttributes() => new string[] { EventProperties.Unit, EventProperties.System };
+        public override IEnumerable<string> RoutingAttributes() => new string[] { MessageProperties.Unit, MessageProperties.System };
 
-        public DipswitchCode DipswitchCode => DipswitchCode.ParseCode(AsString(EventProperties.System), AsString(EventProperties.Unit), AsString(EventProperties.CommandCode));
+        public DipswitchCode DipswitchCode => DipswitchCode.ParseCode(AsString(MessageProperties.System), AsString(MessageProperties.Unit), AsString(MessageProperties.CommandCode));
     }
 }

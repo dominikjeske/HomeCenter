@@ -2,6 +2,7 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
@@ -19,16 +20,16 @@ namespace HomeCenter.Adapters.TemperatureBridge
 
         protected TemperatureBridgeAdapter()
         {
-            _requierdProperties.Add(AdapterProperties.PinNumber);
+            _requierdProperties.Add(MessageProperties.PinNumber);
         }
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = AsInt(AdapterProperties.I2cAddress);
+            var _i2cAddress = AsInt(MessageProperties.I2cAddress);
 
-            foreach (var val in AsList(AdapterProperties.UsedPins))
+            foreach (var val in AsList(MessageProperties.UsedPins))
             {
                 _state.Add(int.Parse(val), 0);
             }

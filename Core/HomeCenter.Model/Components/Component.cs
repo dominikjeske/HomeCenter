@@ -107,7 +107,7 @@ namespace HomeCenter.Model.Components
 
         private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
         {
-            eventSources.ForEach(es => _eventSources[es.AsString(EventProperties.EventType)] = adapter);
+            eventSources.ForEach(es => _eventSources[es.AsString(MessageProperties.EventType)] = adapter);
         }
 
         /// <summary>
@@ -162,10 +162,10 @@ namespace HomeCenter.Model.Components
                 {
                     foreach (var command in trigger.Commands)
                     {
-                        if (command.ContainsProperty(CommandProperties.ExecutionDelay))
+                        if (command.ContainsProperty(MessageProperties.ExecutionDelay))
                         {
-                            var executionDelay = command.AsTime(CommandProperties.ExecutionDelay);
-                            var cancelPrevious = command.AsBool(CommandProperties.CancelPrevious, false);
+                            var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
+                            var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
                             await Scheduler.DelayExecution<DelayCommandJob>(executionDelay, command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
                             continue;
                         }
@@ -215,7 +215,7 @@ namespace HomeCenter.Model.Components
 
         protected string Handle(StateQuery command)
         {
-            var stateName = command.AsString(CommandProperties.StateName);
+            var stateName = command.AsString(MessageProperties.StateName);
 
             if (!_capabilities.ContainsKey(stateName)) return null;
             var value = _capabilities[stateName][StateProperties.Value];

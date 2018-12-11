@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    public class RemoteSocketRunner : Runner
+    public class RaspberryRunner : Runner
     {
-        public RemoteSocketRunner(string uid) : base(uid, new string[] { "TurnOn", "TurnOff"})
+        public RaspberryRunner(string uid) : base(uid, new string[] { "TurnOn", "TurnOff", })
         {
         }
 

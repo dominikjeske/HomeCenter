@@ -247,6 +247,19 @@
             }
           }
         ]
+      },
+      {
+        "Uid": "RaspberryLed",
+        "IsEnabled": true,
+        "AdapterRefs": [
+          {
+            "Uid": "Raspberry",
+            "Properties": {
+              "PinNumber": "16",
+              "ReversePinLevel": true
+            }
+          }
+        ]
       }
 
 
@@ -339,6 +352,11 @@
         "Properties": {
           "I2cAddress": 50
         }
+      },
+      {
+        "Uid": "Raspberry",
+        "IsEnabled": true,
+        "Type": "RaspberryAdapter"
       }
 
     ],
@@ -376,11 +394,6 @@
       {
         "Uid": "SerialService",
         "Type": "SerialPortService",
-        "IsEnabled": true
-      },
-      {
-        "Uid": "GpioService",
-        "Type": "GpioService",
         "IsEnabled": true
       }
     ]

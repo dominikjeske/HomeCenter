@@ -5,7 +5,7 @@
         public static ModeSetCommand Create(string mode)
         {
             var command = new ModeSetCommand();
-            command[CommandProperties.SurroundMode] = mode;
+            command[MessageProperties.SurroundMode] = mode;
             return command;
         }
     }

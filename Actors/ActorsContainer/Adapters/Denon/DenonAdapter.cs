@@ -3,7 +3,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.Extensions;
@@ -36,9 +36,9 @@ namespace HomeCenter.Adapters.Denon
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _hostName = AsString(AdapterProperties.Hostname);
-            _poolInterval = AsIntTime(AdapterProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
-            _zone = AsInt(AdapterProperties.Zone);
+            _hostName = AsString(MessageProperties.Hostname);
+            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _zone = AsInt(MessageProperties.Zone);
 
             await DelayDeviceRefresh<RefreshStateJob>(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             await ScheduleDeviceRefresh<RefreshLightStateJob>(_poolInterval).ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace HomeCenter.Adapters.Denon
             _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
             _mute = await UpdateState(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);            
+            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
         }
 
         protected async Task Handle(TurnOnCommand message)
@@ -124,7 +124,7 @@ namespace HomeCenter.Adapters.Denon
         {
             if (_volume.HasValue)
             {
-                var changeFactor = command.AsDouble(CommandProperties.ChangeFactor, DEFAULT_VOLUME_CHANGE_FACTOR);
+                var changeFactor = command.AsDouble(MessageProperties.ChangeFactor, DEFAULT_VOLUME_CHANGE_FACTOR);
                 var volume = _volume + changeFactor;
 
                 var normalized = NormalizeVolume(volume.Value);
@@ -148,7 +148,7 @@ namespace HomeCenter.Adapters.Denon
         {
             if (_volume.HasValue)
             {
-                var changeFactor = command.AsDouble(CommandProperties.ChangeFactor, DEFAULT_VOLUME_CHANGE_FACTOR);
+                var changeFactor = command.AsDouble(MessageProperties.ChangeFactor, DEFAULT_VOLUME_CHANGE_FACTOR);
                 var volume = _volume - changeFactor;
                 var normalized = NormalizeVolume(volume.Value);
 
@@ -169,7 +169,7 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            var volume = command.AsDouble(CommandProperties.Value);
+            var volume = command.AsDouble(MessageProperties.Value);
             var normalized = NormalizeVolume(volume);
 
             var control = new DenonControlQuery
@@ -230,7 +230,7 @@ namespace HomeCenter.Adapters.Denon
         protected async Task SetInput(InputSetCommand message)
         {
             if (_fullState == null) throw new UnsupportedStateException("Cannot change input source on Denon device because device info was not downloaded from device");
-            var inputName = message.AsString(CommandProperties.InputSource);
+            var inputName = message.AsString(MessageProperties.InputSource);
             var input = _fullState.TranslateInputName(inputName, _zone.ToString());
             if (input?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
 
@@ -252,7 +252,7 @@ namespace HomeCenter.Adapters.Denon
         {
             //Surround support only in main zone
             if (_zone != 1) return;
-            var surroundMode = message.AsString(CommandProperties.SurroundMode);
+            var surroundMode = message.AsString(MessageProperties.SurroundMode);
             var mode = DenonSurroundModes.MapApiCommand(surroundMode);
             if (mode?.Length == 0) throw new UnsupportedPropertyStateException($"Surroundmode {mode} was not found on available surround modes");
 
