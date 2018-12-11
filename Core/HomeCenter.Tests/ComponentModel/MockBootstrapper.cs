@@ -1,8 +1,7 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Actors;
-using HomeCenter.Model.Native;
+using HomeCenter.Model.Devices;
 using HomeCenter.Services.Bootstrapper;
-using HomeCenter.Services.Configuration;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Roslyn;
@@ -40,7 +39,7 @@ namespace HomeCenter.Tests.ComponentModel
         protected override void RegisterNativeServices()
         {
             var i2cBus = Mock.Of<II2cBus>();
-            
+
             _container.RegisterInstance(i2cBus);
             _container.RegisterInstance(Mock.Of<ISerialDevice>());
             _container.RegisterInstance(Mock.Of<ISoundPlayer>());
@@ -54,7 +53,7 @@ namespace HomeCenter.Tests.ComponentModel
                 RemoteActorPort = 8080,
                 Configuration = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json"),
                 AdapterRepoName = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Actors\ActorsContainer\Adapters")
-        });
+            });
         }
     }
 }

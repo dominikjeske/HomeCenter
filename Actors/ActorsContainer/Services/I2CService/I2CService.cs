@@ -1,9 +1,9 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Devices;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;

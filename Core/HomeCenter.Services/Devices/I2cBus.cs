@@ -1,6 +1,5 @@
-﻿using HomeCenter.Model.Native;
+﻿using HomeCenter.Model.Devices;
 using System;
-using System.Device.Gpio;
 
 namespace HomeCenter.Services.Devices
 {

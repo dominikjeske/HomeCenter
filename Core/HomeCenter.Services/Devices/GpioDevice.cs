@@ -1,16 +1,26 @@
-﻿using System.Device.Gpio;
+﻿using HomeCenter.Model.Devices;
+using System;
+using System.Device.Gpio;
+using System.Device.Gpio.Drivers;
 
 namespace HomeCenter.Services.Devices
 {
-    public class GpioDevice
+    public class GpioDevice : IGpioDevice, IDisposable
     {
-        public void Write(int pin)
+        private readonly GpioController _controller = new GpioController(PinNumberingScheme.Logical, new RaspberryPi3Driver());
+
+        public void Dispose()
         {
-            using (var controller = new GpioController())
+            _controller.Dispose();
+        }
+
+        public void Write(int pin, bool value)
+        {
+            if (!_controller.IsPinOpen(pin))
             {
-                controller.OpenPin(pin, PinMode.Output);
-                controller.Write(pin, PinValue.High);
+                _controller.OpenPin(pin, PinMode.Output);
             }
+            _controller.Write(pin, value ? PinValue.High : PinValue.Low);
         }
     }
 }

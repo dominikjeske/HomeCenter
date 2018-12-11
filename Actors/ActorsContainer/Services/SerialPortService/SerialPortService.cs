@@ -1,11 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Devices;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using HomeCenter.Model.Native;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 namespace HomeCenter.Services.Networking
 {
     [ProxyCodeGenerator]
-    public abstract class SerialMessagingService : Service
+    public abstract class SerialPortService : Service
     {
         private readonly ISerialDevice _serialDevice;
         private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
-        protected SerialMessagingService(ISerialDevice serialDevice)
+        protected SerialPortService(ISerialDevice serialDevice)
         {
             _serialDevice = serialDevice ?? throw new ArgumentNullException(nameof(serialDevice));
         }
@@ -43,7 +43,7 @@ namespace HomeCenter.Services.Networking
         {
             if (_messageHandlers.ContainsKey(registration.MessageType))
             {
-                throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialMessagingService)}");
+                throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialPortService)}");
             }
 
             _messageHandlers.Add(registration.MessageType, registration);
@@ -59,12 +59,12 @@ namespace HomeCenter.Services.Networking
                 var messageBodySize = reader.ReadByte();
                 var messageType = reader.ReadByte();
 
-                if(messageType == 0)
+                if (messageType == 0)
                 {
                     Logger.LogInformation("Test message from RC");
                 }
 
-                if(messageType == 10)
+                if (messageType == 10)
                 {
                     var byteArray = reader.ReadBytes(rawData.Length - 2);
                     string message = Encoding.UTF8.GetString(byteArray);
@@ -74,7 +74,7 @@ namespace HomeCenter.Services.Networking
 
                 if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
                 {
-                    Logger.LogInformation($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+                    Logger.LogInformation($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
                     return;
                     //throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
                 }

@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Native;
+﻿using HomeCenter.Model.Devices;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using Moq;

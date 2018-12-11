@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Native
+namespace HomeCenter.Model.Devices
 {
     public interface ISoundPlayer
     {

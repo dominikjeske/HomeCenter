@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Native;
+﻿using HomeCenter.Model.Devices;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Devices;
@@ -22,6 +22,7 @@ namespace HomeCenter.Runner
         {
             _container.RegisterSingleton<II2cBus, I2cBus>();
             _container.RegisterSingleton<ISerialDevice, SerialDevice>();
+            _container.RegisterSingleton<IGpioDevice, GpioDevice>();
         }
 
         protected override void RegisterControllerOptions()

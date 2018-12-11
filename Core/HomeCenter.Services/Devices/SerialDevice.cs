@@ -1,5 +1,5 @@
-﻿using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Native;
+﻿using HomeCenter.Model.Devices;
+using HomeCenter.Model.Exceptions;
 using System;
 using System.IO.Ports;
 using System.Linq;

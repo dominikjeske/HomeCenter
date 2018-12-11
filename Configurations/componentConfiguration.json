@@ -375,8 +375,13 @@
       },
       {
         "Uid": "SerialService",
-        "Type": "SerialMessagingService",
-        "IsEnabled": false
+        "Type": "SerialPortService",
+        "IsEnabled": true
+      },
+      {
+        "Uid": "GpioService",
+        "Type": "GpioService",
+        "IsEnabled": true
       }
     ]
 
