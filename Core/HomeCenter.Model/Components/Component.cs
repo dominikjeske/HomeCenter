@@ -83,9 +83,10 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
+            var discoverQuery = DiscoverQuery.CreateQuery(this);
             foreach (var adapterRef in _adapters)
             {
-                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.Default, adapterRef.Uid).ConfigureAwait(false);
+                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(discoverQuery, adapterRef.Uid).ConfigureAwait(false);
                 if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
                 MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
@@ -128,16 +129,16 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters
         /// </summary>
-        protected override async Task UnhandledMessage(object actorMessage)
+        protected override async Task UnhandledMessage(object message)
         {
-            var message = actorMessage as ActorMessage;
+            var actorMessage = message as ActorMessage;
 
             bool handled = false;
 
-            if (message is Command command)
+            if (actorMessage is Command command)
             {
                 // TODO use value converter before publish
-                var supportedCapabilities = _capabilities.Values.Where(capability => capability.IsCommandSupported(message));
+                var supportedCapabilities = _capabilities.Values.Where(capability => capability.IsCommandSupported(command));
                 foreach (var state in supportedCapabilities)
                 {
                     var adapter = _adapterStateMap[state.Name];
@@ -155,39 +156,50 @@ namespace HomeCenter.Model.Components
 
         protected async Task Handle(Event ev)
         {
-            var trigger = _triggers.FirstOrDefault(t => t?.Event?.Equals(ev) ?? false);
+            var trigger = _triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
             if (trigger != null)
             {
-                if (await trigger.ValidateCondition().ConfigureAwait(false))
-                {
-                    foreach (var command in trigger.Commands)
-                    {
-                        if (command.ContainsProperty(MessageProperties.ExecutionDelay))
-                        {
-                            var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
-                            var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
-                            await Scheduler.DelayExecution<DelayCommandJob>(executionDelay, command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
-                            continue;
-                        }
-
-                        MessageBroker.Send(command, Self);
-                    }
-                }
+                await HandleEventInTrigger(trigger).ConfigureAwait(false);
             }
-            else if (ev is PropertyChangedEvent propertyChanged)
+
+            if (ev is PropertyChangedEvent propertyChanged)
             {
-                var propertyName = propertyChanged.PropertyChangedName;
-                if (!_capabilities.ContainsKey(propertyName)) return;
+                await HandlePropertyChange(propertyChanged).ConfigureAwait(false);
+            }
+        }
 
-                var state = _capabilities[propertyName];
-                var oldValue = state.Value;
-                var newValue = propertyChanged.NewValue;
+        private async Task HandlePropertyChange(PropertyChangedEvent propertyChanged)
+        {
+            var propertyName = propertyChanged.PropertyChangedName;
+            if (!_capabilities.ContainsKey(propertyName)) return;
 
-                if (newValue.Equals(oldValue)) return;
+            var state = _capabilities[propertyName];
+            var oldValue = state.Value;
+            var newValue = propertyChanged.NewValue;
 
-                state.Value = newValue;
+            if (newValue.Equals(oldValue)) return;
 
-                await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+            state.Value = newValue;
+
+            await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+        }
+
+        private async Task HandleEventInTrigger(Trigger trigger)
+        {
+            if (await trigger.ValidateCondition().ConfigureAwait(false))
+            {
+                foreach (var command in trigger.Commands)
+                {
+                    if (command.ContainsProperty(MessageProperties.ExecutionDelay))
+                    {
+                        var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
+                        var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
+                        await Scheduler.DelayExecution<DelayCommandJob>(executionDelay, command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    MessageBroker.Send(command, Self);
+                }
             }
         }
 

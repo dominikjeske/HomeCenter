@@ -45,7 +45,6 @@
     "Components": [
       {
         "Uid": "DenonComponent",
-        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Denon"
         },
@@ -57,7 +56,6 @@
       },
       {
         "Uid": "KodiComponent",
-        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Kodi"
         },
@@ -69,7 +67,6 @@
       },
       {
         "Uid": "PcComponent",
-        "IsEnabled": false,
         "Properties": {
           "FriendlyName": "PC"
         },
@@ -81,7 +78,6 @@
       },
       {
         "Uid": "SamsungComponent",
-        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Samsung"
         },
@@ -93,7 +89,6 @@
       },
       {
         "Uid": "SonyComponent",
-        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Sony"
         },
@@ -105,7 +100,7 @@
       },
       {
         "Uid": "Lamp1",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "Properties": {
           "FriendlyName": "Blue lamp"
         },
@@ -155,7 +150,6 @@
       },
       {
         "Uid": "RemoteLamp",
-        "IsEnabled": true,
         "Triggers": [
           {
             "Schedule": {
@@ -196,7 +190,6 @@
       },
       {
         "Uid": "RemoteLamp2",
-        "IsEnabled": true,
         "Triggers": [
           {
             // Add custom c# scheduler
@@ -237,7 +230,6 @@
       },
       {
         "Uid": "RemoteLamp3",
-        "IsEnabled": true,
         "AdapterRefs": [
           {
             "Uid": "RemoteSocket",
@@ -250,13 +242,24 @@
       },
       {
         "Uid": "RaspberryLed",
-        "IsEnabled": true,
         "AdapterRefs": [
           {
             "Uid": "Raspberry",
             "Properties": {
               "PinNumber": "16",
               "ReversePinLevel": true
+            }
+          }
+        ]
+      },
+      {
+        "Uid": "RoomTemperature",
+        "AdapterRefs": [
+          {
+            "Uid": "TemperatureBridge",
+            "Properties": 
+            {
+              "PinNumber": "16"
             }
           }
         ]
@@ -289,7 +292,6 @@
       {
         "Uid": "Denon",
         "Type": "DenonAdapter",
-        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.100",
           "PoolInterval": 500,
@@ -299,7 +301,6 @@
       {
         "Uid": "Kodi",
         "Type": "KodiAdapter",
-        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -311,7 +312,6 @@
       {
         "Uid": "PC",
         "Type": "PcAdapter",
-        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -322,7 +322,6 @@
       {
         "Uid": "Samsung",
         "Type": "SamsungAdapter",
-        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.102"
         }
@@ -330,7 +329,6 @@
       {
         "Uid": "Sony",
         "Type": "SonyBraviaAdapter",
-        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "AuthKey": "344fb7d28691ba43c9045e9d38fa3c83a0587620fc14a79a958db4ff5d30e0e7"
@@ -339,7 +337,6 @@
       {
         "Uid": "RemoteSocket",
         "Type": "RemoteSocketBridgeAdapter",
-        "IsEnabled": true,
         "Properties": {
           "I2cAddress": 50,
           "PinNumber": 7
@@ -347,7 +344,6 @@
       },
       {
         "Uid": "RemoteIR",
-        "IsEnabled": true,
         "Type": "InfraredBridgeAdapter",
         "Properties": {
           "I2cAddress": 50
@@ -355,8 +351,14 @@
       },
       {
         "Uid": "Raspberry",
-        "IsEnabled": true,
         "Type": "RaspberryAdapter"
+      },
+      {
+        "Uid": "TemperatureBridge",
+        "Type": "TemperatureBridgeAdapter",
+        "Properties": {
+          "I2cAddress": 50
+        }
       }
 
     ],
@@ -365,7 +367,6 @@
       {
         "Uid": "HttpService",
         "Type": "HttpMessagingService",
-        "IsEnabled": true,
         "Properties": {
           "Routing": 5
         }
@@ -373,7 +374,6 @@
       {
         "Uid": "TcpService",
         "Type": "TcpMessagingService",
-        "IsEnabled": true,
         "Properties": {
           "Routing": 3
         }
@@ -381,7 +381,6 @@
       {
         "Uid": "UdpService",
         "Type": "UdpBroadcastService",
-        "IsEnabled": true,
         "Properties": {
           "Routing": 3
         }
@@ -389,12 +388,10 @@
       {
         "Uid": "I2CService",
         "Type": "I2CService",
-        "IsEnabled": true
       },
       {
         "Uid": "SerialService",
         "Type": "SerialPortService",
-        "IsEnabled": true
       }
     ]
 

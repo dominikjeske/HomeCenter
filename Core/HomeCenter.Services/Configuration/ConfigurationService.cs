@@ -75,7 +75,6 @@ namespace HomeCenter.Services.Configuration
             var components = MapComponents(result);
             var areas = MapAreas(result, components);
 
-            //MessageBroker.Send(SystemStartedEvent.Default, "Controller");
             await MessageBroker.PublisEvent(SystemStartedEvent.Default).ConfigureAwait(false);
         }
 

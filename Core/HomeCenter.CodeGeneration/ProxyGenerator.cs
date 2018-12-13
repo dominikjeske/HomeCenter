@@ -113,9 +113,10 @@ namespace HomeCenter.CodeGeneration
         private ClassDeclarationSyntax AddSubscriptions(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
         {
             var commands = GetMethodList(classSyntax, model, "Command", "Subscibe");
+            var events = GetMethodList(classSyntax, model, "Event", "Subscibe");
             var queries = GetMethodList(classSyntax, model, "Query", "Subscibe");
             
-            if(commands.Count + queries.Count > 0)
+            if(commands.Count + queries.Count + events.Count > 0)
             {
                 var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
 
@@ -125,6 +126,13 @@ namespace HomeCenter.CodeGeneration
                 };
 
                 foreach (var method in commands)
+                {
+                    var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
+
+                    statementSyntaxes.Add(registration);
+                }
+
+                foreach (var method in events)
                 {
                     var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
 
