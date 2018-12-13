@@ -31,11 +31,7 @@ namespace HomeCenter.Adapters.TemperatureBridge
 
             _i2cAddress = AsInt(MessageProperties.I2cAddress);
 
-            foreach (var val in AsList(MessageProperties.UsedPins))
-            {
-                _state.Add(int.Parse(val), 0);
-            }
-            var registration = new SerialRegistrationCommand(Self, 1, new Format[]
+            var registration = new SerialRegistrationCommand(Self, I2C_ACTION_TEMPERATURE, new Format[]
             {
                 new Format(1, typeof(byte), MessageProperties.PinNumber),
                 new Format(2, typeof(float), MessageProperties.Value)
@@ -48,7 +44,12 @@ namespace HomeCenter.Adapters.TemperatureBridge
             var pin = serialResult.AsByte(MessageProperties.PinNumber);
             var temperature = serialResult.AsDouble(MessageProperties.Value);
 
-            _state[pin] = await UpdateState(TemperatureState.StateName, pin, temperature).ConfigureAwait(false);
+            if (_state.ContainsKey(pin))
+            {
+                var oldValue = _state[pin];
+
+                _state[pin] = await UpdateState(TemperatureState.StateName, oldValue, temperature, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
+            }
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -62,6 +63,12 @@ namespace HomeCenter.Adapters.TemperatureBridge
         {
             var pin = message.AsByte(MessageProperties.PinNumber);
             var registrationMessage = new byte[] { I2C_ACTION_TEMPERATURE, pin };
+
+            if (!_state.ContainsKey(pin))
+            {
+                _state.Add(pin, 0);
+            }
+
             MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, registrationMessage));
         }
     }

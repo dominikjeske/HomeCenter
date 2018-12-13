@@ -88,7 +88,7 @@ namespace HomeCenter.CodeGeneration
 
         private ClassDeclarationSyntax AddReciveMapMethod(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
         {
-            var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsync")
+            var methodDeclaration = MethodDeclaration(ParseTypeName("Task"), "ReceiveAsyncInternal")
                                                    .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword), Token(SyntaxKind.OverrideKeyword) }))
                                                    .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext"))))))
                                                    .WithBody(Block(

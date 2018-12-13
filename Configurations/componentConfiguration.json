@@ -257,9 +257,14 @@
         "AdapterRefs": [
           {
             "Uid": "TemperatureBridge",
-            "Properties": 
-            {
-              "PinNumber": "16"
+            "Properties": {
+              "PinNumber": "4"
+            }
+          },
+          {
+            "Uid": "HumidityBridge",
+            "Properties": {
+              "PinNumber": "4"
             }
           }
         ]
@@ -301,6 +306,7 @@
       {
         "Uid": "Kodi",
         "Type": "KodiAdapter",
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -312,6 +318,7 @@
       {
         "Uid": "PC",
         "Type": "PcAdapter",
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102",
           "Port": 500,
@@ -322,12 +329,14 @@
       {
         "Uid": "Samsung",
         "Type": "SamsungAdapter",
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.102"
         }
       },
       {
         "Uid": "Sony",
+        "IsEnabled": false,
         "Type": "SonyBraviaAdapter",
         "Properties": {
           "Hostname": "192.168.0.102",
@@ -359,6 +368,13 @@
         "Properties": {
           "I2cAddress": 50
         }
+      },
+      {
+        "Uid": "HumidityBridge",
+        "Type": "HumidityBridgeAdapter",
+        "Properties": {
+          "I2cAddress": 50
+        }
       }
 
     ],
@@ -387,11 +403,11 @@
       },
       {
         "Uid": "I2CService",
-        "Type": "I2CService",
+        "Type": "I2CService"
       },
       {
         "Uid": "SerialService",
-        "Type": "SerialPortService",
+        "Type": "SerialPortService"
       }
     ]
 

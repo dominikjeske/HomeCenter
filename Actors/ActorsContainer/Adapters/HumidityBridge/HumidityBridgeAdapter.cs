@@ -16,6 +16,8 @@ namespace HomeCenter.Adapters.HumidityBridge
     [ProxyCodeGenerator]
     public abstract class HumidityBridgeAdapter : Adapter
     {
+        private const int I2C_ACTION_HUMANITY = 6;
+        private int _i2cAddress;
         private readonly Dictionary<int, double> _state = new Dictionary<int, double>();
 
         protected HumidityBridgeAdapter()
@@ -27,34 +29,48 @@ namespace HomeCenter.Adapters.HumidityBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = AsInt(MessageProperties.I2cAddress);
+            _i2cAddress = AsInt(MessageProperties.I2cAddress);
 
-            foreach (var val in AsList(MessageProperties.UsedPins))
+            var registration = new SerialRegistrationCommand(Self, I2C_ACTION_HUMANITY, new Format[]
             {
-                _state.Add(int.Parse(val), 0);
-            }
-
-            var registration = new SerialRegistrationCommand(Self, 6, new Format[]
-            {
-                new Format(1, typeof(byte), "Pin"),
-                new Format(2, typeof(float), "Humidity")
+                new Format(1, typeof(byte), MessageProperties.PinNumber),
+                new Format(2, typeof(float), MessageProperties.Value)
             });
             await MessageBroker.SendToService(registration).ConfigureAwait(false);
         }
 
         protected async Task Handle(SerialResultEvent serialResult)
         {
-            var pin = serialResult.AsByte("Pin");
-            var humidity = serialResult.AsDouble("Humidity");
+            var pin = serialResult.AsByte(MessageProperties.PinNumber);
+            var humidity = serialResult.AsDouble(MessageProperties.Value);
 
-            var oldValue = _state[pin];
+            if (_state.ContainsKey(pin))
+            {
+                var oldValue = _state[pin];
 
-            _state[pin] = await UpdateState(HumidityState.StateName, oldValue, humidity).ConfigureAwait(false);
+                _state[pin] = await UpdateState(HumidityState.StateName, oldValue, humidity, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
+            }
         }
 
+       
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
+            RegisterPinNumber(message);
+
             return new DiscoveryResponse(RequierdProperties(), new HumidityState(ReadWriteMode.Read));
+        }
+
+        private void RegisterPinNumber(DiscoverQuery message)
+        {
+            var pin = message.AsByte(MessageProperties.PinNumber);
+            var registrationMessage = new byte[] { 1, pin };
+
+            if (!_state.ContainsKey(pin))
+            {
+                _state.Add(pin, 0);
+            }
+
+            MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, registrationMessage));
         }
     }
 }

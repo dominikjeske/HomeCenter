@@ -83,25 +83,25 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            var discoverQuery = DiscoverQuery.CreateQuery(this);
+            
             foreach (var adapterRef in _adapters)
             {
-                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(discoverQuery, adapterRef.Uid).ConfigureAwait(false);
+                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapterRef), adapterRef.Uid).ConfigureAwait(false);
                 if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapterRef.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
 
-                MapCapabilitiesToAdapters(adapterRef, capabilities.SupportedStates);
-                BuildCapabilityStates(capabilities);
+                CreateAdapterStateMap(adapterRef, capabilities.SupportedStates);
+                CreateCapabilities(capabilities);
                 MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
                 SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
             }
         }
 
-        private void MapCapabilitiesToAdapters(AdapterReference adapter, State[] states)
+        private void CreateAdapterStateMap(AdapterReference adapter, State[] states)
         {
             states.ForEach(state => _adapterStateMap[state.Name] = adapter);
         }
 
-        private void BuildCapabilityStates(DiscoveryResponse capabilities)
+        private void CreateCapabilities(DiscoveryResponse capabilities)
         {
             _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => key.Name, val => val));
         }

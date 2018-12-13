@@ -21,7 +21,20 @@ namespace HomeCenter.Model.Actors
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
 
-        public virtual Task ReceiveAsync(IContext context) => Task.CompletedTask;
+        //TODO - use more build in proto actor mechanics
+        public async Task ReceiveAsync(IContext context)
+        {
+            try
+            {
+                await ReceiveAsyncInternal(context).ConfigureAwait(false);
+            }
+            catch (System.Exception e)
+            {
+                Logger.LogError(e, $"Exception in device {Uid}: {e}");
+            }
+        }
+
+        public virtual Task ReceiveAsyncInternal(IContext context) => Task.CompletedTask;
 
         protected virtual Task UnhandledMessage(object message)
         {

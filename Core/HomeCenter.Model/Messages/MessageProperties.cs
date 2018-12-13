@@ -38,7 +38,6 @@
         public const string Port = nameof(Port);
         public const string MAC = nameof(MAC);
         public const string AuthKey = nameof(AuthKey);
-        public const string UsedPins = nameof(UsedPins);
         public const string System = nameof(System);
         public const string Bits = nameof(Bits);
         public const string Unit = nameof(Unit);

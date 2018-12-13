@@ -1,8 +1,9 @@
 ﻿using HomeCenter.Model.Devices;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
-using Moq;
 using SimpleInjector;
+using System;
+using System.Reactive.Linq;
 
 namespace HomeCenter.Runner
 {
@@ -20,10 +21,9 @@ namespace HomeCenter.Runner
 
         protected override void RegisterNativeServices()
         {
-            var i2cBus = Mock.Of<II2cBus>();
-
-            _container.RegisterInstance(i2cBus);
-            _container.RegisterInstance(Mock.Of<ISerialDevice>());
+            _container.RegisterSingleton<II2cBus, FakeII2cBus>();
+            _container.RegisterSingleton<ISerialDevice, FakeISerialDevice>();
+            _container.RegisterSingleton<IGpioDevice, FakeGpioDevice>();
         }
 
         protected override void RegisterControllerOptions()
@@ -34,6 +34,42 @@ namespace HomeCenter.Runner
                 RemoteActorPort = 8000,
                 Configuration = _configuration
             });
+        }
+    }
+
+    public class FakeII2cBus : II2cBus
+    {
+        public void Write(int address, Span<byte> data)
+        {
+        }
+    }
+
+    public class FakeGpioDevice : IGpioDevice
+    {
+        public void Write(int pin, bool value)
+        {
+            
+        }
+    }
+
+    public class FakeISerialDevice : ISerialDevice
+    {
+        public IObservable<byte[]> DataSink => Observable.Empty<byte[]>();
+
+        public void Dispose()
+        {
+        }
+
+        public void Init()
+        {
+        }
+
+        public void Send(byte[] data)
+        {
+        }
+
+        public void Send(string data)
+        {
         }
     }
 }

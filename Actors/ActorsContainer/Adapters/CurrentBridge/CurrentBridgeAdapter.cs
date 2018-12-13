@@ -29,11 +29,6 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             var _i2cAddress = AsInt(MessageProperties.I2cAddress);
 
-            foreach (var val in AsList(MessageProperties.UsedPins))
-            {
-                _state.Add(byte.Parse(val), 0);
-            }
-
             var registration = new SerialRegistrationCommand(Self, 5, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
