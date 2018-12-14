@@ -1,12 +1,11 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Adapters.RemoteSocketBridge.Codes;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Codes;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
@@ -18,8 +17,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.RemoteSocketBridge
 {
-    //TODO reset state of all devices on start?
-
     [ProxyCodeGenerator]
     public abstract class RemoteSocketBridgeAdapter : Adapter
     {
@@ -35,7 +32,6 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
             _I2cAddress = AsInt(MessageProperties.I2cAddress);
             _pinNumber = AsInt(MessageProperties.PinNumber);
-
 
             var registration = new SerialRegistrationCommand(Self, 2, new Format[]
              {
@@ -57,7 +53,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                 return;
             }
 
-            await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode)).ConfigureAwait(false);
+            await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString())).ConfigureAwait(false);
         }
 
         protected async Task TurnOn(TurnOnCommand message)

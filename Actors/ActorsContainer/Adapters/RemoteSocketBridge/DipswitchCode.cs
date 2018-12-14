@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Codes
+namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
 {
     public class DipswitchCode : IEquatable<DipswitchCode>
     {
