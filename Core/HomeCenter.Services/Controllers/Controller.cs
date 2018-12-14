@@ -12,13 +12,13 @@ namespace HomeCenter.Services.Controllers
     [ProxyCodeGenerator]
     public abstract class Controller : DeviceActor
     {
-        private readonly ControllerOptions _controllerOptions;
+        private readonly StartupConfiguration _startupConfiguration;
         private readonly IActorFactory _actorFactory;
 
-        protected Controller(ControllerOptions controllerOptions, IActorFactory actorFactory)
+        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory)
         {
             _actorFactory = actorFactory;
-            _controllerOptions = controllerOptions;
+            _startupConfiguration = startupConfiguration;
         }
 
         protected override async Task OnStarted(Proto.IContext context)
@@ -31,7 +31,7 @@ namespace HomeCenter.Services.Controllers
         private void StartSystemFromConfiguration()
         {
             var confService = _actorFactory.GetActor<ConfigurationService>(nameof(ConfigurationService));
-            MessageBroker.Send(StartSystemCommand.Create(), confService);
+            MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), confService);
         }
 
         [Subscibe]

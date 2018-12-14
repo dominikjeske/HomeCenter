@@ -329,9 +329,8 @@
       {
         "Uid": "Samsung",
         "Type": "SamsungAdapter",
-        "IsEnabled": false,
         "Properties": {
-          "Hostname": "192.168.0.102",
+          "Hostname": "192.168.0.105",
           "InfraredAdapter": "RemoteIR"
         }
       },

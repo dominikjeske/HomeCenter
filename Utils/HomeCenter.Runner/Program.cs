@@ -27,10 +27,9 @@ namespace HomeCenter.Runner
             if (programNumber == 0)
             {
                 Console.WriteLine("HomeCenter TestRunner:");
-                Console.WriteLine("1. Full controller configuration (REMOTE)");
-                Console.WriteLine("2. Full controller configuration (LOCAL)");
-                Console.WriteLine("3. ProtoCluster Playground");
-                Console.WriteLine("4. Code generation");
+                Console.WriteLine("1. Full controller configuration");
+                Console.WriteLine("2. ProtoCluster Playground");
+                Console.WriteLine("3. Code generation");
 
                 input = Console.ReadLine();
                 if (!int.TryParse(input, out programNumber))
@@ -42,19 +41,15 @@ namespace HomeCenter.Runner
             switch (programNumber)
             {
                 case 1:
-                    await StartRemoteController().ConfigureAwait(false);
-                    break;
-
-                case 2:
                     await StartController().ConfigureAwait(false);
                     break;
 
-                case 3:
+                case 2:
                     await StartCluster().ConfigureAwait(false);
                     Console.ReadLine();
                     break;
 
-                case 4:
+                case 3:
                     await GenerateDebuging().ConfigureAwait(false);
                     Console.ReadLine();
                     break;
@@ -73,37 +68,11 @@ namespace HomeCenter.Runner
 
         private static Task StartController()
         {
-            var runners = new Runner[]
-            {
-                new DenonRunner("DenonComponent"),
-                new KodiRunner("KodiComponent"),
-                new PcRunner("PcComponent"),
-                new SamsungRunner("KodiComponent"),
-                new SonyRunner("SonyComponent"),
-                 new RemoteSocketRunner("RemoteLamp3")
-            };
-
-            var runner = new WirehomeRunner(runners.ToList());
+            var runner = new WirehomeRunner();
             return runner.Run();
         }
 
-        private static Task StartRemoteController()
-        {
-            var runners = new Runner[]
-            {
-                new DenonRunner("DenonComponent"),
-                new KodiRunner("KodiComponent"),
-                new PcRunner("PcComponent"),
-                new SamsungRunner("KodiComponent"),
-                new SonyRunner("SonyComponent"),
-                new RemoteSocketRunner("RemoteLamp3"),
-                new RaspberryRunner("RaspberryLed")
-            };
-
-            var runner = new RemoteWirehomeRunner(runners.ToList());
-            return runner.Run();
-        }
-
+ 
         private static Task StartCluster()
         {
             return ProtoCluster.Start();
@@ -125,5 +94,43 @@ namespace HomeCenter.Runner
                 Console.WriteLine(e);
             }
         }
+
+        //public static void RegisterSonyClient()
+        //{
+        //    try
+        //    {
+        //        var request = new SonyRegisterRequest();
+        //        var http = new HttpMessagingService(new EventAggregator());
+
+        //        Console.WriteLine("Sony Bravia TV registration tool.");
+        //        Console.WriteLine("");
+        //        Console.WriteLine("Write address of Sony Bravia TV (format like: 192.168.0.107)");
+
+        //        var address = Console.ReadLine();
+        //        request.Address = address?.Length == 0 ? "192.168.0.107" : address;
+
+        //        await http.SendPostRequest(new MessageEnvelope<SonyRegisterRequest>(request)).ConfigureAwait(false);
+
+        //        Console.WriteLine("Enter PIN from TV:");
+
+        //        request.PIN = Console.ReadLine();
+
+        //        await http.SendPostRequest(new MessageEnvelope<SonyRegisterRequest>(request)).ConfigureAwait(false);
+
+        //        var key = request.ReadAuthKey();
+
+        //        Console.WriteLine("Device was registered successfully. Applicaction hash:");
+        //        Console.WriteLine(key);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.ToString());
+        //    }
+        //    finally
+        //    {
+        //        Console.ReadLine();
+        //    }
+        //}
+
     }
 }

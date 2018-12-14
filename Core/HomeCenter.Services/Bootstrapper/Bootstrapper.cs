@@ -6,6 +6,7 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Controllers;
+using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Logging;
 using HomeCenter.Services.Quartz;
@@ -23,18 +24,19 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Bootstrapper
 {
-    public abstract class Bootstrapper
+    public class Bootstrapper
     {
-        protected Bootstrapper(Container container)
+        public Bootstrapper(Container container)
         {
             _container = container;
+            _container.Options.AllowOverridingRegistrations = true;
         }
 
         protected Container _container;
 
         public async Task<PID> BuildController()
         {
-            RegisterControllerOptions();
+            RegisterConfiguration();
 
             RegisterNativeServices();
 
@@ -51,6 +53,11 @@ namespace HomeCenter.Services.Bootstrapper
             _container.Verify();
 
             return CreateController();
+        }
+
+        protected virtual void RegisterConfiguration()
+        {
+            _container.RegisterInstance(new StartupConfiguration { ConfigurationLocation = "componentConfiguration.json" });
         }
 
         private void RegisterActorProxies()
@@ -127,10 +134,12 @@ namespace HomeCenter.Services.Bootstrapper
             _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
         }
 
-        protected abstract void RegisterNativeServices();
-
-        //TODO Move all to json config
-        protected abstract void RegisterControllerOptions();
+        protected virtual void RegisterNativeServices()
+        {
+            _container.RegisterSingleton<II2cBus, I2cBus>();
+            _container.RegisterSingleton<ISerialDevice, SerialDevice>();
+            _container.RegisterSingleton<IGpioDevice, GpioDevice>();
+        }
 
         public void Dispose() => _container.Dispose();
 

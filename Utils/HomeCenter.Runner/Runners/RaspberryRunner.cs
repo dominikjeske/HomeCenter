@@ -6,8 +6,9 @@ namespace HomeCenter.Runner
 {
     public class RaspberryRunner : Runner
     {
-        public RaspberryRunner(string uid) : base(uid, new string[] { "TurnOn", "TurnOff", })
+        public RaspberryRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "TurnOn", "TurnOff", };
         }
 
         public override Task RunTask(int taskId)

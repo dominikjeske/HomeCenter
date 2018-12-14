@@ -10,8 +10,9 @@ namespace HomeCenter.Runner
 {
     public class DenonRunner : Runner
     {
-        public DenonRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" })
+        public DenonRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" };
         }
 
         public override async Task RunTask(int taskId)

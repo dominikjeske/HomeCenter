@@ -9,11 +9,8 @@ namespace HomeCenter.Runner
 {
     public class WirehomeBootstrapper : Bootstrapper
     {
-        private readonly string _configuration;
-
-        public WirehomeBootstrapper(Container container, string configuration) : base(container)
+        public WirehomeBootstrapper(Container container) : base(container)
         {
-            _configuration = configuration;
             _container.Options.AllowOverridingRegistrations = true;
         }
 
@@ -26,14 +23,9 @@ namespace HomeCenter.Runner
             _container.RegisterSingleton<IGpioDevice, FakeGpioDevice>();
         }
 
-        protected override void RegisterControllerOptions()
+        protected override void RegisterConfiguration()
         {
-            _container.RegisterInstance(new ControllerOptions
-            {
-                AdapterMode = "Embedded",
-                RemoteActorPort = 8000,
-                Configuration = _configuration
-            });
+            _container.RegisterInstance(new StartupConfiguration { ConfigurationLocation = @"..\..\..\..\..\Configurations\componentConfiguration.json" });
         }
     }
 

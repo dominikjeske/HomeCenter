@@ -37,22 +37,19 @@ namespace HomeCenter.Services.Configuration
         private readonly IActorFactory _actorFactory;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRoslynCompilerService _roslynCompilerService;
-        private readonly ControllerOptions _controllerOptions;
 
-        protected ConfigurationService(ControllerOptions controllerOptions, IMapper mapper, ILogger<ConfigurationService> logger,
-                                    IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
+        protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger;
             _actorFactory = actorFactory;
             _serviceProvider = serviceProvider;
             _roslynCompilerService = roslynCompilerService;
-            _controllerOptions = controllerOptions;
         }
 
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
         {
-            var configPath = _controllerOptions.Configuration;
+            var configPath = startFromConfigCommand.Configuration;
 
             if(!File.Exists(configPath))
             {
@@ -204,14 +201,15 @@ namespace HomeCenter.Services.Configuration
 
             if (adapterMode == "Compiled")
             {
-                var result = _roslynCompilerService.CompileAssemblies(_controllerOptions.AdapterRepoName);
-                var veryfy = Result.Combine(result.ToArray());
-                if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");
+                //TODO
+                //var result = _roslynCompilerService.CompileAssemblies(_controllerOptions.AdapterRepoName);
+                //var veryfy = Result.Combine(result.ToArray());
+                //if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");
 
-                foreach (var adapter in result)
-                {
-                    Assembly.LoadFrom(adapter.Value);
-                }
+                //foreach (var adapter in result)
+                //{
+                //    Assembly.LoadFrom(adapter.Value);
+                //}
             }
             else
             {

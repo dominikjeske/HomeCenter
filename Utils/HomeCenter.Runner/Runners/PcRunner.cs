@@ -5,8 +5,9 @@ namespace HomeCenter.Runner
 {
     public class PcRunner : Runner
     {
-        public PcRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSelect" })
+        public PcRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSelect" };
         }
 
         public override Task RunTask(int taskId)

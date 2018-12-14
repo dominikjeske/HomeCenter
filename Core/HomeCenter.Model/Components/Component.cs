@@ -34,9 +34,9 @@ namespace HomeCenter.Model.Components
 
         protected override async Task OnStarted(IContext context)
         {
-            if (!IsEnabled) return;
-
             await base.OnStarted(context).ConfigureAwait(false);
+
+            if (!IsEnabled) return;
 
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);

@@ -8,7 +8,14 @@
             set => SetProperty(nameof(AdapterMode), value);
         }
 
-        public static StartSystemCommand Create(string mode = "Embedded") => new StartSystemCommand { AdapterMode = mode };
+
+        public string Configuration
+        {
+            get => AsString(nameof(Configuration));
+            set => SetProperty(nameof(Configuration), value);
+        }
+
+        public static StartSystemCommand Create(string configuration, string mode = "Embedded") => new StartSystemCommand { AdapterMode = mode, Configuration = configuration };
     }
 
    

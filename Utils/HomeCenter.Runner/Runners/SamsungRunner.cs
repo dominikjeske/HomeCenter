@@ -5,8 +5,9 @@ namespace HomeCenter.Runner
 {
     public class SamsungRunner : Runner
     {
-        public SamsungRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff",  "Mute",  "InputSelect", "VolumeUp (IR)" })
+        public SamsungRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "Mute", "InputSelect" };
         }
 
         public override Task RunTask(int taskId)
@@ -36,11 +37,6 @@ namespace HomeCenter.Runner
                 case 5:
                     MessageBroker.Send(InputSetCommand.Create("HDMI"), Uid);
                     break;
-                case 6:
-                    MessageBroker.Send(SendCodeCommand.Create(3772833823), "RemoteIR"); //TODO TEST
-                    break;
-
-
             }
 
             return Task.CompletedTask;

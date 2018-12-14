@@ -15,8 +15,8 @@ namespace HomeCenter.Adapters.Samsung
     [ProxyCodeGenerator]
     public abstract class SamsungAdapter : Adapter
     {
+        private const uint TURN_ON_IR_CODE = 3772793023;
         private string _hostname;
-
         private bool _powerState;
         private string _input;
         private string _infraredAdaperName;
@@ -49,8 +49,7 @@ namespace HomeCenter.Adapters.Samsung
 
         protected Task Handle(TurnOnCommand message)
         {
-            //TODO ADD infrared message code
-            MessageBroker.Send(SendCodeCommand.Create(666), _infraredAdaperName);
+            MessageBroker.Send(SendCodeCommand.Create(TURN_ON_IR_CODE), _infraredAdaperName);
             return Task.CompletedTask;
         }
 

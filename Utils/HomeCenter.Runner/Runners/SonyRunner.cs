@@ -5,8 +5,9 @@ namespace HomeCenter.Runner
 {
     public class SonyRunner : Runner
     {
-        public SonyRunner(string uid) : base(uid, new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet" })
+        public SonyRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet" };
         }
 
         public override Task RunTask(int taskId)

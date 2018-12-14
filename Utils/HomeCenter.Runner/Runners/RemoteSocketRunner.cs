@@ -6,8 +6,9 @@ namespace HomeCenter.Runner
 {
     public class RemoteSocketRunner : Runner
     {
-        public RemoteSocketRunner(string uid) : base(uid, new string[] { "TurnOn", "TurnOff"})
+        public RemoteSocketRunner(string uid) : base(uid)
         {
+            _tasks = new string[] { "TurnOn", "TurnOff" };
         }
 
         public override Task RunTask(int taskId)

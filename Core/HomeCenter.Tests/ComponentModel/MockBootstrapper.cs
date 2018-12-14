@@ -47,7 +47,7 @@ namespace HomeCenter.Tests.ComponentModel
 
         protected override void RegisterControllerOptions()
         {
-            _container.RegisterInstance(new ControllerOptions
+            _container.RegisterInstance(new StartupConfiguration
             {
                 AdapterMode = "Embedded",
                 RemoteActorPort = 8080,

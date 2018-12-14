@@ -8,13 +8,12 @@ namespace HomeCenter.Runner
 {
     public abstract class Runner 
     {
-        private readonly string[] _tasks;
+        protected string[] _tasks;
         protected Container Container;
         protected IActorMessageBroker MessageBroker;
 
-        internal Runner(string uid, string[] tasks)
+        internal Runner(string uid)
         {
-            _tasks = tasks;
             Uid = uid;
         }
 
