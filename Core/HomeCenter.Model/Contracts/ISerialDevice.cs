@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Devices
+namespace HomeCenter.Model.Contracts
 {
     public interface ISerialDevice : IDisposable
     {
-        IObservable<byte[]> DataSink { get; }
-
         void Init();
 
         void Send(byte[] data);
 
         void Send(string data);
+
+        IDisposable Subscribe(Action<byte[]> handler);
     }
 }

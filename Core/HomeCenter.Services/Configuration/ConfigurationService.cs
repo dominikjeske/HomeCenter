@@ -5,6 +5,7 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;

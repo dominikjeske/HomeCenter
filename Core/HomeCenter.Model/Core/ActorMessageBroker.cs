@@ -1,6 +1,6 @@
 ﻿using ConcurrentCollections;
 using HomeCenter.Broker;
-using HomeCenter.Model.Actors;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
@@ -99,7 +99,6 @@ namespace HomeCenter.Model.Core
             var pid = _actorFactory.GetActor(uid, address);
             _actorFactory.Context.Send(pid, message);
         }
-
 
         public Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage => _actorFactory.Context.RequestAsync<R>(actor, message);
 

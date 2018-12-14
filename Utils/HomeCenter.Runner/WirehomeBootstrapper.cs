@@ -1,9 +1,9 @@
-﻿using HomeCenter.Model.Devices;
+﻿using HomeCenter.Model.Contracts;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using SimpleInjector;
 using System;
-using System.Reactive.Linq;
+using System.Reactive.Disposables;
 
 namespace HomeCenter.Runner
 {
@@ -48,14 +48,11 @@ namespace HomeCenter.Runner
     {
         public void Write(int pin, bool value)
         {
-            
         }
     }
 
     public class FakeISerialDevice : ISerialDevice
     {
-        public IObservable<byte[]> DataSink => Observable.Empty<byte[]>();
-
         public void Dispose()
         {
         }
@@ -71,5 +68,7 @@ namespace HomeCenter.Runner
         public void Send(string data)
         {
         }
+
+        public IDisposable Subscribe(Action<byte[]> handler) => Disposable.Empty;
     }
 }

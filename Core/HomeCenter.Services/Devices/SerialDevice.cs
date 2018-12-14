@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Devices;
+﻿using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Exceptions;
 using System;
 using System.IO.Ports;
@@ -12,7 +12,6 @@ namespace HomeCenter.Services.Devices
     {
         private SerialPort _serialPort;
         private Subject<byte[]> _dataSink;
-        public IObservable<byte[]> DataSink => _dataSink.AsObservable();
 
         public void Dispose()
         {
@@ -55,6 +54,8 @@ namespace HomeCenter.Services.Devices
         {
             _serialPort.Write(data);
         }
+
+        public IDisposable Subscribe(Action<byte[]> handler) => _dataSink.Subscribe(handler);
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {

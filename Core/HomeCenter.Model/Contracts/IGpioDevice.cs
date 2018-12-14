@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Devices
+﻿namespace HomeCenter.Model.Contracts
 {
     public interface IGpioDevice
     {

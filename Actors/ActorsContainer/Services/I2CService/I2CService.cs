@@ -1,7 +1,7 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Devices;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;

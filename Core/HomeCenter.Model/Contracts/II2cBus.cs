@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Model.Devices
+namespace HomeCenter.Model.Contracts
 {
     public interface II2cBus
     {

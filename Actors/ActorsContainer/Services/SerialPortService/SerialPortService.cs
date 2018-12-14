@@ -1,7 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Devices;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,7 +33,7 @@ namespace HomeCenter.Services.Networking
             await base.OnStarted(context).ConfigureAwait(false);
 
             _serialDevice.Init();
-            _disposeContainer.Add(_serialDevice.DataSink.Subscribe(Handle));
+            _disposeContainer.Add(_serialDevice.Subscribe(Handle));
             _disposeContainer.Add(_serialDevice);
         }
 

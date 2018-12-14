@@ -3,6 +3,7 @@ using AutoMapper.Configuration;
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;

@@ -1,7 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Devices;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;

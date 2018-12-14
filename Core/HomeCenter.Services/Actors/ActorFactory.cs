@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -21,13 +21,12 @@ namespace HomeCenter.Model.Actors
             _logger = logger;
         }
 
-
         public PID GetActor(string id, string address = default, IContext parent = default)
         {
             return GetActor(id, address, parent, () => throw new InvalidOperationException($"Actor not created {id}"));
         }
 
-        public PID GetActor<T>(string id = default, string address = default, IContext parent = default)  where T : class, IActor => GetActor(typeof(T), id, address, parent);
+        public PID GetActor<T>(string id = default, string address = default, IContext parent = default) where T : class, IActor => GetActor(typeof(T), id, address, parent);
 
         public PID GetActor(Type actorType, string id = default, string address = default, IContext parent = default)
         {
@@ -37,7 +36,7 @@ namespace HomeCenter.Model.Actors
 
         public PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default, int routing = 0)
         {
-            if(routing == 0)
+            if (routing == 0)
             {
                 return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
             }
@@ -47,11 +46,11 @@ namespace HomeCenter.Model.Actors
         public PID GetRootActor(PID actor)
         {
             var rootSeparator = actor.Id.IndexOf("/");
-            if(rootSeparator > -1)
+            if (rootSeparator > -1)
             {
                 var rootId = actor.Id.Substring(0, rootSeparator);
                 var pid = new PID(actor.Address, rootId);
-               return pid;
+                return pid;
             }
             return actor;
         }

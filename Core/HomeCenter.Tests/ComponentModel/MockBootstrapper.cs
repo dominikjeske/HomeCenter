@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Actors;
-using HomeCenter.Model.Devices;
+using HomeCenter.Model.Contracts;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;

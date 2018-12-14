@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Devices;
+﻿using HomeCenter.Model.Contracts;
 using System;
 
 namespace HomeCenter.Services.Devices
