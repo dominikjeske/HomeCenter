@@ -11,5 +11,7 @@
         public const string HimadityController = nameof(HimadityController);
         public const string CurrentController = nameof(CurrentController);
         public const string InfoController = nameof(InfoController);
+        public const string InfraredController = nameof(InfraredController);
+        public const string RemoteSocketController = nameof(RemoteSocketController);
     }
 }

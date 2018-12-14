@@ -44,5 +44,8 @@
         public const string AdapterName = nameof(AdapterName);
         public const string AdapterAuthor = nameof(AdapterAuthor);
         public const string AdapterDescription = nameof(AdapterDescription);
+
+        public const string InfraredAdapter = nameof(InfraredAdapter);
+        
     }
 }

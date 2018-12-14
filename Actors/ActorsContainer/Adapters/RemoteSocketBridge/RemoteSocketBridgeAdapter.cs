@@ -110,8 +110,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.DipswitchCode, EventDirections.Recieving),
-                                                                 new EventSource(EventType.DipswitchCode, EventDirections.Sending)}, new PowerState());
+            return new DiscoveryResponse(new PowerState());
         }
     }
 }

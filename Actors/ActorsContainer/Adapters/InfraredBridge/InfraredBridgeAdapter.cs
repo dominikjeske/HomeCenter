@@ -2,10 +2,8 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
@@ -25,7 +23,7 @@ namespace HomeCenter.Adapters.InfraredBridge
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
-            
+
             _I2cAddress = AsInt(MessageProperties.I2cAddress);
 
             var registration = new SerialRegistrationCommand(Self, 3, new Format[]
@@ -40,8 +38,7 @@ namespace HomeCenter.Adapters.InfraredBridge
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
-            return new DiscoveryResponse(new List<EventSource> { new EventSource(EventType.InfraredCode, EventDirections.Recieving),
-                                                                 new EventSource(EventType.InfraredCode, EventDirections.Sending)});
+            return new DiscoveryResponse(new InfraredReceiverState(), new InfraredSenderState());
         }
 
         protected Task Handle(SerialResultEvent serialResultCommand)

@@ -25,10 +25,9 @@ namespace HomeCenter.Model.Components
     public class Component : DeviceActor
     {
         private List<string> _tagCache = new List<string>();
-
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
-        private Dictionary<string, AdapterReference> _eventSources { get; } = new Dictionary<string, AdapterReference>();
+
         [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
@@ -83,7 +82,6 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            
             foreach (var adapterRef in _adapters)
             {
                 var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapterRef), adapterRef.Uid).ConfigureAwait(false);
@@ -91,7 +89,6 @@ namespace HomeCenter.Model.Components
 
                 CreateAdapterStateMap(adapterRef, capabilities.SupportedStates);
                 CreateCapabilities(capabilities);
-                MapEventSourcesToAdapters(adapterRef, capabilities.EventSources);
                 SubscribeToAdapterEvents(adapterRef, capabilities.RequierdProperties);
             }
         }
@@ -104,11 +101,6 @@ namespace HomeCenter.Model.Components
         private void CreateCapabilities(DiscoveryResponse capabilities)
         {
             _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => key.Name, val => val));
-        }
-
-        private void MapEventSourcesToAdapters(AdapterReference adapter, IList<EventSource> eventSources)
-        {
-            eventSources.ForEach(es => _eventSources[es.AsString(MessageProperties.EventType)] = adapter);
         }
 
         /// <summary>

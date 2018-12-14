@@ -19,12 +19,14 @@ namespace HomeCenter.Adapters.Samsung
 
         private bool _powerState;
         private string _input;
+        private string _infraredAdaperName;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
             _hostname = AsString(MessageProperties.Hostname);
+            _infraredAdaperName = AsString(MessageProperties.InfraredAdapter);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -47,7 +49,8 @@ namespace HomeCenter.Adapters.Samsung
 
         protected Task Handle(TurnOnCommand message)
         {
-            //TODO ADD infrared message
+            //TODO ADD infrared message code
+            MessageBroker.Send(SendCodeCommand.Create(666), _infraredAdaperName);
             return Task.CompletedTask;
         }
 
