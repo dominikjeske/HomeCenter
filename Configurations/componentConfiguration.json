@@ -336,11 +336,12 @@
       },
       {
         "Uid": "Sony",
-        "IsEnabled": false,
         "Type": "SonyBraviaAdapter",
         "Properties": {
-          "Hostname": "192.168.0.102",
-          "AuthKey": "344fb7d28691ba43c9045e9d38fa3c83a0587620fc14a79a958db4ff5d30e0e7"
+          "Hostname": "192.168.0.109",
+          "MAC": "54:35:30:01:86:51",
+          "ClientID": "SonyHomeCenterTest",
+          "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
         }
       },
       {

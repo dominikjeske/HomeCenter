@@ -17,5 +17,6 @@ namespace HomeCenter.Model.Messages.Queries.Services
         public Dictionary<string, string> DefaultHeaders { get; set; } = new Dictionary<string, string>();
         public KeyValuePair<string, string> AuthorisationHeader { get; set; } = new KeyValuePair<string, string>("", "");
         public NetworkCredential Creditionals { get; set; }
+        public bool IgnoreReturnStatus { get; set; }
     }
 }

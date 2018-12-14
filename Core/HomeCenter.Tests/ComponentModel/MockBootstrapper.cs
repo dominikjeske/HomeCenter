@@ -45,15 +45,15 @@ namespace HomeCenter.Tests.ComponentModel
             _container.RegisterInstance(Mock.Of<ISoundPlayer>());
         }
 
-        protected override void RegisterControllerOptions()
-        {
-            _container.RegisterInstance(new StartupConfiguration
-            {
-                AdapterMode = "Embedded",
-                RemoteActorPort = 8080,
-                Configuration = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json"),
-                AdapterRepoName = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Actors\ActorsContainer\Adapters")
-            });
-        }
+        //protected override void RegisterControllerOptions()
+        //{
+        //    _container.RegisterInstance(new StartupConfiguration
+        //    {
+        //        AdapterMode = "Embedded",
+        //        RemoteActorPort = 8080,
+        //        Configuration = Path.Combine(Directory.GetCurrentDirectory(), $@"ComponentModel\SampleConfigs\{_configuration}.json"),
+        //        AdapterRepoName = _repositoryPath ?? Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), @"Actors\ActorsContainer\Adapters")
+        //    });
+        //}
     }
 }

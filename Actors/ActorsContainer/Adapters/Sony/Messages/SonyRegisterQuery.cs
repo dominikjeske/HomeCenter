@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,21 +9,15 @@ using System.Text;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
-    public class SonyRegisterCommand : HttpCommand, IFormatableMessage<SonyRegisterCommand>
+    public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
     {
-        public string ClientID { get; set; } = "faed787d-8cac-4b67-8c0d-4e291584843b";
+        public string ClientID { get; set; } = "";
         public string ApplicationID { get; set; } = "HomeCenter";
         public string PIN { get; set; }
 
-        public string ReadAuthKey()
-        {
-            return Cookies.GetCookies(new Uri($"http://{Address}/sony/"))
-                          .OfType<Cookie>()
-                          .First(x => x.Name == "auth")
-                          .Value;
-        }
+        private Uri _cookieAddress;
 
-        public SonyRegisterCommand FormatMessage()
+        public SonyRegisterQuery FormatMessage()
         {
             if (string.IsNullOrWhiteSpace(Address))
             {
@@ -34,9 +28,14 @@ namespace HomeCenter.Adapters.Sony.Messages
             {
                 AuthorisationHeader = new KeyValuePair<string, string>("Basic", Convert.ToBase64String(new UTF8Encoding().GetBytes(":" + PIN)));
             }
+            else
+            {
+                IgnoreReturnStatus = true;
+            }
 
             Cookies = new CookieContainer();
-            Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", "", "/sony", Address));
+            _cookieAddress = new Uri($"http://{Address}/sony/");
+            Cookies.Add(_cookieAddress, new Cookie("auth", "", "/sony", Address));
 
             Address = $"http://{Address}/sony/accessControl";
             Body = JsonConvert.SerializeObject(new
@@ -48,6 +47,24 @@ namespace HomeCenter.Adapters.Sony.Messages
             });
 
             return this;
+        }
+
+        public string ReadAuthKey()
+        {
+            return Cookies.GetCookies(_cookieAddress)
+                          .OfType<Cookie>()
+                          .First(x => x.Name == "auth")
+                          .Value;
+        }
+
+        public override object Parse(string rawHttpResult)
+        {
+            if (!string.IsNullOrWhiteSpace(PIN))
+            {
+                return ReadAuthKey();
+            }
+
+            return string.Empty;
         }
     }
 }

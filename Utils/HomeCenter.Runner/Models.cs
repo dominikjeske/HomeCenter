@@ -1,48 +1,55 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Queries.Device;
+﻿using HomeCenter.Model.Actors;
 using Quartz;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Runner.Codegen
 {
     //[ProxyCodeGenerator]
-    //public class Device : DeviceActor
-    //{
-    //    public Device(IScheduler scheduler)
-    //    {
+    public class Device : DeviceActor
+    {
+        public Device(IScheduler scheduler)
+        {
+        }
 
-    //    }
+        //protected Task Invoke(Event command)
+        //{
+        //    return Task.CompletedTask;
+        //}
 
+        protected Task Invoke(SonyRegisterQuery command)
+        {
+            return Task.CompletedTask;
+        }
+    }
 
-    //    //protected Task Invoke(Event command)
-    //    //{
-    //    //    return Task.CompletedTask;
-    //    //}
+    public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
+    {
+      
+    }
 
-    //    private Task Invoke(TurnOnCommand command)
-    //    {
-    //        return Task.CompletedTask;
-    //    }
+    public abstract class HttpPostQuery : Query
+    {
+       
+    }
 
+    public abstract class Query
+    {
 
-    //}
+    }
 
-   
+    public interface IFormatableMessage<T>
+    {
+     
+    }
 
     //[CommandBuilder]
-    public class CommandBuilder : Command
-    {
+    //public class CommandBuilder : Command
+    //{
+    //}
 
-    }
-
-
-    public class Command
-    {
-
-    }
+    //public class Command
+    //{
+    //}
 
     //[ProxyCodeGenerator]
     //public class HttpService : Actor

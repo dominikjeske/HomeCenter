@@ -22,7 +22,7 @@ namespace HomeCenter.Runner
     {
         public async Task<string> Generate(string code)
         {
-            var generator = new CommandBuilerGenerator(); //new ProxyGenerator();
+            var generator = new ProxyGenerator();
             var models = await GetModels(code);
 
             var syntaxTree = models.syntaxTree;
@@ -39,8 +39,8 @@ namespace HomeCenter.Runner
             {
                 var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
 
-                //if (HasBaseType(classSemantic, "DeviceActor"))
-                //{
+                if (HasBaseType(classSemantic, "DeviceActor"))
+                {
                     // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
 
                     var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
@@ -53,7 +53,7 @@ namespace HomeCenter.Runner
 
                         classList.Add(res);
                     }
-                //}
+                }
             }
 
             foreach (var proxyClass in classList)

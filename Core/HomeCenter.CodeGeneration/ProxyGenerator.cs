@@ -415,13 +415,15 @@ namespace HomeCenter.CodeGeneration
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));
             }
-            
+
+           
             var result = filter.Select(c => new MethodDescription
             {
                 Method = c,
                 Parameter = model.GetDeclaredSymbol(c.ParameterList.Parameters.FirstOrDefault()),
                 ReturnType = model.GetTypeInfo(c.ReturnType).Type
-            }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType || x.Parameter.Type.Name == parameterType).ToList();
+                // TODO write recursive base type check
+            }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType || x.Parameter.Type.BaseType?.BaseType?.Name == parameterType || x.Parameter.Type.Name == parameterType).ToList();
 
             return result;
         }

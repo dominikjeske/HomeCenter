@@ -1,4 +1,7 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Adapters.Sony.Messages;
+using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Utils.ConsoleExtentions;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
@@ -7,10 +10,10 @@ namespace HomeCenter.Runner
     {
         public SonyRunner(string uid) : base(uid)
         {
-            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet" };
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "Register" };
         }
 
-        public override Task RunTask(int taskId)
+        public override async Task RunTask(int taskId)
         {
             switch (taskId)
             {
@@ -45,9 +48,21 @@ namespace HomeCenter.Runner
                 case 7:
                     MessageBroker.Send(InputSetCommand.Create("HDMI1"), Uid);
                     break;
+                case 8:
+                    
+                    var command = new SonyRegisterQuery();
+                    var result = await MessageBroker.Request<SonyRegisterQuery, string>(command, "Sony");
+
+                    ConsoleEx.WriteTitleLine("Enter PIN from TV:");
+                    var pin = Console.ReadLine();
+                    command.PIN = pin;
+                    result = await MessageBroker.Request<SonyRegisterQuery, string>(command, "Sony");
+
+                    Console.WriteLine($"Device was registered successfully. Application hash: {result}");
+                    break;
             }
 
-            return Task.CompletedTask;
+            
         }
     }
 }

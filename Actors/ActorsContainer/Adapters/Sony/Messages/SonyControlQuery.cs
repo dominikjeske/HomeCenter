@@ -1,16 +1,16 @@
 ﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
+using HomeCenter.Model.Messages.Queries.Services;
 using System;
 using System.Net;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
-    public class SonyControlCommand : HttpCommand, IFormatableMessage<SonyControlCommand>
+    public class SonyControlQuery : HttpPostQuery, IFormatableMessage<SonyControlQuery>
     {
         public string Code { get; set; }
         public string AuthorisationKey { get; set; }
 
-        public SonyControlCommand FormatMessage()
+        public SonyControlQuery FormatMessage()
         {
             DefaultHeaders.Add("SOAPACTION", "\"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC\"");
 
@@ -27,6 +27,11 @@ namespace HomeCenter.Adapters.Sony.Messages
                     </s:Envelope>";
 
             return this;
+        }
+
+        public override object Parse(string rawHttpResult)
+        {
+            return rawHttpResult;
         }
     }
 }

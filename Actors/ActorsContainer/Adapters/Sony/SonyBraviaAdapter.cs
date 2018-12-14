@@ -5,6 +5,7 @@ using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
 using System;
@@ -23,6 +24,8 @@ namespace HomeCenter.Adapters.Sony
         private double _volume;
         private bool _mute;
         private string _input;
+        private string _clientId;
+        private string _mac;
 
         private TimeSpan _poolInterval;
         private string _hostname;
@@ -36,20 +39,24 @@ namespace HomeCenter.Adapters.Sony
             { "HDMI4", "AAAAAgAAABoAAABdAw==" }
         };
 
+       
+
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
             _hostname = AsString(MessageProperties.Hostname);
             _authorisationKey = AsString(MessageProperties.AuthKey);
+            _clientId = AsString(MessageProperties.ClientID);
+            _mac = AsString(MessageProperties.MAC);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+           // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
-        private SonyControlCommand GetControlCommand(string code)
+        private SonyControlQuery GetControlCommand(string code)
         {
-            return new SonyControlCommand
+            return new SonyControlQuery
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
@@ -69,6 +76,8 @@ namespace HomeCenter.Adapters.Sony
             };
         }
 
+         
+
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
@@ -76,6 +85,15 @@ namespace HomeCenter.Adapters.Sony
                                                                new MuteState(),
                                                                new InputSourceState()
                                           );
+        }
+
+        protected async Task<string> Handle(SonyRegisterQuery sonyRegisterQuery)
+        {
+            sonyRegisterQuery.Address = _hostname;
+            sonyRegisterQuery.ClientID = _clientId;
+
+            var result = await MessageBroker.QueryService<SonyRegisterQuery, string>(sonyRegisterQuery);
+            return result;
         }
 
         protected async Task Handle(RefreshCommand message)
@@ -92,15 +110,15 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(TurnOnCommand message)
         {
-            var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            var command = new WakeOnLanCommand(_mac);
+            await MessageBroker.SendToService(command).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
         }
 
         protected async Task Handle(TurnOffCommand message)
         {
             var cmd = GetControlCommand("AAAAAQAAAAEAAAAvAw==");
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryService<SonyControlQuery, string>(cmd).ConfigureAwait(false);
             _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
         }
 
@@ -155,9 +173,11 @@ namespace HomeCenter.Adapters.Sony
             var code = _inputSourceMap[inputName];
 
             var cmd = GetControlCommand(code);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryService<SonyControlQuery, string>(cmd).ConfigureAwait(false);
 
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
+
+       
     }
 }

@@ -7,45 +7,35 @@ namespace HomeCenter.Model.Messages.Commands.Service
 {
     public class WakeOnLanCommand : UdpCommand
     {
-        public WakeOnLanCommand(string macAddress)
+        public WakeOnLanCommand(string macAddress, int port = 9)
         {
-            Address = FormatAddress(macAddress);
-            Body = FormatBody();
-        }
+            macAddress = Regex.Replace(macAddress, "[-|:]", "");
 
-        private string FormatAddress(string macAddress)
-        {
-            var MAC = Regex.Replace(macAddress, "[^0-9A-Fa-f]", "");
+            int payloadIndex = 0;
 
-            if (MAC.Length != 12)
+            /* The magic packet is a broadcast frame containing anywhere within its payload 6 bytes of all 255 (FF FF FF FF FF FF in hexadecimal), followed by sixteen repetitions of the target computer's 48-bit MAC address, for a total of 102 bytes. */
+            byte[] payload = new byte[1024];    // Our packet that we will be broadcasting
+
+            // Add 6 bytes with value 255 (FF) in our payload
+            for (int i = 0; i < 6; i++)
             {
-                throw new ArgumentException("Invalid MAC address. Try again!");
+                payload[payloadIndex] = 255;
+                payloadIndex++;
             }
 
-            //255.255.255.255  i.e broadcast, port = 12287
-            var address = new IPAddress(0xffffffff);
-            return $"{address}:{12287}";
-        }
-
-        private byte[] FormatBody()
-        {
-            int byteCount = 0;
-            var bytes = new byte[102];
-            for (int trailer = 0; trailer < 6; trailer++)
+            // Repeat the device MAC address sixteen times
+            for (int j = 0; j < 16; j++)
             {
-                bytes[byteCount++] = 0xFF;
-            }
-            for (int macPackets = 0; macPackets < 16; macPackets++)
-            {
-                int i = 0;
-                for (int macBytes = 0; macBytes < 6; macBytes++)
+                for (int k = 0; k < macAddress.Length; k += 2)
                 {
-                    bytes[byteCount++] =
-                    byte.Parse(Address.Substring(i, 2), NumberStyles.HexNumber);
-                    i += 2;
+                    var s = macAddress.Substring(k, 2);
+                    payload[payloadIndex] = byte.Parse(s, NumberStyles.HexNumber);
+                    payloadIndex++;
                 }
             }
-            return bytes;
+
+            Body = payload;
+            Address = $"255.255.255.255:{port}";
         }
     }
 }

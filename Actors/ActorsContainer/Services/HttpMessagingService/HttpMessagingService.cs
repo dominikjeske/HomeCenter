@@ -59,9 +59,13 @@ namespace HomeCenter.Services.Networking
                     content.Headers.ContentType = new MediaTypeHeaderValue(httpMessage.ContentType);
                 }
                 var response = await httpClient.PostAsync(httpMessage.Address, content).ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);
 
+                if (!httpMessage.IgnoreReturnStatus)
+                {
+                    response.EnsureSuccessStatusCode(); 
+                }
+
+                var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);
                 return httpMessage.Parse(responseBody);
             }
         }
