@@ -142,17 +142,26 @@ namespace HomeCenter.CodeGeneration
                 foreach (var method in queries)
                 {
                     ExpressionStatementSyntax registration;
-                    if (method.ReturnType is INamedTypeSymbol namedSymbol)
+                    if (method.ReturnType is INamedTypeSymbol namedSymbol && namedSymbol.TypeArguments.Length > 0)
                     {
                         var arg = namedSymbol.TypeArguments[0];
 
                         registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(arg.Name) })))));
                     }
-                    else
+                    else if(!string.IsNullOrWhiteSpace(method.ReturnType.Name))
                     {
                         registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) })))));
                     }
- 
+                    //if (method.ReturnType is IArrayTypeSymbol arraySymbol)
+                    //{
+                    //    registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) })))));
+                    //}
+                    else
+                    {
+                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.ToString()) })))));
+                    }
+                    //
+
 
                     statementSyntaxes.Add(registration);
                 }

@@ -86,6 +86,10 @@ namespace HomeCenter.Adapters.Common
 
             stopwatch.Stop();
 
+            if (newState == null) Logger.LogInformation($"NULL {newState}");
+
+            if (newState.Length == 0) Logger.LogInformation($"ZERO {newState}");
+
             if (newState.SequenceEqual(_state)) return;
 
             var oldState = _state.ToArray();

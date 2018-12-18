@@ -6,6 +6,7 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -19,9 +20,11 @@ namespace HomeCenter.Adapters.HSREL8
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
+            Logger.LogInformation($"HSREL8Adapter was initialized");
+
             await SetState(new byte[] { 0x00, 255 }, true).ConfigureAwait(false);
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+            //await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)

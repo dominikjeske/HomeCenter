@@ -21,6 +21,12 @@ namespace HomeCenter.Runner
 
         public abstract Task RunTask(int taskId);
 
+        public virtual void RunnerReset()
+        {
+
+        }
+
+       
         public void SetContainer(Container container)
         {
             Container = container;
@@ -33,7 +39,11 @@ namespace HomeCenter.Runner
             {
                 var taskId = Menu();
                 if (taskId == -1) continue;
-                if (taskId == -2) break;
+                if (taskId == -2)
+                {
+                    RunnerReset();
+                    break;
+                }
                 try
                 {
                     await RunTask(taskId).ConfigureAwait(false);
@@ -47,7 +57,7 @@ namespace HomeCenter.Runner
 
         public int Menu()
         {
-            ConsoleEx.WriteTitleLine($"{GetType().Name} runner:");
+            ConsoleEx.WriteTitleLine($"{GetType().Name}:");
 
             for (int i = 0; i < _tasks.Length; i++)
             {

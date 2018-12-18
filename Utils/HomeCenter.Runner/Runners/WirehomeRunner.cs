@@ -24,7 +24,8 @@ namespace HomeCenter.Runner
                 new SamsungRunner("SamsungComponent"),
                 new SonyRunner("SonyComponent"),
                 new RemoteSocketRunner("RemoteLamp3"),
-                new RaspberryRunner("RaspberryLed")
+                new RaspberryRunner("RaspberryLed"),
+                new HSRel8Runner("ButtonLamp")
             };
 
             _tasks = _runners.Select(x => x.Uid).ToArray();

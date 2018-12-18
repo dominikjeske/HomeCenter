@@ -1,12 +1,11 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
-using HomeCenter.Model.Core;
 using HomeCenter.Model.Contracts;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Networking
 {
@@ -18,13 +17,14 @@ namespace HomeCenter.Services.Networking
         protected I2CService(II2cBus nativeI2CBus)
         {
             _nativeI2CBus = nativeI2CBus;
+
+            _disposables.Add(_nativeI2CBus);
         }
 
         [Subscibe]
         protected void Handle(I2cCommand command)
         {
             var address = command.Address;
-            var useCache = command.UseCache; //TODO
             var data = command.Body;
 
             CheckAddress(address);
@@ -39,21 +39,22 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        protected Task<byte[]> Handle(I2cQuery query)
+        [Subscibe]
+        protected byte[] Handle(I2cQuery query)
         {
             var address = query.Address;
-            var useCache = query.UseCache;
 
-            //try
-            //{
-            //    return _nativeI2CBus.Read(address, query.Size);
-            //}
-            //catch (Exception exception)
-            //{
-            //    Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}.");
-            //}
+            Logger.LogWarning($"Reading from address {address}.");
 
-            return Task.FromResult(new byte[] { }); //TODO
+            try
+            {
+                return _nativeI2CBus.Read(address).ToArray();
+            }
+            catch (Exception exception)
+            {
+                Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}. {exception.Message}");
+                return Array.Empty<byte>();
+            }
         }
 
         private void CheckAddress(int value)

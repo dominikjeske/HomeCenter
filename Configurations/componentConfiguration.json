@@ -234,8 +234,20 @@
           {
             "Uid": "RemoteSocket",
             "Properties": {
-              "System": "AllOn",
-              "Unit": "D"
+              "System": "Switch2",
+              "Unit": "B",
+              "Repeat": 1
+            }
+          }
+        ]
+      },
+      {
+        "Uid": "ButtonLamp",
+        "AdapterRefs": [
+          {
+            "Uid": "HSRel8_1",
+            "Properties": {
+              "PinNumber": "1"
             }
           }
         ]
@@ -277,10 +289,9 @@
       {
         "Uid": "HSRel8_1",
         "Type": "HSREL8Adapter",
-        "IsEnabled": false,
         "Properties": {
-          "I2cAddress": 100,
-          "PoolInterval": 500,
+          "I2cAddress": 24,
+          "PoolInterval": 5000,
           "PollDurationWarningThreshold": 2000
         }
       },
@@ -339,7 +350,7 @@
         "Type": "SonyBraviaAdapter",
         "Properties": {
           "Hostname": "192.168.0.109",
-          "MAC": "54:35:30:01:86:51",
+          "MAC": "D8:D4:3C:D3:90:B6",
           "ClientID": "SonyHomeCenterTest",
           "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
         }

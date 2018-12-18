@@ -31,6 +31,16 @@ namespace HomeCenter.Runner
 
     public class FakeII2cBus : II2cBus
     {
+        public void Dispose()
+        {
+            
+        }
+
+        public Span<byte> Read(int address)
+        {
+            return Span<byte>.Empty;
+        }
+
         public void Write(int address, Span<byte> data)
         {
         }

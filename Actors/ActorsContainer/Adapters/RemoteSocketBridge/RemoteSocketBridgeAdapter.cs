@@ -59,6 +59,9 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         protected async Task TurnOn(TurnOnCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
+
+            Logger.LogInformation($"Sending code {dipswitchCode.Code}");
+
             var cmd = I2cCommand.Create(_I2cAddress, package);
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
             await UpdateState(dipswitchCode).ConfigureAwait(false);

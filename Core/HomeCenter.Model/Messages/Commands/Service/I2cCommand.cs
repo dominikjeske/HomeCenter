@@ -14,12 +14,6 @@
             set => SetProperty(nameof(Body), value);
         }
 
-        public bool UseCache
-        {
-            get => AsBool(nameof(UseCache), true);
-            set => SetProperty(nameof(UseCache), value);
-        }
-
-        public static I2cCommand Create(int address, byte[] data, bool useCache = true) => new I2cCommand { Address = address, Body = data, UseCache = useCache };
+        public static I2cCommand Create(int address, byte[] data, bool useCache = true) => new I2cCommand { Address = address, Body = data};
     }
 }

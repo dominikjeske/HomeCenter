@@ -1,5 +1,7 @@
 ﻿using HomeCenter.Model.Actors;
+using HomeCenter.Model.Core;
 using Quartz;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner.Codegen
@@ -16,9 +18,25 @@ namespace HomeCenter.Runner.Codegen
         //    return Task.CompletedTask;
         //}
 
-        protected Task Invoke(SonyRegisterQuery command)
+        //protected Task Invoke(SonyRegisterQuery command)
+        //{
+        //    return Task.CompletedTask;
+        //}
+
+        [Subscibe]
+        protected byte[] Handle(HttpPostQuery query)
         {
-            return Task.CompletedTask;
+            
+            return Array.Empty<byte>();
+            
+        }
+
+        [Subscibe]
+        protected int Handle2(HttpPostQuery query)
+        {
+
+            return 0;
+
         }
     }
 

@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Sony
 {
-    // TODO test when power off
     [ProxyCodeGenerator]
     public abstract class SonyBraviaAdapter : Adapter
     {
@@ -112,6 +111,8 @@ namespace HomeCenter.Adapters.Sony
         {
             var command = new WakeOnLanCommand(_mac);
             await MessageBroker.SendToService(command).ConfigureAwait(false);
+            //var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
+
             _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
         }
 
