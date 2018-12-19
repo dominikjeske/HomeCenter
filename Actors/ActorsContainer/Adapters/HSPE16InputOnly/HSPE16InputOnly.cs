@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Adapters.Common;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -21,7 +20,7 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
             var cmd = I2cCommand.Create(_i2cAddress, setupInputs);
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+            //await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)

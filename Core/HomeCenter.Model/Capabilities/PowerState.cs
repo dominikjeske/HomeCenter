@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(PowerState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PowerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand));
+            SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand), nameof(RefreshCommand)); //TODO set Refresh to default on all states?
         }
     }
 }

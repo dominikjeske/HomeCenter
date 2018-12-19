@@ -1,12 +1,10 @@
 ﻿using HomeCenter.Adapters.Common;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
-using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -20,9 +18,7 @@ namespace HomeCenter.Adapters.HSREL8
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            Logger.LogInformation($"HSREL8Adapter was initialized");
-
-            await SetState(new byte[] { 0x00, 255 }, true).ConfigureAwait(false);
+            await SetState(new byte[] { 0x00, 255 }).ConfigureAwait(false);
 
             //await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
         }
@@ -36,19 +32,20 @@ namespace HomeCenter.Adapters.HSREL8
         {
             int pinNumber = GetPin(message);
 
-            return SetPortState(pinNumber, true, true);
+            return SetPortState(pinNumber, true);
         }
 
         public Task TurnOff(TurnOffCommand message)
         {
             int pinNumber = GetPin(message);
 
-            return SetPortState(pinNumber, false, true);
+            return SetPortState(pinNumber, false);
         }
 
         private int GetPin(Command message)
         {
             var pinNumber = message.AsInt(MessageProperties.PinNumber);
+            //TODO change to 7 if we cant use other pins
             if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
             return pinNumber;
         }

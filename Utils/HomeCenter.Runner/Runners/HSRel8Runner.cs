@@ -12,7 +12,7 @@ namespace HomeCenter.Runner
 
         public HSRel8Runner(string uid) : base(uid)
         {
-            _tasks = new string[] { "TurnOn", "TurnOff", };
+            _tasks = new string[] { "TurnOn", "TurnOff", "Refresh" };
         }
 
         public override void RunnerReset()
@@ -39,6 +39,10 @@ namespace HomeCenter.Runner
 
                 case 1:
                     cmd = new TurnOffCommand();
+                    break;
+                case 2:
+                    cmd = new RefreshCommand();
+                    cmd.DefaultLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
                     break;
             }
 

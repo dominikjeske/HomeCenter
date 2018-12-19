@@ -29,7 +29,10 @@ namespace HomeCenter.Model.Components
             // add properties from adapter reference
             foreach (var prop in GetProperties())
             {
-                command.SetProperty(prop.Key, prop.Value);
+                if (!command.ContainsProperty(prop.Key))   // If property already exists we leave it. This allow to override by sender
+                {
+                    command.SetProperty(prop.Key, prop.Value);
+                }
             }
 
             return command;

@@ -56,26 +56,21 @@ namespace HomeCenter.Adapters.Common
             return GetPortState(pinNumber);
         }
 
-        protected async Task SetPortState(int pinNumber, bool state, bool commit)
+        protected Task SetPortState(int pinNumber, bool state)
         {
             _state.SetBit(pinNumber, state);
 
-            if (commit)
-            {
-                await CommitChanges().ConfigureAwait(false);
-            }
+            return CommitChanges();
         }
 
-        protected async Task SetState(byte[] state, bool commit)
+        protected Task SetState(byte[] state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
             Buffer.BlockCopy(state, 0, _state, 0, state.Length);
 
-            if (commit)
-            {
-                await CommitChanges().ConfigureAwait(false);
-            }
+            return CommitChanges();
+            
         }
 
         private async Task FetchState()
@@ -85,10 +80,6 @@ namespace HomeCenter.Adapters.Common
             var newState = await ReadFromBus().ConfigureAwait(false);
 
             stopwatch.Stop();
-
-            if (newState == null) Logger.LogInformation($"NULL {newState}");
-
-            if (newState.Length == 0) Logger.LogInformation($"ZERO {newState}");
 
             if (newState.SequenceEqual(_state)) return;
 
@@ -100,6 +91,8 @@ namespace HomeCenter.Adapters.Common
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
+            Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
+
             for (int i = 0; i < oldStateBits.Length; i++)
             {
                 var oldPinState = oldStateBits.Get(i);
@@ -110,8 +103,6 @@ namespace HomeCenter.Adapters.Common
                 var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>() { [MessageProperties.PinNumber] = i.ToString() });
 
                 await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
-
-                Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
@@ -127,7 +118,7 @@ namespace HomeCenter.Adapters.Common
             await WriteToBus(_state).ConfigureAwait(false);
             Buffer.BlockCopy(_state, 0, _committedState, 0, _state.Length);
 
-            Logger.LogWarning("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
+            Logger.LogInformation("Board '" + Uid + "' committed state '" + BitConverter.ToString(_state) + "'.");
         }
 
         private bool GetPortState(int id) => _state.GetBit(id);
