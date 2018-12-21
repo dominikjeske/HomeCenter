@@ -8,6 +8,7 @@ using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
 using Proto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

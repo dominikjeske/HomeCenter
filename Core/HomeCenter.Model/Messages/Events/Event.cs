@@ -1,12 +1,21 @@
 ﻿using HomeCenter.Broker;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Utils.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace HomeCenter.Model.Messages.Events
 {
-    public class Event : ActorMessage, System.IEquatable<Event>
+    public class Event : ActorMessage, IEquatable<Event>
     {
+        public Event()
+        {
+            Uid = Guid.NewGuid().ToString();
+            EventTime = SystemTime.Now;
+        }
+
         public bool Equals(Event other) => other != null && Type.Compare(other.Type) == 0 && GetProperties().LeftEqual(other.GetProperties()); //TODO check
 
         public virtual IEnumerable<string> RoutingAttributes() => GetPropetiesKeys();
@@ -16,7 +25,7 @@ namespace HomeCenter.Model.Messages.Events
             var attributes = GetProperties().ToDictionary();
             if (!attributes.ContainsKey(MessageProperties.EventType))
             {
-                attributes.Add(MessageProperties.EventType, EventType.PropertyChanged);
+                attributes.Add(MessageProperties.EventType, nameof(PropertyChangedEvent)); //TODO  check
             }
 
             var routingKey = attributes[MessageProperties.MessageSource];
@@ -33,6 +42,18 @@ namespace HomeCenter.Model.Messages.Events
             attributes[MessageProperties.MessageSource] = routingKey;
 
             return new RoutingFilter(routingKey, attributes);
+        }
+
+        public DateTimeOffset EventTime
+        {
+            get => AsDate(MessageProperties.EventTime);
+            set => SetProperty(MessageProperties.EventTime, value);
+        }
+
+        public string MessageSource
+        {
+            get => AsString(MessageProperties.MessageSource);
+            set => SetProperty(MessageProperties.MessageSource, value);
         }
     }
 }

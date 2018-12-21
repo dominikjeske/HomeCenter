@@ -5,7 +5,7 @@ using System.Device.I2c;
 
 namespace HomeCenter.Services.Devices
 {
-    public class I2cBus : II2cBus, IDisposable
+    public class I2cBus : II2cBus
     {
         private const int BusId = 1;
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
@@ -19,16 +19,22 @@ namespace HomeCenter.Services.Devices
 
         public Span<byte> Read(int address)
         {
-            CheckCache(address);
+            //CheckCache(address);
+
+            //var buffer = new Span<byte>();
+            //_deviceCache[address].Read(buffer);
+
+            //Console.WriteLine($"Read from {address} -> {buffer.Length}");
+
+            //return buffer;
 
             var buffer = new Span<byte>();
-            _deviceCache[address].Read(buffer);
-
-            Console.WriteLine($"Read from {address} -> {buffer.Length}");
-
+            var device = new System.Device.I2c.Drivers.UnixI2cDevice(new I2cConnectionSettings(BusId, address));
+            device.Write(new byte[] { 0x00 });
+            device.Read(buffer);
             return buffer;
         }
-
+        
         private void CheckCache(int address)
         {
             if (!_deviceCache.ContainsKey(address))

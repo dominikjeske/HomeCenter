@@ -1,22 +1,65 @@
-﻿using HomeCenter.Model.Messages.Queries;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 
 namespace HomeCenter.Model.Messages.Queries.Services
 {
     public abstract class HttpPostQuery : Query
     {
-        public virtual string Address { get; set; }
-        public virtual string Body { get; set; }
+        protected HttpPostQuery()
+        {
+            RequestType = "POST";
+        }
 
-        public abstract object Parse(string rawHttpResult);
+        public virtual object Parse(string rawHttpResult) => rawHttpResult;
 
-        public string RequestType { get; set; } = "POST";
-        public string ContentType { get; set; }
-        public CookieContainer Cookies { get; set; }
-        public Dictionary<string, string> DefaultHeaders { get; set; } = new Dictionary<string, string>();
-        public KeyValuePair<string, string> AuthorisationHeader { get; set; } = new KeyValuePair<string, string>("", "");
-        public NetworkCredential Creditionals { get; set; }
-        public bool IgnoreReturnStatus { get; set; }
+        public CookieContainer Cookies { get; protected set; }
+
+        public string Address
+        {
+            get => AsString(MessageProperties.Address);
+            set => SetProperty(MessageProperties.Address, value);
+        }
+
+        public string Body
+        {
+            get => AsString(MessageProperties.Body);
+            set => SetProperty(MessageProperties.Body, value);
+        }
+
+        public string RequestType
+        {
+            get => AsString(MessageProperties.RequestType);
+            set => SetProperty(MessageProperties.RequestType, value);
+        }
+
+        public string ContentType
+        {
+            get => AsString(MessageProperties.ContentType);
+            set => SetProperty(MessageProperties.ContentType, value);
+        }
+
+        public bool IgnoreReturnStatus
+        {
+            get => AsBool(MessageProperties.IgnoreReturnStatus);
+            set => SetProperty(MessageProperties.IgnoreReturnStatus, value);
+        }
+
+        public IDictionary<string, string> AuthorisationHeader
+        {
+            get => AsDictionary(MessageProperties.AuthorisationHeader);
+            set => SetProperty(MessageProperties.AuthorisationHeader, value);
+        }
+
+        public IDictionary<string, string> Headers
+        {
+            get => AsDictionary(MessageProperties.Headers);
+            set => SetProperty(MessageProperties.Headers, value);
+        }
+
+        public IDictionary<string, string> Creditionals
+        {
+            get => AsDictionary(MessageProperties.Creditionals);
+            set => SetProperty(MessageProperties.Creditionals, value);
+        }
     }
 }

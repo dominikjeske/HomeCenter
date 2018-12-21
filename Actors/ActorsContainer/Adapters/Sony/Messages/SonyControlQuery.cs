@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace HomeCenter.Adapters.Sony.Messages
@@ -12,8 +13,7 @@ namespace HomeCenter.Adapters.Sony.Messages
 
         public SonyControlQuery FormatMessage()
         {
-            DefaultHeaders.Add("SOAPACTION", "\"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC\"");
-
+            Headers = new Dictionary<string, string>() { ["SOAPACTION"] = "\"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC\"" };
             Cookies = new CookieContainer();
             Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", AuthorisationKey, "/sony", Address));
             Address = $"http://{Address}/sony/IRCC";
@@ -27,11 +27,6 @@ namespace HomeCenter.Adapters.Sony.Messages
                     </s:Envelope>";
 
             return this;
-        }
-
-        public override object Parse(string rawHttpResult)
-        {
-            return rawHttpResult;
         }
     }
 }

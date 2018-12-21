@@ -47,7 +47,7 @@
         "Uid": "RemoteSocket",
         "Type": "RemoteSocketBridgeAdapter",
         "Properties": {
-          "I2cAddress": 101,
+          "Address": 101,
           "PinNumber": 12
         }
       }

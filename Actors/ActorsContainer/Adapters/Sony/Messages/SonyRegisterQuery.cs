@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.Sony.Messages
 
             if (!string.IsNullOrWhiteSpace(PIN))
             {
-                AuthorisationHeader = new KeyValuePair<string, string>("Basic", Convert.ToBase64String(new UTF8Encoding().GetBytes(":" + PIN)));
+                AuthorisationHeader = new Dictionary<string, string>() { ["Basic"] = Convert.ToBase64String(new UTF8Encoding().GetBytes(":" + PIN)) };
             }
             else
             {

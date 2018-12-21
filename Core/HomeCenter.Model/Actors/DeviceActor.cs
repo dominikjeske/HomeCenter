@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ namespace HomeCenter.Model.Actors
         {
             if (rawMessage is ActorMessage message)
             {
-                Logger.Log(message.DefaultLogLevel, $"[{Uid}]: {message}");
+                Logger.Log(message.LogLevel, $"[{Uid}]: {message}");
             }
 
             return rawMessage;

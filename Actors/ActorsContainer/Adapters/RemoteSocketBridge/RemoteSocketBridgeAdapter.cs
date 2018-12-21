@@ -30,7 +30,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _I2cAddress = AsInt(MessageProperties.I2cAddress);
+            _I2cAddress = AsInt(MessageProperties.Address);
             _pinNumber = AsInt(MessageProperties.PinNumber);
 
             var registration = new SerialRegistrationCommand(Self, 2, new Format[]
@@ -53,7 +53,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                 return;
             }
 
-            await MessageBroker.PublisEvent(new DipswitchEvent(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString())).ConfigureAwait(false);
+            await MessageBroker.PublisEvent(DipswitchEvent.Create(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString())).ConfigureAwait(false);
         }
 
         protected async Task TurnOn(TurnOnCommand message)

@@ -2,9 +2,23 @@
 {
     public abstract class HttpGetQuery : Query
     {
-        public string Address { get; set; }
-        public string RequestType { get; set; } = "GET";
-
         public abstract object Parse(string rawHttpResult);
+
+        protected HttpGetQuery()
+        {
+            RequestType = "GET";
+        }
+
+        public string Address
+        {
+            get => AsString(MessageProperties.Address);
+            set => SetProperty(MessageProperties.Address, value);
+        }
+
+        public string RequestType
+        {
+            get => AsString(MessageProperties.RequestType);
+            set => SetProperty(MessageProperties.RequestType, value);
+        }
     }
 }

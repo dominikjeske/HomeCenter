@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace HomeCenter.Utils.Extensions
 {
@@ -7,7 +8,7 @@ namespace HomeCenter.Utils.Extensions
         public static bool GetBit(this byte[] bytes, int index)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
-            if (index > bytes.Length * 8 - 1) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index > (bytes.Length * 8) - 1) throw new ArgumentOutOfRangeException(nameof(index));
 
             var byteOffset = index / 8;
             var bitOffset = index % 8;
@@ -18,7 +19,7 @@ namespace HomeCenter.Utils.Extensions
         public static void SetBit(this byte[] bytes, int index, bool state)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
-            if (index > bytes.Length * 8 - 1) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index > (bytes.Length * 8) - 1) throw new ArgumentOutOfRangeException(nameof(index));
 
             var byteOffset = index / 8;
             var bitOffset = index % 8;
@@ -37,6 +38,19 @@ namespace HomeCenter.Utils.Extensions
         }
 
         public static string ToBitString(this byte[] bytes) => BitConverter.ToString(bytes);
+
+        public static string ToBinaryString(this byte[] bytes)
+        {
+            StringBuilder hex = new StringBuilder(bytes.Length * 8);
+            foreach (byte b in bytes)
+            {
+                hex.AppendFormat(Convert.ToString(b, 2).PadLeft(8, '0'));
+                hex.Append("-");
+            }
+            hex.Remove(hex.Length - 1, 1);
+
+            return hex.ToString();
+        }
 
         private static ulong SetBit(this ulong target, int index, bool state)
         {

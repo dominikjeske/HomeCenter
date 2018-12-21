@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Extensions
 {
-    public static class Extensions
+    public static class TypeExtensions
     {
         public static IEnumerable<MethodInfo> GetMethodsBySignature(this Type type, params Type[] parameterTypes)
         {

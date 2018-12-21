@@ -29,7 +29,7 @@ namespace HomeCenter.Adapters.TemperatureBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            _i2cAddress = AsInt(MessageProperties.I2cAddress);
+            _i2cAddress = AsInt(MessageProperties.Address);
 
             var registration = new SerialRegistrationCommand(Self, I2C_ACTION_TEMPERATURE, new Format[]
             {

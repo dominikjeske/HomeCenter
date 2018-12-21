@@ -4,6 +4,7 @@
     {
         //Common
         public const string MessageSource = nameof(MessageSource);
+        public const string LogLevel = nameof(LogLevel);
 
         //Command
         public const string IsFinishComand = nameof(IsFinishComand);
@@ -26,7 +27,7 @@
         public const string CommandCode = nameof(CommandCode);
 
         //Adapter
-        public const string I2cAddress = nameof(I2cAddress);
+        public const string Address = nameof(Address);
         public const string PinNumber = nameof(PinNumber);
         public const string ReversePinLevel = nameof(ReversePinLevel);
         public const string PoolInterval = nameof(PoolInterval);
@@ -47,6 +48,16 @@
         public const string ClientID = nameof(ClientID);
 
         public const string InfraredAdapter = nameof(InfraredAdapter);
-        
+
+        //Services
+        public const string Body = nameof(Body);
+        public const string ContentType = nameof(ContentType);
+        public const string RequestType = nameof(RequestType);
+        public const string Size = nameof(Size);
+        public const string IgnoreReturnStatus = nameof(IgnoreReturnStatus);
+        public const string AuthorisationHeader = nameof(AuthorisationHeader);
+        public const string Headers = nameof(Headers);
+        public const string Creditionals = nameof(Creditionals);
+        public const string Initialize = nameof(Initialize);
     }
 }

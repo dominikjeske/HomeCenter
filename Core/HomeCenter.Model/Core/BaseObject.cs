@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Exceptions;
 using HomeCenter.Utils.Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace HomeCenter.Model.Core
         {
             var sb = new StringBuilder();
             sb.Append($"Type: {Type}");
-            if(_properties.Count > 0)
+            if (_properties.Count > 0)
             {
                 sb.Append($" | Properties: {GetProperties()?.ToFormatedString()} ");
             }
@@ -38,7 +39,7 @@ namespace HomeCenter.Model.Core
             {
                 sb.Append($" | Tags: {Tags.ToFormatedString()} ");
             }
-            if(!string.IsNullOrWhiteSpace(Uid))
+            if (!string.IsNullOrWhiteSpace(Uid))
             {
                 sb.Append($" | Uid: {Uid}");
             }
@@ -50,17 +51,20 @@ namespace HomeCenter.Model.Core
 
         public void SetProperty(string propertyName, string value) => _properties[propertyName] = value;
 
-        public void SetProperty(string propertyName, DateTimeOffset value) => _properties[propertyName] = value.ToString(); //TODO check this
+        public void SetProperty(string propertyName, DateTimeOffset value) => _properties[propertyName] = value.ToString();
 
-        public void SetProperty(string propertyName, TimeSpan value) => _properties[propertyName] = value.ToString(); //TODO check this
+        public void SetProperty(string propertyName, TimeSpan value) => _properties[propertyName] = value.ToString();
 
-        public void SetProperty(string propertyName, int value) => _properties[propertyName] = value.ToString(); //TODO check this
+        public void SetProperty(string propertyName, int value) => _properties[propertyName] = value.ToString();
 
-        public void SetProperty(string propertyName, double value) => _properties[propertyName] = value.ToString(); //TODO check this
+        public void SetProperty(string propertyName, double value) => _properties[propertyName] = value.ToString();
 
-        public void SetProperty(string propertyName, bool value) => _properties[propertyName] = value.ToString(); //TODO check this
+        public void SetProperty(string propertyName, bool value) => _properties[propertyName] = value.ToString();
 
-        public void SetProperty(string propertyName, byte[] value) => _properties[propertyName] = value.ToHex(); //Convert.ToBase64String(value);
+        public void SetProperty(string propertyName, byte[] value) => _properties[propertyName] = value.ToHex();
+
+        public void SetProperty(string propertyName, IDictionary<string, string> value) => _properties[propertyName] = JsonConvert.SerializeObject(value);
+
 
         public void SetPropertyList(string propertyName, params string[] values) => _properties[propertyName] = string.Join(", ", values);
 
@@ -163,8 +167,6 @@ namespace HomeCenter.Model.Core
             throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
         }
 
-        
-
         public double AsDouble(string propertyName, double? defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
@@ -208,7 +210,13 @@ namespace HomeCenter.Model.Core
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
 
             return _properties[propertyName].ToBytes();
-            //return Convert.FromBase64String(_properties[propertyName]);
+        }
+
+        public IDictionary<string, string> AsDictionary(string propertyName, IDictionary<string, string> defaultValue = null)
+        {
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+
+            return JsonConvert.DeserializeObject<IDictionary<string, string>>(_properties[propertyName]);
         }
     }
 }

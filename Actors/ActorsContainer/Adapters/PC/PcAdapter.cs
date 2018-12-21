@@ -71,7 +71,7 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(TurnOnCommand message)
         {
-            var cmd = new WakeOnLanCommand(_mac);
+            var cmd = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);
 
             //TODO check state before update the state

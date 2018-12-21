@@ -109,7 +109,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(TurnOnCommand message)
         {
-            var command = new WakeOnLanCommand(_mac);
+            var command = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(command).ConfigureAwait(false);
             //var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
 

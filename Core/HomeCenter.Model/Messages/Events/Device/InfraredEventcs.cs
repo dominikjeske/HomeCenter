@@ -1,16 +1,27 @@
-﻿using System;
-
-namespace HomeCenter.Model.Messages.Events.Device
+﻿namespace HomeCenter.Model.Messages.Events.Device
 {
     public class InfraredEvent : Event
     {
-        public InfraredEvent(string deviceUID, int system, uint commandCode)
+        public static InfraredEvent Create(string deviceUID, int system, uint commandCode)
         {
-            Type = EventType.InfraredCode;
-            Uid = Guid.NewGuid().ToString();
-            this[MessageProperties.MessageSource] = deviceUID;
-            SetProperty(MessageProperties.System, system);
-            SetProperty(MessageProperties.CommandCode, commandCode);
+            return new InfraredEvent()
+            {
+                MessageSource = deviceUID,
+                System = system,
+                CommandCode = commandCode
+            };
+        }
+
+        public int System
+        {
+            get => AsInt(MessageProperties.System);
+            set => SetProperty(MessageProperties.System, value);
+        }
+
+        public uint CommandCode
+        {
+            get => AsUint(MessageProperties.CommandCode);
+            set => SetProperty(MessageProperties.CommandCode, value);
         }
     }
 }

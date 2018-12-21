@@ -42,7 +42,7 @@ namespace HomeCenter.Runner
                     break;
                 case 2:
                     cmd = new RefreshCommand();
-                    cmd.DefaultLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
+                    cmd.LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Information);
                     break;
             }
 

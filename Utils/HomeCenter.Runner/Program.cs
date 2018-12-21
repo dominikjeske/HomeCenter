@@ -1,16 +1,40 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
     internal static class Program
     {
+        public static string ByteArrayToString(byte[] bytes)
+        {
+            StringBuilder hex = new StringBuilder(bytes.Length * 8);
+            foreach (byte b in bytes)
+            {
+                hex.AppendFormat(Convert.ToString(b, 2).PadLeft(8, '0'));
+                hex.Append("-");
+            }
+            hex.Remove(hex.Length - 1, 1);
+                
+            return hex.ToString();
+        }
+
         private static async Task Main(string[] args)
         {
+
+            var bytes = new byte[2];
+            bytes[1] = 5;
+            
+            var ss = BitConverter.ToString(bytes);
+            var bits = new BitArray(bytes);
+            var ccc = bits.ToString();
+
+            var xx = ByteArrayToString(bytes);
 
             var configuration = GetConfiguration();
 

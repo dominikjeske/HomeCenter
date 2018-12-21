@@ -41,7 +41,7 @@ namespace HomeCenter.Adapters.Denon.Messages
 
         public DenonStatusLightQuery()
         {
-            DefaultLogLevel = Microsoft.Extensions.Logging.LogLevel.Trace;
+            LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Trace);
         }
     }
 }

@@ -173,7 +173,7 @@ namespace HomeCenter.Model.Components
 
             state.Value = newValue;
 
-            await MessageBroker.PublisEvent(new PropertyChangedEvent(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+            await MessageBroker.PublisEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
 
         private async Task HandleEventInTrigger(Trigger trigger)

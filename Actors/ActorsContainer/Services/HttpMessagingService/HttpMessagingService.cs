@@ -1,9 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -29,6 +31,8 @@ namespace HomeCenter.Services.Networking
         [Subscibe]
         protected async Task<object> SendPostRequest(HttpPostQuery httpMessage)
         {
+            //TODO Assert messages required properties
+
             var httpClientHandler = new HttpClientHandler();
             if (httpMessage.Cookies != null)
             {
@@ -36,25 +40,29 @@ namespace HomeCenter.Services.Networking
                 httpClientHandler.UseCookies = true;
             }
 
-            if (httpMessage.Creditionals != null)
+            if (httpMessage.ContainsProperty(MessageProperties.Creditionals))
             {
-                httpClientHandler.Credentials = httpMessage.Creditionals;
+                var creditionals = httpMessage.Creditionals.First();
+                httpClientHandler.Credentials = new System.Net.NetworkCredential(creditionals.Key, creditionals.Value);
             }
 
             using (var httpClient = new HttpClient(httpClientHandler))
             {
-                foreach (var header in httpMessage.DefaultHeaders)
+                if (httpMessage.ContainsProperty(MessageProperties.Headers))
                 {
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    foreach (var header in httpMessage.Headers)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    }
                 }
-
-                if (!string.IsNullOrWhiteSpace(httpMessage.AuthorisationHeader.Key))
+                if (httpMessage.ContainsProperty(MessageProperties.AuthorisationHeader))
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(httpMessage.AuthorisationHeader.Key, httpMessage.AuthorisationHeader.Value);
+                    var header = httpMessage.AuthorisationHeader.First();
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(header.Key, header.Value);
                 }
 
                 var content = new StringContent(httpMessage.Body);
-                if (!string.IsNullOrWhiteSpace(httpMessage.ContentType))
+                if (httpMessage.ContainsProperty(MessageProperties.ContentType))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(httpMessage.ContentType);
                 }

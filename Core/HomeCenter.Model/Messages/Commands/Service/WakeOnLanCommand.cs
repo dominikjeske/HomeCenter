@@ -1,15 +1,21 @@
-﻿using System;
-using System.Globalization;
-using System.Net;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace HomeCenter.Model.Messages.Commands.Service
 {
-    public class WakeOnLanCommand : UdpCommand
+    public class WakeOnLanCommand : UdpCommand, IFormatableMessage<WakeOnLanCommand>
     {
-        public WakeOnLanCommand(string macAddress, int port = 9)
+        public static WakeOnLanCommand Create(string macAddress, int port = 9) => new WakeOnLanCommand { Address = macAddress, Port = port };
+
+        public int Port
         {
-            macAddress = Regex.Replace(macAddress, "[-|:]", "");
+            get => AsInt(MessageProperties.Port);
+            set => SetProperty(MessageProperties.Port, value);
+        }
+
+        public WakeOnLanCommand FormatMessage()
+        {
+            var macAddress = Regex.Replace(Address, "[-|:]", "");
 
             int payloadIndex = 0;
 
@@ -35,7 +41,9 @@ namespace HomeCenter.Model.Messages.Commands.Service
             }
 
             Body = payload;
-            Address = $"255.255.255.255:{port}";
+            Address = $"255.255.255.255:{Port}";
+
+            return this;
         }
     }
 }

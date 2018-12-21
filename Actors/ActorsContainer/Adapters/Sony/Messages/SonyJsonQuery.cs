@@ -39,8 +39,7 @@ namespace HomeCenter.Adapters.Sony.Messages
             return this;
         }
 
-        public override object Parse(string rawHttpResult) => rawHttpResult;
-
+   
         //public object ParseResult(string responseData, Type responseType = null)
         //{
         //    var response = (JObject)JsonConvert.DeserializeObject(responseData);

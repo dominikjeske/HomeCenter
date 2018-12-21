@@ -2,6 +2,7 @@
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {
@@ -25,7 +26,7 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
         public KodiCommand FormatMessage()
         {
-            Creditionals = new System.Net.NetworkCredential(UserName, Password);
+            Creditionals = new Dictionary<string, string>() { [UserName] = Password };
             Address = $"http://{Address}:{Port}/jsonrpc";
 
             var jsonRpcRequest = new JsonRpcRequest

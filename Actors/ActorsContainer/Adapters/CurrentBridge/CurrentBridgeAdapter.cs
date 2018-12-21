@@ -27,7 +27,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = AsInt(MessageProperties.I2cAddress);
+            var _i2cAddress = AsInt(MessageProperties.Address);
 
             var registration = new SerialRegistrationCommand(Self, 5, new Format[]
             {

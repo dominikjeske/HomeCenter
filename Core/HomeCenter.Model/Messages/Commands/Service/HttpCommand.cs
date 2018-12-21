@@ -1,19 +1,34 @@
-﻿using HomeCenter.Model.Messages.Queries;
-using System.Collections.Generic;
-using System.Net;
-
-namespace HomeCenter.Model.Messages.Commands.Service
+﻿namespace HomeCenter.Model.Messages.Commands.Service
 {
     public class HttpCommand : Command
     {
-        public virtual string Address { get; set; }
-        public virtual string Body { get; set; }
+        public HttpCommand()
+        {
+            RequestType = "POST";
+        }
 
-        public string RequestType { get; set; } = "POST";
-        public string ContentType { get; set; }
-        public CookieContainer Cookies { get; set; }
-        public Dictionary<string, string> DefaultHeaders { get; set; } = new Dictionary<string, string>();
-        public KeyValuePair<string, string> AuthorisationHeader { get; set; } = new KeyValuePair<string, string>("", "");
-        public NetworkCredential Creditionals { get; set; }
+        public string Address
+        {
+            get => AsString(MessageProperties.Address);
+            set => SetProperty(MessageProperties.Address, value);
+        }
+
+        public string Body
+        {
+            get => AsString(MessageProperties.Body);
+            set => SetProperty(MessageProperties.Body, value);
+        }
+
+        public string RequestType
+        {
+            get => AsString(MessageProperties.RequestType);
+            set => SetProperty(MessageProperties.RequestType, value);
+        }
+
+        public string ContentType
+        {
+            get => AsString(MessageProperties.ContentType);
+            set => SetProperty(MessageProperties.ContentType, value);
+        }
     }
 }

@@ -6,8 +6,9 @@ namespace HomeCenter.Model.Messages.Queries
     {
         public CancellationToken CancellationToken { get; }
 
-        public Query() { }
-        
+        public Query()
+        {
+        }
 
         public Query(string commandType)
         {

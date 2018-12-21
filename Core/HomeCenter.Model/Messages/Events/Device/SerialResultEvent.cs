@@ -3,6 +3,4 @@
     public class SerialResultEvent : Event
     {
     }
-
-
 }

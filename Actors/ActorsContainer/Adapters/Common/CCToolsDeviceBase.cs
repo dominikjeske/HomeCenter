@@ -21,8 +21,25 @@ namespace HomeCenter.Adapters.Common
     public abstract class CCToolsBaseAdapter : Adapter
     {
         private const int StateSize = 2;
+
+
+        // Byte 0 = Offset
+        // Register 0-1=Input
+        // Register 2-3=Output
+        // Register 4-5=Inversion
+        // Register 6-7=Configuration
+        // Register 8=Timeout
+
+        //byte 0 = Set target register to OUTPUT-1 register
+        //byte 1 = The state of ports 0-7
+        //byte 2 = The state of ports 8-15
         private readonly byte[] _outputWriteBuffer = { 2, 0, 0 };
+
+        //byte 0 = Set target register to CONFIGURATION register
+        //byte 1 = Set CONFIGURATION-1 to outputs
+        //byte 2 = Set CONFIGURATION-2 to outputs
         private readonly byte[] _configurationWriteBuffer = { 6, 0, 0 };
+
 
         private int _poolDurationWarning;
         protected int _i2cAddress;
@@ -42,7 +59,7 @@ namespace HomeCenter.Adapters.Common
 
             _poolInterval = AsIntTime(MessageProperties.PoolInterval);
             _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold);
-            _i2cAddress = AsInt(MessageProperties.I2cAddress);
+            _i2cAddress = AsInt(MessageProperties.Address);
 
             _state = new byte[StateSize];
             _committedState = new byte[StateSize];
@@ -81,7 +98,7 @@ namespace HomeCenter.Adapters.Common
 
             stopwatch.Stop();
 
-            if (newState.SequenceEqual(_state)) return;
+            if (newState.SequenceEqual(_state) || newState.Length == 0) return;
 
             var oldState = _state.ToArray();
 
@@ -91,16 +108,19 @@ namespace HomeCenter.Adapters.Common
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
-            Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBitString()}->{newState.ToBitString()})");
+            Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBinaryString()}->{newState.ToBinaryString()})");
 
             for (int i = 0; i < oldStateBits.Length; i++)
             {
                 var oldPinState = oldStateBits.Get(i);
                 var newPinState = newStateBits.Get(i);
-
+                
                 if (oldPinState == newPinState) continue;
 
-                var properyChangeEvent = new PropertyChangedEvent(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>() { [MessageProperties.PinNumber] = i.ToString() });
+                var properyChangeEvent = PropertyChangedEvent.Create(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>()
+                {
+                    [MessageProperties.PinNumber] = i.ToString()
+                });
 
                 await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
             }
@@ -142,7 +162,7 @@ namespace HomeCenter.Adapters.Common
 
         private async Task<byte[]> ReadFromBus()
         {
-            var query = I2cQuery.Create(_i2cAddress, StateSize);
+            var query = I2cQuery.Create(_i2cAddress, new byte[] { 0 });
             var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query).ConfigureAwait(false);
             return result;
         }

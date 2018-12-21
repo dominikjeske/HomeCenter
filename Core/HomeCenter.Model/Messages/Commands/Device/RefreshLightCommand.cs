@@ -6,7 +6,7 @@
 
         public RefreshLightCommand()
         {
-            DefaultLogLevel = Microsoft.Extensions.Logging.LogLevel.Trace;
+            LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Trace);
         }
     }
 }

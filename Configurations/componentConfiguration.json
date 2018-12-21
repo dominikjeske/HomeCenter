@@ -245,7 +245,7 @@
         "Uid": "ButtonLamp",
         "AdapterRefs": [
           {
-            "Uid": "HSRel8_1",
+            "Uid": "HSPE16InputOnly_1",
             "Properties": {
               "PinNumber": "1"
             }
@@ -290,7 +290,7 @@
         "Uid": "HSRel8_1",
         "Type": "HSREL8Adapter",
         "Properties": {
-          "I2cAddress": 24,
+          "Address": 24,
           "PoolInterval": 5000,
           "PollDurationWarningThreshold": 2000
         }
@@ -298,9 +298,8 @@
       {
         "Uid": "HSPE16InputOnly_1",
         "Type": "HSPE16InputOnlyAdapter",
-        "IsEnabled": false,
         "Properties": {
-          "I2cAddress": 101,
+          "Address": 16,
           "PoolInterval": 500,
           "PollDurationWarningThreshold": 2000
         }
@@ -359,7 +358,7 @@
         "Uid": "RemoteSocket",
         "Type": "RemoteSocketBridgeAdapter",
         "Properties": {
-          "I2cAddress": 50,
+          "Address": 50,
           "PinNumber": 7
         }
       },
@@ -367,7 +366,7 @@
         "Uid": "RemoteIR",
         "Type": "InfraredBridgeAdapter",
         "Properties": {
-          "I2cAddress": 50
+          "Address": 50
         }
       },
       {
@@ -378,14 +377,14 @@
         "Uid": "TemperatureBridge",
         "Type": "TemperatureBridgeAdapter",
         "Properties": {
-          "I2cAddress": 50
+          "Address": 50
         }
       },
       {
         "Uid": "HumidityBridge",
         "Type": "HumidityBridgeAdapter",
         "Properties": {
-          "I2cAddress": 50
+          "Address": 50
         }
       }
 

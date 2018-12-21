@@ -23,7 +23,5 @@ namespace HomeCenter.Adapters.PC.Messages
 
             return this;
         }
-
-        public override object Parse(string rawHttpResult) => rawHttpResult;
     }
 }

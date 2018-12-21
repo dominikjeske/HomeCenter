@@ -3,7 +3,7 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.Components
@@ -19,7 +19,7 @@ namespace HomeCenter.Model.Components
                 routerAttributes.Add(adapterProperty, this[adapterProperty]);
             }
             routerAttributes.Add(MessageProperties.MessageSource, Uid);
-            routerAttributes.Add(MessageProperties.EventType, EventType.PropertyChanged);
+            routerAttributes.Add(MessageProperties.EventType, nameof(PropertyChangedEvent));
 
             return new RoutingFilter(Uid, routerAttributes);
         }
