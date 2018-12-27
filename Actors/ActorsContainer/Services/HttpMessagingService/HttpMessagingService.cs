@@ -16,7 +16,7 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class HttpMessagingService : Service
     {
-        [Subscibe]
+        [Subscribe]
         protected async Task<object> SendGetRequest(HttpGetQuery httpMessage)
         {
             using (var httpClient = new HttpClient())
@@ -28,7 +28,7 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        [Subscibe]
+        [Subscribe]
         protected async Task<object> SendPostRequest(HttpPostQuery httpMessage)
         {
             //TODO Assert messages required properties

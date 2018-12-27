@@ -6,19 +6,19 @@ using System.Runtime.InteropServices;
 
 namespace HomeCenter.Model.Messages.Queries.Service
 {
-    public class SerialRegistrationCommand : Command
+    public class RegisterSerialCommand : Command
     {
         public Format[] ResultFormat { get; }
         public byte MessageType { get; }
         public int MessageSize { get; }
         public PID Actor { get; }
 
-        public SerialRegistrationCommand()
+        public RegisterSerialCommand()
         {
 
         }
 
-        public SerialRegistrationCommand(PID actor, byte messageType, Format[] resultFormat)
+        public RegisterSerialCommand(PID actor, byte messageType, Format[] resultFormat)
         {
             Actor = actor;
             MessageType = messageType;

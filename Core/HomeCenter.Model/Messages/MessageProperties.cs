@@ -5,6 +5,7 @@
         //Common
         public const string MessageSource = nameof(MessageSource);
         public const string LogLevel = nameof(LogLevel);
+        public const string Type = nameof(Type);
 
         //Command
         public const string IsFinishComand = nameof(IsFinishComand);
@@ -22,13 +23,12 @@
         public const string OldValue = nameof(OldValue);
         public const string NewValue = nameof(NewValue);
         public const string EventTime = nameof(EventTime);
-        public const string EventType = nameof(EventType);
-        public const string EventDirection = nameof(EventDirection);
         public const string CommandCode = nameof(CommandCode);
 
         //Adapter
         public const string Address = nameof(Address);
         public const string PinNumber = nameof(PinNumber);
+        public const string PinMode = nameof(PinMode);
         public const string ReversePinLevel = nameof(ReversePinLevel);
         public const string PoolInterval = nameof(PoolInterval);
         public const string PollDurationWarningThreshold = nameof(PollDurationWarningThreshold);
@@ -46,6 +46,10 @@
         public const string AdapterAuthor = nameof(AdapterAuthor);
         public const string AdapterDescription = nameof(AdapterDescription);
         public const string ClientID = nameof(ClientID);
+        public const string PinChangeWithPullUp = nameof(PinChangeWithPullUp);
+        public const string PinChangeWithPullDown = nameof(PinChangeWithPullDown);
+        public const string IsRising = nameof(IsRising);
+        public const string InterruptPin = nameof(InterruptPin);
 
         public const string InfraredAdapter = nameof(InfraredAdapter);
 

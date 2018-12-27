@@ -18,13 +18,13 @@ namespace HomeCenter.Broker.Handlers
             SubscriptionFilter = filter;
         }
 
-        public bool IsFilterMatch(RoutingFilter messageFilter)
+        public bool IsFilterMatch(object message, RoutingFilter messageFilter)
         {
             if (messageFilter?.RoutingKey == "*") return true;
 
             if (SubscriptionFilter == null && messageFilter != null) return false;
-
-            return SubscriptionFilter?.EvaluateFilter(messageFilter) ?? true;
+            
+            return SubscriptionFilter?.EvaluateFilter(message, messageFilter) ?? true;
         }
     }
 }

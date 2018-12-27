@@ -25,7 +25,7 @@ namespace HomeCenter.Services.Networking
             _disposables.Add(_nativeI2CBus);
         }
 
-        [Subscibe]
+        [Subscribe]
         protected void Handle(I2cCommand command)
         {
             var address = command.Address;
@@ -43,7 +43,7 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        [Subscibe]
+        [Subscribe]
         protected byte[] Handle(I2cQuery query)
         {
             var address = query.Address;

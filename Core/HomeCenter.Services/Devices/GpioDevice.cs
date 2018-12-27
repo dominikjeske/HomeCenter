@@ -1,56 +1,31 @@
 ﻿using HomeCenter.Model.Contracts;
+using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages;
 using System;
+using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Device.Gpio.Drivers;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace HomeCenter.Services.Devices
 {
-    public class GpioDevice : IGpioDevice, IDisposable
+    public class GpioDevice : IGpioDevice
     {
         private readonly GpioController _controller = new GpioController(PinNumberingScheme.Logical, new RaspberryPi3Driver());
+        private readonly List<int> _changeHandlers = new List<int>();
+        private readonly Subject<PinChanged> _pinChanged = new Subject<PinChanged>();
 
-        private PinValue _value;
+        public IObservable<PinChanged> PinChanged => _pinChanged.AsObservable();
 
-        public GpioDevice()
+        public void RegisterPinChanged(int pinNumber, string pinMode)
         {
-            _controller.OpenPin(21, PinMode.Input);
-           
+            if (_changeHandlers.Contains(pinNumber)) return;
 
-            _controller.RegisterCallbackForPinValueChangedEvent(21, PinEventTypes.Falling, Falling);
-            _controller.RegisterCallbackForPinValueChangedEvent(21, PinEventTypes.Rising, Rising);
+            _controller.OpenPin(pinNumber, GetPinMode(pinMode));
 
-            Task.Run(() =>
-            {
-                while(true)
-                {
-                    var value = _controller.Read(21);
-
-                   // if(value != _value)
-                   // {
-                        Console.WriteLine($"VALUE CAHANGED: FROM {_value} to {value}");
-                        _value = value;
-                  //  }
-
-                    Thread.Sleep(1000);
-                }
-            });
-        }
-
-        public void Falling(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
-        {
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!! FALLING");
-        }
-
-        public void Rising(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
-        {
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!! RISING");
-        }
-
-        public void Dispose()
-        {
-            _controller.Dispose();
+            _controller.RegisterCallbackForPinValueChangedEvent(pinNumber, PinEventTypes.Falling, PinFalling);
+            _controller.RegisterCallbackForPinValueChangedEvent(pinNumber, PinEventTypes.Rising, PinRising);
         }
 
         public void Write(int pin, bool value)
@@ -60,6 +35,57 @@ namespace HomeCenter.Services.Devices
                 _controller.OpenPin(pin, PinMode.Output);
             }
             _controller.Write(pin, value ? PinValue.High : PinValue.Low);
+        }
+
+        public void Dispose()
+        {
+            foreach (var pin in _changeHandlers)
+            {
+                _controller.UnregisterCallbackForPinValueChangedEvent(pin, PinFalling);
+                _controller.UnregisterCallbackForPinValueChangedEvent(pin, PinRising);
+            }
+
+            _controller.Dispose();
+            _pinChanged.Dispose();
+        }
+
+        private void PinFalling(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
+        {
+            _pinChanged.OnNext(GetPinChanged(pinValueChangedEventArgs));
+        }
+
+        private void PinRising(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
+        {
+            _pinChanged.OnNext(GetPinChanged(pinValueChangedEventArgs));
+        }
+
+        private PinChanged GetPinChanged(PinValueChangedEventArgs pinValueChangedEventArgs)
+        {
+            return new PinChanged
+            {
+                PinNumber = pinValueChangedEventArgs.PinNumber,
+                IsRising = pinValueChangedEventArgs.ChangeType == PinEventTypes.Rising
+            };
+        }
+
+        private PinMode GetPinMode(string pinMode)
+        {
+            switch (pinMode)
+            {
+                case PinModes.Input:
+                    return PinMode.Input;
+
+                case PinModes.Output:
+                    return PinMode.Output;
+
+                case PinModes.InputPullDown:
+                    return PinMode.InputPullDown;
+
+                case PinModes.InputPullUp:
+                    return PinMode.InputPullUp;
+            }
+
+            throw new UnsupportedPropertyStateException($"Pin mode {pinMode} is unsupported");
         }
     }
 }

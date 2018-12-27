@@ -1,6 +1,8 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Broker.Behaviors;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Tests.Helpers;
 using HomeCenter.Tests.Mocks;
 using Microsoft.Reactive.Testing;
@@ -8,7 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<OtherMessage>(handler => { });
 
-            var result = aggregator.GetSubscriptors<TestMessage>(null);
+            var result = aggregator.GetSubscriptors(new TestMessage(), null);
 
             Assert.AreEqual(1, result.Count);
         }
@@ -43,7 +44,7 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<OtherMessage>(handler => { });
 
-            var result = aggregator.GetSubscriptors<DerivedTestMessage>();
+            var result = aggregator.GetSubscriptors(new DerivedTestMessage());
 
             Assert.AreEqual(1, result.Count);
         }
@@ -56,7 +57,7 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<TestMessage>(handler => { }, "x");
 
-            var result = aggregator.GetSubscriptors<TestMessage>("x");
+            var result = aggregator.GetSubscriptors(new TestMessage(), "x");
 
             Assert.AreEqual(1, result.Count);
         }
@@ -69,7 +70,7 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<TestMessage>(handler => { });
 
-            var result = aggregator.GetSubscriptors<TestMessage>("x");
+            var result = aggregator.GetSubscriptors(new TestMessage(), "x");
 
             Assert.AreEqual(0, result.Count);
         }
@@ -82,7 +83,7 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<TestMessage>(handler => { }, "x");
 
-            var result = aggregator.GetSubscriptors<TestMessage>();
+            var result = aggregator.GetSubscriptors(new TestMessage());
 
             Assert.AreEqual(1, result.Count);
         }
@@ -95,10 +96,65 @@ namespace HomeCenter.Tests
             aggregator.Subscribe<TestMessage>(handler => { });
             aggregator.Subscribe<TestMessage>(handler => { }, "x");
 
-            var result = aggregator.GetSubscriptors<TestMessage>("*");
+            var result = aggregator.GetSubscriptors(new TestMessage(), "*");
 
             Assert.AreEqual(2, result.Count);
         }
+
+        [TestMethod]
+        public void GetSubscriptors_WhenMissingRoutingFilter_ShouldReturnNoElements()
+        {
+            var aggregator = InitAggregator();
+
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            {
+                [MessageProperties.MessageSource] = "Adapter"
+            }));
+
+            var result = aggregator.GetSubscriptors(new Event());
+
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [TestMethod]
+        public void GetSubscriptors_WhenRoutingFilterMechSubscriptionFromOneAttribute_ShouldReturnAllMechingSubscriptions()
+        {
+            var aggregator = InitAggregator();
+
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            {
+                [MessageProperties.MessageSource] = "Adapter"
+            }));
+
+            var ev = new Event();
+            ev[MessageProperties.MessageSource] = "Adapter";
+
+            var result = aggregator.GetSubscriptors(ev);
+
+            Assert.AreEqual(1, result.Count);
+        }
+
+        [TestMethod]
+        public void GetSubscriptors_WhenRoutingFilterMechSubscriptionFromManyAttributes_ShouldReturnAllMechingSubscriptions()
+        {
+            var aggregator = InitAggregator();
+
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            {
+                [MessageProperties.MessageSource] = "Adapter",
+                [MessageProperties.PinNumber] = "5"
+            }));
+
+            var ev = new Event();
+            ev[MessageProperties.MessageSource] = "Adapter";
+            ev[MessageProperties.PinNumber] = "5";
+            ev[MessageProperties.Value] = "Value";
+
+            var result = aggregator.GetSubscriptors(ev);
+
+            Assert.AreEqual(1, result.Count);
+        }
+
 
         [TestMethod]
         public async Task QueryAsync_WhenSubscribed_ShouldReturnProperResult()
@@ -132,26 +188,26 @@ namespace HomeCenter.Tests
             Assert.AreEqual("Test", result);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public async Task QueryAsync_WhenTwoSubscribed_ShouldThrow()
-        {
-            var aggregator = InitAggregator();
+        //[TestMethod]
+        //[ExpectedException(typeof(Exception))]
+        //public async Task QueryAsync_WhenTwoSubscribed_ShouldThrow()
+        //{
+        //    var aggregator = InitAggregator();
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(50).ConfigureAwait(false);
-                return "Slower";
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(50).ConfigureAwait(false);
+        //        return "Slower";
+        //    });
 
-            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-            {
-                await Task.Delay(10).ConfigureAwait(false);
-                return "Faster";
-            });
+        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+        //    {
+        //        await Task.Delay(10).ConfigureAwait(false);
+        //        return "Faster";
+        //    });
 
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
-        }
+        //    var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+        //}
 
         [TestMethod]
         public void QueryAsync_WhenSubscribedForWrongReturnType_ShouldThrowInvalidCastException()
@@ -282,76 +338,76 @@ namespace HomeCenter.Tests
 
             aggregator.ClearSubscriptions();
 
-            var result = aggregator.GetSubscriptors<TestMessage>(null);
+            var result = aggregator.GetSubscriptors(new TestMessage(), null);
             Assert.AreEqual(result.Count, 0);
         }
 
-        //[TestMethod]
-        //public void QueryWithResults_WhenSubscribed_ShouldReturnProperResult()
-        //{
-        //    var aggregator = InitAggregator();
-        //    var expected = new List<string> { "Test", "Test2" };
+        [TestMethod]
+        public void QueryWithResults_WhenSubscribed_ShouldReturnProperResult()
+        {
+            var aggregator = InitAggregator();
+            var expected = new List<string> { "Test", "Test2" };
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(10).ConfigureAwait(false);
-        //        return expected[0];
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(10).ConfigureAwait(false);
+                return expected[0];
+            });
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(30).ConfigureAwait(false);
-        //        return expected[1];
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(30).ConfigureAwait(false);
+                return expected[1];
+            });
 
-        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage());
+            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage());
 
-        //    subscription.AssertEqual(expected.ToObservable());
-        //}
+            subscription.AssertEqual(expected.ToObservable());
+        }
 
-        //[TestMethod]
-        //public void QueryWithResults_WhenLongRun_ShouldTimeOut()
-        //{
-        //    var aggregator = InitAggregator();
-        //    var expected = new List<string> { "Test", "Test2" };
+        [TestMethod]
+        public void QueryWithResults_WhenLongRun_ShouldTimeOut()
+        {
+            var aggregator = InitAggregator();
+            var expected = new List<string> { "Test", "Test2" };
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(100).ConfigureAwait(false);
-        //        return expected[1];
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+                return expected[1];
+            });
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(100).ConfigureAwait(false);
-        //        return expected[0];
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+                return expected[0];
+            });
 
-        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), behaviors: new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(10)));
+            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), behaviors: new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(10)));
 
-        //    AggregateExceptionHelper.AssertInnerException<TimeoutException>(subscription);
-        //}
+            AggregateExceptionHelper.AssertInnerException<TimeoutException>(subscription);
+        }
 
-        //[TestMethod]
-        //public void QueryWithResults_WhenCanceled_ShouldThrowOperationCanceledException()
-        //{
-        //    var aggregator = InitAggregator();
-        //    var expected = new List<string> { "Test", "Test2" };
+        [TestMethod]
+        public void QueryWithResults_WhenCanceled_ShouldThrowOperationCanceledException()
+        {
+            var aggregator = InitAggregator();
+            var expected = new List<string> { "Test", "Test2" };
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async message =>
-        //    {
-        //        message.CancellationToken.ThrowIfCancellationRequested();
-        //        await Task.Delay(100).ConfigureAwait(false);
-        //        return expected[1];
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async message =>
+            {
+                message.CancellationToken.ThrowIfCancellationRequested();
+                await Task.Delay(100).ConfigureAwait(false);
+                return expected[1];
+            });
 
-        //    var ts = new CancellationTokenSource();
-        //    ts.Cancel();
+            var ts = new CancellationTokenSource();
+            ts.Cancel();
 
-        //    var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token);
+            var subscription = aggregator.QueryWithResults<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token);
 
-        //    AggregateExceptionHelper.AssertInnerException<TaskCanceledException>(subscription);
-        //}
+            AggregateExceptionHelper.AssertInnerException<TaskCanceledException>(subscription);
+        }
 
         [TestMethod]
         public async Task Publish_WhenSubscribed_ShouldInvokeSubscriber()

@@ -7,7 +7,7 @@ using TestHelper;
 
 namespace HomeCenter.Analyzer.Test
 {
-    [TestClass]
+   // [TestClass]
     public class UnitTest : CodeFixVerifier
     {
         //No diagnostics expected to show up

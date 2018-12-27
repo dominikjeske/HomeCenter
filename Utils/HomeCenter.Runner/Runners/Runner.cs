@@ -10,7 +10,7 @@ namespace HomeCenter.Runner
     {
         protected string[] _tasks;
         protected Container Container;
-        protected IActorMessageBroker MessageBroker;
+        protected IMessageBroker MessageBroker;
 
         internal Runner(string uid)
         {
@@ -30,7 +30,7 @@ namespace HomeCenter.Runner
         public void SetContainer(Container container)
         {
             Container = container;
-            MessageBroker = container.GetInstance<IActorMessageBroker>();
+            MessageBroker = container.GetInstance<IMessageBroker>();
         }
 
         public virtual async Task Run()

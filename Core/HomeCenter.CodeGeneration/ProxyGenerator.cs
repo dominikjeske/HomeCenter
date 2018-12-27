@@ -112,9 +112,9 @@ namespace HomeCenter.CodeGeneration
 
         private ClassDeclarationSyntax AddSubscriptions(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
         {
-            var commands = GetMethodList(classSyntax, model, "Command", "Subscibe");
-            var events = GetMethodList(classSyntax, model, "Event", "Subscibe");
-            var queries = GetMethodList(classSyntax, model, "Query", "Subscibe");
+            var commands = GetMethodList(classSyntax, model, "Command", "Subscribe");
+            var events = GetMethodList(classSyntax, model, "Event", "Subscribe");
+            var queries = GetMethodList(classSyntax, model, "Query", "Subscribe");
             
             if(commands.Count + queries.Count + events.Count > 0)
             {
@@ -235,9 +235,9 @@ namespace HomeCenter.CodeGeneration
             {
                 parameters = parameters.AddParameters(Parameter(Identifier("scheduler")).WithType(IdentifierName("IScheduler")));
             }
-            if (!CheckIfExists(parList, "IActorMessageBroker"))
+            if (!CheckIfExists(parList, "IMessageBroker"))
             {
-                parameters = parameters.AddParameters(Parameter(Identifier("messageBroker")).WithType(IdentifierName("IActorMessageBroker")));
+                parameters = parameters.AddParameters(Parameter(Identifier("messageBroker")).WithType(IdentifierName("IMessageBroker")));
             }
             if (!CheckIfExists(parList, "ILogger"))
             {

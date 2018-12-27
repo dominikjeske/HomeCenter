@@ -90,7 +90,7 @@ namespace HomeCenter.Adapters.Common
             
         }
 
-        private async Task FetchState()
+        protected async Task FetchState()
         {
             var stopwatch = Stopwatch.StartNew();
 
@@ -122,7 +122,7 @@ namespace HomeCenter.Adapters.Common
                     [MessageProperties.PinNumber] = i.ToString()
                 });
 
-                await MessageBroker.PublisEvent(properyChangeEvent, _requierdProperties).ConfigureAwait(false);
+                await MessageBroker.PublishEvent(properyChangeEvent).ConfigureAwait(false);
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)

@@ -138,19 +138,20 @@ namespace HomeCenter.Broker
             return latestSubscriptions;
         }
 
-        public List<BaseCommandHandler> GetCurrentSubscriptions(Type messageType, RoutingFilter filter = null)
+        public List<BaseCommandHandler> GetCurrentSubscriptions(object message, RoutingFilter filter = null)
         {
             var latestSubscriptions = GetCurrentSubscriptions();
-            var msgTypeInfo = messageType.GetTypeInfo();
+            var msgTypeInfo = message.GetType().GetTypeInfo();
             var filteredSubscription = new List<BaseCommandHandler>();
 
+            //TODO add parraler?
             for (var idx = 0; idx < latestSubscriptions.Length; idx++)
             {
                 var subscription = latestSubscriptions[idx];
 
                 if (!subscription.MessageType.IsAssignableFrom(msgTypeInfo)) continue;
 
-                if (!subscription.IsFilterMatch(filter)) continue;
+                if (!subscription.IsFilterMatch(message, filter)) continue;
 
                 filteredSubscription.Add(subscription);
             }

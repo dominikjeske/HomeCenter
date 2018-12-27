@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public interface IActorMessageBroker
+    public interface IMessageBroker
     {
-        Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes = null) where T : Event;
+        Task PublishEvent<T>(T message) where T : Event;
 
         Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
 

@@ -9,9 +9,9 @@ namespace HomeCenter.Model.Triggers
 {
     public class DelayCommandJob : IJob
     {
-        private readonly IActorMessageBroker _actorMessageBroker;
+        private readonly IMessageBroker _actorMessageBroker;
 
-        public DelayCommandJob(IActorMessageBroker actorMessageBroker)
+        public DelayCommandJob(IMessageBroker actorMessageBroker)
         {
             _actorMessageBroker = actorMessageBroker;
         }

@@ -8,20 +8,18 @@ using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
 using Proto;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public class ActorMessageBroker : IActorMessageBroker
+    public class MessageBroker : IMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IActorFactory _actorFactory;
 
         private readonly ConcurrentHashSet<SubscriptionCache> _subscriptionCahce = new ConcurrentHashSet<SubscriptionCache>();
 
-        public ActorMessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory)
+        public MessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory)
         {
             _eventAggregator = eventAggregator;
             _actorFactory = actorFactory;
@@ -85,9 +83,9 @@ namespace HomeCenter.Model.Core
             return query.Verify(result, expectedResult);
         }
 
-        public Task PublisEvent<T>(T message, IEnumerable<string> routerAttributes = null) where T : Event
+        public Task PublishEvent<T>(T message) where T : Event
         {
-            return _eventAggregator.Publish(message, message.GetRoutingFilter(routerAttributes));
+            return _eventAggregator.Publish(message);
         }
 
         public void Send(object message, PID destination)

@@ -15,7 +15,7 @@ namespace HomeCenter.Model.Actors
     public abstract class DeviceActor : BaseObject, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
-        [DI] protected IActorMessageBroker MessageBroker { get; set; }
+        [DI] protected IMessageBroker MessageBroker { get; set; }
         [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
 

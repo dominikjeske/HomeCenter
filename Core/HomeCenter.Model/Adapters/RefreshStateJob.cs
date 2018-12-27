@@ -9,9 +9,9 @@ namespace HomeCenter.Model.Adapters
 {
     public class RefreshStateJob : IJob
     {
-        private readonly IActorMessageBroker _actorMessageBroker;
+        private readonly IMessageBroker _actorMessageBroker;
 
-        public RefreshStateJob(IActorMessageBroker actorMessageBroker)
+        public RefreshStateJob(IMessageBroker actorMessageBroker)
         {
             _actorMessageBroker = actorMessageBroker;
         }

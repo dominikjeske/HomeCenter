@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Exceptions;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Utils.Extensions;
 using Newtonsoft.Json;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace HomeCenter.Model.Core
 {
-    public class BaseObject
+    public class BaseObject : IPropertiesSource
     {
         [Map] private Dictionary<string, string> _properties { get; set; } = new Dictionary<string, string>();
         public string Uid { get; protected set; } = "";
@@ -65,7 +66,6 @@ namespace HomeCenter.Model.Core
 
         public void SetProperty(string propertyName, IDictionary<string, string> value) => _properties[propertyName] = JsonConvert.SerializeObject(value);
 
-
         public void SetPropertyList(string propertyName, params string[] values) => _properties[propertyName] = string.Join(", ", values);
 
         public IReadOnlyDictionary<string, string> GetProperties() => _properties.AsReadOnly();
@@ -97,7 +97,7 @@ namespace HomeCenter.Model.Core
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper int value");
+            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper bool value");
         }
 
         public int AsInt(string propertyName, int? defaultValue = null)
@@ -198,9 +198,9 @@ namespace HomeCenter.Model.Core
             return _properties[propertyName];
         }
 
-        public IList<string> AsList(string propertyName, IList<string> defaultValue = null)
+        public IList<string> AsList(string propertyName, IEnumerable<string> defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return (IList<string>)defaultValue ?? throw new MissingPropertyException(propertyName);
 
             return _properties[propertyName].Split(',').Select(x => x.Trim()).ToList();
         }

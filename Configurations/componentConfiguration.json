@@ -45,6 +45,7 @@
     "Components": [
       {
         "Uid": "DenonComponent",
+        "IsEnabled":  false,
         "Properties": {
           "FriendlyName": "Denon"
         },
@@ -300,6 +301,7 @@
         "Type": "HSPE16InputOnlyAdapter",
         "Properties": {
           "Address": 16,
+          "InterruptPin": 21,
           "PoolInterval": 500,
           "PollDurationWarningThreshold": 2000
         }
@@ -307,6 +309,7 @@
       {
         "Uid": "Denon",
         "Type": "DenonAdapter",
+        "IsEnabled": false,
         "Properties": {
           "Hostname": "192.168.0.100",
           "PoolInterval": 500,
@@ -371,7 +374,10 @@
       },
       {
         "Uid": "Raspberry",
-        "Type": "RaspberryAdapter"
+        "Type": "RaspberryAdapter",
+        "Properties": {
+          "PinChangeWithPullUp": "21"
+        }
       },
       {
         "Uid": "TemperatureBridge",

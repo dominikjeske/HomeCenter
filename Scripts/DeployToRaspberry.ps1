@@ -1,7 +1,7 @@
 #Script dependencies:
 #Install-Module -Name Posh-SSH
 
-$raspberry = '192.168.0.110'
+$raspberry = '192.168.1.102'
 $remoteProjectPath = '/home/pi/HomeCenter'
 $configuration = 'componentConfiguration.json'
 

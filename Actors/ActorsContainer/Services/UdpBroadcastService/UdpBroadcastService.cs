@@ -11,7 +11,7 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class UdpBroadcastService : Service
     {
-        [Subscibe]
+        [Subscribe]
         protected async Task Handle(UdpCommand udpCommand)
         {
             using (var socket = new UdpClient())

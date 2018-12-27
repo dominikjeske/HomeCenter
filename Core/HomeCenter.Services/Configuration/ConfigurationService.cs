@@ -73,7 +73,7 @@ namespace HomeCenter.Services.Configuration
             var components = MapComponents(result);
             var areas = MapAreas(result, components);
 
-            await MessageBroker.PublisEvent(SystemStartedEvent.Default).ConfigureAwait(false);
+            await MessageBroker.PublishEvent(SystemStartedEvent.Default).ConfigureAwait(false);
         }
 
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)

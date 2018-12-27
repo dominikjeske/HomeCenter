@@ -15,7 +15,7 @@ namespace HomeCenter.Broker
 
         void UnSubscribe(Guid token);
 
-        List<BaseCommandHandler> GetSubscriptors<T>(RoutingFilter filter = null);
+        List<BaseCommandHandler> GetSubscriptors(object message, RoutingFilter filter = null);
 
         SubscriptionToken Subscribe<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null);
 
@@ -27,7 +27,7 @@ namespace HomeCenter.Broker
 
         SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter filter = null);
 
-      //  IObservable<IMessageEnvelope<T>> Observe<T>();
+        IObservable<IMessageEnvelope<T>> Observe<T>();
 
         Func<BehaviorChain> DefaultBehavior { get; set; }
 
@@ -48,13 +48,13 @@ namespace HomeCenter.Broker
             BehaviorChain behaviors = null
         ) where R : class;
 
-        //IObservable<R> QueryWithResults<T, R>
-        //(
-        //    T message,
-        //    RoutingFilter filter = null,
-        //    CancellationToken cancellationToken = default,
-        //    BehaviorChain behaviors = null
-        //) where R : class;
+        IObservable<R> QueryWithResults<T, R>
+        (
+            T message,
+            RoutingFilter filter = null,
+            CancellationToken cancellationToken = default,
+            BehaviorChain behaviors = null
+        ) where R : class;
 
         Task QueryWithRepublishResult<T, R>
         (

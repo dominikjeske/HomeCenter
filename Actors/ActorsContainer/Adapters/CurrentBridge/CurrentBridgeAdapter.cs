@@ -29,7 +29,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             var _i2cAddress = AsInt(MessageProperties.Address);
 
-            var registration = new SerialRegistrationCommand(Self, 5, new Format[]
+            var registration = new RegisterSerialCommand(Self, 5, new Format[]
             {
                 new Format(1, typeof(byte), "Pin"),
                 new Format(2, typeof(byte), "Current")

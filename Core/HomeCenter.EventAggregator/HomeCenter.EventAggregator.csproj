@@ -13,11 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
+    <PackageReference Include="System.Reactive" Version="4.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
   </ItemGroup>
 
 </Project>

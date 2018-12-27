@@ -5,12 +5,17 @@ namespace HomeCenter.Broker
 {
     public class RoutingFilter
     {
-        public static readonly RoutingFilter MessageWrite = new RoutingFilter("MessageWrite");
-        public static readonly RoutingFilter MessageRead = new RoutingFilter("MessageRead");
+        public string RoutingKey { get; }
+        public Dictionary<string, string> RoutingAttributes { get; } = new Dictionary<string, string>();
 
         public RoutingFilter(string routingKey)
         {
             RoutingKey = routingKey;
+        }
+
+        public RoutingFilter(IDictionary<string, string> routingAttributes)
+        {
+            RoutingAttributes.AddRangeNewOnly(routingAttributes);
         }
 
         public RoutingFilter(string routingKey, IDictionary<string, string> routingAttributes)
@@ -19,13 +24,32 @@ namespace HomeCenter.Broker
             RoutingAttributes.AddRangeNewOnly(routingAttributes);
         }
 
-        public string RoutingKey { get; }
-        public Dictionary<string, string> RoutingAttributes { get; } = new Dictionary<string, string>();
-
-        public bool EvaluateFilter(RoutingFilter messageFilter)
+        public bool EvaluateFilter(object message, RoutingFilter messageFilter)
         {
-            if (messageFilter == null || RoutingKey.Compare(messageFilter.RoutingKey) != 0) return false;
-            if (!RoutingAttributes.IsEqual(messageFilter.RoutingAttributes)) return false;
+            // If routing key is defined on subscription we check if it is match with message key
+            if (!string.IsNullOrWhiteSpace(RoutingKey) && !RoutingKey.InvariantEquals(messageFilter?.RoutingKey)) return false;
+
+            // If subscription have routing attributes
+            if (RoutingAttributes.Count > 0)
+            {
+                // If message is IPropertiesSource we check properties from message directly
+                if (message is IPropertiesSource propertiesSource)
+                {
+                    foreach (var attribute in RoutingAttributes)
+                    {
+                        if (!propertiesSource.ContainsProperty(attribute.Key)) return false;
+
+                        if (!propertiesSource[attribute.Key].InvariantEquals(attribute.Value)) return false;
+                    }
+                }
+
+                // if we have additional routing attributes in message filter
+                if (messageFilter?.RoutingAttributes?.Count > 0 && !RoutingAttributes.IsEqual(messageFilter.RoutingAttributes))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

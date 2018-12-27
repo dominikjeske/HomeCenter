@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.InfraredBridge
 
             _I2cAddress = AsInt(MessageProperties.Address);
 
-            var registration = new SerialRegistrationCommand(Self, 3, new Format[]
+            var registration = new RegisterSerialCommand(Self, 3, new Format[]
                {
                 new Format(1, typeof(byte), "System"),
                 new Format(2, typeof(uint), "Code"),
@@ -46,7 +46,7 @@ namespace HomeCenter.Adapters.InfraredBridge
             var system = serialResultCommand.AsByte("System");
             var code = serialResultCommand.AsUint("Code");
 
-            return MessageBroker.PublisEvent(InfraredEvent.Create(Uid, system, code));
+            return MessageBroker.PublishEvent(InfraredEvent.Create(Uid, system, code));
         }
 
         protected Task Handle(SendCodeCommand message)

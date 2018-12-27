@@ -31,7 +31,7 @@ namespace HomeCenter.Adapters.TemperatureBridge
 
             _i2cAddress = AsInt(MessageProperties.Address);
 
-            var registration = new SerialRegistrationCommand(Self, I2C_ACTION_TEMPERATURE, new Format[]
+            var registration = new RegisterSerialCommand(Self, I2C_ACTION_TEMPERATURE, new Format[]
             {
                 new Format(1, typeof(byte), MessageProperties.PinNumber),
                 new Format(2, typeof(float), MessageProperties.Value)

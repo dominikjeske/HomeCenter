@@ -6,6 +6,11 @@ namespace HomeCenter.Utils.Extensions
     {
         public static int Compare(this string orginalText, string comparedText) => string.Compare(orginalText, comparedText, StringComparison.OrdinalIgnoreCase);
 
+        public static bool InvariantEquals(this string stringA, string stringB)
+        {
+            return string.Equals(stringA, stringB, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static byte[] ToBytes(this string byteString)
         {
             // Get the separator character.

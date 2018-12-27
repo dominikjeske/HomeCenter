@@ -20,7 +20,7 @@ namespace HomeCenter.Services.Networking
     public abstract class SerialPortService : Service
     {
         private readonly ISerialDevice _serialDevice;
-        private readonly Dictionary<int, SerialRegistrationCommand> _messageHandlers = new Dictionary<int, SerialRegistrationCommand>();
+        private readonly Dictionary<int, RegisterSerialCommand> _messageHandlers = new Dictionary<int, RegisterSerialCommand>();
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
 
         protected SerialPortService(ISerialDevice serialDevice)
@@ -37,8 +37,8 @@ namespace HomeCenter.Services.Networking
             _disposeContainer.Add(_serialDevice);
         }
 
-        [Subscibe]
-        protected Task Handle(SerialRegistrationCommand registration)
+        [Subscribe]
+        protected Task Handle(RegisterSerialCommand registration)
         {
             if (_messageHandlers.ContainsKey(registration.MessageType))
             {
@@ -71,11 +71,9 @@ namespace HomeCenter.Services.Networking
                     return;
                 }
 
-                if (!_messageHandlers.TryGetValue(messageType, out SerialRegistrationCommand registration))
+                if (!_messageHandlers.TryGetValue(messageType, out RegisterSerialCommand registration))
                 {
-                    Logger.LogInformation($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
-                    return;
-                    //throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialMessagingService)}");
+                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
                 }
 
                 if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");

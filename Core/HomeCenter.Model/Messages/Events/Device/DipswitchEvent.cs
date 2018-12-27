@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace HomeCenter.Model.Messages.Events.Device
+﻿namespace HomeCenter.Model.Messages.Events.Device
 {
     public class DipswitchEvent : Event
     {
@@ -14,12 +12,6 @@ namespace HomeCenter.Model.Messages.Events.Device
                 CommandCode = command
             };
         }
-
-        public override IEnumerable<string> RoutingAttributes() => new string[]
-        {
-            MessageProperties.Unit,
-            MessageProperties.System
-        };
 
         public string Unit
         {

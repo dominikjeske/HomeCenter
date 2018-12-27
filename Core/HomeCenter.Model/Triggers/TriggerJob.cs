@@ -8,9 +8,9 @@ namespace HomeCenter.Model.Triggers
 {
     public class TriggerJob : IJob
     {
-        private readonly IActorMessageBroker _actorMessageBroker;
+        private readonly IMessageBroker _actorMessageBroker;
 
-        public TriggerJob(IActorMessageBroker actorMessageBroker)
+        public TriggerJob(IMessageBroker actorMessageBroker)
         {
             _actorMessageBroker = actorMessageBroker;
         }

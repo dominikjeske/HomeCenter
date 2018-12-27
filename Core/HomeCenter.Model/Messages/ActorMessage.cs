@@ -1,4 +1,7 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Core;
+using HomeCenter.Utils.Extensions;
+using System.Linq;
 
 namespace HomeCenter.Model.Messages
 {
@@ -15,6 +18,14 @@ namespace HomeCenter.Model.Messages
         {
             get => AsString(MessageProperties.LogLevel, nameof(Microsoft.Extensions.Logging.LogLevel.Information));
             set => SetProperty(MessageProperties.LogLevel, value);
+        }
+
+        public RoutingFilter GetRoutingFilterFromProperties()
+        {
+            var attributes = GetProperties().ToDictionary();
+            attributes.Add(MessageProperties.Type, Type);
+
+            return new RoutingFilter(attributes);
         }
     }
 }

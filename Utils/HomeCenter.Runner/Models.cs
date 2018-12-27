@@ -23,7 +23,7 @@ namespace HomeCenter.Runner.Codegen
         //    return Task.CompletedTask;
         //}
 
-        [Subscibe]
+        [Subscribe]
         protected byte[] Handle(HttpPostQuery query)
         {
             
@@ -31,7 +31,7 @@ namespace HomeCenter.Runner.Codegen
             
         }
 
-        [Subscibe]
+        [Subscribe]
         protected int Handle2(HttpPostQuery query)
         {
 

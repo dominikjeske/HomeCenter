@@ -34,7 +34,7 @@ namespace HomeCenter.Services.Controllers
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), confService);
         }
 
-        [Subscibe]
+        [Subscribe]
         protected Task Handle(SystemStartedEvent systemStartedEvent)
         {
             return RunScheduler();

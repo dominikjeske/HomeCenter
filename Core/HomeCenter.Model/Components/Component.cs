@@ -53,9 +53,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = Uid);
-
-                Subscribe<Event>(trigger.Event.GetRoutingFilter());
+                Subscribe<Event>(trigger.Event.GetRoutingFilterFromProperties());
             }
         }
 
@@ -63,8 +61,6 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule != null))
             {
-                trigger.Commands.ForEach(c => c[MessageProperties.MessageSource] = Uid);
-
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
                     await Scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(Self), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
@@ -173,7 +169,7 @@ namespace HomeCenter.Model.Components
 
             state.Value = newValue;
 
-            await MessageBroker.PublisEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
         }
 
         private async Task HandleEventInTrigger(Trigger trigger)
