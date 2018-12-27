@@ -50,7 +50,7 @@
         public const string PinChangeWithPullDown = nameof(PinChangeWithPullDown);
         public const string IsRising = nameof(IsRising);
         public const string InterruptPin = nameof(InterruptPin);
-
+        public const string InterruptSource = nameof(InterruptSource);
         public const string InfraredAdapter = nameof(InfraredAdapter);
 
         //Services

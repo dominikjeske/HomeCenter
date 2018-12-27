@@ -2,21 +2,20 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Contracts;
+using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
-using Microsoft.Extensions.Logging;
 using Proto;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
 {
     [ProxyCodeGenerator]
-    public abstract class RaspberryAdapter : Adapter, IObserver<PinChanged>
+    public abstract class RaspberryAdapter : Adapter
     {
         private readonly IGpioDevice _gpioDevice;
 
@@ -24,7 +23,7 @@ namespace HomeCenter.Adapters.PC
         {
             _gpioDevice = gpioDevice;
 
-            _disposables.Add(_gpioDevice.PinChanged.Subscribe(this));
+            _disposables.Add(_gpioDevice.PinChanged.SubscribeAsync(OnPinChanged));
         }
 
         protected override Task OnStarted(IContext context)
@@ -74,6 +73,11 @@ namespace HomeCenter.Adapters.PC
             _gpioDevice.RegisterPinChanged(pinNumber, pinMode);
         }
 
+        private Task OnPinChanged(PinChanged value)
+        {
+            return MessageBroker.PublishEvent(PinValueChangedEvent.Create(Uid, value.PinNumber, value.IsRising));
+        }
+
         protected void Handle(VolumeUpCommand command)
         {
             //TODO
@@ -87,22 +91,6 @@ namespace HomeCenter.Adapters.PC
         protected void Handle(VolumeSetCommand command)
         {
             //TODO
-        }
-
-        public void OnCompleted()
-        {
-        }
-
-        public void OnError(Exception error)
-        {
-            Logger.LogError($"{error}");
-        }
-
-        public void OnNext(PinChanged value)
-        {
-            MessageBroker.Send(PinValueChangedEvent.Create(Uid, value.PinNumber, value.IsRising), "HSPE16InputOnly_1");
-
-            //MessageBroker.PublishEvent(PinValueChangedEvent.Create(Uid, value.PinNumber, value.IsRising)).GetAwaiter().GetResult();
         }
     }
 }

@@ -56,9 +56,9 @@ namespace HomeCenter.Model.Extensions
             return TimeSpan.FromMilliseconds(ms).Ticks;
         }
 
-        public static IDisposable SubscribeAsync<T>(this IObservable<T> source, Func<Task> onNextAsync) =>
+        public static IDisposable SubscribeAsync<T>(this IObservable<T> source, Func<T, Task> onNextAsync) =>
            source
-               .Select(_ => Observable.FromAsync(onNextAsync))
+               .Select(message => Observable.FromAsync(() => onNextAsync(message)))
                .Concat()
                .Subscribe();
 
@@ -68,10 +68,6 @@ namespace HomeCenter.Model.Extensions
                 .Merge()
                 .Subscribe();
 
-        public static IDisposable SubscribeAsyncConcurrent<T>(this IObservable<T> source, Func<Task> onNextAsync, int maxConcurrent) =>
-            source
-                .Select(_ => Observable.FromAsync(onNextAsync))
-                .Merge(maxConcurrent)
-                .Subscribe();
+        
     }
 }

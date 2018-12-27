@@ -291,9 +291,7 @@
         "Uid": "HSRel8_1",
         "Type": "HSREL8Adapter",
         "Properties": {
-          "Address": 24,
-          "PoolInterval": 5000,
-          "PollDurationWarningThreshold": 2000
+          "Address": 24
         }
       },
       {
@@ -301,9 +299,8 @@
         "Type": "HSPE16InputOnlyAdapter",
         "Properties": {
           "Address": 16,
-          "InterruptPin": 21,
-          "PoolInterval": 500,
-          "PollDurationWarningThreshold": 2000
+          "InterruptSource": "Raspberry",
+          "InterruptPin":  21
         }
       },
       {

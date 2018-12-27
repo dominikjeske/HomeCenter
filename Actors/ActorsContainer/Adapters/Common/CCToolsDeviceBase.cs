@@ -43,7 +43,6 @@ namespace HomeCenter.Adapters.Common
 
         private int _poolDurationWarning;
         protected int _i2cAddress;
-        protected TimeSpan _poolInterval;
 
         private byte[] _committedState;
         private byte[] _state;
@@ -56,9 +55,8 @@ namespace HomeCenter.Adapters.Common
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
-
-            _poolInterval = AsIntTime(MessageProperties.PoolInterval);
-            _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold);
+            
+            _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold, 2000);
             _i2cAddress = AsInt(MessageProperties.Address);
 
             _state = new byte[StateSize];
