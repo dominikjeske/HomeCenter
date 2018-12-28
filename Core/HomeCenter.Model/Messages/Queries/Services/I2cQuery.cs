@@ -2,10 +2,11 @@
 {
     public class I2cQuery : Query
     {
-        public static I2cQuery Create(int address, byte[] preRead) => new I2cQuery
+        public static I2cQuery Create(int address, byte[] InitializeWrite, int bufferSize) => new I2cQuery
         {
             Address = address,
-            Initialize = preRead
+            Initialize = InitializeWrite,
+            BufferSize = bufferSize
         };
 
         public int Address
@@ -18,6 +19,12 @@
         {
             get => AsByteArray(MessageProperties.Initialize);
             set => SetProperty(MessageProperties.Initialize, value);
+        }
+
+        public int BufferSize
+        {
+            get => AsInt(MessageProperties.Size);
+            set => SetProperty(MessageProperties.Size, value);
         }
     }
 }

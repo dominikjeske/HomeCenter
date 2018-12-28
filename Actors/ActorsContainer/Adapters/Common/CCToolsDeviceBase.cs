@@ -106,7 +106,7 @@ namespace HomeCenter.Adapters.Common
 
         private async Task<byte[]> ReadFromBus()
         {
-            var query = I2cQuery.Create(_i2cAddress, _driver.GetReadTable());
+            var query = I2cQuery.Create(_i2cAddress, _driver.GetReadTable(), _driver.BufferSize);
             var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query).ConfigureAwait(false);
             return result;
         }

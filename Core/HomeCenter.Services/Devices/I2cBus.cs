@@ -1,54 +1,92 @@
 ﻿using HomeCenter.Model.Contracts;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Device.I2c;
+using System.Runtime.InteropServices;
 
 namespace HomeCenter.Services.Devices
 {
     public class I2cBus : II2cBus
     {
-        private const int BusId = 1;
-        private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
+        private const int I2CSlave = 0x0703;
+        private const int OpenReadWrite = 0x2;
 
-        public void Write(int address, Span<byte> data)
+        private readonly object _accessLock = new object();
+        private readonly ILogger _logger;
+        private readonly string _filename;
+
+        private int _handle;
+        private bool _isEnabled = false;
+
+        public I2cBus(ILogger logger)
         {
-            CheckCache(address);
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _deviceCache[address].Write(data);
+            _filename = "/dev/i2c-" + 1;
         }
 
-        public Span<byte> Read(int address)
+        private void CheckEnabled()
         {
-            //CheckCache(address);
+            if (_isEnabled) return;
 
-            //var buffer = new Span<byte>();
-            //_deviceCache[address].Read(buffer);
+            _handle = NativeOpen(_filename, OpenReadWrite);
+            _isEnabled = true;
 
-            //Console.WriteLine($"Read from {address} -> {buffer.Length}");
-
-            //return buffer;
-
-            var buffer = new Span<byte>();
-            var device = new System.Device.I2c.Drivers.UnixI2cDevice(new I2cConnectionSettings(BusId, address));
-            device.Write(new byte[] { 0x00 });
-            device.Read(buffer);
-            return buffer;
-        }
-        
-        private void CheckCache(int address)
-        {
-            if (!_deviceCache.ContainsKey(address))
+            if (_handle != 0)
             {
-                _deviceCache[address] = new System.Device.I2c.Drivers.UnixI2cDevice(new I2cConnectionSettings(BusId, address));
+                _logger.Log(LogLevel.Trace, $"Opened '{_filename}' (Handle = {_handle}).");
+            }
+            else
+            {
+                _logger.Log(LogLevel.Error, $"Error while opening '{_filename}'.");
             }
         }
 
-        public void Dispose()
+        public void Write(int address, byte[] data)
         {
-            foreach (var device in _deviceCache.Values)
+            lock (_accessLock)
             {
-                device.Dispose();
+                CheckEnabled();
+
+                var ioCtlResult = NativeIoctl(_handle, I2CSlave, address);
+                var writeResult = NativeWrite(_handle, data, data.Length, 0);
+
+                //_logger.Log(LogLevel.Information, $"Written on '{_filename}' (Device address = {address}; Buffer = {data}; IOCTL result = {ioCtlResult}; Write result = {writeResult}; Error = {Marshal.GetLastWin32Error()}).");
             }
         }
+
+        public void Read(int address, byte[] buffer)
+        {
+            lock (_accessLock)
+            {
+                CheckEnabled();
+
+                NativeIoctl(_handle, I2CSlave, address);
+                NativeRead(_handle, buffer, buffer.Length, 0);
+            }
+        }
+
+        public void WriteRead(int deviceAddress, byte[] writeBuffer, byte[] readBuffer)
+        {
+            lock (_accessLock)
+            {
+                CheckEnabled();
+
+                NativeIoctl(_handle, I2CSlave, deviceAddress);
+                NativeWrite(_handle, writeBuffer, writeBuffer.Length, 0);
+                NativeRead(_handle, readBuffer, readBuffer.Length, 0);
+            }
+        }
+
+        [DllImport("libc.so.6", EntryPoint = "open", SetLastError = true)]
+        private static extern int NativeOpen(string fileName, int mode);
+
+        [DllImport("libc.so.6", EntryPoint = "ioctl", SetLastError = true)]
+        private static extern int NativeIoctl(int fd, int request, int data);
+
+        [DllImport("libc.so.6", EntryPoint = "read", SetLastError = true)]
+        private static extern int NativeRead(int handle, byte[] data, int length, int offset);
+
+        [DllImport("libc.so.6", EntryPoint = "write", SetLastError = true)]
+        private static extern int NativeWrite(int handle, byte[] data, int length, int offset);
     }
 }

@@ -32,18 +32,19 @@ namespace HomeCenter.Runner
 
     public class FakeII2cBus : II2cBus
     {
-        public void Dispose()
+        public void Read(int address, byte[] buffer)
         {
             
         }
 
-        public Span<byte> Read(int address)
+        public void Write(int address, byte[] data)
         {
-            return Span<byte>.Empty;
+            
         }
 
-        public void Write(int address, Span<byte> data)
+        public void WriteRead(int deviceAddress, byte[] writeBuffer, byte[] readBuffer)
         {
+            
         }
     }
 

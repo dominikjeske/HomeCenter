@@ -16,7 +16,7 @@ namespace HomeCenter.Adapters.Common
     public class MAX7311Driver
     {
         private readonly byte[] _committedState = new byte[StateSize];
-        private readonly byte[] _state;
+        private readonly byte[] _state = new byte[StateSize];
         private const int StateSize = 2;
 
         /// <summary>
@@ -47,6 +47,8 @@ namespace HomeCenter.Adapters.Common
                 state[1]   // The state of ports 8-15
             };
         }
+
+        public int BufferSize => _committedState.Length;
 
         public byte[] GetReadTable()
         {
