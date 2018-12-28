@@ -20,6 +20,8 @@ namespace HomeCenter.Adapters.Samsung
         private bool _powerState;
         private string _input;
         private string _infraredAdaperName;
+        private string _mac;
+        private string _appKey;
 
         protected override async Task OnStarted(IContext context)
         {
@@ -27,6 +29,8 @@ namespace HomeCenter.Adapters.Samsung
 
             _hostname = AsString(MessageProperties.Hostname);
             _infraredAdaperName = AsString(MessageProperties.InfraredAdapter);
+            _mac = AsString(MessageProperties.MAC);
+            _appKey = AsString(MessageProperties.AppKey, "HomeCenter");
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -43,7 +47,9 @@ namespace HomeCenter.Adapters.Samsung
             return new SamsungControlCommand
             {
                 Address = _hostname,
-                Code = code
+                Code = code,
+                MAC = _mac,
+                AppKey = _appKey
             };
         }
 

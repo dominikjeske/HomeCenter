@@ -201,7 +201,6 @@ namespace HomeCenter.Services.Configuration
 
             if (adapterMode == "Compiled")
             {
-                //TODO
                 //var result = _roslynCompilerService.CompileAssemblies(_controllerOptions.AdapterRepoName);
                 //var veryfy = Result.Combine(result.ToArray());
                 //if (veryfy.IsFailure) throw new CompilationException($"Error while compiling adapters: {veryfy.Error}");

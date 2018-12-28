@@ -97,7 +97,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         private async Task UpdateState(DipswitchCode code)
         {
             var codeShortValue = code.ToShortCode();
-            bool oldValue = false; //TODO
+            bool oldValue = false;
             if (_state.ContainsKey(codeShortValue))
             {
                 oldValue = _state[codeShortValue];

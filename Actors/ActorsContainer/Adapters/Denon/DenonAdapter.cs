@@ -244,7 +244,7 @@ namespace HomeCenter.Adapters.Denon
             };
 
             await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
-            //TODO Check if this value is ok - confront with pooled state
+
             _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
         }
 
@@ -266,7 +266,7 @@ namespace HomeCenter.Adapters.Denon
             };
 
             await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
-            //TODO Check if this value is ok - confront with pooled state
+
             _surround = await UpdateState(SurroundSoundState.StateName, _surround, surroundMode).ConfigureAwait(false);
         }
     }

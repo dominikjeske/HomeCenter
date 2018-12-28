@@ -12,7 +12,7 @@ namespace HomeCenter.Model.Messages.Events
             EventTime = SystemTime.Now;
         }
 
-        public bool Equals(Event other) => other != null && Type.Compare(other.Type) == 0 && GetProperties().LeftEqual(other.GetProperties()); //TODO check
+        public bool Equals(Event other) => other != null && Type.Compare(other.Type) == 0 && GetProperties().LeftEqual(other.GetProperties());
 
         public DateTimeOffset EventTime
         {

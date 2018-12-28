@@ -144,7 +144,6 @@ namespace HomeCenter.Broker
             var msgTypeInfo = message.GetType().GetTypeInfo();
             var filteredSubscription = new List<BaseCommandHandler>();
 
-            //TODO add parraler?
             for (var idx = 0; idx < latestSubscriptions.Length; idx++)
             {
                 var subscription = latestSubscriptions[idx];

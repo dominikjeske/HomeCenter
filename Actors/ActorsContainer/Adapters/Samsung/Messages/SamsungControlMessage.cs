@@ -11,7 +11,6 @@ namespace HomeCenter.Adapters.Samsung.Messages
         public string Code { get; set; }
         public int Port { get; set; } = 55000;
 
-        private readonly string _appKey = "HomeCenter";
         private readonly string _nullValue = char.ToString((char)0x00);
         private readonly string _appString = "samsung.remote";
 
@@ -23,12 +22,23 @@ namespace HomeCenter.Adapters.Samsung.Messages
             return this;
         }
 
+        public string MAC
+        {
+            get => AsString(MessageProperties.MAC);
+            set => SetProperty(MessageProperties.MAC, value);
+        }
+
+        public string AppKey
+        {
+            get => AsString(MessageProperties.AppKey);
+            set => SetProperty(MessageProperties.AppKey, value);
+        }
+
         private byte[] CreateIdentifier()
         {
-            //TODO check is this correct?
-            var myIpBase64 = Base64Encode("192.168.1.35");
-            var myMacBase64 = Base64Encode("0C-89-10-CD-43-28");
-            var nameBase64 = Base64Encode(_appKey);
+            var myIpBase64 = Base64Encode(Address);
+            var myMacBase64 = Base64Encode(MAC);
+            var nameBase64 = Base64Encode(AppKey);
 
             var message =
                 char.ToString((char)0x64) +

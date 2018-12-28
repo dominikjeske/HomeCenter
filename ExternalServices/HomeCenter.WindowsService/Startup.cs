@@ -48,7 +48,7 @@ namespace HomeCenter.WindowsService
 
             loggerFactory.AddNLog();
 
-            app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly); //TODO new SwaggerUiSettings<());
+            app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly); 
 
             app.UseExceptionHandler(options =>
             {

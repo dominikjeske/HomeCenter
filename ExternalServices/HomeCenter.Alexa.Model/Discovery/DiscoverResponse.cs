@@ -60,7 +60,7 @@ namespace HomeCenter.Alexa.Model.Discovery
         public static IList<string> GetDisplayCategory(AlexaDevice device)
         {
             var list = new List<string>();
-            //TODO fix the logic
+         
             if (device.Capabilities.Any(capability => capability.Interface == InterfaceType.PowerController))
             {
                 list.Add(nameof(DisplayCategory.LIGHT));

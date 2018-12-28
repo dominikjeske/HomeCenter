@@ -341,6 +341,7 @@
         "Type": "SamsungAdapter",
         "Properties": {
           "Hostname": "192.168.0.105",
+          "MAC": "0C-89-10-CD-43-28",
           "InfraredAdapter": "RemoteIR"
         }
       },
