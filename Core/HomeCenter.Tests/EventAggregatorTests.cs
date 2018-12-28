@@ -9,6 +9,7 @@ using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,33 @@ namespace HomeCenter.Tests
         {
             return new EventAggregator();
         }
+
+        [TestMethod]
+        public void Test()
+        {
+            var aggregator = InitAggregator();
+
+            int num = 10000;
+            var timer = new Stopwatch();
+            
+            for (int i = 0; i < num; i++)
+            {
+                aggregator.Subscribe<TestMessage>(handler => { });
+            }
+            
+            timer.Start();
+            for (int i = 0; i < num; i++)
+            {
+                var result = aggregator.GetSubscriptors(new TestMessage());
+            }
+            timer.Stop();
+
+            Console.WriteLine($"Time: {timer.Elapsed.TotalMilliseconds}ms");
+
+            Assert.AreEqual(1, 1);
+        }
+
+
 
         [TestMethod]
         public void GetSubscriptors_WhenSubscribeForType_ShouldReturnProperSubscriptions()
