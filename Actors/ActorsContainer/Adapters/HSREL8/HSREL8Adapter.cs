@@ -18,8 +18,8 @@ namespace HomeCenter.Adapters.HSREL8
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            await SetState(new byte[] { 0x00, 255 }).ConfigureAwait(false);
-            
+            await ConfigureDriver(true, false).ConfigureAwait(false);
+            await FetchState().ConfigureAwait(false);
         }
 
         protected DiscoveryResponse QueryCapabilities(DiscoverQuery message)

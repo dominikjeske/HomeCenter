@@ -3,7 +3,6 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using Microsoft.Extensions.Logging;
@@ -26,10 +25,7 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
                 [MessageProperties.PinNumber] = AsString(MessageProperties.InterruptPin)
             }));
 
-            byte[] setupInputs = { 0x06, 0xFF, 0xFF };
-            var cmd = I2cCommand.Create(_i2cAddress, setupInputs);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-
+            await ConfigureDriver(false, false).ConfigureAwait(false);
             await FetchState().ConfigureAwait(false);
         }
 
