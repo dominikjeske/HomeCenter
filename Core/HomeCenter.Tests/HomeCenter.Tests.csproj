@@ -16,7 +16,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="SimpleInjector" Version="4.4.2" />
+    <PackageReference Include="SimpleInjector" Version="4.4.3" />
   </ItemGroup>
 
   <ItemGroup>

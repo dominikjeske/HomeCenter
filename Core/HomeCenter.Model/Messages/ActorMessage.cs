@@ -19,13 +19,5 @@ namespace HomeCenter.Model.Messages
             get => AsString(MessageProperties.LogLevel, nameof(Microsoft.Extensions.Logging.LogLevel.Information));
             set => SetProperty(MessageProperties.LogLevel, value);
         }
-
-        public RoutingFilter GetRoutingFilterFromProperties()
-        {
-            var attributes = GetProperties().ToDictionary();
-            attributes.Add(MessageProperties.Type, Type);
-
-            return new RoutingFilter(attributes);
-        }
     }
 }

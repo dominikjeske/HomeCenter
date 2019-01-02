@@ -53,8 +53,25 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                Subscribe<Event>(trigger.Event.GetRoutingFilterFromProperties());
+                Subscribe<Event>(GetRoutingFilterFromProperties(trigger.Event));
             }
+        }
+
+        public RoutingFilter GetRoutingFilterFromProperties(Event ev)
+        {
+            var attributes = ev.GetProperties().ToDictionary();
+            attributes.Add(MessageProperties.Type, Type);
+
+            if(ev.ContainsProperty(MessageProperties.MessageSource))
+            {
+                var adapter = _adapters.FirstOrDefault(a => a.Uid == ev.MessageSource);
+                if(adapter != null)
+                {
+                    adapter.re
+                }
+            }
+
+            return new RoutingFilter(attributes);
         }
 
         private async Task InitScheduledTriggers()

@@ -213,22 +213,13 @@
             "Event": {
               "Type": "PropertyChanged",
               "Properties": {
-                "MessageSource": "HSPE16InputOnly_1",
-                "PinNumber": 1
+                "MessageSource": "HSPE16InputOnly_1"
               }
             },
             "Commands": [
               {
                 "Type": "TurnOnCommand"
-              },
-              {
-                "Type": "TurnOffCommand",
-                "Properties": {
-                  "ExecutionDelay": "00:01:00",
-                  "CancelPrevious": true
-                }
               }
-
             ]
           }
         ]

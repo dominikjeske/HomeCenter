@@ -10,6 +10,15 @@ namespace HomeCenter.Model.Components
 {
     public class AdapterReference : BaseObject
     {
+        private readonly List<string> _requierdProperties = new List<string>();
+
+        public IList<string> RequierdProperties => _requierdProperties;
+
+        public void AddRequierdProperties(IList<string> requierdProperties)
+        {
+            _requierdProperties.AddRange(requierdProperties);
+        }
+
         public RoutingFilter GetRoutingFilter(IList<string> requierdProperties)
         {
             var routerAttributes = new Dictionary<string, string>();
