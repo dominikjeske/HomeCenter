@@ -21,8 +21,7 @@ namespace HomeCenter.Model.Actors
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
-
-        //TODO - use more build in proto actor mechanics
+        
         public async Task ReceiveAsync(IContext context)
         {
             try
@@ -31,7 +30,8 @@ namespace HomeCenter.Model.Actors
             }
             catch (System.Exception e)
             {
-                Logger.LogError(e, $"Exception in device {Uid}: {e}");
+                throw;
+                //Logger.LogError(e, $"Exception in device {Uid}: {e}");
             }
         }
 

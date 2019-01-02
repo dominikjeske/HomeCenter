@@ -124,7 +124,7 @@ namespace HomeCenter.Services.Configuration
             {
                 var localConfigCopy = componentConfig; // prevents override of componentConfig when executed in multi thread
 
-                var component = _actorFactory.GetActor(() => _mapper.Map<ComponentProxy>(localConfigCopy), localConfigCopy.Uid);
+                var component = _actorFactory.CreateActor(() => _mapper.Map<ComponentProxy>(localConfigCopy), localConfigCopy.Uid);
                 components.Add(localConfigCopy.Uid, component);
             }
 
@@ -143,7 +143,7 @@ namespace HomeCenter.Services.Configuration
 
                     var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
                     if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
-                    var actor = _actorFactory.GetActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
+                    var actor = _actorFactory.CreateActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
 
                     actors.Add(actorConfig.Uid, actor);
                 }

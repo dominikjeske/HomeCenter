@@ -30,7 +30,7 @@ namespace HomeCenter.Services.Controllers
 
         private void StartSystemFromConfiguration()
         {
-            var confService = _actorFactory.GetActor<ConfigurationService>(nameof(ConfigurationService));
+            var confService = _actorFactory.CreateActor<ConfigurationService>();
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), confService);
         }
 

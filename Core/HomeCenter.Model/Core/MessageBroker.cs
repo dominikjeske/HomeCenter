@@ -95,7 +95,7 @@ namespace HomeCenter.Model.Core
 
         public void Send(object message, string uid, string address = null)
         {
-            var pid = _actorFactory.GetActor(uid, address);
+            var pid = _actorFactory.GetExistingActor(uid, address);
             _actorFactory.Context.Send(pid, message);
         }
 
@@ -103,7 +103,7 @@ namespace HomeCenter.Model.Core
 
         public Task<R> Request<T, R>(T message, string uid) where T : ActorMessage
         {
-            var pid = _actorFactory.GetActor(uid);
+            var pid = _actorFactory.GetExistingActor(uid);
 
             return Request<T, R>(message, pid);
         }

@@ -65,7 +65,7 @@ namespace HomeCenter.Adapters.Common
                 throw;
             }
 
-            Logger.LogInformation("Board '" + Uid + "' committed state '" + BitConverter.ToString(_driver.GetState()) + "'.");
+            Logger.LogInformation("Board '" + Uid + "' committed state '" + _driver.GetState().ToBinaryString() + "'.");
         }
 
         protected async Task FetchState()

@@ -45,7 +45,7 @@
     "Components": [
       {
         "Uid": "DenonComponent",
-        "IsEnabled":  false,
+        "IsEnabled":  true,
         "Properties": {
           "FriendlyName": "Denon"
         },
@@ -97,56 +97,6 @@
           {
             "Uid": "Sony"
           }
-        ]
-      },
-      {
-        "Uid": "Lamp1",
-        "IsEnabled": false,
-        "Properties": {
-          "FriendlyName": "Blue lamp"
-        },
-        "AdapterRefs": [
-          {
-            "Uid": "HSRel8_1",
-            "Properties": {
-              "PinNumber": 1
-            }
-          }
-        ],
-        "Triggers": [
-          {
-            "Event": {
-              "Type": "PropertyChanged",
-              "Properties": {
-                "MessageSource": "HSPE16InputOnly_1",
-                "PinNumber": 2
-              }
-            },
-            "Commands": [
-              {
-                "Type": "TurnOnCommand"
-              },
-              {
-                "Type": "TurnOffCommand",
-                "Properties": {
-                  "ExecutionDelay": "00:01:00",
-                  "CancelPrevious": true
-                }
-              }
-
-            ]
-          }
-        ],
-        "Converters": {
-          "PowerState": "PowerConverter"
-        },
-        "Tags": {
-          "APP_CAPTION": "MyC",
-          "APP_SORT_VALUE": "2"
-        },
-        "Classes": [
-          "Window",
-          "Lamp"
         ]
       },
       {
@@ -243,13 +193,43 @@
         ]
       },
       {
-        "Uid": "ButtonLamp",
+        "Uid": "CCToolsLamp",
         "AdapterRefs": [
           {
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
               "PinNumber": "1"
             }
+          },
+          {
+            "Uid": "HSRel8_1",
+            "Properties": {
+              "PinNumber": "0"
+            }
+          }
+        ],
+        "Triggers": [
+          {
+            "Event": {
+              "Type": "PropertyChanged",
+              "Properties": {
+                "MessageSource": "HSPE16InputOnly_1",
+                "PinNumber": 1
+              }
+            },
+            "Commands": [
+              {
+                "Type": "TurnOnCommand"
+              },
+              {
+                "Type": "TurnOffCommand",
+                "Properties": {
+                  "ExecutionDelay": "00:01:00",
+                  "CancelPrevious": true
+                }
+              }
+
+            ]
           }
         ]
       },
@@ -306,7 +286,7 @@
       {
         "Uid": "Denon",
         "Type": "DenonAdapter",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "Properties": {
           "Hostname": "192.168.0.100",
           "PoolInterval": 500,

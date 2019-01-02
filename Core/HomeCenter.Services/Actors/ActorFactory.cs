@@ -9,6 +9,8 @@ namespace HomeCenter.Model.Actors
 {
     public class ActorFactory : IActorFactory
     {
+        private const string NONHOST = "nonhost";
+
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
         private readonly ILogger<ActorFactory> _logger;
@@ -21,26 +23,15 @@ namespace HomeCenter.Model.Actors
             _logger = logger;
         }
 
-        public PID GetActor(string id, string address = default, IContext parent = default)
+        public PID GetExistingActor(string id, string address = default, IContext parent = default)
         {
-            return GetActor(id, address, parent, () => throw new InvalidOperationException($"Actor not created {id}"));
-        }
-
-        public PID GetActor<T>(string id = default, string address = default, IContext parent = default) where T : class, IActor => GetActor(typeof(T), id, address, parent);
-
-        public PID GetActor(Type actorType, string id = default, string address = default, IContext parent = default)
-        {
-            id = id ?? actorType.FullName;
-            return GetActor(id, address, parent, () => CreateActor(actorType, id, parent, () => new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType))));
-        }
-
-        public PID GetActor(Func<IActor> actorProducer, string id, IContext parent = default, int routing = 0)
-        {
-            if (routing == 0)
+            var pid = CreatePidAddress(id, address, parent);
+            var reff = ProcessRegistry.Instance.Get(pid);
+            if (reff is DeadLetterProcess)
             {
-                return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => new Props().WithProducer(actorProducer)));
+                throw new InvalidOperationException($"Actor {pid} is death");
             }
-            return GetActor(id, null, parent, () => CreateActor(typeof(object), id, parent, () => Router.NewRoundRobinPool(Props.FromProducer(actorProducer), routing)));
+            return pid;
         }
 
         public PID GetRootActor(PID actor)
@@ -55,9 +46,51 @@ namespace HomeCenter.Model.Actors
             return actor;
         }
 
-        public PID GetActor(string uid, string address, IContext parent, Func<PID> create)
+        public PID CreateActor<T>(string id = default, string address = default, IContext parent = default) where T : class, IActor
         {
-            address = address ?? "nonhost";
+            return CreateActorFromType(typeof(T), id, address, parent);
+        }
+
+        public PID CreateActor(Func<IActor> actorProducer, string id, string address = default, IContext parent = default, int routing = 0)
+        {
+            if (routing == 0)
+            {
+                return GetOrCreateActor(id, address, parent, () => CreateActor(typeof(object), id, parent, () => WithGuardiad(Props.FromProducer(actorProducer))));
+            }
+            return GetOrCreateActor(id, address, parent, () => CreateActor(typeof(object), id, parent, () => Router.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
+        }
+
+        private PID CreateActorFromType(Type actorType, string id = default, string address = default, IContext parent = default)
+        {
+            id = id ?? actorType.FullName;
+            return GetOrCreateActor(id, address, parent, () => CreateActor(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)))));
+        }
+
+
+        private Props WithGuardiad(Props props)
+        {
+            return props.WithGuardianSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
+        }
+
+        private Props WithChildGuardiad(Props props)
+        {
+            return props.WithChildSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
+        }
+
+        private PID GetOrCreateActor(string uid, string address, IContext parent, Func<PID> create)
+        {
+            var pid = CreatePidAddress(uid, address, parent);
+            var reff = ProcessRegistry.Instance.Get(pid);
+            if (reff is DeadLetterProcess)
+            {
+                pid = create();
+            }
+            return pid;
+        }
+
+        private PID CreatePidAddress(string uid, string address, IContext parent)
+        {
+            address = address ?? NONHOST;
 
             var pidId = uid;
             if (parent != null)
@@ -66,12 +99,14 @@ namespace HomeCenter.Model.Actors
             }
 
             var pid = new PID(address, pidId);
-            var reff = ProcessRegistry.Instance.Get(pid);
-            if (reff is DeadLetterProcess)
-            {
-                pid = create();
-            }
             return pid;
+        }
+
+        public SupervisorDirective Decide(PID pid, Exception reason)
+        {
+            _logger.LogError(reason, $"Exception in device {pid}: {reason}");
+
+            return SupervisorDirective.Escalate;
         }
 
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)

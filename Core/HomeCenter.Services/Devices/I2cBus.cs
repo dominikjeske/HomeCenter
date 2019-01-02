@@ -11,13 +11,13 @@ namespace HomeCenter.Services.Devices
         private const int OpenReadWrite = 0x2;
 
         private readonly object _accessLock = new object();
-        private readonly ILogger _logger;
+        private readonly ILogger<I2cBus> _logger;
         private readonly string _filename;
 
         private int _handle;
         private bool _isEnabled = false;
 
-        public I2cBus(ILogger logger)
+        public I2cBus(ILogger<I2cBus> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
