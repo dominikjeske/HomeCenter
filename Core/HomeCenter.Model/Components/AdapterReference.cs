@@ -10,19 +10,17 @@ namespace HomeCenter.Model.Components
 {
     public class AdapterReference : BaseObject
     {
-        private readonly List<string> _requierdProperties = new List<string>();
-
-        public IList<string> RequierdProperties => _requierdProperties;
+        public List<string> RequierdProperties { get; } = new List<string>();
 
         public void AddRequierdProperties(IList<string> requierdProperties)
         {
-            _requierdProperties.AddRange(requierdProperties);
+            RequierdProperties.AddRange(requierdProperties);
         }
 
-        public RoutingFilter GetRoutingFilter(IList<string> requierdProperties)
+        public RoutingFilter GetRoutingFilter()
         {
             var routerAttributes = new Dictionary<string, string>();
-            foreach (var adapterProperty in requierdProperties)
+            foreach (var adapterProperty in RequierdProperties)
             {
                 if (!ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {Uid} in component {Uid} missing configuration property {adapterProperty}");
                 routerAttributes.Add(adapterProperty, this[adapterProperty]);

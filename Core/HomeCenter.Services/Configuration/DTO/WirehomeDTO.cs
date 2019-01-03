@@ -16,5 +16,8 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonProperty("Services")]
         public IList<ServiceDTO> Services { get; set; }
+
+        [JsonProperty("Templates")]
+        public IList<ComponentDTO> Templates { get; set; }
     }
 }

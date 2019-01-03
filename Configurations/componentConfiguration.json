@@ -45,59 +45,86 @@
     "Components": [
       {
         "Uid": "DenonComponent",
-        "IsEnabled":  true,
+        "IsEnabled": true,
         "Properties": {
           "FriendlyName": "Denon"
         },
-        "AdapterRefs": [
-          {
-            "Uid": "Denon"
+        "Adapter": {
+          "Uid": "Denon",
+          "Type": "DenonAdapter",
+          "IsEnabled": true,
+          "Properties": {
+            "Hostname": "192.168.0.100",
+            "PoolInterval": 500,
+            "Zone": 1
           }
-        ]
+        }
       },
       {
         "Uid": "KodiComponent",
         "Properties": {
           "FriendlyName": "Kodi"
         },
-        "AdapterRefs": [
-          {
-            "Uid": "Kodi"
+        "Adapter": {
+          "Uid": "Kodi",
+          "Type": "KodiAdapter",
+          "IsEnabled": false,
+          "Properties": {
+            "Hostname": "192.168.0.102",
+            "Port": 500,
+            "PoolInterval": 500,
+            "UserName": "dnf",
+            "Password": "Kodi123"
           }
-        ]
+        }
       },
       {
         "Uid": "PcComponent",
         "Properties": {
           "FriendlyName": "PC"
         },
-        "AdapterRefs": [
-          {
-            "Uid": "PC"
+        "Adapter": {
+          "Uid": "PC",
+          "Type": "PcAdapter",
+          "IsEnabled": false,
+          "Properties": {
+            "Hostname": "192.168.0.102",
+            "Port": 500,
+            "PoolInterval": 500,
+            "MAC": "9C-5C-8E-C2-01-62"
           }
-        ]
+        }
       },
       {
         "Uid": "SamsungComponent",
         "Properties": {
           "FriendlyName": "Samsung"
         },
-        "AdapterRefs": [
-          {
-            "Uid": "Samsung"
+        "Adapter": {
+          "Uid": "Samsung",
+          "Type": "SamsungAdapter",
+          "Properties": {
+            "Hostname": "192.168.0.105",
+            "MAC": "0C-89-10-CD-43-28",
+            "InfraredAdapter": "RemoteIR"
           }
-        ]
+        }
       },
       {
         "Uid": "SonyComponent",
         "Properties": {
           "FriendlyName": "Sony"
         },
-        "AdapterRefs": [
-          {
-            "Uid": "Sony"
+        "Adapter": {
+          "Uid": "Sony",
+          "Type": "SonyBraviaAdapter",
+          "Properties": {
+            "Hostname": "192.168.0.109",
+            "MAC": "D8:D4:3C:D3:90:B6",
+            "ClientID": "SonyHomeCenterTest",
+            "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
           }
-        ]
+        }
       },
       {
         "Uid": "RemoteLamp",
@@ -198,13 +225,13 @@
           {
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
-              "PinNumber": "1"
+              "PinNumber": 1
             }
           },
           {
             "Uid": "HSRel8_1",
             "Properties": {
-              "PinNumber": "0"
+              "PinNumber": 0
             }
           }
         ],
@@ -223,6 +250,14 @@
             ]
           }
         ]
+      },
+      {
+        "Uid": "CCToolsLampFromTemplate",
+        "Template": "CCToolsLampTemplate",
+        "TemplateProperties": {
+          "#In": 2,
+          "#Out": 1
+        }
       },
       {
         "Uid": "RaspberryLed",
@@ -271,59 +306,7 @@
         "Properties": {
           "Address": 16,
           "InterruptSource": "Raspberry",
-          "InterruptPin":  21
-        }
-      },
-      {
-        "Uid": "Denon",
-        "Type": "DenonAdapter",
-        "IsEnabled": true,
-        "Properties": {
-          "Hostname": "192.168.0.100",
-          "PoolInterval": 500,
-          "Zone": 1
-        }
-      },
-      {
-        "Uid": "Kodi",
-        "Type": "KodiAdapter",
-        "IsEnabled": false,
-        "Properties": {
-          "Hostname": "192.168.0.102",
-          "Port": 500,
-          "PoolInterval": 500,
-          "UserName": "dnf",
-          "Password": "Kodi123"
-        }
-      },
-      {
-        "Uid": "PC",
-        "Type": "PcAdapter",
-        "IsEnabled": false,
-        "Properties": {
-          "Hostname": "192.168.0.102",
-          "Port": 500,
-          "PoolInterval": 500,
-          "MAC": "9C-5C-8E-C2-01-62"
-        }
-      },
-      {
-        "Uid": "Samsung",
-        "Type": "SamsungAdapter",
-        "Properties": {
-          "Hostname": "192.168.0.105",
-          "MAC": "0C-89-10-CD-43-28",
-          "InfraredAdapter": "RemoteIR"
-        }
-      },
-      {
-        "Uid": "Sony",
-        "Type": "SonyBraviaAdapter",
-        "Properties": {
-          "Hostname": "192.168.0.109",
-          "MAC": "D8:D4:3C:D3:90:B6",
-          "ClientID": "SonyHomeCenterTest",
-          "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
+          "InterruptPin": 21
         }
       },
       {
@@ -395,6 +378,42 @@
         "Uid": "SerialService",
         "Type": "SerialPortService"
       }
+    ],
+
+    "Templates": [
+      {
+        "Uid": "CCToolsLampTemplate",
+        "AdapterRefs": [
+          {
+            "Uid": "HSPE16InputOnly_1",
+            "Properties": {
+              "PinNumber": "#In"
+            }
+          },
+          {
+            "Uid": "HSRel8_1",
+            "Properties": {
+              "PinNumber": "#Out"
+            }
+          }
+        ],
+        "Triggers": [
+          {
+            "Event": {
+              "Type": "PropertyChanged",
+              "Properties": {
+                "MessageSource": "HSPE16InputOnly_1"
+              }
+            },
+            "Commands": [
+              {
+                "Type": "TurnOnCommand"
+              }
+            ]
+          }
+        ]
+      }
+
     ]
 
   }
