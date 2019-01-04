@@ -54,6 +54,8 @@
         public const string InterruptPin = nameof(InterruptPin);
         public const string InterruptSource = nameof(InterruptSource);
         public const string InfraredAdapter = nameof(InfraredAdapter);
+        public const string FirstPortWriteMode = nameof(FirstPortWriteMode);
+        public const string SecondPortWriteMode = nameof(SecondPortWriteMode);
 
         //Services
         public const string Body = nameof(Body);

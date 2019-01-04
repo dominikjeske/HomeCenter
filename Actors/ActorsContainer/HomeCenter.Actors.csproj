@@ -26,4 +26,9 @@
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Adapters\Common\" />
+  </ItemGroup>
+
 </Project>

@@ -295,18 +295,24 @@
     "Adapters": [
       {
         "Uid": "HSRel8_1",
-        "Type": "HSREL8Adapter",
+        "Type": "CCToolsAdapter",
         "Properties": {
-          "Address": 24
+          "Address": 24,
+          "InterruptSource": "Raspberry",
+          "InterruptPin": 21,
+          "FirstPortWriteMode": true,
+          "SecondPortWriteMode": false
         }
       },
       {
         "Uid": "HSPE16InputOnly_1",
-        "Type": "HSPE16InputOnlyAdapter",
+        "Type": "CCToolsAdapter",
         "Properties": {
           "Address": 16,
           "InterruptSource": "Raspberry",
-          "InterruptPin": 21
+          "InterruptPin": 21,
+          "FirstPortWriteMode": false,
+          "SecondPortWriteMode": false
         }
       },
       {

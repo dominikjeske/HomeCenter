@@ -32,12 +32,15 @@ namespace HomeCenter.Runner
                     cmd.LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Information);
                     break;
                 case 3:
-                    var ev = PropertyChangedEvent.Create("HSPE16InputOnly_1", "PowerState", true, false, new Dictionary<string, string>()
-                    {
-                        [MessageProperties.PinNumber] = 1.ToString()
-                    });
-                    MessageBroker.PublishEvent(ev);
-                    return Task.CompletedTask;
+                    //var ev = PropertyChangedEvent.Create("HSPE16InputOnly_1", "PowerState", true, false, new Dictionary<string, string>()
+                    //{
+                    //    [MessageProperties.PinNumber] = 1.ToString()
+                    //});
+                    //MessageBroker.PublishEvent(ev);
+                    cmd = new SwitchPowerStateCommand();
+                    cmd[MessageProperties.PinNumber] = "5";
+                    break;
+                    //return Task.CompletedTask;
             }
 
             MessageBroker.Send(cmd, Uid);
