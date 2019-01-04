@@ -20,6 +20,8 @@ namespace HomeCenter.Model.Triggers
             var trigger = context.GetDataContext<TriggerJobDataDTO>();
             var time = context.FireTimeUtc.Add(trigger.FinishCommandTime.GetValueOrDefault());
 
+            Console.WriteLine(trigger.Actor);
+
             if (await trigger.Condition.Validate().ConfigureAwait(false))
             {
                 foreach(var cmd in trigger.Commands)

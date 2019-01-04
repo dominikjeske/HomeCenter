@@ -248,6 +248,16 @@
                 "Type": "SwitchPowerStateCommand"
               }
             ]
+          },
+          {
+            "Schedule": {
+              "CronExpression": "0/5 * * * * ?"
+            },
+            "Commands": [
+              {
+                "Type": "SwitchPowerStateCommand"
+              }
+            ]
           }
         ]
       },

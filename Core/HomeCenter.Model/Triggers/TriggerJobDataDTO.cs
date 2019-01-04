@@ -10,7 +10,7 @@ namespace HomeCenter.Model.Triggers
 {
     public class TriggerJobDataDTO
     {
-        public IValidable Condition { get; set; }
+        public IValidable Condition { get; set; } = EmptyCondition.Default;
         public PID Actor { get; set; }
         public IList<Command> Commands { get; set; }
         public IList<Command> FinishCommands { get; set; }

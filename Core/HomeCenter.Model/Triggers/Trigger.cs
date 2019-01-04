@@ -15,9 +15,9 @@ namespace HomeCenter.Model.Triggers
         [Map] public Event Event { get; private set; }
         [Map] public IList<Command> Commands { get; set; }
         [Map] public Schedule Schedule { get; private set; }
-        [Map] public ConditionContainer Condition { get; private set; }
+        [Map] public IValidable Condition { get; private set; }
 
-        public Task<bool> ValidateCondition() => Condition?.Validate() ?? Task.FromResult(true);
+        public Task<bool> ValidateCondition() => Condition.Validate();
 
         public TriggerJobDataDTO ToJobData(PID actor) => new TriggerJobDataDTO
         {

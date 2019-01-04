@@ -25,7 +25,6 @@ namespace HomeCenter.Model.Components
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {
-        private List<string> _tagCache = new List<string>();
         private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
         private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
 
@@ -169,8 +168,6 @@ namespace HomeCenter.Model.Components
 
         protected async Task Handle(Event ev)
         {
-            Logger.LogInformation("HANDLE EVENT");
-
             var trigger = _triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
             if (trigger != null)
             {
