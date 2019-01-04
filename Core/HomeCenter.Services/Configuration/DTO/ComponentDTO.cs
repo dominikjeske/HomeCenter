@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
-    public class ComponentDTO : BaseDTO
+    public class ComponentDTO : ActorBaseDTO
     {
         [JsonProperty("AdapterRefs")]
         public IList<AdapterReferenceDTO> Adapters { get; set; }
@@ -16,10 +16,7 @@ namespace HomeCenter.Services.Configuration.DTO
         [JsonProperty("Converters")]
         [JsonConverter(typeof(ValueConverter))]
         public IDictionary<string, IValueConverter> Converters { get; set; }
-
-        [JsonProperty("Classes")]
-        public IList<string> Classes { get; set; }
-
+        
         [JsonProperty("Triggers")]
         public IList<TriggerDTO> Triggers { get; set; }
 

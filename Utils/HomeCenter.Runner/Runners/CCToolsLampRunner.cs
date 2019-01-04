@@ -1,5 +1,8 @@
-﻿using HomeCenter.Model.Messages.Commands;
+﻿using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Events.Device;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
@@ -8,7 +11,7 @@ namespace HomeCenter.Runner
     {
         public CCToolsLampRunner(string uid) : base(uid)
         {
-            _tasks = new string[] { "TurnOn", "TurnOff", "Refresh"};
+            _tasks = new string[] { "TurnOn", "TurnOff", "Refresh", "Test"};
         }
 
         public override Task RunTask(int taskId)
@@ -28,6 +31,13 @@ namespace HomeCenter.Runner
                     cmd = new RefreshCommand();
                     cmd.LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Information);
                     break;
+                case 3:
+                    var ev = PropertyChangedEvent.Create("HSPE16InputOnly_1", "PowerState", true, false, new Dictionary<string, string>()
+                    {
+                        [MessageProperties.PinNumber] = 1.ToString()
+                    });
+                    MessageBroker.PublishEvent(ev);
+                    return Task.CompletedTask;
             }
 
             MessageBroker.Send(cmd, Uid);

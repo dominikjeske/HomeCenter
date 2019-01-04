@@ -3,11 +3,13 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
 using Quartz;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Actors
@@ -21,7 +23,9 @@ namespace HomeCenter.Model.Actors
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
-        
+
+        public List<string> Tags { get; private set; } = new List<string>();
+
         public async Task ReceiveAsync(IContext context)
         {
             try
@@ -105,6 +109,12 @@ namespace HomeCenter.Model.Actors
                 return true;
             }
 
+            if(msg is SystemStartedEvent started)
+            {
+                await OnSystemStarted(started).ConfigureAwait(false);
+                return true;
+            }
+
             return false;
         }
 
@@ -112,6 +122,9 @@ namespace HomeCenter.Model.Actors
         {
             Logger.LogInformation($"Device '{Uid}' started with id '{context.Self.Id}'");
             Self = context.Self;
+
+            Subscribe<SystemStartedEvent>();
+
             return Task.CompletedTask;
         }
 
@@ -143,6 +156,12 @@ namespace HomeCenter.Model.Actors
         }
 
         protected virtual Task OtherSystemMessage(IContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+
+        protected virtual Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
             return Task.CompletedTask;
         }

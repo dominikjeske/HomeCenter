@@ -12,7 +12,7 @@ namespace HomeCenter.Model.Core
 {
     public interface IMessageBroker
     {
-        Task PublishEvent<T>(T message) where T : Event;
+        Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event;
 
         Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
 

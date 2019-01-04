@@ -89,12 +89,12 @@ namespace HomeCenter.Adapters.Common
                 var newPinState = newStateBits.Get(i);
 
                 if (oldPinState == newPinState) continue;
-
+                
                 var properyChangeEvent = PropertyChangedEvent.Create(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>()
                 {
                     [MessageProperties.PinNumber] = i.ToString()
                 });
-
+                
                 await MessageBroker.PublishEvent(properyChangeEvent).ConfigureAwait(false);
             }
 

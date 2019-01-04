@@ -245,7 +245,7 @@
             },
             "Commands": [
               {
-                "Type": "TurnOnCommand"
+                "Type": "SwitchPowerStateCommand"
               }
             ]
           }

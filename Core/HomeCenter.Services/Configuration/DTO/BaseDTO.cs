@@ -19,8 +19,5 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonProperty("Properties")]
         public Dictionary<string, string> Properties { get; set; }
-
-        [JsonProperty("Tags")]
-        public IDictionary<string, string> Tags { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace HomeCenter.Model.Messages.Events
 {
     public class Event : ActorMessage, IEquatable<Event>
     {
-        public Event()
+        public Event() 
         {
             Uid = Guid.NewGuid().ToString();
             EventTime = SystemTime.Now;

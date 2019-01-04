@@ -27,7 +27,8 @@ namespace HomeCenter.Broker
         public bool EvaluateFilter(object message, RoutingFilter messageFilter)
         {
             // If routing key is defined on subscription we check if it is match with message key
-            if (!string.IsNullOrWhiteSpace(RoutingKey) && !RoutingKey.InvariantEquals(messageFilter?.RoutingKey)) return false;
+            // If Subscriber or sender use * we skip routing key comparison
+            if (!string.IsNullOrWhiteSpace(RoutingKey) && !RoutingKey.InvariantEquals(messageFilter?.RoutingKey) && messageFilter?.RoutingKey != "*" && RoutingKey != "*") return false;
 
             // If subscription have routing attributes
             if (RoutingAttributes.Count > 0)

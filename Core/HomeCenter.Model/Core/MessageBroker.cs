@@ -83,9 +83,9 @@ namespace HomeCenter.Model.Core
             return query.Verify(result, expectedResult);
         }
 
-        public Task PublishEvent<T>(T message) where T : Event
+        public Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event
         {
-            return _eventAggregator.Publish(message);
+            return _eventAggregator.Publish(message, routingFilter);
         }
 
         public void Send(object message, PID destination)

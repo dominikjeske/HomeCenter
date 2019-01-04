@@ -4,22 +4,22 @@ namespace HomeCenter.Model.Messages.Events.Device
 {
     public class PropertyChangedEvent : Event
     {
-        public static PropertyChangedEvent Create(string deviceUID, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties = null)
+        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties = null)
         {
-            return BuildEvent(deviceUID, changedPropertyName, oldValue, newValue, additionalProperties);
+            return BuildEvent(messageSource, changedPropertyName, oldValue, newValue, additionalProperties);
         }
 
-        public static PropertyChangedEvent Create(string deviceUID, string changedPropertyName, bool oldValue, bool newValue, IDictionary<string, string> additionalProperties = null)
+        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, bool oldValue, bool newValue, IDictionary<string, string> additionalProperties = null)
         {
-            return BuildEvent(deviceUID, changedPropertyName, oldValue.ToString(), newValue.ToString(), additionalProperties);
+            return BuildEvent(messageSource, changedPropertyName, oldValue.ToString(), newValue.ToString(), additionalProperties);
         }
 
-        private static PropertyChangedEvent BuildEvent(string deviceUID, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties)
+        private static PropertyChangedEvent BuildEvent(string messageSource, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties)
         {
             var propertyChangeEvent = new PropertyChangedEvent
             {
                 PropertyChangedName = changedPropertyName,
-                MessageSource = deviceUID,
+                MessageSource = messageSource,
                 NewValue = newValue
             };
 

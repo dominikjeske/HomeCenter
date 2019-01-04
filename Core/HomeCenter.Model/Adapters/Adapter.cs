@@ -29,7 +29,7 @@ namespace HomeCenter.Model.Adapters
                 }
             }
 
-            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, stateName, oldValue?.ToString(), newValue.ToString(), additionalProperties)).ConfigureAwait(false);
+            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, stateName, oldValue?.ToString(), newValue.ToString(), additionalProperties), Uid).ConfigureAwait(false);
             return newValue;
         }
 

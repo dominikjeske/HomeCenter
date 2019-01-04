@@ -1,23 +1,33 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Exceptions;
+using HomeCenter.Model.Messages;
 using HomeCenter.Utils.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace HomeCenter.Model.Core
 {
     public class BaseObject : IPropertiesSource
     {
         [Map] private Dictionary<string, string> _properties { get; set; } = new Dictionary<string, string>();
-        public string Uid { get; protected set; } = "";
-        public string Type { get; set; } = "";
-        public List<string> Tags { get; private set; } = new List<string>();
 
+        public string Uid
+        {
+            get => AsString(MessageProperties.Uid, GetType().Name);
+            set => SetProperty(MessageProperties.Uid, value);
+        }
+
+        public string Type
+        {
+            get => AsString(MessageProperties.Type);
+            set => SetProperty(MessageProperties.Type, value);
+        }
+        
         public BaseObject()
         {
+            Type = GetType().Name;
         }
 
         public BaseObject(IDictionary<string, string> properties)
@@ -28,26 +38,8 @@ namespace HomeCenter.Model.Core
             }
         }
 
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append($"Type: {Type}");
-            if (_properties.Count > 0)
-            {
-                sb.Append($" | Properties: {GetProperties()?.ToFormatedString()} ");
-            }
-            if (Tags.Count > 0)
-            {
-                sb.Append($" | Tags: {Tags.ToFormatedString()} ");
-            }
-            if (!string.IsNullOrWhiteSpace(Uid))
-            {
-                sb.Append($" | Uid: {Uid}");
-            }
-
-            return sb.ToString();
-        }
-
+        public override string ToString() => GetProperties()?.ToFormatedString();
+  
         public bool ContainsProperty(string propertyName) => _properties.ContainsKey(propertyName);
 
         public void SetProperty(string propertyName, string value) => _properties[propertyName] = value;

@@ -9,11 +9,6 @@ namespace HomeCenter.Model.Messages
     {
         public Proto.IContext Context { get; set; }
 
-        protected ActorMessage()
-        {
-            Type = GetType().Name;
-        }
-
         public string LogLevel
         {
             get => AsString(MessageProperties.LogLevel, nameof(Microsoft.Extensions.Logging.LogLevel.Information));

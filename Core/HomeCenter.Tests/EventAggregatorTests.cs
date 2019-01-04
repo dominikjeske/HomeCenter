@@ -3,6 +3,7 @@ using HomeCenter.Broker.Behaviors;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Tests.Helpers;
 using HomeCenter.Tests.Mocks;
 using Microsoft.Reactive.Testing;
@@ -23,33 +24,6 @@ namespace HomeCenter.Tests
         {
             return new EventAggregator();
         }
-
-        [TestMethod]
-        public void Test()
-        {
-            var aggregator = InitAggregator();
-
-            int num = 10000;
-            var timer = new Stopwatch();
-            
-            for (int i = 0; i < num; i++)
-            {
-                aggregator.Subscribe<TestMessage>(handler => { });
-            }
-            
-            timer.Start();
-            for (int i = 0; i < num; i++)
-            {
-                var result = aggregator.GetSubscriptors(new TestMessage());
-            }
-            timer.Stop();
-
-            Console.WriteLine($"Time: {timer.Elapsed.TotalMilliseconds}ms");
-
-            Assert.AreEqual(1, 1);
-        }
-
-
 
         [TestMethod]
         public void GetSubscriptors_WhenSubscribeForType_ShouldReturnProperSubscriptions()
@@ -179,6 +153,27 @@ namespace HomeCenter.Tests
             ev[MessageProperties.Value] = "Value";
 
             var result = aggregator.GetSubscriptors(ev);
+
+            Assert.AreEqual(1, result.Count);
+        }
+
+        [TestMethod]
+        public void GetSubscriptors_WhenPublishWithRoutingKeyAndPropertiesAndSubscriberWantAll_ShouldSkipRoutingKeyCheck()
+        {
+            var aggregator = InitAggregator();
+
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter("*", new Dictionary<string, string>
+            {
+                [MessageProperties.MessageSource] = "Adapter",
+                [MessageProperties.PinNumber] = "5"
+            }));
+
+            var ev = new Event();
+            ev[MessageProperties.MessageSource] = "Adapter";
+            ev[MessageProperties.PinNumber] = "5";
+            ev[MessageProperties.Value] = "Value";
+
+            var result = aggregator.GetSubscriptors(ev, "x");
 
             Assert.AreEqual(1, result.Count);
         }

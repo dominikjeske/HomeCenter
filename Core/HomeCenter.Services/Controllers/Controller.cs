@@ -34,12 +34,12 @@ namespace HomeCenter.Services.Controllers
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), confService);
         }
 
-        [Subscribe]
-        protected Task Handle(SystemStartedEvent systemStartedEvent)
+
+        protected override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
             return RunScheduler();
         }
-
+        
         private Task RunScheduler() => Scheduler.Start(_disposables.Token);
     }
 }

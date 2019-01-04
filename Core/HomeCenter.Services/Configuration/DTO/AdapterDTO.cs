@@ -1,6 +1,7 @@
 ﻿namespace HomeCenter.Services.Configuration.DTO
 {
-    public class AdapterDTO : BaseDTO
+    public class AdapterDTO : ActorBaseDTO
     {
+       
     }
 }

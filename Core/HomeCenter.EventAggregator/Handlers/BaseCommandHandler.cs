@@ -20,9 +20,14 @@ namespace HomeCenter.Broker.Handlers
 
         public bool IsFilterMatch(object message, RoutingFilter messageFilter)
         {
-            if (messageFilter?.RoutingKey == "*") return true;
-
-            if (SubscriptionFilter == null && messageFilter != null) return false;
+            if (SubscriptionFilter == null)
+            {
+                if(messageFilter == null || messageFilter?.RoutingKey == "*")
+                {
+                    return true;
+                }
+                return false;
+            }
             
             return SubscriptionFilter?.EvaluateFilter(message, messageFilter) ?? true;
         }

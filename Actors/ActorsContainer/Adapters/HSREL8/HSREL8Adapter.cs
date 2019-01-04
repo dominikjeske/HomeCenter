@@ -27,19 +27,29 @@ namespace HomeCenter.Adapters.HSREL8
             return new DiscoveryResponse(RequierdProperties(), new PowerState());
         }
 
-        public Task TurnOn(TurnOnCommand message)
+        public Task Handle(TurnOnCommand message)
         {
             int pinNumber = GetPin(message);
 
             return SetPortState(pinNumber, true);
         }
 
-        public Task TurnOff(TurnOffCommand message)
+        public Task Handle(TurnOffCommand message)
         {
             int pinNumber = GetPin(message);
 
             return SetPortState(pinNumber, false);
         }
+
+        public Task Handle(SwitchPowerStateCommand message)
+        {
+            int pinNumber = GetPin(message);
+            var currentState = _driver.GetState(pinNumber);
+
+            return SetPortState(pinNumber, !currentState);
+        }
+
+        
 
         private int GetPin(Command message)
         {

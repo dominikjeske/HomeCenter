@@ -14,6 +14,7 @@ using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,6 @@ namespace HomeCenter.Model.Components
         private RoutingFilter GetRoutingFilterFromProperties(Event ev)
         {
             var attributes = ev.GetProperties().ToDictionary();
-            attributes.Add(MessageProperties.Type, ev.Type);
             AddRequiersProperties(ev, attributes);
 
             return new RoutingFilter(attributes);
@@ -169,6 +169,8 @@ namespace HomeCenter.Model.Components
 
         protected async Task Handle(Event ev)
         {
+            Logger.LogInformation("HANDLE EVENT");
+
             var trigger = _triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
             if (trigger != null)
             {
@@ -228,15 +230,7 @@ namespace HomeCenter.Model.Components
                                                                                    .ToList()
                                                                                    .AsReadOnly();
 
-        protected IReadOnlyCollection<string> Handle(TagsQuery command)
-        {
-            if (_tagCache == null)
-            {
-                _tagCache = new List<string>(Tags);
-                _tagCache.AddRange(_capabilities.Values.SelectMany(x => x.Tags));
-            }
-            return _tagCache.AsReadOnly();
-        }
+       
 
         protected string Handle(StateQuery command)
         {

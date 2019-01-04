@@ -6,6 +6,7 @@
         public const string MessageSource = nameof(MessageSource);
         public const string LogLevel = nameof(LogLevel);
         public const string Type = nameof(Type);
+        public const string Uid = nameof(Uid);
 
         //Command
         public const string IsFinishComand = nameof(IsFinishComand);

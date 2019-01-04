@@ -36,8 +36,6 @@ namespace HomeCenter.Adapters.HSPE16InputOnly
 
         protected async Task Hadle(PinValueChangedEvent pinValueChangedEvent)
         {
-            Logger.LogInformation($"PIN is changing");
-
             await FetchState().ConfigureAwait(false);
         }
     }
