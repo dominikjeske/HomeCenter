@@ -238,20 +238,10 @@
         "Triggers": [
           {
             "Event": {
-              "Type": "PropertyChanged",
+              "Type": "PropertyChangedEvent",
               "Properties": {
                 "MessageSource": "HSPE16InputOnly_1"
               }
-            },
-            "Commands": [
-              {
-                "Type": "SwitchPowerStateCommand"
-              }
-            ]
-          },
-          {
-            "Schedule": {
-              "CronExpression": "0/5 * * * * ?"
             },
             "Commands": [
               {
@@ -308,8 +298,6 @@
         "Type": "CCToolsAdapter",
         "Properties": {
           "Address": 24,
-          "InterruptSource": "Raspberry",
-          "InterruptPin": 21,
           "FirstPortWriteMode": true,
           "SecondPortWriteMode": false
         }
@@ -416,7 +404,7 @@
         "Triggers": [
           {
             "Event": {
-              "Type": "PropertyChanged",
+              "Type": "PropertyChangedEvent",
               "Properties": {
                 "MessageSource": "HSPE16InputOnly_1"
               }

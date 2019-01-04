@@ -16,7 +16,14 @@ namespace HomeCenter.Model.Core
         public string Uid
         {
             get => AsString(MessageProperties.Uid, GetType().Name);
-            set => SetProperty(MessageProperties.Uid, value);
+            set
+            {
+                // Prevent for setting UID null during initialisation
+                if (value != null)
+                {
+                    SetProperty(MessageProperties.Uid, value);
+                }
+            }
         }
 
         public string Type
@@ -60,7 +67,10 @@ namespace HomeCenter.Model.Core
 
         public void SetPropertyList(string propertyName, params string[] values) => _properties[propertyName] = string.Join(", ", values);
 
-        public IReadOnlyDictionary<string, string> GetProperties() => _properties.AsReadOnly();
+        public IReadOnlyDictionary<string, string> GetProperties()
+        {
+            return _properties.AsReadOnly();
+        }
 
         public IEnumerable<string> GetPropetiesKeys() => _properties.Keys;
 

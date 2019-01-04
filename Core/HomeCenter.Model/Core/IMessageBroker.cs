@@ -5,7 +5,6 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Proto;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
@@ -20,7 +19,7 @@ namespace HomeCenter.Model.Core
             where T : Query
             where R : class;
 
-        Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) 
+        Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null)
             where T : Query
             where R : class;
 
@@ -40,6 +39,6 @@ namespace HomeCenter.Model.Core
         SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
 
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
-        
+
     }
 }

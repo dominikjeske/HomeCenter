@@ -44,11 +44,14 @@ namespace HomeCenter.Adapters.Common
             _firstPortWriteMode = AsBool(MessageProperties.FirstPortWriteMode);
             _secondPortWriteMode = AsBool(MessageProperties.SecondPortWriteMode);
 
-            Subscribe<PinValueChangedEvent>(new Broker.RoutingFilter(new Dictionary<string, string>()
+            if (ContainsProperty(MessageProperties.InterruptPin) && ContainsProperty(MessageProperties.InterruptSource))
             {
-                [MessageProperties.MessageSource] = AsString(MessageProperties.InterruptSource),
-                [MessageProperties.PinNumber] = AsString(MessageProperties.InterruptPin)
-            }));
+                Subscribe<PinValueChangedEvent>(new Broker.RoutingFilter(new Dictionary<string, string>()
+                {
+                    [MessageProperties.MessageSource] = AsString(MessageProperties.InterruptSource),
+                    [MessageProperties.PinNumber] = AsString(MessageProperties.InterruptPin)
+                }));
+            }
 
             await ConfigureDriver().ConfigureAwait(false);
             await FetchState().ConfigureAwait(false);
@@ -154,8 +157,8 @@ namespace HomeCenter.Adapters.Common
                 {
                     [MessageProperties.PinNumber] = i.ToString()
                 });
-                
-                await MessageBroker.PublishEvent(properyChangeEvent).ConfigureAwait(false);
+
+                await MessageBroker.PublishEvent(properyChangeEvent, Uid).ConfigureAwait(false);
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)

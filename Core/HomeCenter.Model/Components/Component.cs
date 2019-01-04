@@ -82,6 +82,7 @@ namespace HomeCenter.Model.Components
                         if (!attributes.ContainsKey(property))
                         {
                             attributes.Add(property, adapter.AsString(property));
+                            ev.SetProperty(property, adapter.AsString(property));
                         }
                     }
                 }
@@ -193,7 +194,7 @@ namespace HomeCenter.Model.Components
 
             state.Value = newValue;
 
-            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue)).ConfigureAwait(false);
+            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue), Uid).ConfigureAwait(false);
         }
 
         private async Task HandleEventInTrigger(Trigger trigger)
