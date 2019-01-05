@@ -103,7 +103,7 @@ namespace HomeCenter.Adapters.Common
         {
             var pinNumber = message.AsInt(MessageProperties.PinNumber);
             if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
-            var isPinInFirstPortRange = pinNumber < 7;
+            var isPinInFirstPortRange = pinNumber < 8;
 
             if(isPinInFirstPortRange && !_firstPortWriteMode || !isPinInFirstPortRange && !_secondPortWriteMode)
             {
@@ -144,26 +144,30 @@ namespace HomeCenter.Adapters.Common
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
-            Logger.LogInformation($"'{Uid}' fetched different state ({oldState.ToBinaryString()}->{newState.ToBinaryString()})");
+            Logger.LogInformation($"[{Uid}] fetched different state ({oldState.ToBinaryString()}->{newState.ToBinaryString()})");
 
-            for (int i = 0; i < oldStateBits.Length; i++)
+            for (int pinNumber = 0; pinNumber < oldStateBits.Length; pinNumber++)
             {
-                var oldPinState = oldStateBits.Get(i);
-                var newPinState = newStateBits.Get(i);
+                var oldPinState = oldStateBits.Get(pinNumber);
+                var newPinState = newStateBits.Get(pinNumber);
+                var isPinInFirstPortRange = pinNumber < 8;
 
-                if (oldPinState == newPinState) continue;
+                // When state is the same or change is in port that are set to WRITE we skip event generation
+                if (oldPinState == newPinState || (isPinInFirstPortRange && _firstPortWriteMode) || (!isPinInFirstPortRange && _secondPortWriteMode)) continue;
                 
                 var properyChangeEvent = PropertyChangedEvent.Create(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>()
                 {
-                    [MessageProperties.PinNumber] = i.ToString()
+                    [MessageProperties.PinNumber] = pinNumber.ToString()
                 });
 
                 await MessageBroker.PublishEvent(properyChangeEvent, Uid).ConfigureAwait(false);
+
+                Logger.LogInformation($"[{Uid}] port state '{pinNumber}' changed {oldPinState}->{newPinState}");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
             {
-                Logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds} ms.");
+                Logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds}ms.");
             }
         }
 

@@ -6,7 +6,8 @@
         {
             Address = address,
             Initialize = InitializeWrite,
-            BufferSize = bufferSize
+            BufferSize = bufferSize,
+            LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Trace)
         };
 
         public int Address

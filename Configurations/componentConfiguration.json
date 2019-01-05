@@ -298,6 +298,19 @@
         "Type": "CCToolsAdapter",
         "Properties": {
           "Address": 24,
+          "InterruptSource": "Raspberry",
+          "InterruptPin": 21,
+          "FirstPortWriteMode": true,
+          "SecondPortWriteMode": false
+        }
+      },
+      {
+        "Uid": "HSRel8_2",
+        "Type": "CCToolsAdapter",
+        "Properties": {
+          "Address": 32,
+          "InterruptSource": "Raspberry",
+          "InterruptPin": 21,
           "FirstPortWriteMode": true,
           "SecondPortWriteMode": false
         }
@@ -307,6 +320,17 @@
         "Type": "CCToolsAdapter",
         "Properties": {
           "Address": 16,
+          "InterruptSource": "Raspberry",
+          "InterruptPin": 21,
+          "FirstPortWriteMode": false,
+          "SecondPortWriteMode": false
+        }
+      },
+      {
+        "Uid": "HSPE16InputOnly_2",
+        "Type": "CCToolsAdapter",
+        "Properties": {
+          "Address": 88,
           "InterruptSource": "Raspberry",
           "InterruptPin": 21,
           "FirstPortWriteMode": false,

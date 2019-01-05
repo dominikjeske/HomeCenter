@@ -8,8 +8,9 @@
             {
                 MessageSource = deviceUID,
                 PinNumber = pinNumber,
-                IsRising = isRising
-            };
+                IsRising = isRising,
+                LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Trace)
+        };
         }
 
         public int PinNumber
