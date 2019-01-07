@@ -225,6 +225,12 @@
           {
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
+              "PinNumber": 2
+            }
+          },
+          {
+            "Uid": "HSPE16InputOnly_1",
+            "Properties": {
               "PinNumber": 1
             }
           },
@@ -240,12 +246,17 @@
             "Event": {
               "Type": "PropertyChangedEvent",
               "Properties": {
-                "MessageSource": "HSPE16InputOnly_1"
+                "MessageSource": "HSPE16InputOnly_1",
+                "PinNumber": 2,
+                "NewValue": true
               }
             },
             "Commands": [
               {
-                "Type": "SwitchPowerStateCommand"
+                "Type": "TurnOnCommand",
+                "Properties": {
+                  "Time": 200
+                }
               }
             ]
           }

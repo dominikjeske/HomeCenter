@@ -62,15 +62,15 @@ namespace HomeCenter.Adapters.Common
             return MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, _driver.Configure(_firstPortWriteMode, _secondPortWriteMode)));
         }
 
-        protected Task Hadle(PinValueChangedEvent pinValueChangedEvent) => FetchState();
-
-        protected Task Handle(RefreshCommand message) => FetchState();
-        
         protected DiscoveryResponse Handle(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState());
         }
 
+        protected Task Hadle(PinValueChangedEvent pinValueChangedEvent) => FetchState();
+
+        protected Task Handle(RefreshCommand message) => FetchState();
+        
         protected Task Handle(TurnOnCommand message)
         {
             int pinNumber = ValidatePin(message);

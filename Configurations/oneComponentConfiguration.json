@@ -7,36 +7,34 @@
     ],
     "Components": [
       {
-        "Uid": "RemoteLamp",
-        "IsEnabled": true,
-        "Triggers": [
+        "Uid": "StandardLamp",
+        "AdapterRefs": [
           {
-            "Schedule": {
-              "CronExpression": "0 0/5 * * * ?", // every 5 minutes https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
-              "Calendar": "PolishCalendar"
-            },
-            "Conditions": [
-              {
-                "Type": "IsNightCondition",
-                "Relation": "AND"
-              },
-              {
-                "Type": "IsNightCondition",
-                "Relation": "AND"
-              }
-            ],
-            "Command": {
-              "Type": "SwitchPowerState"
+            "Uid": "HSPE16InputOnly_1",
+            "Properties": {
+              "PinNumber": 1
+            }
+          },
+          {
+            "Uid": "HSRel8_1",
+            "Properties": {
+              "PinNumber": 0
             }
           }
         ],
-        "AdapterRefs": [
+        "Triggers": [
           {
-            "Uid": "RemoteSocket",
-            "Properties": {
-              "System": "AllOn", // AllOff, Switch1, Switch2, Switch3, Switch4, Switch5, AllOn
-              "Unit": "A" // A, B, C, D
-            }
+            "Event": {
+              "Type": "PropertyChangedEvent",
+              "Properties": {
+                "MessageSource": "HSPE16InputOnly_1"
+              }
+            },
+            "Commands": [
+              {
+                "Type": "SwitchPowerStateCommand"
+              }
+            ]
           }
         ]
       }
