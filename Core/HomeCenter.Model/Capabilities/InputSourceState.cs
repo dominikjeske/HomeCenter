@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class InputSourceState : State
+    public class InputSourceState : StateBase
     {
         public static string StateName { get; } = nameof(InputSourceState);
 

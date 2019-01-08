@@ -1,33 +1,21 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Utils.Extensions;
+using System.Collections.Generic;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class State : BaseObject
+    public abstract class StateBase : BaseObject
     {
-        public State(string ReadWriteMode = default)
+        protected StateBase(string readWriteMode = default)
         {
-            if (ReadWriteMode == null) ReadWriteMode = Constants.ReadWriteMode.ReadWrite;
+            if (readWriteMode == null) readWriteMode = ReadWriteMode.ReadWrite;
 
-            SetEmptyProperty(StateProperties.TimeOfValue);
-            SetEmptyProperty(StateProperties.Value);
-
-            this[StateProperties.ReadWriteMode] = ReadWriteMode;
+            SetProperty(StateProperties.ReadWriteMode, readWriteMode);
         }
 
-        public bool IsCommandSupported(ActorMessage command) => AsList(StateProperties.SupportedCommands)?.Contains(command.Type) ?? false;
-
-        public string Name => AsString(StateProperties.StateName);
-        public string CapabilityName => AsString(StateProperties.CapabilityName);
-
-        public string Value
-        {
-            get => this[StateProperties.Value];
-            set => this[StateProperties.Value] = value;
-        }
-
-        public override string ToString() => $"{Name}: {Value} [{CapabilityName}] | Properties: [{GetProperties()?.ToFormatedString()}]";
+        public string ReadWrite => this[StateProperties.ReadWriteMode];
+        public string Name => this[StateProperties.StateName];
+        public string CapabilityName => this[StateProperties.CapabilityName];
+        public IList<string> SupportedCommands => AsList(StateProperties.SupportedCommands);
     }
 }

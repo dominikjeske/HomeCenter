@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class TemperatureState : State
+    public class TemperatureState : StateBase
     {
         public static string StateName { get; } = nameof(TemperatureState);
 

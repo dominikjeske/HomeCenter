@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Queries.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class DescriptionState : State
+    public class DescriptionState : StateBase
     {
         public static string StateName { get; } = nameof(DescriptionState);
 

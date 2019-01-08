@@ -115,9 +115,10 @@ namespace HomeCenter.Services.Configuration
 
         private void ResolveInlineAdapters(HomeCenterConfigDTO result)
         {
-            foreach(var inlineAdapter in result.HomeCenter.Components.Where(c => c.Adapter != null).Select(c => c.Adapter))
+            foreach(var component in result.HomeCenter.Components.Where(c => c.Adapter != null).Select(c => c))
             {
-                result.HomeCenter.Adapters.Add(inlineAdapter);
+                result.HomeCenter.Adapters.Add(component.Adapter);
+                component.Adapters = new List<AdapterReferenceDTO>() { new AdapterReferenceDTO { Uid = component.Adapter.Uid, Type = component.Adapter.Type } };
             }
         }
 

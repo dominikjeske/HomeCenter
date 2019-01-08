@@ -10,7 +10,6 @@ namespace HomeCenter.Model.Messages.Queries.Device
             var query = new DiscoverQuery();
             foreach (var property in parent.GetProperties().Where(p => !string.IsNullOrWhiteSpace(p.Value)))
             {
-                
                 query[property.Key] = property.Value;
             }
             return query;

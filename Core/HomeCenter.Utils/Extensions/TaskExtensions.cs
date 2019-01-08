@@ -8,6 +8,21 @@ namespace HomeCenter.Utils.Extensions
 {
     public static class TaskExtensions
     {
+        /// <summary>
+        /// Execute <paramref name="func"/> on each data from <paramref name="data"/>
+        /// </summary>
+        /// <typeparam name="T">Type of input data</typeparam>
+        /// <typeparam name="R">Type of return value</typeparam>
+        /// <param name="data">Data on which we are operate</param>
+        /// <param name="func">Func that change data</param>
+        /// <returns></returns>
+        public static async Task<IEnumerable<(T Input, R Result)>> WhenAll<T, R>(this IEnumerable<T> data, Func<T, Task<R>> func)
+        {
+            var discoveryRequests = data.Select(d => new { ResultTask = func(d), Input = d }).ToArray();
+            await Task.WhenAll(discoveryRequests.Select(c => c.ResultTask)).ConfigureAwait(false);
+            return discoveryRequests.Select(d => (d.Input, d.ResultTask.Result));
+        }
+
         public static async Task<Task> WhenAll(this IEnumerable<Task> tasks, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var timeoutTask = Task.Delay(timeout, cancellationToken);

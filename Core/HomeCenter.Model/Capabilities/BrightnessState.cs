@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class BrightnessState : State
+    public class BrightnessState : StateBase
     {
         public BrightnessState(string ReadWriteMode = default) : base(ReadWriteMode)
         {

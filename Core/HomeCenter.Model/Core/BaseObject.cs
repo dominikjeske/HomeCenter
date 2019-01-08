@@ -31,7 +31,7 @@ namespace HomeCenter.Model.Core
             get => AsString(MessageProperties.Type);
             set => SetProperty(MessageProperties.Type, value);
         }
-        
+
         public BaseObject()
         {
             Type = GetType().Name;
@@ -46,26 +46,62 @@ namespace HomeCenter.Model.Core
         }
 
         public override string ToString() => GetProperties()?.ToFormatedString();
-  
+
         public bool ContainsProperty(string propertyName) => _properties.ContainsKey(propertyName);
 
-        public void SetProperty(string propertyName, string value) => _properties[propertyName] = value;
+        public BaseObject SetProperty(string propertyName, string value)
+        {
+            _properties[propertyName] = value;
+            return this;
+        }
 
-        public void SetProperty(string propertyName, DateTimeOffset value) => _properties[propertyName] = value.ToString();
+        public BaseObject SetProperty(string propertyName, DateTimeOffset value)
+        {
+            _properties[propertyName] = value.ToString();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, TimeSpan value) => _properties[propertyName] = value.ToString();
+        public BaseObject SetProperty(string propertyName, TimeSpan value)
+        {
+            _properties[propertyName] = value.ToString();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, int value) => _properties[propertyName] = value.ToString();
+        public BaseObject SetProperty(string propertyName, int value)
+        {
+            _properties[propertyName] = value.ToString();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, double value) => _properties[propertyName] = value.ToString();
+        public BaseObject SetProperty(string propertyName, double value)
+        {
+            _properties[propertyName] = value.ToString();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, bool value) => _properties[propertyName] = value.ToString();
+        public BaseObject SetProperty(string propertyName, bool value)
+        {
+            _properties[propertyName] = value.ToString();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, byte[] value) => _properties[propertyName] = value.ToHex();
+        public BaseObject SetProperty(string propertyName, byte[] value)
+        {
+            _properties[propertyName] = value.ToHex();
+            return this;
+        }
 
-        public void SetProperty(string propertyName, IDictionary<string, string> value) => _properties[propertyName] = JsonConvert.SerializeObject(value);
+        public BaseObject SetProperty(string propertyName, IDictionary<string, string> value)
+        {
+            _properties[propertyName] = JsonConvert.SerializeObject(value);
+            return this;
+        }
 
-        public void SetPropertyList(string propertyName, params string[] values) => _properties[propertyName] = string.Join(", ", values);
+        public BaseObject SetPropertyList(string propertyName, params string[] values)
+        {
+            _properties[propertyName] = string.Join(", ", values);
+            return this;
+        }
 
         public IReadOnlyDictionary<string, string> GetProperties()
         {

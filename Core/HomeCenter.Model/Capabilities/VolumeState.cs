@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class VolumeState : State
+    public class VolumeState : StateBase
     {
         public static string StateName { get; } = nameof(VolumeState);
 

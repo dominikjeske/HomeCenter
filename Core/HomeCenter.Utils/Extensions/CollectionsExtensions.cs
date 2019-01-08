@@ -24,6 +24,8 @@ namespace HomeCenter.Utils.Extensions
             foreach (T item in collection) action(item);
         }
 
+        public static bool InvariantContains(this IEnumerable<string> stringList, string comparedString) => stringList.Any(x => x.InvariantEquals(comparedString));
+
         public static string ToFormatedString<T>(this IEnumerable<T> collection, string separator = ",")
         {
             return string.Join($"{separator} ", collection);
@@ -111,6 +113,5 @@ namespace HomeCenter.Utils.Extensions
         }
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dict) => dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        
     }
 }

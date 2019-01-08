@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class CurrentState : State
+    public class CurrentState : StateBase
     {
         public static string StateName { get; } = nameof(CurrentState);
 

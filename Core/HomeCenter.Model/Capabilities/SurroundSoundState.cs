@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class SurroundSoundState : State
+    public class SurroundSoundState : StateBase
     {
         public static string StateName { get; } = nameof(SurroundSoundState);
 

@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class HumidityState : State
+    public class HumidityState : StateBase
     {
         public static string StateName { get; } = nameof(HumidityState);
 

@@ -231,7 +231,8 @@
           {
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
-              "PinNumber": 1
+              "PinNumber": 1,
+              "PowerState":  "Read"
             }
           },
           {

@@ -6,19 +6,19 @@ namespace HomeCenter.Model.Messages.Queries.Device
 {
     public class DiscoveryResponse : BaseObject
     {
-        public DiscoveryResponse(IList<string> requierdProperties, params State[] supportedStates)
+        public DiscoveryResponse(IList<string> requierdProperties, params StateBase[] supportedStates)
         {
             SupportedStates = supportedStates;
             RequierdProperties = requierdProperties;
         }
 
-        public DiscoveryResponse(params State[] supportedStates)
+        public DiscoveryResponse(params StateBase[] supportedStates)
         {
             SupportedStates = supportedStates;
             RequierdProperties = new List<string>();
         }
 
-        public State[] SupportedStates { get; }
+        public StateBase[] SupportedStates { get; }
         public IList<string> RequierdProperties { get; }
     }
 }

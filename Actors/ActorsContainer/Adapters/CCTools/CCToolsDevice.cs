@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
+using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
@@ -64,7 +65,10 @@ namespace HomeCenter.Adapters.Common
 
         protected DiscoveryResponse Handle(DiscoverQuery message)
         {
-            return new DiscoveryResponse(RequierdProperties(), new PowerState());
+            var pinNumber = message.AsInt(MessageProperties.PinNumber);
+            bool pinInWriteMode = IsPinInWriteMode(pinNumber);
+            
+            return new DiscoveryResponse(RequierdProperties(), pinInWriteMode ? new PowerState(ReadWriteMode.Write) : new PowerState(ReadWriteMode.Read));
         }
 
         protected Task Hadle(PinValueChangedEvent pinValueChangedEvent) => FetchState();
@@ -150,11 +154,11 @@ namespace HomeCenter.Adapters.Common
             {
                 var oldPinState = oldStateBits.Get(pinNumber);
                 var newPinState = newStateBits.Get(pinNumber);
-                var isPinInFirstPortRange = pinNumber < 8;
+                bool pinInWriteMode = IsPinInWriteMode(pinNumber);
 
                 // When state is the same or change is in port that are set to WRITE we skip event generation
-                if (oldPinState == newPinState || (isPinInFirstPortRange && _firstPortWriteMode) || (!isPinInFirstPortRange && _secondPortWriteMode)) continue;
-                
+                if (oldPinState == newPinState || pinInWriteMode) continue;
+
                 var properyChangeEvent = PropertyChangedEvent.Create(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>()
                 {
                     [MessageProperties.PinNumber] = pinNumber.ToString()
@@ -169,6 +173,13 @@ namespace HomeCenter.Adapters.Common
             {
                 Logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds}ms.");
             }
+        }
+
+        private bool IsPinInWriteMode(int pinNumber)
+        {
+            var isPinInFirstPortRange = pinNumber < 8;
+            var pinInWriteMode = (isPinInFirstPortRange && _firstPortWriteMode) || (!isPinInFirstPortRange && _secondPortWriteMode);
+            return pinInWriteMode;
         }
 
         private async Task<byte[]> ReadFromBus()

@@ -5,7 +5,7 @@ namespace HomeCenter.Model.Capabilities
 {
 
 
-    public class InfraredSenderState : State
+    public class InfraredSenderState : StateBase
     {
         public static string StateName { get; } = nameof(InfraredSenderState);
 

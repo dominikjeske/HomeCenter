@@ -1,10 +1,9 @@
-﻿using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Utils.ConsoleExtentions;
-using HomeCenter.Utils.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Utils.Extensions;
 
 namespace HomeCenter.Runner
 {
@@ -12,7 +11,7 @@ namespace HomeCenter.Runner
     {
         public DenonRunner(string uid) : base(uid)
         {
-            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "Capabilities", "States", "Tags", "Status", "Test" };
+            _tasks = new string[] { "VolumeUp", "VolumeDown", "TurnOn", "TurnOff", "VolumeSet", "Mute", "Unmute", "InputSet", "ModeSet", "SupportedStates", "SupportedCapabilities", "State" };
         }
 
         public override async Task RunTask(int taskId)
@@ -57,19 +56,17 @@ namespace HomeCenter.Runner
 
                 case 9:
                     var capabilities = await MessageBroker.Request<CapabilitiesQuery, IReadOnlyCollection<string>>(CapabilitiesQuery.Default, Uid);
-                    ConsoleEx.WriteOKLine($"Capabilities: {capabilities.ToFormatedString()}");
+                    ConsoleEx.WriteTitleLine($"Capabilities of '{Uid}': {string.Join(", ", capabilities)}");
                     break;
+
                 case 10:
-                    var states = await MessageBroker.Request<SupportedStatesQuery, IReadOnlyCollection<string>>(SupportedStatesQuery.Default, Uid);
-                    ConsoleEx.WriteOKLine($"Supported States: {states.ToFormatedString()}");
+                    var supportedStates = await MessageBroker.Request<SupportedStatesQuery, IReadOnlyCollection<string>>(SupportedStatesQuery.Default, Uid);
+                    ConsoleEx.WriteTitleLine($"Supported states of '{Uid}': {string.Join(", ", supportedStates)}");
                     break;
+
                 case 11:
-                    var tags = await MessageBroker.Request<TagsQuery, IReadOnlyCollection<string>>(TagsQuery.Default, Uid);
-                    ConsoleEx.WriteOKLine($"Tags: {tags.ToFormatedString()}");
-                    break;
-                case 12:
-                    var status = await MessageBroker.Request<StatusQuery, IReadOnlyCollection<State>>(StatusQuery.Default, Uid);
-                    ConsoleEx.WriteOKLine($"Status: {status.ToFormatedString(" | ")}");
+                    var states = await MessageBroker.Request<StateQuery, IReadOnlyDictionary<string, string>>(StateQuery.Default, Uid);
+                    ConsoleEx.WriteTitleLine($"State of '{Uid}': {string.Join(", ", states.ToFormatedString())}");
                     break;
             }
 

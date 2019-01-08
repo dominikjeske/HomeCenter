@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class PlaybackState : State
+    public class PlaybackState : StateBase
     {
         public static string StateName { get; } = nameof(PlaybackState);
 

@@ -2,10 +2,7 @@
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Capabilities.Constants;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
@@ -14,7 +11,6 @@ using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
-using Microsoft.Extensions.Logging;
 using Proto;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +21,7 @@ namespace HomeCenter.Model.Components
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {
-        private Dictionary<string, State> _capabilities { get; } = new Dictionary<string, State>();
-        private Dictionary<string, AdapterReference> _adapterStateMap { get; } = new Dictionary<string, AdapterReference>();
+        private ComponentState _componentState;
 
         [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
@@ -110,30 +105,18 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            foreach (var adapter in _adapters)
+            var discoveryRequests = (await _adapters.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
+
+            foreach (var discovery in discoveryRequests)
             {
-                var capabilities = await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid).ConfigureAwait(false);
-                if (capabilities == null) throw new DiscoveryException($"Failed to initialize adapter {adapter.Uid} in component {Uid}. There is no response from DiscoveryResponse command");
+                discovery.Input.AddRequierdProperties(discovery.Result.RequierdProperties);
 
-                adapter.AddRequierdProperties(capabilities.RequierdProperties);
-
-                CreateAdapterStateMap(adapter, capabilities.SupportedStates);
-                CreateCapabilities(capabilities);
-
-                Subscribe<Event>(adapter.GetRoutingFilter());
+                Subscribe<Event>(discovery.Input.GetRoutingFilter());
             }
+
+            _componentState = new ComponentState(discoveryRequests.ToDictionary(k => k.Input, v => v.Result));
         }
 
-        private void CreateAdapterStateMap(AdapterReference adapter, State[] states)
-        {
-            states.ForEach(state => _adapterStateMap[state.Name] = adapter);
-        }
-
-        private void CreateCapabilities(DiscoveryResponse capabilities)
-        {
-            _capabilities.AddRangeNewOnly(capabilities.SupportedStates.ToDictionary(key => key.Name, val => val));
-        }
-        
         /// <summary>
         /// Subscribe for commands addressed to this component via event aggregator
         /// </summary>
@@ -151,12 +134,10 @@ namespace HomeCenter.Model.Components
             if (actorMessage is Command command)
             {
                 // TODO use value converter before publish
-                var supportedCapabilities = _capabilities.Values.Where(capability => capability.IsCommandSupported(command));
-                foreach (var state in supportedCapabilities)
+                foreach (var adapter in _componentState.GetCommandAdapter(command))
                 {
-                    var adapter = _adapterStateMap[state.Name];
-                    var adapterCommand = adapter.GetDeviceCommand(command);
-                    MessageBroker.Send(adapterCommand, adapter.Uid);
+                    var adapterCommand = _adapters.Single(a => a.Uid == adapter).GetDeviceCommand(command);
+                    MessageBroker.Send(adapterCommand, adapter);
                     handled = true;
                 }
             }
@@ -183,18 +164,11 @@ namespace HomeCenter.Model.Components
 
         private async Task HandlePropertyChange(PropertyChangedEvent propertyChanged)
         {
-            var propertyName = propertyChanged.PropertyChangedName;
-            if (!_capabilities.ContainsKey(propertyName)) return;
-
-            var state = _capabilities[propertyName];
-            var oldValue = state.Value;
-            var newValue = propertyChanged.NewValue;
-
-            if (newValue.Equals(oldValue)) return;
-
-            state.Value = newValue;
-
-            await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyName, oldValue, newValue), Uid).ConfigureAwait(false);
+            if (_componentState.IsStateProvidingAdapter(propertyChanged.MessageSource, propertyChanged.PropertyChangedName)
+                && _componentState.TryUpdateState(propertyChanged.PropertyChangedName, propertyChanged.NewValue, out var oldValue))
+            {
+                await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
+            }
         }
 
         private async Task HandleEventInTrigger(Trigger trigger)
@@ -216,34 +190,18 @@ namespace HomeCenter.Model.Components
             }
         }
 
-        protected IReadOnlyCollection<string> Handle(CapabilitiesQuery command) => _capabilities.Values
-                                                                                                .Select(cap => cap.CapabilityName)
-                                                                                                .Distinct()
-                                                                                                .ToList()
-                                                                                                .AsReadOnly();
+        protected IReadOnlyCollection<string> Handle(CapabilitiesQuery command) => _componentState.SupportedCapabilities();
 
-        protected IReadOnlyCollection<string> Handle(SupportedStatesQuery command) => _capabilities.Values
-                                                                                   .Select(cap => cap.Name)
-                                                                                   .Distinct()
-                                                                                   .ToList()
-                                                                                   .AsReadOnly();
+        protected IReadOnlyCollection<string> Handle(SupportedStatesQuery command) => _componentState.SupportedStates();
 
-       
-
-        protected string Handle(StateQuery command)
+        protected IReadOnlyDictionary<string, string> Handle(StateQuery command)
         {
-            var stateName = command.AsString(MessageProperties.StateName);
-
-            if (!_capabilities.ContainsKey(stateName)) return null;
-            var value = _capabilities[stateName][StateProperties.Value];
-            if (_converters.ContainsKey(stateName))
+            if (command.ContainsProperty(MessageProperties.StateName))
             {
-                value = _converters[stateName].Convert(value);
+                return _componentState.GetStateValues(command[MessageProperties.StateName]);
             }
 
-            return value;
+            return _componentState.GetStateValues();
         }
-
-        protected IReadOnlyCollection<State> Handle(StatusQuery command) => _capabilities.Values.ToList().AsReadOnly();
     }
 }

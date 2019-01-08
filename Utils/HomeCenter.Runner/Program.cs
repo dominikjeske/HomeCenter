@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
@@ -15,7 +12,7 @@ namespace HomeCenter.Runner
         {
             var configuration = GetConfiguration();
 
-            int programNumber = 0;
+            int programNumber = 1;
             string input = "";
             string remote = configuration.GetValue<string>("Address");
 
@@ -73,7 +70,6 @@ namespace HomeCenter.Runner
             return runner.Run();
         }
 
- 
         private static Task StartCluster()
         {
             return ProtoCluster.Start();
@@ -95,6 +91,5 @@ namespace HomeCenter.Runner
                 Console.WriteLine(e);
             }
         }
-
     }
 }

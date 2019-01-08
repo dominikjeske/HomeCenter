@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class MuteState : State
+    public class MuteState : StateBase
     {
         public static string StateName { get; } = nameof(MuteState);
 

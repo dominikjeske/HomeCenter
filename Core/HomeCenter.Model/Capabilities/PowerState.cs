@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    public class PowerState : State
+    public class PowerState : StateBase
     {
         public static string StateName { get; } = nameof(PowerState);
 
@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(PowerState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PowerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand), nameof(SwitchPowerStateCommand), nameof(RefreshCommand)); //TODO set Refresh to default on all states?
+            SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand), nameof(SwitchPowerStateCommand));
         }
     }
 }
