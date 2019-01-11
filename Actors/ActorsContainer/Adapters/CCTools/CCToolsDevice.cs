@@ -57,7 +57,7 @@ namespace HomeCenter.Adapters.Common
             await ConfigureDriver().ConfigureAwait(false);
             await FetchState().ConfigureAwait(false);
         }
-        
+
         private Task ConfigureDriver()
         {
             return MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, _driver.Configure(_firstPortWriteMode, _secondPortWriteMode)));
@@ -67,19 +67,25 @@ namespace HomeCenter.Adapters.Common
         {
             var pinNumber = message.AsInt(MessageProperties.PinNumber);
             bool pinInWriteMode = IsPinInWriteMode(pinNumber);
-            
+
             return new DiscoveryResponse(RequierdProperties(), pinInWriteMode ? new PowerState(ReadWriteMode.Write) : new PowerState(ReadWriteMode.Read));
         }
 
         protected Task Hadle(PinValueChangedEvent pinValueChangedEvent) => FetchState();
 
         protected Task Handle(RefreshCommand message) => FetchState();
-        
-        protected Task Handle(TurnOnCommand message)
+
+        protected async Task Handle(TurnOnCommand message)
         {
             int pinNumber = ValidatePin(message);
 
-            return SetPortState(pinNumber, true);
+            await SetPortState(pinNumber, true).ConfigureAwait(false);
+
+            if (message.ContainsProperty(MessageProperties.StateTime))
+            {
+                await Task.Delay(message.AsIntTime(MessageProperties.StateTime)).ConfigureAwait(false);
+                await Handle(new TurnOffCommand()).ConfigureAwait(false);
+            }
         }
 
         protected Task Handle(TurnOffCommand message)
@@ -96,27 +102,27 @@ namespace HomeCenter.Adapters.Common
 
             return SetPortState(pinNumber, !currentState);
         }
-        
+
         protected bool QueryState(StateQuery message)
         {
             var pinNumber = AsInt(MessageProperties.PinNumber);
             return _driver.GetState(pinNumber);
         }
-        
+
         private int ValidatePin(Command message)
         {
             var pinNumber = message.AsInt(MessageProperties.PinNumber);
             if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
             var isPinInFirstPortRange = pinNumber < 8;
 
-            if(isPinInFirstPortRange && !_firstPortWriteMode || !isPinInFirstPortRange && !_secondPortWriteMode)
+            if ((isPinInFirstPortRange && !_firstPortWriteMode) || (!isPinInFirstPortRange && !_secondPortWriteMode))
             {
                 throw new UnsupportedStateException($"Pin {pinNumber} on device {Uid} is configured for INPUT");
             }
-            
+
             return pinNumber;
         }
-        
+
         private async Task SetPortState(int pinNumber, bool state)
         {
             var newState = _driver.GenerateNewState(pinNumber, state);

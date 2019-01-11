@@ -4,6 +4,7 @@
     {
         //Common
         public const string MessageSource = nameof(MessageSource);
+        public const string MessageDestination = nameof(MessageDestination);
         public const string LogLevel = nameof(LogLevel);
         public const string Type = nameof(Type);
         public const string Uid = nameof(Uid);
@@ -19,6 +20,7 @@
         public const string SurroundMode = nameof(SurroundMode);
         public const string Repeat = nameof(Repeat);
         public const string Code = nameof(Code);
+        public const string StateTime = nameof(StateTime);
 
         //Events
         public const string OldValue = nameof(OldValue);

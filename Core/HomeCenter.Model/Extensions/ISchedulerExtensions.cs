@@ -1,4 +1,6 @@
-﻿using HomeCenter.Model.Messages.Commands;
+﻿using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Triggers;
 using Quartz;
 using Quartz.Impl.Matchers;
 using System;
@@ -104,11 +106,15 @@ namespace HomeCenter.Model.Extensions
             return job.Key;
         }
 
-        public static async Task<JobKey> DelayExecution<T>(this IScheduler scheduler, TimeSpan delay, Command command, string uid, bool cancelExisting = true, CancellationToken token = default) where T : IJob
+        public static async Task<JobKey> DelayCommandExecution(this IScheduler scheduler, TimeSpan delay, Command command, string destination, bool cancelExisting = true, CancellationToken token = default) 
         {
+            var uid = $"{destination}_{command.Type}";
+
             if (cancelExisting) await scheduler.CancelJob(uid).ConfigureAwait(false);
 
-            var job = JobBuilder.Create<T>()
+            command.SetProperty(MessageProperties.MessageDestination, destination);
+
+            var job = JobBuilder.Create<DelayCommandJob>()
                                 .WithIdentity(GetUniqueName(uid))
                                 .SetJobData(WrapJobData(command))
                                 .Build();

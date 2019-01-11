@@ -181,7 +181,8 @@ namespace HomeCenter.Model.Components
                     {
                         var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
                         var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
-                        await Scheduler.DelayExecution<DelayCommandJob>(executionDelay, command, $"{Uid}_{command.Type}", cancelPrevious).ConfigureAwait(false);
+
+                        await Scheduler.DelayCommandExecution(executionDelay, command, Uid, cancelPrevious).ConfigureAwait(false);
                         continue;
                     }
 
