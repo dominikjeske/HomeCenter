@@ -248,15 +248,15 @@
               "Type": "PropertyChangedEvent",
               "Properties": {
                 "MessageSource": "HSPE16InputOnly_1",
-                "PinNumber": 2,
-                "NewValue": true
+                "PinNumber": 0
+               
               }
             },
             "Commands": [
               {
                 "Type": "TurnOnCommand",
                 "Properties": {
-                  "StateTime": 500
+                  "StateTime": 200
                 }
               }
             ]

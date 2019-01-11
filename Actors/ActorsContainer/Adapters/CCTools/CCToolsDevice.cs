@@ -56,6 +56,21 @@ namespace HomeCenter.Adapters.Common
 
             await ConfigureDriver().ConfigureAwait(false);
             await FetchState().ConfigureAwait(false);
+
+            if(_firstPortWriteMode)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    await SetPortState(i, false).ConfigureAwait(false);
+                }
+            }
+            if (_secondPortWriteMode)
+            {
+                for (int i = 8; i < 15; i++)
+                {
+                    await SetPortState(i, false).ConfigureAwait(false);
+                }
+            }
         }
 
         private Task ConfigureDriver()
@@ -84,7 +99,7 @@ namespace HomeCenter.Adapters.Common
             if (message.ContainsProperty(MessageProperties.StateTime))
             {
                 await Task.Delay(message.AsIntTime(MessageProperties.StateTime)).ConfigureAwait(false);
-                await Handle(new TurnOffCommand()).ConfigureAwait(false);
+                await SetPortState(pinNumber, false).ConfigureAwait(false);
             }
         }
 
@@ -172,7 +187,7 @@ namespace HomeCenter.Adapters.Common
 
                 await MessageBroker.PublishEvent(properyChangeEvent, Uid).ConfigureAwait(false);
 
-                Logger.LogInformation($"[{Uid}] port state '{pinNumber}' changed {oldPinState}->{newPinState}");
+                Logger.LogInformation($"[{Uid}] Pin state '{pinNumber}' changed {oldPinState}->{newPinState}");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
