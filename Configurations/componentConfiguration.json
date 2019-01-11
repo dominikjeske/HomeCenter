@@ -225,7 +225,7 @@
           {
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
-              "PinNumber": 2
+              "PinNumber": 0
             }
           },
           {
@@ -256,7 +256,7 @@
               {
                 "Type": "TurnOnCommand",
                 "Properties": {
-                  "StateTime": 200
+                  "StateTime": 500
                 }
               }
             ]
