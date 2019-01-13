@@ -248,8 +248,8 @@
               "Type": "PropertyChangedEvent",
               "Properties": {
                 "MessageSource": "HSPE16InputOnly_1",
-                "PinNumber": 0
-               
+                "PinNumber": 0,
+                "NewValue": "True"
               }
             },
             "Commands": [

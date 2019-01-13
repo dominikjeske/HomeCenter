@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Common
 {
+    // TODO add reverse state - to interprate true as false and oposite
     [ProxyCodeGenerator]
     public abstract class CCToolsAdapter : Adapter
     {
@@ -187,7 +188,7 @@ namespace HomeCenter.Adapters.Common
 
                 await MessageBroker.PublishEvent(properyChangeEvent, Uid).ConfigureAwait(false);
 
-                Logger.LogInformation($"[{Uid}] Pin state '{pinNumber}' changed {oldPinState}->{newPinState}");
+                Logger.LogInformation($"[{Uid}] Pin [{pinNumber}] state changed {oldPinState}->{newPinState}");
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)

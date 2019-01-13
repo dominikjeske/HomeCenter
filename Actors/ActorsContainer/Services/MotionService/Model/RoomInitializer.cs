@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public class RoomInitializer
     {

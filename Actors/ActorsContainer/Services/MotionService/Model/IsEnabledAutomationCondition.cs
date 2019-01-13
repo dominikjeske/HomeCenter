@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using HomeCenter.Model.Conditions;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public class IsEnabledAutomationCondition : Condition
     {

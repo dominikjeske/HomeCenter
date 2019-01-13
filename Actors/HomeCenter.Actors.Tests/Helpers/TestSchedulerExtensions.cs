@@ -1,9 +1,9 @@
-﻿using System.Reactive.Linq;
-using Microsoft.Reactive.Testing;
-using System.Linq;
+﻿using Microsoft.Reactive.Testing;
 using System;
+using System.Linq;
+using System.Reactive.Linq;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Services.MotionService.Tests
 {
     public static class TestExtensions
     {
@@ -11,7 +11,7 @@ namespace Wirehome.Extensions.Tests
         {
             scheduler.AdvanceTo(events.Messages.Max(x => x.Time));
         }
-        
+
         public static void AdvanceJustAfterEnd<T>(this TestScheduler scheduler, ITestableObservable<T> events, int timeAfter = 500)
         {
             scheduler.AdvanceTo(events.Messages.Max(x => x.Time) + Time.Tics(timeAfter));
@@ -36,10 +36,7 @@ namespace Wirehome.Extensions.Tests
         {
             scheduler.AdvanceTo(events.Messages.ElementAt(elementIndex).Time + Time.Tics(timeAfter));
         }
-        
+
         public static TimeSpan JustAfter(this TimeSpan span, int timeAfter = 100) => span.Add(TimeSpan.FromMilliseconds(timeAfter));
-        
     }
-
-
 }

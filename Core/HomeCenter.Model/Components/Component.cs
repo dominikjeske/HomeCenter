@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
+    // TODO - add transformation of input commands and output events
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {

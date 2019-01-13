@@ -1,6 +1,8 @@
 ﻿using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,15 +12,14 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Wirehome.Motion.Model;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Services.MotionService
 {
-    //TODO Thread safe
     public class Room : IDisposable
     {
         //TODO validate conditions
         private readonly Condition _turnOnConditionsValidator;
+
         private readonly Condition _turnOffConditionsValidator;
 
         private readonly MotionConfiguration _motionConfiguration;
@@ -53,8 +54,6 @@ namespace Wirehome.Motion
         public override string ToString()
         {
             return $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}]";
-            //TODO DEBUG
-            // return $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}] [Lamp: {(Lamp as MotionLamp)?.GetIsTurnedOn()}]";
         }
 
         public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, IMessageBroker messageBroker,
@@ -63,16 +62,16 @@ namespace Wirehome.Motion
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
             Neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
             Lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
-            
+
             //TODO configure conditions
-            //if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
-            //{
-            //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsDayCondition(daylightService, dateTimeService));
-            //}
-            //else if (areaDescriptor.WorkingTime == WorkingTime.AfterDusk)
-            //{
-            //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsNightCondition(daylightService, dateTimeService));
-            //}
+            if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
+            {
+                //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsDayCondition(daylightService, dateTimeService));
+            }
+            else if (areaDescriptor.WorkingTime == WorkingTime.AfterDusk)
+            {
+                //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsNightCondition(daylightService, dateTimeService));
+            }
 
             //_turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
             //_turnOffConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
@@ -123,7 +122,7 @@ namespace Wirehome.Motion
                 RegisterTurnOffTime();
             }
 
-            _logger.LogInformation($"[{Uid} Light] = {powerChangeEvent.Value} | Source: {powerChangeEvent.EventSource}");
+            _logger.LogInformation($"[{Uid} Light] = {powerChangeEvent.Value} | Source: {powerChangeEvent.EventTriggerSource}");
         }
 
         public async Task MarkMotion(DateTimeOffset time)

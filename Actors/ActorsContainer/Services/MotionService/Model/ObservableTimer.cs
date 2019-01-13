@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public class ObservableTimer : IObservableTimer
     {

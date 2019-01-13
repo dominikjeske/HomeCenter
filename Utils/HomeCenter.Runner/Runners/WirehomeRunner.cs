@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    public class WirehomeRunner : Runner
+    public class HomeCenterRunner : Runner
     {
         private readonly List<Runner> _runners = new List<Runner>();
         private Bootstrapper _bootstrapper;
 
-        public WirehomeRunner() : base(nameof(WirehomeRunner))
+        public HomeCenterRunner() : base(nameof(HomeCenterRunner))
         {
             _runners = new List<Runner>
             {
@@ -42,7 +42,7 @@ namespace HomeCenter.Runner
             }
             else
             {
-                _bootstrapper = new WirehomeBootstrapper(container);
+                _bootstrapper = new HomeCenterBootstrapper(container);
             }
 
             var controller = await _bootstrapper.BuildController().ConfigureAwait(false);

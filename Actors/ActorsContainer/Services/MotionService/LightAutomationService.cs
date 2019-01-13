@@ -1,6 +1,8 @@
 ﻿using Force.DeepCloner;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
+using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,9 +11,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Wirehome.Motion.Model;
 
-namespace Wirehome.Motion
+namespace HomeCenter.Services.MotionService
 {
     //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
     //TODO Alarm when move in one enter room without move in entering neighbor
@@ -37,6 +38,7 @@ namespace Wirehome.Motion
             var configurationProvider = motionConfigurationProvider ?? throw new ArgumentNullException(nameof(motionConfigurationProvider));
             _motionConfiguration = configurationProvider.GetConfiguration();
             _observableTimer = observableTimer;
+            _concurrencyProvider = concurrencyProvider;
         }
 
         public Task Initialize()
@@ -51,7 +53,6 @@ namespace Wirehome.Motion
 
             if (!roomInitializers.Any()) throw new Exception("No detectors found to automate");
 
-            //TODO Check if component is real lamp - wait for new component implementation
             _rooms = roomInitializers.Select(roomInitializer => roomInitializer.ToRoom(_motionConfiguration, _concurrencyProvider, Logger, MessageBroker))
                                                              .ToImmutableDictionary(k => k.Uid, v => v);
 
@@ -91,16 +92,14 @@ namespace Wirehome.Motion
 
         public IObservable<MotionVector> AnalyzeMove()
         {
-            //TODO
-            //var events = _eventAggregator.Observe<MotionEvent>();
+            var events = MessageBroker.Observe<MotionEvent>();
 
-            //return events.Timestamp(_concurrencyProvider.Scheduler)
-            //             .Select(move => new MotionWindow(move.Value.Message.MotionDetectorUID, move.Timestamp))
-            //             .Do(HandleMove)
-            //             .Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
-            //             .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start, IsProperVector))
-            //             .SelectMany(motion => motion.ToVectors()));
-            return Observable.Empty<MotionVector>();
+            return events.Timestamp(_concurrencyProvider.Scheduler)
+                         .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp))
+                         .Do(HandleMove)
+                         .Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
+                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start, IsProperVector))
+                         .SelectMany(motion => motion.ToVectors()));
         }
 
         private void HandleMove(MotionWindow point)
@@ -116,7 +115,8 @@ namespace Wirehome.Motion
 
             if (confusionPoints.Count == 0)
             {
-                MarkVector(motionVector);
+                //TODO change this to async?
+                MarkVector(motionVector).GetAwaiter().GetResult();
             }
             else if (_rooms[motionVector.Start.Uid].NumberOfPersonsInArea > 0)
             {
@@ -136,13 +136,14 @@ namespace Wirehome.Motion
                                                                .ObserveOn(_concurrencyProvider.Task)
                                                                .Subscribe(PeriodicCheck, HandleError);
 
+        //TODO change this to async?
         private void PeriodicCheck(DateTimeOffset currentTime)
         {
-            UpdateRooms();
-            ResolveConfusions(currentTime);
+            UpdateRooms().GetAwaiter().GetResult();
+            ResolveConfusions(currentTime).GetAwaiter().GetResult();
         }
 
-        private void ResolveConfusions(DateTimeOffset currentTime)
+        private async Task ResolveConfusions(DateTimeOffset currentTime)
         {
             var toRemove = new HashSet<MotionVector>();
 
@@ -165,7 +166,7 @@ namespace Wirehome.Motion
                     var noMoveInStartNeighbors = startNeighbors.All(n => n.LastMotion.Time.GetValueOrDefault() <= confusedVector.Start.TimeStamp);
                     if (noMoveInStartNeighbors)
                     {
-                        MarkVector(confusedVector.UnConfuze());
+                        await MarkVector(confusedVector.UnConfuze()).ConfigureAwait(false);
                         toRemove.Add(confusedVector);
                     }
                 }
@@ -174,9 +175,12 @@ namespace Wirehome.Motion
             _confusedVectors.RemoveAll(toRemove.Contains);
         }
 
-        private void UpdateRooms()
+        private async Task UpdateRooms()
         {
-            _rooms.Values.ForEach(room => room.Update());
+            foreach (var room in _rooms.Values)
+            {
+                await room.Update().ConfigureAwait(false);
+            }
         }
 
         private async Task MarkVector(MotionVector motionVector)

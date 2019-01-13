@@ -8,6 +8,7 @@ using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Newtonsoft.Json;
 using Proto;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
@@ -41,13 +42,6 @@ namespace HomeCenter.Model.Core
             if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;
 
             return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message).ConfigureAwait(false), filter);
-        }
-
-        private SubscriptionCache GetSubscription<T>(PID subscriber)
-        {
-            var rootActor = _actorFactory.GetRootActor(subscriber);
-            var sub = new SubscriptionCache(rootActor, typeof(T));
-            return sub;
         }
 
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
@@ -86,6 +80,19 @@ namespace HomeCenter.Model.Core
         public Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event
         {
             return _eventAggregator.Publish(message, routingFilter);
+        }
+
+        public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
+        {
+            return _eventAggregator.Observe<T>();
+        }
+
+
+        private SubscriptionCache GetSubscription<T>(PID subscriber)
+        {
+            var rootActor = _actorFactory.GetRootActor(subscriber);
+            var sub = new SubscriptionCache(rootActor, typeof(T));
+            return sub;
         }
 
         public void Send(object message, PID destination)

@@ -2,7 +2,7 @@
 using HomeCenter.Utils.Extensions;
 using System;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public class MotionPoint : ValueObject<MotionPoint>, IEquatable<MotionPoint>
     {

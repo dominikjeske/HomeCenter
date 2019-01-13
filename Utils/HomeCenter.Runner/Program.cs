@@ -66,7 +66,7 @@ namespace HomeCenter.Runner
 
         private static Task StartController()
         {
-            var runner = new WirehomeRunner();
+            var runner = new HomeCenterRunner();
             return runner.Run();
         }
 

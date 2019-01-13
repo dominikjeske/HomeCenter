@@ -8,9 +8,9 @@ using System.Reactive.Linq;
 
 namespace HomeCenter.Runner
 {
-    public class WirehomeBootstrapper : Bootstrapper
+    public class HomeCenterBootstrapper : Bootstrapper
     {
-        public WirehomeBootstrapper(Container container) : base(container)
+        public HomeCenterBootstrapper(Container container) : base(container)
         {
             _container.Options.AllowOverridingRegistrations = true;
         }

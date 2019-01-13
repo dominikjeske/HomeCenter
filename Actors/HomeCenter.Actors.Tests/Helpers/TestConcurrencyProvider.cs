@@ -1,8 +1,8 @@
-﻿using Microsoft.Reactive.Testing;
+﻿using HomeCenter.Services.MotionService.Model;
+using Microsoft.Reactive.Testing;
 using System.Reactive.Concurrency;
-using Wirehome.Motion.Model;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Services.MotionService.Tests
 {
     public class TestConcurrencyProvider : IConcurrencyProvider
     {

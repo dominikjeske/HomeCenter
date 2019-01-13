@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Extensions.Tests
+namespace HomeCenter.Services.MotionService.Tests
 {
     public static class Time
     {

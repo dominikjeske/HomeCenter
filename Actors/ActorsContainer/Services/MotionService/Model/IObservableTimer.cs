@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public interface IObservableTimer
     {

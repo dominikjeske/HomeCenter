@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.Model.Messages.Events.Device;
+using System.Collections.Generic;
 using System.Reactive;
 
-namespace Wirehome.Motion.Model
+namespace HomeCenter.Services.MotionService.Model
 {
     public class DisableAutomationDecoder : IEventDecoder
     {

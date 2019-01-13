@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Proto;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
@@ -40,5 +41,6 @@ namespace HomeCenter.Model.Core
 
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
 
+        IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event;
     }
 }

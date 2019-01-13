@@ -16,6 +16,8 @@ namespace HomeCenter.Model.Core
 
         public static void Set(DateTimeOffset time) => _timeFunc.Value = () => time;
 
+        public static void Set(TimeSpan time) => _timeFunc.Value = () => DateTimeOffset.Now.Date.Add(time);
+
         public static void Set(Func<DateTimeOffset> timeFunc) => _timeFunc.Value = timeFunc;
     }
 }
