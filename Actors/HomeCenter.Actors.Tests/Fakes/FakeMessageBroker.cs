@@ -3,6 +3,7 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using Microsoft.Reactive.Testing;
@@ -26,6 +27,10 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
         {
+            if(typeof(T) == typeof(MotionEvent))
+            {
+                return (IObservable<IMessageEnvelope<T>>)_motionData;
+            }
             throw new NotImplementedException();
         }
 
