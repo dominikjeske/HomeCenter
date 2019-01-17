@@ -1,6 +1,6 @@
 ﻿# Project desctiption
 
-This project is .NET Core 2.1 application for Raspberry Pi 2/3 and Windows IoT and the main goal is to automate all devices in home into one HomeCenter.
+This project is .NET Core 2.2 application for Raspberry Pi 2/3 - main goal is to automate all devices in home into one HomeCenter by using actor model device adapter and services
 
 # Core elements
 
