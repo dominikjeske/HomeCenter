@@ -7,11 +7,11 @@ namespace HomeCenter.Services.MotionService.Model
         private TimeSpan _baseTime;
         private TimeSpan _currentExtension = TimeSpan.FromTicks(0);
         private int _counter;
-        private float _incrementFactor;
+        private double _incrementFactor;
 
         public TimeSpan Value => _baseTime + _currentExtension;
 
-        public Timeout(TimeSpan baseTime, float incrementFactor)
+        public Timeout(TimeSpan baseTime, double incrementFactor)
         {
             _baseTime = baseTime;
             _incrementFactor = incrementFactor;

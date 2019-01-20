@@ -8,7 +8,10 @@ namespace HomeCenter.Services.Configuration.DTO
         [JsonProperty("Areas")]
         public IList<AreaDTO> Areas { get; set; }
 
-        [JsonProperty("Components")]
-        public IList<ComponentDTO> Components { get; set; }
+        [JsonProperty("ComponentsRefs")]
+        public IList<ComponentDTO> ComponentsRefs { get; set; }
+
+        [JsonProperty("AttachedProperties")]
+        public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
     }
 }

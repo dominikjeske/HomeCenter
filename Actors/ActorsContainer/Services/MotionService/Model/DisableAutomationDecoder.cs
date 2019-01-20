@@ -4,7 +4,7 @@ using System.Reactive;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    public class DisableAutomationDecoder : IEventDecoder
+    internal class DisableAutomationDecoder : IEventDecoder
     {
         private Room _room;
 

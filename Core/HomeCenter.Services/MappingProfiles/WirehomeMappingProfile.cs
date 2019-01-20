@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Conditions;
@@ -24,6 +25,7 @@ namespace HomeCenter.Services.Profiles
                                             .ConstructUsingServiceLocator();
             CreateMap<EventDTO, Event>();
             CreateMap<AreaDTO, Area>();
+            CreateMap<AttachedPropertyDTO, AttachedProperty>();
             CreateMap<ScheduleDTO, Schedule>();
             CreateMap<ConditionContainerDTO, ConditionContainer>().ForMember(s => s.Conditions, d => d.MapFrom<ConditionResolver>())
                                                                   .ConstructUsingServiceLocator();

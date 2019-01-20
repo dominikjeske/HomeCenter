@@ -4,7 +4,7 @@ using System.Reactive;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    public interface IEventDecoder
+    internal interface IEventDecoder
     {
         void DecodeMessage(IList<Timestamped<PowerStateChangeEvent>> powerStateEvents);
         void Init(Room room);

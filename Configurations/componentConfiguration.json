@@ -21,9 +21,22 @@
               },
               {
                 "Uid": "Livingroom",
-                "Components": [
+                "ComponentsRefs": [
                   {
                     "Uid": "DenonComponent"
+                  },
+                  {
+                    "Uid": "MotionSensorLivingroom"
+                  }
+                ],
+                "AttachedProperties": [
+                  {
+                    "Service": "MotionService",
+                    "Properties": {
+                      "WorkingTime": "",
+                      "MaxPersonCapacity": "",
+                      "AreaType": ""
+                    }
                   }
                 ]
               },
@@ -232,7 +245,7 @@
             "Uid": "HSPE16InputOnly_1",
             "Properties": {
               "PinNumber": 1,
-              "PowerState":  "Read"
+              "PowerState": "Read"
             }
           },
           {
@@ -299,9 +312,33 @@
             }
           }
         ]
+      },
+
+      /* Motion sensors */
+
+      {
+        "Uid": "MotionSensorLivingroom",
+        "AdapterRefs": [
+          {
+            "Uid": "HSPE16InputOnly_1",
+            "Properties": {
+              "PinNumber": 0
+            }
+          }
+        ],
+        "AttachedProperties": [
+          {
+            "Service": "MotionService",
+            "Properties": {
+              "Neighbors": "MotionSensorHallway, MotionSensorToilet",
+              "Lamp": "LivingRoomLamp",
+              "EventDecoder": "DisableAutomationDecoder"
+            }
+          }
+        ]
       }
 
-
+      /* Motion sensors END*/
     ],
 
     "Adapters": [
@@ -417,6 +454,10 @@
       {
         "Uid": "SerialService",
         "Type": "SerialPortService"
+      },
+      {
+        "Uid": "MotionService",
+        "Type": "LightAutomationService"
       }
     ],
 

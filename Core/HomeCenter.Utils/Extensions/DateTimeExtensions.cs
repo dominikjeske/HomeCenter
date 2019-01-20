@@ -10,7 +10,7 @@ namespace HomeCenter.Utils.Extensions
 
         public static bool IsMovePhisicallyPosible(this DateTimeOffset time, DateTimeOffset comparedTime, TimeSpan motionMinDiff) => TimeSpan.FromTicks(Math.Abs(time.Ticks - comparedTime.Ticks)) >= motionMinDiff;
 
-        public static TimeSpan IncreaseByPercentage(this TimeSpan time, float percentage) => TimeSpan.FromTicks(time.Ticks + (long)(time.Ticks * (percentage / 100.0)));
+        public static TimeSpan IncreaseByPercentage(this TimeSpan time, double percentage) => TimeSpan.FromTicks(time.Ticks + (long)(time.Ticks * (percentage / 100.0)));
 
         public static bool IsTimeInRange(this TimeSpan time, TimeSpan from, TimeSpan until)
         {

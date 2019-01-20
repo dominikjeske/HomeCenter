@@ -1,9 +1,9 @@
 ﻿namespace HomeCenter.Services.MotionService.Model
 {
-    public enum AreaType
+    public static class AreaType
     {
-        Room = 0,
-        Passage = 1,
-        Outdoor = 2
+        public static readonly string Room = nameof(Room);
+        public static readonly string Passage = nameof(Passage);
+        public static readonly string Outdoor = nameof(Outdoor);
     }
 }

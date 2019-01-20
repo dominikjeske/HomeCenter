@@ -29,5 +29,8 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonProperty("TemplateProperties")]
         public Dictionary<string, string> TemplateProperties { get; set; }
+
+        [JsonProperty("AttachedProperties")]
+        public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
     }
 }

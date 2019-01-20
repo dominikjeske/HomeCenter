@@ -1,10 +1,10 @@
 ﻿namespace HomeCenter.Services.MotionService.Model
 {
-    public enum WorkingTime
+    public static class WorkingTime
     {
-        AllDay,
-        DayLight,
-        AfterDusk,
-        Night
+        public static readonly string AllDay = nameof(AllDay);
+        public static readonly string DayLight = nameof(DayLight);
+        public static readonly string AfterDusk = nameof(AfterDusk);
+        public static readonly string Night = nameof(Night);
     }
 }

@@ -68,6 +68,8 @@ namespace HomeCenter.Services.Configuration
 
             ResolveInlineAdapters(result);
 
+            ResolveAttachedProperties(result);
+
             CheckForDuplicateUid(result);
 
             var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
@@ -78,6 +80,41 @@ namespace HomeCenter.Services.Configuration
             var areas = MapAreas(result, components);
 
             await MessageBroker.PublishEvent(SystemStartedEvent.Default).ConfigureAwait(false);
+        }
+
+        private void ResolveAttachedProperties(HomeCenterConfigDTO result)
+        {
+            var components = result.HomeCenter.Components.Where(c => c.AttachedProperties?.Count > 0);
+            foreach(var component in components)
+            {
+                foreach(var property in component.AttachedProperties)
+                {
+                    var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == property.Service);
+                    if(serviceDto == null) throw new MissingMemberException($"Service {property.Service} was not found in configuration");
+
+                    var area = result.HomeCenter.Areas.Flatten(a => a.Areas).FirstOrDefault(a => a.ComponentsRefs?.Any(c => c.Uid.InvariantEquals(component.Uid)) ?? false);
+                    if (area == null) throw new MissingMemberException($"Component {component.Uid} was not found in any area");
+
+                    property.AttachedActor = component.Uid;
+                    property.AttachedArea = area.Uid;
+
+                    serviceDto.ComponentsAttachedProperties.Add(property);
+                }
+            }
+
+            var areas = result.HomeCenter.Areas.Flatten(a => a.Areas).Where(c => c.AttachedProperties?.Count > 0);
+
+            foreach (var area in areas)
+            {
+                foreach (var property in area.AttachedProperties)
+                {
+                    var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == property.Service);
+                    if (serviceDto == null) throw new MissingMemberException($"Service {property.Service} was not found in configuration");
+
+                    property.AttachedActor = area.Uid;
+                    serviceDto.AreasAttachedProperties.Add(property);
+                }
+            }
         }
 
         private void ResolveTemplates(HomeCenterConfigDTO result)
@@ -151,9 +188,9 @@ namespace HomeCenter.Services.Configuration
             foreach (var area in areas.Expand(a => a.Areas))
             {
                 var areInConfig = configAreas.FirstOrDefault(a => a.Uid == area.Uid);
-                if (areInConfig?.Components != null)
+                if (areInConfig?.ComponentsRefs != null)
                 {
-                    foreach (var component in areInConfig?.Components)
+                    foreach (var component in areInConfig?.ComponentsRefs)
                     {
                         //area.AddComponent(component.Uid, components[component.Uid]);
                     }

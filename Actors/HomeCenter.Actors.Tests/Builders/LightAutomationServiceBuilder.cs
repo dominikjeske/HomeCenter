@@ -1,8 +1,14 @@
-﻿using Force.DeepCloner;
+﻿using AutoMapper;
+using HomeCenter.Model.Actors;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService.Model;
+using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Moq;
+using Quartz;
+using SimpleInjector;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
@@ -12,10 +18,13 @@ namespace HomeCenter.Services.MotionService.Tests
     public class LightAutomationServiceBuilder
     {
         private AreaDescriptor _areaDescriptor;
-        private Func<IEventDecoder[]> _sampleDecoder;
+
+        // private Func<IEventDecoder[]> _sampleDecoder;
         private List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
+
         private List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
         private int _timeDuration = 20;
+        private Container _container;
 
         public LightAutomationServiceBuilder WithAreaDescriptor(AreaDescriptor areaDescriptor)
         {
@@ -23,11 +32,11 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public LightAutomationServiceBuilder WithSampleDecoder(Func<IEventDecoder[]> sampleDecoder)
-        {
-            _sampleDecoder = sampleDecoder;
-            return this;
-        }
+        //public LightAutomationServiceBuilder WithSampleDecoder(Func<IEventDecoder[]> sampleDecoder)
+        //{
+        //    _sampleDecoder = sampleDecoder;
+        //    return this;
+        //}
 
         public LightAutomationServiceBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
         {
@@ -56,8 +65,6 @@ namespace HomeCenter.Services.MotionService.Tests
         )
         Build()
         {
-            AreaDescriptor area = _areaDescriptor ?? new AreaDescriptor();
-
             var hallwayLampToilet = new FakeMotionLamp(Detectors.hallwayDetectorToilet);
             var hallwayLampLivingRoom = new FakeMotionLamp(Detectors.hallwayDetectorLivingRoom);
             var toiletLamp = new FakeMotionLamp(Detectors.toiletDetector);
@@ -81,41 +88,33 @@ namespace HomeCenter.Services.MotionService.Tests
                 { Detectors.staircaseDetector, staircaseLamp }
             };
 
+            _container = new Container();
+            Mapper.Initialize(p =>
+            {
+                p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
+                p.CreateMap<AttachedPropertyDTO, AttachedProperty>();
+
+                p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
+                p.ConstructServicesUsing(_container.GetInstance);
+            });
+
             var scheduler = new TestScheduler();
             var concurrencyProvider = new TestConcurrencyProvider(scheduler);
-            var motionConfigurationProvider = new MotionConfigurationProvider();
-            var motionConfiguration = motionConfigurationProvider.GetConfiguration();
-
-            var observableTimer = Mock.Of<IObservableTimer>();
-            var quartzScheduler = Mock.Of<Quartz.IScheduler>();
-
-            var logger = new FakeLogger<LightAutomationServiceProxy>(scheduler);
-
-            Mock.Get(observableTimer).Setup(x => x.GenerateTime(motionConfiguration.PeriodicCheckTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), motionConfiguration.PeriodicCheckTime)));
-
+            var quartzScheduler = Mock.Of<IScheduler>();
             var motionEvents = scheduler.CreateColdObservable<MotionEnvelope>(_motionEvents.ToArray());
             var messageBroker = new FakeMessageBroker(motionEvents);
 
-            var lightAutomation = new LightAutomationServiceProxy(concurrencyProvider, motionConfigurationProvider, observableTimer, quartzScheduler, messageBroker, logger);
+            _container.RegisterInstance<IScheduler>(quartzScheduler);
+            _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
+            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(new FakeLogger<LightAutomationServiceProxy>(scheduler));
+            _container.RegisterInstance<IMessageBroker>(messageBroker);
 
-            var descriptors = new List<RoomInitializer>
-                {
-                    new RoomInitializer(Detectors.hallwayDetectorToilet, new[] { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector }, hallwayLampToilet.Id, _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.hallwayDetectorLivingRoom, new[] { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }, hallwayLampLivingRoom.Id, _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.livingRoomDetector, new[] { Detectors.balconyDetector, Detectors.hallwayDetectorLivingRoom }, livingRoomLamp.Id, _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.balconyDetector, new[] { Detectors.livingRoomDetector }, balconyLamp.Id, _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.kitchenDetector, new[] { Detectors.hallwayDetectorToilet }, kitchenLamp.Id,  _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.bathroomDetector, new[] { Detectors.hallwayDetectorLivingRoom }, bathroomLamp.Id,  _sampleDecoder?.Invoke(), area.DeepClone()),
-                    new RoomInitializer(Detectors.badroomDetector, new[] { Detectors.hallwayDetectorLivingRoom }, badroomLamp.Id, _sampleDecoder?.Invoke() , area.DeepClone()),
-                    new RoomInitializer(Detectors.staircaseDetector, new[] { Detectors.hallwayDetectorToilet }, staircaseLamp.Id, _sampleDecoder?.Invoke() , area.DeepClone()),
-                };
+            //TODO
+            //Mock.Get(observableTimer).Setup(x => x.GenerateTime(motionConfiguration.PeriodicCheckTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), motionConfiguration.PeriodicCheckTime)));
 
-            var toiletArea = area.DeepClone();
-            toiletArea.MaxPersonCapacity = 1;
-            descriptors.Add(new RoomInitializer(Detectors.toiletDetector, new[] { Detectors.hallwayDetectorToilet }, toiletLamp.Id, _sampleDecoder?.Invoke(), toiletArea));
+            var serviceDto = ConfigureRooms(lampDictionary);
 
-            lightAutomation.RegisterRooms(descriptors);
-            lightAutomation.Initialize();
+            var lightAutomation = Mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto);
 
             return
             (
@@ -124,6 +123,106 @@ namespace HomeCenter.Services.MotionService.Tests
                 scheduler,
                 lampDictionary
             );
+        }
+
+        private ServiceDTO ConfigureRooms(Dictionary<string, FakeMotionLamp> lamps)
+        {
+            var serviceDto = new ServiceDTO();
+
+            //toiletArea.MaxPersonCapacity = 1;
+
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.hallwayDetectorToilet,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector }),
+                    [MotionProperties.Lamp] = lamps[Detectors.hallwayDetectorToilet].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.hallwayDetectorLivingRoom,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }),
+                    [MotionProperties.Lamp] = lamps[Detectors.hallwayDetectorLivingRoom].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.livingRoomDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.balconyDetector, Detectors.hallwayDetectorLivingRoom }),
+                    [MotionProperties.Lamp] = lamps[Detectors.livingRoomDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.balconyDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.livingRoomDetector }),
+                    [MotionProperties.Lamp] = lamps[Detectors.balconyDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.kitchenDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
+                    [MotionProperties.Lamp] = lamps[Detectors.kitchenDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.bathroomDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom }),
+                    [MotionProperties.Lamp] = lamps[Detectors.bathroomDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.badroomDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom }),
+                    [MotionProperties.Lamp] = lamps[Detectors.badroomDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.staircaseDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
+                    [MotionProperties.Lamp] = lamps[Detectors.staircaseDetector].Id
+                }
+            });
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = Detectors.toiletDetector,
+                AttachedArea = "",
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
+                    [MotionProperties.Lamp] = lamps[Detectors.toiletDetector].Id
+                }
+            });
+
+            return serviceDto;
         }
 
         public Recorded<Notification<DateTimeOffset>>[] GenerateTestTime(TimeSpan duration, TimeSpan frequency)

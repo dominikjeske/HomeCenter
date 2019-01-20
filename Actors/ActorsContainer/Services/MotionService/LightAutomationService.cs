@@ -1,7 +1,10 @@
 ﻿using Force.DeepCloner;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
+using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -17,44 +20,72 @@ namespace HomeCenter.Services.MotionService
     //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
     //TODO Alarm when move in one enter room without move in entering neighbor
     [ProxyCodeGenerator]
-    public class LightAutomationService : Service
+    public abstract class LightAutomationService : Service
     {
         private readonly IConcurrencyProvider _concurrencyProvider;
-
-        //TODO is this necessary?
-        private readonly IObservableTimer _observableTimer;
-
-        private readonly MotionConfiguration _motionConfiguration;
         private readonly List<MotionVector> _confusedVectors = new List<MotionVector>();
-
+        private readonly MotionConfiguration _motionConfiguration = new MotionConfiguration();
         private ImmutableDictionary<string, Room> _rooms;
-        private bool _IsInitialized;
 
-        public LightAutomationService(IConcurrencyProvider concurrencyProvider,
-                                      IMotionConfigurationProvider motionConfigurationProvider,
-                                      IObservableTimer observableTimer
-        )
+        protected LightAutomationService(IConcurrencyProvider concurrencyProvider)
         {
-            var configurationProvider = motionConfigurationProvider ?? throw new ArgumentNullException(nameof(motionConfigurationProvider));
-            _motionConfiguration = configurationProvider.GetConfiguration();
-            _observableTimer = observableTimer;
             _concurrencyProvider = concurrencyProvider;
         }
 
-        public Task Initialize()
+        protected override async Task OnStarted(Proto.IContext context)
         {
-            _IsInitialized = true;
-            return Task.CompletedTask;
+            await base.OnStarted(context).ConfigureAwait(false);
+
+            ReadConfigurationFromProperties();
+            ReadRoomsFromAttachedProperties();
+            StartWatchForEvents();
         }
 
-        public void RegisterRooms(IEnumerable<RoomInitializer> roomInitializers)
+        private void StartWatchForEvents()
         {
-            if (_IsInitialized) throw new Exception("Cannot register new descriptors after service has started");
+            _rooms.Values.ForEach(room => room.RegisterForLampChangeState());
 
-            if (!roomInitializers.Any()) throw new Exception("No detectors found to automate");
+            //_disposables.Add(PeriodicCheck());
+            _disposables.Add(CheckMotion());
+        }
 
-            _rooms = roomInitializers.Select(roomInitializer => roomInitializer.ToRoom(_motionConfiguration, _concurrencyProvider, Logger, MessageBroker))
-                                                             .ToImmutableDictionary(k => k.Uid, v => v);
+        private void ReadConfigurationFromProperties()
+        {
+            _motionConfiguration.MotionTimeWindow = AsTime(MotionProperties.MotionTimeWindow, TimeSpan.FromMilliseconds(3000));
+            _motionConfiguration.ConfusionResolutionTime = AsTime(MotionProperties.ConfusionResolutionTime, TimeSpan.FromMilliseconds(5000));
+            _motionConfiguration.ConfusionResolutionTimeOut = AsTime(MotionProperties.ConfusionResolutionTimeOut, TimeSpan.FromMilliseconds(10000));
+            _motionConfiguration.MotionMinDiff = AsTime(MotionProperties.MotionMinDiff, TimeSpan.FromMilliseconds(500));
+            _motionConfiguration.PeriodicCheckTime = AsTime(MotionProperties.PeriodicCheckTime, TimeSpan.FromMilliseconds(1000));
+            _motionConfiguration.ManualCodeWindow = AsTime(MotionProperties.MotionTimeWindow, TimeSpan.FromMilliseconds(3000));
+            _motionConfiguration.TurnOffTimeoutIncrementPercentage = AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, 50);
+            _motionConfiguration.TurnOffPresenceFactor = AsDouble(MotionProperties.TurnOffPresenceFactor, 0.05f);
+        }
+
+        private void ReadRoomsFromAttachedProperties()
+        {
+            Dictionary<string, AreaDescriptor> areas = new Dictionary<string, AreaDescriptor>();
+            foreach (var area in AreasAttachedProperties)
+            {
+                areas.Add(area.AttachedActor, new AreaDescriptor
+                {
+                    WorkingTime = area.AsString(MotionProperties.WorkingTime),
+                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, 10),
+                    AreaType = area.AsString(MotionProperties.AreaType),
+                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, TimeSpan.FromMilliseconds(2500)),
+                    LightIntensityAtNight = area.AsDouble(MotionProperties.LightIntensityAtNight),
+                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, TimeSpan.FromMilliseconds(10000)),
+                    TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled),
+                });
+            }
+
+            List<Room> rooms = new List<Room>();
+            foreach (var motionDetector in ComponentsAttachedProperties)
+            {
+                rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsList(MotionProperties.Neighbors), motionDetector.AsString(MotionProperties.Lamp),
+                                    _concurrencyProvider, Logger, MessageBroker, areas[motionDetector.AttachedArea], _motionConfiguration, Enumerable.Empty<IEventDecoder>()));
+            }
+
+            _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
 
             var missingRooms = _rooms.Select(m => m.Value)
                                      .SelectMany(n => n.Neighbors)
@@ -66,31 +97,53 @@ namespace HomeCenter.Services.MotionService
             _rooms.Values.ForEach(room => room.BuildNeighborsCache(GetNeighbors(room.Uid)));
         }
 
-        public void DisableAutomation(string roomId) => _rooms[roomId].DisableAutomation();
-
-        public void DisableAutomation(string roomId, TimeSpan time) => _rooms[roomId].DisableAutomation(time);
-
-        public void EnableAutomation(string roomId) => _rooms[roomId].EnableAutomation();
-
-        public bool IsAutomationDisabled(string roomId) => _rooms[roomId].AutomationDisabled;
-
-        public int GetCurrentNumberOfPeople(string roomId) => _rooms[roomId].NumberOfPersonsInArea;
-
-        public AreaDescriptor GetAreaDescriptor(string roomId) => _rooms[roomId].AreaDescriptor.ShallowClone();
-
-        public int NumberOfPersonsInHouse => _rooms.Sum(md => md.Value.NumberOfPersonsInArea);
-        public int NumberOfConfusions => _confusedVectors.Count;
-        public MotionConfiguration Configuration => _motionConfiguration.ShallowClone();
-
-        public void Start()
+        protected void Handle(DisableAutomationCommand command)
         {
-            _rooms.Values.ForEach(room => room.RegisterForLampChangeState());
-
-            _disposables.Add(PeriodicCheck());
-            _disposables.Add(CheckMotion());
+            var roomId = command.AsString(MotionProperties.RoomId);
+            if (command.ContainsProperty(MessageProperties.TimeOut))
+            {
+                _rooms[roomId].DisableAutomation(command.AsTime(MessageProperties.TimeOut));
+            }
+            else
+            {
+                _rooms[roomId].DisableAutomation();
+            }
         }
 
-        public IObservable<MotionVector> AnalyzeMove()
+        protected void Handle(EnableAutomationCommand command)
+        {
+            var roomId = command.AsString(MotionProperties.RoomId);
+            _rooms[roomId].EnableAutomation();
+        }
+
+        protected bool Handle(AutomationStateQuery query)
+        {
+            var roomId = query.AsString(MotionProperties.RoomId);
+            return _rooms[roomId].AutomationDisabled;
+        }
+
+        protected int Handle(NumberOfPeopleQuery query)
+        {
+            var roomId = query.AsString(MotionProperties.RoomId);
+            return _rooms[roomId].NumberOfPersonsInArea;
+        }
+
+        protected AreaDescriptor Handle(AreaDescriptorQuery query)
+        {
+            var roomId = query.AsString(MotionProperties.RoomId);
+            return _rooms[roomId].AreaDescriptor.ShallowClone();
+        }
+
+        protected MotionStatus Handle(MotionServiceStatusQuery query)
+        {
+            return new MotionStatus
+            {
+                NumberOfPersonsInHouse = _rooms.Sum(md => md.Value.NumberOfPersonsInArea),
+                NumberOfConfusions = _confusedVectors.Count
+            };
+        }
+
+        private IObservable<MotionVector> AnalyzeMove()
         {
             var events = MessageBroker.Observe<MotionEvent>();
 
@@ -132,9 +185,10 @@ namespace HomeCenter.Services.MotionService
 
         private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
 
-        private IDisposable PeriodicCheck() => _observableTimer.GenerateTime(_motionConfiguration.PeriodicCheckTime)
-                                                               .ObserveOn(_concurrencyProvider.Task)
-                                                               .Subscribe(PeriodicCheck, HandleError);
+        //TODO
+        //private IDisposable PeriodicCheck() => _observableTimer.GenerateTime(_motionConfiguration.PeriodicCheckTime)
+        //                                                       .ObserveOn(_concurrencyProvider.Task)
+        //                                                       .Subscribe(PeriodicCheck, HandleError);
 
         //TODO change this to async?
         private void PeriodicCheck(DateTimeOffset currentTime)

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
-    public class Room : IDisposable
+    internal class Room : IDisposable
     {
         //TODO validate conditions
         private readonly Condition _turnOnConditionsValidator;
