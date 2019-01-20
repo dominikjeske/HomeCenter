@@ -2,6 +2,10 @@
 
 This project is .NET Core 2.2 application for Raspberry Pi 2/3 - main goal is to automate all devices in home into one HomeCenter by using actor model device adapter and services
 
+![alt text](https://raw.githubusercontent.com/bigdnf/HomeCenter/master/Resources/cctools.jpg)
+
+![alt text](https://raw.githubusercontent.com/bigdnf/HomeCenter/master/Resources/mainmodule.jpg)
+
 # Core elements
 
 - All objects in model are based on **BaseObject** [`\HomeCenter.Core\ComponentModel`]. This object have following properties
