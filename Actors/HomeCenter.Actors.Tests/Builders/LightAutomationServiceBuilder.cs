@@ -3,10 +3,12 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Moq;
+using Proto;
 using Quartz;
 using SimpleInjector;
 using System;
@@ -58,7 +60,6 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public
         (
-            LightAutomationServiceProxy,
             ITestableObservable<MotionEnvelope>,
             TestScheduler,
             Dictionary<string, FakeMotionLamp>
@@ -113,12 +114,16 @@ namespace HomeCenter.Services.MotionService.Tests
             //Mock.Get(observableTimer).Setup(x => x.GenerateTime(motionConfiguration.PeriodicCheckTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), motionConfiguration.PeriodicCheckTime)));
 
             var serviceDto = ConfigureRooms(lampDictionary);
+            
+            var context = new RootContext();
+            
+            var props = Props.FromProducer(() => Mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto));
+            var motionService = context.SpawnNamed(props, "motionService");
 
-            var lightAutomation = Mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto);
+            context.Send(motionService, new DisableAutomationCommand());
 
             return
             (
-                lightAutomation,
                 motionEvents,
                 scheduler,
                 lampDictionary
@@ -128,6 +133,7 @@ namespace HomeCenter.Services.MotionService.Tests
         private ServiceDTO ConfigureRooms(Dictionary<string, FakeMotionLamp> lamps)
         {
             var serviceDto = new ServiceDTO();
+            serviceDto.IsEnabled = true;
 
             //toiletArea.MaxPersonCapacity = 1;
 

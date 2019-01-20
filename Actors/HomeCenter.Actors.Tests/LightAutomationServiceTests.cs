@@ -4,6 +4,7 @@ using HomeCenter.Services.MotionService.Model;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -31,9 +32,11 @@ namespace HomeCenter.Services.MotionService.Tests
     {
 
         [TestMethod]
-        public void TEST()
+        public async Task TEST()
         {
-            var (service, motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().Build();
+            var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().Build();
+
+            await Task.Delay(5000);
 
         }
 
