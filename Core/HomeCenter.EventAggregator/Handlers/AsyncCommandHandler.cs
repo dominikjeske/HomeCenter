@@ -9,7 +9,7 @@ namespace HomeCenter.Broker.Handlers
         {
         }
 
-        public async Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message) where R : class
+        public async Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
             var handler = Handler as Func<IMessageEnvelope<T>, Task>;
             if (handler == null) throw new InvalidCastException($"Invalid cast from {Handler.GetType()} to Func<IMessageEnvelope<{typeof(T).Name}>, Task<object>>");

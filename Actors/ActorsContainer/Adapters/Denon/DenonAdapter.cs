@@ -86,8 +86,6 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Handle(TurnOnCommand message)
         {
-            throw new Exception("Test");
-
             var control = new DenonControlQuery
             {
                 Command = "PowerOn",

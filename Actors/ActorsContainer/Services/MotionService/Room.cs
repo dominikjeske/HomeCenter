@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Model.Conditions;
+using HomeCenter.Model.Conditions.Specific;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
@@ -17,19 +18,16 @@ namespace HomeCenter.Services.MotionService
 {
     internal class Room : IDisposable
     {
-        //TODO validate conditions
-        private readonly Condition _turnOnConditionsValidator;
-
-        private readonly Condition _turnOffConditionsValidator;
+        private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
+        private readonly ConditionContainer _turnOffConditionsValidator = new ConditionContainer();
 
         private readonly MotionConfiguration _motionConfiguration;
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
-        private string Lamp { get; }
 
         // Configuration parameters
         public string Uid { get; }
 
-        internal IEnumerable<string> Neighbors { get; }
+        internal IEnumerable<string> _neighbors { get; }
         internal IReadOnlyCollection<Room> NeighborsCache { get; private set; }
 
         // Dynamic parameters
@@ -37,7 +35,7 @@ namespace HomeCenter.Services.MotionService
 
         internal int NumberOfPersonsInArea { get; private set; }
         internal MotionStamp LastMotion { get; } = new MotionStamp();
-        internal AreaDescriptor AreaDescriptor { get; }
+        internal AreaDescriptor _areaDescriptor { get; }
         internal MotionVector LastVectorEnter { get; private set; }
 
         private Probability _PresenceProbability { get; set; } = Probability.Zero;
@@ -60,33 +58,32 @@ namespace HomeCenter.Services.MotionService
                     AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration, IEnumerable<IEventDecoder> eventsDecoders)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
-            Neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
-            Lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
+            _neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
+            _lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
+            _logger = logger;
+            _motionConfiguration = motionConfiguration;
+            _concurrencyProvider = concurrencyProvider;
+            _eventsDecoders = eventsDecoders;
+            _messageBroker = messageBroker;
+            _areaDescriptor = areaDescriptor;
 
             //TODO configure conditions
             if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
             {
-                //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsDayCondition(daylightService, dateTimeService));
+                _turnOnConditionsValidator.WithCondition(new IsDayCondition(_messageBroker));
             }
             else if (areaDescriptor.WorkingTime == WorkingTime.AfterDusk)
             {
-                //    _turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsNightCondition(daylightService, dateTimeService));
+                _turnOnConditionsValidator.WithCondition(new IsNightCondition(_messageBroker));
             }
 
             //_turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
             //_turnOffConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
             //_turnOffConditionsValidator.WithCondition(ConditionRelation.And, new IsTurnOffAutomaionCondition(this));
 
-            _logger = logger;
-            _motionConfiguration = motionConfiguration;
-            _concurrencyProvider = concurrencyProvider;
-            _eventsDecoders = eventsDecoders;
-            AreaDescriptor = areaDescriptor;
-            _TurnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
-
+            
+            _TurnOffTimeOut = new Timeout(_areaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
             _eventsDecoders?.ForEach(decoder => decoder.Init(this));
-            _messageBroker = messageBroker;
-            _lamp = lamp;
         }
 
         internal void RegisterForLampChangeState()
@@ -141,15 +138,15 @@ namespace HomeCenter.Services.MotionService
             if (_PresenceProbability == Probability.Zero && time.HappendInPrecedingTimeWindow(_LastAutoTurnOff, _motionConfiguration.MotionTimeWindow))
             {
                 UpdateAreaTurnoffTimeOut();
-                _TurnOffTimeOut.UpdateBaseTime(AreaDescriptor.TurnOffTimeout);
+                _TurnOffTimeOut.UpdateBaseTime(_areaDescriptor.TurnOffTimeout);
             }
         }
 
         private void UpdateAreaTurnoffTimeOut()
         {
-            var newTimeOut = AreaDescriptor.TurnOffTimeout.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutIncrementPercentage);
-            _logger.LogInformation($"[{Uid} turn-off time out] {AreaDescriptor.TurnOffTimeout} -> {newTimeOut}");
-            AreaDescriptor.TurnOffTimeout = newTimeOut;
+            var newTimeOut = _areaDescriptor.TurnOffTimeout.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutIncrementPercentage);
+            _logger.LogInformation($"[{Uid} turn-off time out] {_areaDescriptor.TurnOffTimeout} -> {newTimeOut}");
+            _areaDescriptor.TurnOffTimeout = newTimeOut;
         }
 
         public async Task Update()
@@ -168,7 +165,7 @@ namespace HomeCenter.Services.MotionService
         {
             DecrementNumberOfPersons();
 
-            if (AreaDescriptor.MaxPersonCapacity == 1)
+            if (_areaDescriptor.MaxPersonCapacity == 1)
             {
                 await SetProbability(Probability.Zero).ConfigureAwait(false);
             }
@@ -256,7 +253,7 @@ namespace HomeCenter.Services.MotionService
                   lastMotion?.Time != null
                && lastMotion.CanConfuze
                && timeOfMotion.IsMovePhisicallyPosible(lastMotion.Time.Value, _motionConfiguration.MotionMinDiff)
-               && timeOfMotion.HappendInPrecedingTimeWindow(lastMotion.Time, AreaDescriptor.MotionDetectorAlarmTime)
+               && timeOfMotion.HappendInPrecedingTimeWindow(lastMotion.Time, _areaDescriptor.MotionDetectorAlarmTime)
             )
             {
                 return new MotionPoint(Uid, lastMotion.Time.Value);
@@ -318,7 +315,13 @@ namespace HomeCenter.Services.MotionService
 
         private void RegisterTurnOffTime() => _LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
 
-        private Task<bool> CanTurnOnLamp() => _turnOnConditionsValidator.Validate();
+        private  Task<bool> CanTurnOnLamp()
+        {
+
+                return _turnOnConditionsValidator.Validate();
+
+            
+        }
 
         private Task<bool> CanTurnOffLamp() => _turnOffConditionsValidator.Validate();
     }

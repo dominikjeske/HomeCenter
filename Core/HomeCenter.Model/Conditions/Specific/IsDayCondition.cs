@@ -1,13 +1,16 @@
-﻿using HomeCenter.Broker;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Queries.Device;
+using System;
 
 namespace HomeCenter.Model.Conditions.Specific
 {
     public class IsDayCondition : TimeRangeCondition
     {
-        public IsDayCondition(IEventAggregator eventAggregator)
+        public IsDayCondition(IMessageBroker messageBroker)
         {
-            //WithStart(async () => (await eventAggregator.QueryForValueType(CommandFatory.GetSunriseCommand, ConditionProperies.StartTime).ConfigureAwait(false)).ToTimeSpanValue());
-            //WithEnd(async () => (await eventAggregator.QueryForValueType(CommandFatory.GetSunsetCommand, ConditionProperies.EndTime).ConfigureAwait(false)).ToTimeSpanValue());
+            WithStart(() => messageBroker.QueryService<SunriseQuery, TimeSpan?>(SunriseQuery.Default));
+
+            WithEnd(() => messageBroker.QueryService<SunsetQuery, TimeSpan?>(SunsetQuery.Default));
         }
     }
 }

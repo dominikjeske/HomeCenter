@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    public class MotionVector : ValueObject<MotionVector>, IEquatable<MotionVector>
+    public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
         public MotionPoint Start { get; }
         public MotionPoint End { get; }
@@ -35,23 +35,19 @@ namespace HomeCenter.Services.MotionService.Model
 
         public bool Contains(MotionPoint p) => Start.Equals(p) || End.Equals(p);
 
-        protected override bool EqualsCore(MotionVector other) => other.Start.Equals(Start) && other.End.Equals(End);
-
         public bool Equals(MotionVector other) => base.Equals(other);
 
-        protected override int GetHashCodeCore()
+        protected override IEnumerable<object> GetEqualityComponents()
         {
-            unchecked
-            {
-                return ((Start?.GetHashCode() ?? 0) * 397) ^ End.GetHashCode();
-            }
+            yield return Start;
+            yield return End;
         }
 
-        public bool EqualsWithEndTime(MotionVector other) => EqualsCore(other) && End.TimeStamp == other.End.TimeStamp;
+        public bool EqualsWithEndTime(MotionVector other) => Equals(other) && End.TimeStamp == other.End.TimeStamp;
 
-        public bool EqualsWithStartTime(MotionVector other) => EqualsCore(other) && Start.TimeStamp == other.Start.TimeStamp;
+        public bool EqualsWithStartTime(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp;
 
-        public bool EqualsBothTimes(MotionVector other) => EqualsCore(other) && Start.TimeStamp == other.Start.TimeStamp && End.TimeStamp == other.End.TimeStamp;
+        public bool EqualsBothTimes(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp && End.TimeStamp == other.End.TimeStamp;
 
         public IReadOnlyCollection<MotionPoint> ConfusionPoint => _confusionPoints.AsReadOnly();
         public bool IsConfused { get; private set; }

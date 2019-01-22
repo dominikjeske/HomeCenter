@@ -32,9 +32,10 @@ namespace HomeCenter.Model.Actors
             {
                 await ReceiveAsyncInternal(context).ConfigureAwait(false);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
                 throw;
+                //TODO finish exception handling
                 //Logger.LogError(e, $"Exception in device {Uid}: {e}");
             }
         }

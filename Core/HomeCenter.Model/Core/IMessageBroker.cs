@@ -17,17 +17,14 @@ namespace HomeCenter.Model.Core
         Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
 
         Task<R> QueryService<T, R>(T query, RoutingFilter filter = null)
-            where T : Query
-            where R : class;
+            where T : Query;
 
         Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null)
-            where T : Query
-            where R : class;
+            where T : Query;
 
         Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null)
             where T : Query, IMessageResult<Q, R>
-            where Q : class
-            where R : class;
+            where Q : class;
 
         Task<R> Request<T, R>(T message, PID actor) where T : ActorMessage;
 

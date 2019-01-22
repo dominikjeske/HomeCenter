@@ -4,6 +4,6 @@ namespace HomeCenter.Broker
 {
     public interface IAsyncCommandHandler
     {
-        Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message) where R : class;
+        Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message);
     }
 }

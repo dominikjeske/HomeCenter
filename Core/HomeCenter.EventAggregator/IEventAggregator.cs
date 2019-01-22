@@ -37,7 +37,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class;
+        );
 
         Task<R> QueryWithResultCheckAsync<T, R>
         (
@@ -46,7 +46,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class;
+        );
 
         IObservable<R> QueryWithResults<T, R>
         (
@@ -54,7 +54,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class;
+        );
 
         Task QueryWithRepublishResult<T, R>
         (
@@ -62,7 +62,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class;
+        );
 
         Task Publish<T>
         (

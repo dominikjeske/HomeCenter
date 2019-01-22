@@ -19,6 +19,12 @@ namespace HomeCenter.Utils.Extensions
             return collection;
         }
 
+        public static IDictionary<T, R> AddChained<T, R>(this IDictionary<T, R> dictionary, T key, R value)
+        {
+            dictionary.Add(key, value);
+            return dictionary;
+        }
+
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
             foreach (T item in collection) action(item);

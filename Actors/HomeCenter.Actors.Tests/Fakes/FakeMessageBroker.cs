@@ -2,13 +2,16 @@
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using Microsoft.Reactive.Testing;
 using Proto;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
@@ -16,13 +19,11 @@ namespace HomeCenter.Services.MotionService.Tests
     public class FakeMessageBroker : IMessageBroker
     {
         private readonly ITestableObservable<MotionEnvelope> _motionData;
-
-        //Mock.Get(daylightService).Setup(x => x.Sunrise).Returns(TimeSpan.FromHours(8));
-        //Mock.Get(daylightService).Setup(x => x.Sunset).Returns(TimeSpan.FromHours(20));
-
-        public FakeMessageBroker(ITestableObservable<MotionEnvelope> motionData)
+        private readonly Dictionary<string, FakeMotionLamp> _lamps;
+        public FakeMessageBroker(ITestableObservable<MotionEnvelope> motionData, Dictionary<string, FakeMotionLamp> lamps)
         {
             _motionData = motionData;
+            _lamps = lamps;
         }
 
         public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
@@ -41,22 +42,30 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null)
             where T : Query
-            where R : class
         {
             throw new NotImplementedException();
         }
 
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null)
             where T : Query
-            where R : class
         {
-            throw new NotImplementedException();
+            if (query is SunriseQuery)
+            {
+                return Task.FromResult((TimeSpan?)new TimeSpan(6, 0, 0)) as Task<R>;
+            }
+            else if (query is SunsetQuery)
+            {
+                return Task.FromResult((TimeSpan?)new TimeSpan(18, 0, 0)) as Task<R>;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null)
             where T : Query, IMessageResult<Q, R>
             where Q : class
-            where R : class
         {
             throw new NotImplementedException();
         }
@@ -78,7 +87,18 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public void Send(object message, string uid, string address = null)
         {
-            throw new NotImplementedException();
+            if (message is TurnOnCommand)
+            {
+                _lamps[uid].SetState(true);
+            }
+            else if (message is TurnOnCommand)
+            {
+                _lamps[uid].SetState(false);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
@@ -88,7 +108,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
         {
-            throw new NotImplementedException();
+            return SubscriptionToken.Empty;
         }
 
         public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query

@@ -14,7 +14,7 @@ namespace HomeCenter.Broker.Behaviors
             _asyncCommandHandler = asyncCommandHandler ?? throw new ArgumentNullException(nameof(asyncCommandHandler));
         }
 
-        public virtual Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message) where R : class
+        public virtual Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
             return _asyncCommandHandler.HandleAsync<T, R>(message);
         }

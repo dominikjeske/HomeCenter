@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Utils.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    public class MotionPoint : ValueObject<MotionPoint>, IEquatable<MotionPoint>
+    public class MotionPoint : ValueObject, IEquatable<MotionPoint>
     {
         public string Uid { get; }
         public DateTimeOffset TimeStamp { get; }
@@ -17,20 +18,15 @@ namespace HomeCenter.Services.MotionService.Model
 
         public MotionVector ToVector(MotionPoint start) => new MotionVector(start, this);
 
-        protected override bool EqualsCore(MotionPoint other) => Equals(Uid, other.Uid);
-
         public bool Equals(MotionPoint other) => base.Equals(other);
 
         public override string ToString() => $"{Uid}: {TimeStamp:ss:fff}";
 
-        protected override int GetHashCodeCore()
-        {
-            unchecked
-            {
-                return ((Uid?.GetHashCode() ?? 0) * 397) ^ TimeStamp.GetHashCode();
-            }
-        }
-
         public bool IsMovePhisicallyPosible(MotionPoint point, TimeSpan motionMinDiff) => TimeStamp.IsMovePhisicallyPosible(point.TimeStamp, motionMinDiff);
+
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return Uid;
+        }
     }
 }

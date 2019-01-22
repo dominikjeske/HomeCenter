@@ -9,7 +9,7 @@ namespace HomeCenter.Broker.Handlers
         {
         }
 
-        public Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message) where R : class
+        public Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
             var handler = Handler as Action<IMessageEnvelope<T>>;
             if (handler == null && Handler is Func<Delegate> factory)

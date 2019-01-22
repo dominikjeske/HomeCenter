@@ -2,9 +2,9 @@
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.MotionService.Commands;
-using HomeCenter.Services.MotionService.Model;
+using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Moq;
@@ -17,9 +17,9 @@ using System.Reactive;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    public class LightAutomationServiceBuilder
+    internal class LightAutomationServiceBuilder
     {
-        private AreaDescriptor _areaDescriptor;
+        private string _workingTime;
 
         // private Func<IEventDecoder[]> _sampleDecoder;
         private List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
@@ -27,10 +27,16 @@ namespace HomeCenter.Services.MotionService.Tests
         private List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
         private int _timeDuration = 20;
         private Container _container;
+        private readonly ActorContext _actorContext;
 
-        public LightAutomationServiceBuilder WithAreaDescriptor(AreaDescriptor areaDescriptor)
+        public LightAutomationServiceBuilder(ActorContext actorContext)
         {
-            _areaDescriptor = areaDescriptor;
+            _actorContext = actorContext;
+        }
+
+        public LightAutomationServiceBuilder WithWorkingTime(string wortkingTime)
+        {
+            _workingTime = wortkingTime;
             return this;
         }
 
@@ -90,7 +96,10 @@ namespace HomeCenter.Services.MotionService.Tests
             };
 
             _container = new Container();
-            Mapper.Initialize(p =>
+
+
+
+            var config = new MapperConfiguration(p =>
             {
                 p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
                 p.CreateMap<AttachedPropertyDTO, AttachedProperty>();
@@ -99,11 +108,13 @@ namespace HomeCenter.Services.MotionService.Tests
                 p.ConstructServicesUsing(_container.GetInstance);
             });
 
+            var mapper = config.CreateMapper();
+
             var scheduler = new TestScheduler();
             var concurrencyProvider = new TestConcurrencyProvider(scheduler);
             var quartzScheduler = Mock.Of<IScheduler>();
             var motionEvents = scheduler.CreateColdObservable<MotionEnvelope>(_motionEvents.ToArray());
-            var messageBroker = new FakeMessageBroker(motionEvents);
+            var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
 
             _container.RegisterInstance<IScheduler>(quartzScheduler);
             _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
@@ -113,15 +124,19 @@ namespace HomeCenter.Services.MotionService.Tests
             //TODO
             //Mock.Get(observableTimer).Setup(x => x.GenerateTime(motionConfiguration.PeriodicCheckTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), motionConfiguration.PeriodicCheckTime)));
 
-            var serviceDto = ConfigureRooms(lampDictionary);
-            
-            var context = new RootContext();
-            
-            var props = Props.FromProducer(() => Mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto));
-            var motionService = context.SpawnNamed(props, "motionService");
+            var areProperties = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(_workingTime))
+            {
+                areProperties.Add(MotionProperties.WorkingTime, _workingTime);
+            }
 
-            context.Send(motionService, new DisableAutomationCommand());
+            var serviceDto = ConfigureRooms(lampDictionary, areProperties);
+            
+            var props = Props.FromProducer(() => mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto));
+            _actorContext.PID = _actorContext.Context.SpawnNamed(props, "motionService");
 
+            var isAlive = _actorContext.Context.RequestAsync<bool>(new PID("nonhost", "motionService"), IsAliveQuery.Default).GetAwaiter().GetResult();
+            
             return
             (
                 motionEvents,
@@ -130,105 +145,66 @@ namespace HomeCenter.Services.MotionService.Tests
             );
         }
 
-        private ServiceDTO ConfigureRooms(Dictionary<string, FakeMotionLamp> lamps)
+        private ServiceDTO ConfigureRooms(Dictionary<string, FakeMotionLamp> lamps, Dictionary<string, string> areaProperties)
         {
-            var serviceDto = new ServiceDTO();
-            serviceDto.IsEnabled = true;
+            var serviceDto = new ServiceDTO
+            {
+                IsEnabled = true
+            };
 
-            //toiletArea.MaxPersonCapacity = 1;
+            AddArea(serviceDto, Areas.Hallway, areaProperties);
+            AddArea(serviceDto, Areas.Badroom, areaProperties);
+            AddArea(serviceDto, Areas.Balcony, areaProperties);
+            AddArea(serviceDto, Areas.Bathroom, areaProperties);
+            AddArea(serviceDto, Areas.Kitchen, areaProperties);
+            AddArea(serviceDto, Areas.Livingroom, areaProperties);
+            AddArea(serviceDto, Areas.Staircase, areaProperties);
+            AddArea(serviceDto, Areas.Toilet, areaProperties.AddChained(MotionProperties.MaxPersonCapacity, "1"));
 
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.hallwayDetectorToilet,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector }),
-                    [MotionProperties.Lamp] = lamps[Detectors.hallwayDetectorToilet].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.hallwayDetectorLivingRoom,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }),
-                    [MotionProperties.Lamp] = lamps[Detectors.hallwayDetectorLivingRoom].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.livingRoomDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.balconyDetector, Detectors.hallwayDetectorLivingRoom }),
-                    [MotionProperties.Lamp] = lamps[Detectors.livingRoomDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.balconyDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.livingRoomDetector }),
-                    [MotionProperties.Lamp] = lamps[Detectors.balconyDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.kitchenDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
-                    [MotionProperties.Lamp] = lamps[Detectors.kitchenDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.bathroomDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom }),
-                    [MotionProperties.Lamp] = lamps[Detectors.bathroomDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.badroomDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorLivingRoom }),
-                    [MotionProperties.Lamp] = lamps[Detectors.badroomDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.staircaseDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
-                    [MotionProperties.Lamp] = lamps[Detectors.staircaseDetector].Id
-                }
-            });
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
-            {
-                AttachedActor = Detectors.toiletDetector,
-                AttachedArea = "",
-                Properties = new Dictionary<string, string>
-                {
-                    [MotionProperties.Neighbors] = string.Join(", ", new[] { Detectors.hallwayDetectorToilet }),
-                    [MotionProperties.Lamp] = lamps[Detectors.toiletDetector].Id
-                }
-            });
+            AddMotionSensor(Detectors.hallwayDetectorToilet, Areas.Hallway, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector }, lamps, serviceDto);
+            AddMotionSensor(Detectors.hallwayDetectorLivingRoom, Areas.Hallway, new List<string> { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }, lamps, serviceDto);
+            AddMotionSensor(Detectors.livingRoomDetector, Areas.Livingroom, new List<string> { Detectors.livingRoomDetector }, lamps, serviceDto);
+            AddMotionSensor(Detectors.balconyDetector, Areas.Balcony, new List<string> { Detectors.hallwayDetectorLivingRoom }, lamps, serviceDto);
+            AddMotionSensor(Detectors.kitchenDetector, Areas.Kitchen, new List<string> { Detectors.hallwayDetectorToilet }, lamps, serviceDto);
+            AddMotionSensor(Detectors.bathroomDetector, Areas.Bathroom, new List<string> { Detectors.hallwayDetectorLivingRoom }, lamps, serviceDto);
+            AddMotionSensor(Detectors.badroomDetector, Areas.Badroom, new List<string> { Detectors.hallwayDetectorLivingRoom }, lamps, serviceDto);
+            AddMotionSensor(Detectors.staircaseDetector, Areas.Staircase, new List<string> { Detectors.hallwayDetectorToilet }, lamps, serviceDto);
+            AddMotionSensor(Detectors.toiletDetector, Areas.Toilet, new List<string> { Detectors.hallwayDetectorToilet }, lamps, serviceDto);
 
             return serviceDto;
+        }
+
+        private static void AddMotionSensor(string motionSensor, string area, IEnumerable<string> neighbors, Dictionary<string, FakeMotionLamp> lamps, ServiceDTO serviceDto)
+        {
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            {
+                AttachedActor = motionSensor,
+                AttachedArea = area,
+                Properties = new Dictionary<string, string>
+                {
+                    [MotionProperties.Neighbors] = string.Join(", ", neighbors),
+                    [MotionProperties.Lamp] = lamps[motionSensor].Id
+                }
+            });
+        }
+
+        private static void AddArea(ServiceDTO serviceDto, string areaName, IDictionary<string, string> properties = null)
+        {
+            var area = new AttachedPropertyDTO
+            {
+                AttachedActor = areaName,
+                Properties = new Dictionary<string, string>()
+            };
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    area.Properties.Add(property.Key, property.Value);
+                }
+            }
+
+            serviceDto.AreasAttachedProperties.Add(area);
         }
 
         public Recorded<Notification<DateTimeOffset>>[] GenerateTestTime(TimeSpan duration, TimeSpan frequency)

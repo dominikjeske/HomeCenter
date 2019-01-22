@@ -2,29 +2,20 @@
 {
     public class FakeMotionLamp
     {
-        private bool isTurnedOn;
+        public bool IsTurnedOn { get; private set; }
 
         public FakeMotionLamp(string id)
         {
             Id = id;
         }
 
-        public string Id { get; }
-
-        public bool IsTurnedOn => isTurnedOn;
-
-        private void SetIsTurnedOn(bool value)
+        public void SetState(bool state)
         {
-            if (value != isTurnedOn)
-            {
-                var powerStateValue = value ? true : false;
-
-                //TODO
-                //_powerStateSubject.OnNext(new PowerStateChangeEvent(powerStateValue, PowerStateChangeEvent.AutoSource));
-            }
-            isTurnedOn = value;
+            IsTurnedOn = state;
         }
 
+        public string Id { get; }
+        
         // public void SetPowerStateSource(IObservable<PowerStateChangeEvent> source) => PowerStateChange = source;
         public override string ToString() => $"{Id} : {IsTurnedOn}";
     }

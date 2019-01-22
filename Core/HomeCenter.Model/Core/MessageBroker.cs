@@ -45,7 +45,7 @@ namespace HomeCenter.Model.Core
         }
 
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
-                                                                                where R : class
+                                                                              
         {
             query = FormatMessage(query);
 
@@ -53,7 +53,7 @@ namespace HomeCenter.Model.Core
         }
 
         public async Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) where T : Query
-                                                                                          where R : class
+                                                                                        
         {
             query = FormatMessage(query);
 
@@ -71,7 +71,7 @@ namespace HomeCenter.Model.Core
 
         public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
                                                                                                                         where Q : class
-                                                                                                                        where R : class
+                                                                                                                
         {
             var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
             return query.Verify(result, expectedResult);

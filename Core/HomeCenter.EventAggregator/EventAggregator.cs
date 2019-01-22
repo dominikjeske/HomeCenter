@@ -29,7 +29,7 @@ namespace HomeCenter.Broker
            RoutingFilter filter = null,
            CancellationToken cancellationToken = default,
            BehaviorChain behaviors = null
-        ) where R : class
+        )
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
@@ -56,7 +56,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class
+        )
         {
             var result = await QueryAsync<T, R>(message, filter, cancellationToken, behaviors).ConfigureAwait(false);
             if (!EqualityComparer<R>.Default.Equals(result, expectedResult))
@@ -72,7 +72,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class
+        )
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
@@ -98,7 +98,7 @@ namespace HomeCenter.Broker
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        ) where R : class
+        )
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 

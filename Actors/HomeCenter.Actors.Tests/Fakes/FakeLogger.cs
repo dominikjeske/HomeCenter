@@ -22,6 +22,11 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            if(logLevel == LogLevel.Error)
+            {
+                throw exception;
+            }
+
             Console.WriteLine($"[{_scheduler.Now:ss:fff}] { formatter(state, exception)}");
         }
     }

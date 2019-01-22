@@ -4,6 +4,7 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
@@ -37,8 +38,29 @@ namespace HomeCenter.Services.MotionService
             await base.OnStarted(context).ConfigureAwait(false);
 
             ReadConfigurationFromProperties();
-            ReadRoomsFromAttachedProperties();
+            var areas = ReadAreasFromAttachedProperties();
+            ReadRoomsFromAttachedProperties(areas);
+
             StartWatchForEvents();
+        }
+
+        private Dictionary<string, AreaDescriptor> ReadAreasFromAttachedProperties()
+        {
+            var areas = new Dictionary<string, AreaDescriptor>();
+            foreach (var area in AreasAttachedProperties)
+            {
+                areas.Add(area.AttachedActor, new AreaDescriptor
+                {
+                    WorkingTime = area.AsString(MotionProperties.WorkingTime, WorkingTime.AllDay),
+                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, 10),
+                    AreaType = area.AsString(MotionProperties.AreaType, AreaType.Room),
+                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, TimeSpan.FromMilliseconds(2500)),
+                    LightIntensityAtNight = area.ContainsProperty(MotionProperties.LightIntensityAtNight) ? (double?)area.AsDouble(MotionProperties.LightIntensityAtNight) : null,
+                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, TimeSpan.FromMilliseconds(10000)),
+                    TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled, false)
+                });
+            }
+            return areas;
         }
 
         private void StartWatchForEvents()
@@ -61,23 +83,8 @@ namespace HomeCenter.Services.MotionService
             _motionConfiguration.TurnOffPresenceFactor = AsDouble(MotionProperties.TurnOffPresenceFactor, 0.05f);
         }
 
-        private void ReadRoomsFromAttachedProperties()
+        private void ReadRoomsFromAttachedProperties(Dictionary<string, AreaDescriptor> areas)
         {
-            Dictionary<string, AreaDescriptor> areas = new Dictionary<string, AreaDescriptor>();
-            foreach (var area in AreasAttachedProperties)
-            {
-                areas.Add(area.AttachedActor, new AreaDescriptor
-                {
-                    WorkingTime = area.AsString(MotionProperties.WorkingTime),
-                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, 10),
-                    AreaType = area.AsString(MotionProperties.AreaType),
-                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, TimeSpan.FromMilliseconds(2500)),
-                    LightIntensityAtNight = area.AsDouble(MotionProperties.LightIntensityAtNight),
-                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, TimeSpan.FromMilliseconds(10000)),
-                    TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled),
-                });
-            }
-
             List<Room> rooms = new List<Room>();
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
@@ -88,13 +95,18 @@ namespace HomeCenter.Services.MotionService
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
 
             var missingRooms = _rooms.Select(m => m.Value)
-                                     .SelectMany(n => n.Neighbors)
+                                     .SelectMany(n => n._neighbors)
                                      .Distinct()
                                      .Except(_rooms.Keys)
                                      .ToList();
             if (missingRooms.Count > 0) throw new Exception($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
 
             _rooms.Values.ForEach(room => room.BuildNeighborsCache(GetNeighbors(room.Uid)));
+        }
+
+        protected bool Handle(IsAliveQuery isAliveQuery)
+        {
+            return true;
         }
 
         protected void Handle(DisableAutomationCommand command)
@@ -131,7 +143,7 @@ namespace HomeCenter.Services.MotionService
         protected AreaDescriptor Handle(AreaDescriptorQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _rooms[roomId].AreaDescriptor.ShallowClone();
+            return _rooms[roomId]._areaDescriptor.ShallowClone();
         }
 
         protected MotionStatus Handle(MotionServiceStatusQuery query)
@@ -157,7 +169,7 @@ namespace HomeCenter.Services.MotionService
 
         private void HandleMove(MotionWindow point)
         {
-            _rooms?[point.Start.Uid]?.MarkMotion(point.Start.TimeStamp);
+            _rooms?[point.Start.Uid]?.MarkMotion(point.Start.TimeStamp).GetAwaiter().GetResult();
         }
 
         private IDisposable CheckMotion() => AnalyzeMove().ObserveOn(_concurrencyProvider.Task).Subscribe(HandleVector, HandleError);
@@ -193,8 +205,15 @@ namespace HomeCenter.Services.MotionService
         //TODO change this to async?
         private void PeriodicCheck(DateTimeOffset currentTime)
         {
-            UpdateRooms().GetAwaiter().GetResult();
-            ResolveConfusions(currentTime).GetAwaiter().GetResult();
+            try
+            {
+                UpdateRooms().GetAwaiter().GetResult();
+                ResolveConfusions(currentTime).GetAwaiter().GetResult();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private async Task ResolveConfusions(DateTimeOffset currentTime)
@@ -250,8 +269,8 @@ namespace HomeCenter.Services.MotionService
 
         private bool IsProperVector(MotionPoint start, MotionPoint potencialEnd) => AreNeighbors(start, potencialEnd) && start.IsMovePhisicallyPosible(potencialEnd, _motionConfiguration.MotionMinDiff);
 
-        private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _rooms?[p1.Uid]?.Neighbors?.Contains(p2.Uid) ?? false;
+        private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _rooms?[p1.Uid]?._neighbors?.Contains(p2.Uid) ?? false;
 
-        private IEnumerable<Room> GetNeighbors(string roomId) => _rooms.Where(x => _rooms[roomId].Neighbors.Contains(x.Key)).Select(y => y.Value);
+        private IEnumerable<Room> GetNeighbors(string roomId) => _rooms.Where(x => _rooms[roomId]._neighbors.Contains(x.Key)).Select(y => y.Value);
     }
 }

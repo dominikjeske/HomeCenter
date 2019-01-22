@@ -82,7 +82,7 @@ namespace HomeCenter.Utils.Extensions
             return (result as Task<R>)?.Result;
         }
 
-        public static async Task<R> WhenDone<R>(this Task<R> task, TimeSpan timeout, CancellationToken cancellationToken) where R : class
+        public static async Task<R> WhenDone<R>(this Task<R> task, TimeSpan timeout, CancellationToken cancellationToken) //where R : class
         {
             var timeoutTask = Task.Delay(timeout, cancellationToken);
             var result = await Task.WhenAny(new Task[] { task, timeoutTask }).ConfigureAwait(false);
@@ -101,7 +101,7 @@ namespace HomeCenter.Utils.Extensions
                 throw new InvalidOperationException("Not supported result in Timeout");
             }
 
-            return (result as Task<R>)?.Result;
+            return (result as Task<R>).Result;
         }
 
         public static Task WhenCanceled(this CancellationToken cancellationToken)

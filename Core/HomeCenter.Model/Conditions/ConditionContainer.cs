@@ -21,6 +21,12 @@ namespace HomeCenter.Model.Conditions
             return IsInverted ? !result : result;
         }
 
+        public ConditionContainer WithCondition(IValidable condition)
+        {
+            Conditions.Add(condition);
+            return this;
+        }
+
         private async Task<string> CheckConditions(StringBuilder expression)
         {
             int counter = 1;
@@ -45,7 +51,7 @@ namespace HomeCenter.Model.Conditions
                 {
                     if (builder.Length > 0)
                     {
-                        builder.Append($" {DEFAULT_OPERATOR} ");
+                        builder.Append($" {DefaultOperator} ");
                     }
 
                     builder.Append(CONDITION_NAME).Append(counter++);
@@ -71,6 +77,8 @@ namespace HomeCenter.Model.Conditions
 
         public bool EvaluateExpression(string expression)
         {
+            if (string.IsNullOrWhiteSpace(expression)) return true;
+
             var table = new System.Data.DataTable().Columns.Add("", typeof(bool), expression).Table;
             var r = table.NewRow();
             table.Rows.Add(r);

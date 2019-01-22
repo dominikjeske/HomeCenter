@@ -8,95 +8,78 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    //                                             STAIRCASE [S]
-    //  ________________________________________<_    __________________________
-    // |        |                |                       |                      |
-    // |        |                  [HL]      HALLWAY     |                      |
-    // |   B    |                |<            [H]       |<                     |
-    // |   A                     |___   ______           |       BADROOM        |
-    // |   L    |                |            |                    [D]          |
-    // |   C    |                |            |          |                      |
-    // |   O    |                |            |          |______________________|
-    // |   N    |   LIVINGROOM  >|            |          |<                     |
-    // |   Y    |      [L]       |  BATHROOM  |   [HT]                          |
-    // |        |                |     [B]   >|___v  ____|                      |
-    // |  [Y]   |                |            |          |       KITCHEN        |
-    // |        |                |            |  TOILET  |         [K]          |
-    // |        |                |            |    [T]   |                      |
-    // |_______v|________________|____________|_____v____|______________________|
-    //
-    // LEGEND: v/< - Motion Detector
 
     [TestClass]
     public class LightAutomationServiceTests : ReactiveTest
     {
+        private ActorContext _context;
 
-        [TestMethod]
-        public async Task TEST()
+        [TestInitialize]
+        public void PrepareContext()
         {
-            var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().Build();
-
-            await Task.Delay(5000);
-
+            _context = new ActorContext();
         }
 
-        //    [TestMethod]
-        //    public void MoveInRoomShouldTurnOnLight()
-        //    {
-        //        var (service, motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().WithMotion
-        //        (
-        //          OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
-        //          OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
-        //          OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
-        //        ).Build();
+        [TestCleanup]
+        public Task CleanContext()
+        {
+            return _context.PID.StopAsync();
+        }
 
-        //        service.Start();
-        //        scheduler.AdvanceToEnd(motionEvents);
+        [TestMethod]
+        public void MoveInRoomShouldTurnOnLight()
+        {
+            var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithMotion
+            (
+              OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
+              OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
+              OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
+            ).Build();
+            
+            scheduler.AdvanceToEnd(motionEvents);
 
-        //        Assert.AreEqual(true, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
-        //        Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-        //        Assert.AreEqual(true, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-        //    }
+            Assert.AreEqual(true, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
+            Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+            Assert.AreEqual(true, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        }
 
-        //    [TestMethod]
-        //    public void MoveInRoomShouldTurnOnLightOnWhenWorkinghoursAreDaylight()
-        //    {
-        //        var (service, motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().WithAreaDescriptor(new AreaDescriptor { WorkingTime = WorkingTime.DayLight }).WithMotion
-        //        (
-        //          OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
-        //          OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
-        //          OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
-        //        ).Build();
+        [TestMethod]
+        public void MoveInRoomShouldTurnOnLightOnWhenWorkinghoursAreDaylight()
+        {
+            var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithWorkingTime(WorkingTime.DayLight).WithMotion
+            (
+              OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
+              OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
+              OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
+            ).Build();
 
-        //        SystemTime.Set(TimeSpan.FromHours(12));
+            SystemTime.Set(TimeSpan.FromHours(12));
 
-        //        service.Start();
-        //        scheduler.AdvanceToEnd(motionEvents);
+            scheduler.AdvanceToEnd(motionEvents);
 
-        //        Assert.AreEqual(true, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
-        //        Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-        //        Assert.AreEqual(true, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-        //    }
+            Assert.AreEqual(true, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
+            Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+            Assert.AreEqual(true, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        }
 
-        //    [TestMethod]
-        //    public void MoveInRoomShouldNotTurnOnLightOnNightWhenWorkinghoursAreDaylight()
-        //    {
-        //        var (service, motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder().WithAreaDescriptor(new AreaDescriptor { WorkingTime = WorkingTime.DayLight }).WithMotion
-        //        (
-        //          OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
-        //          OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
-        //          OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
-        //        ).Build();
+        [TestMethod]
+        public void MoveInRoomShouldNotTurnOnLightOnNightWhenWorkinghoursAreDaylight()
+        {
+            var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithWorkingTime(WorkingTime.DayLight).WithMotion
+            (
+              OnNext(Time.Tics(500), new MotionEnvelope(Detectors.toiletDetector)),
+              OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.kitchenDetector)),
+              OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.livingRoomDetector))
+            ).Build();
 
-        //        SystemTime.Set(TimeSpan.FromHours(21));
+            SystemTime.Set(TimeSpan.FromHours(21));
 
-        //        service.Start();
-        //        scheduler.AdvanceToEnd(motionEvents);
+            scheduler.AdvanceToEnd(motionEvents);
 
-        //        Assert.AreEqual(false, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
-        //        Assert.AreEqual(false, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-        //        Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-        //    }
+            Assert.AreEqual(false, lampDictionary[Detectors.toiletDetector].IsTurnedOn);
+            Assert.AreEqual(false, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+            Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        }
 
         //    [TestMethod]
         //    public void MoveInRoomShouldNotTurnOnLightOnDaylightWhenWorkinghoursIsNight()
