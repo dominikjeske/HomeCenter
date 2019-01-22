@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Services.MotionService.Tests
+﻿using System;
+
+namespace HomeCenter.Services.MotionService.Tests
 {
     public class FakeMotionLamp
     {
@@ -12,6 +14,7 @@
         public void SetState(bool state)
         {
             IsTurnedOn = state;
+            Console.Write($"Lamp {Id}: {state}");
         }
 
         public string Id { get; }

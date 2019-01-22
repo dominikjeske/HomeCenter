@@ -20,6 +20,7 @@ namespace HomeCenter.Services.MotionService.Tests
     internal class LightAutomationServiceBuilder
     {
         private string _workingTime;
+        private TimeSpan? _confusionResolutionTime;
 
         // private Func<IEventDecoder[]> _sampleDecoder;
         private List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
@@ -55,6 +56,12 @@ namespace HomeCenter.Services.MotionService.Tests
         public LightAutomationServiceBuilder WithLampEvents(params Recorded<Notification<PowerStateChangeEvent>>[] messages)
         {
             _lampEvents.AddRange(messages);
+            return this;
+        }
+
+        public LightAutomationServiceBuilder WithConfusionResolutionTime(TimeSpan confusionResolutionTime)
+        {
+            _confusionResolutionTime = confusionResolutionTime;
             return this;
         }
 
@@ -129,13 +136,17 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 areProperties.Add(MotionProperties.WorkingTime, _workingTime);
             }
-
-            var serviceDto = ConfigureRooms(lampDictionary, areProperties);
             
+            var serviceDto = ConfigureRooms(lampDictionary, areProperties);
+            if (_confusionResolutionTime.HasValue)
+            {
+                serviceDto.Properties.Add(MotionProperties.ConfusionResolutionTime, _confusionResolutionTime.ToString());
+            }
+
             var props = Props.FromProducer(() => mapper.Map<ServiceDTO, LightAutomationServiceProxy>(serviceDto));
             _actorContext.PID = _actorContext.Context.SpawnNamed(props, "motionService");
 
-            var isAlive = _actorContext.Context.RequestAsync<bool>(new PID("nonhost", "motionService"), IsAliveQuery.Default).GetAwaiter().GetResult();
+            _actorContext.IsAlive();
             
             return
             (
@@ -149,7 +160,8 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var serviceDto = new ServiceDTO
             {
-                IsEnabled = true
+                IsEnabled = true,
+                Properties = new Dictionary<string, string>()
             };
 
             AddArea(serviceDto, Areas.Hallway, areaProperties);

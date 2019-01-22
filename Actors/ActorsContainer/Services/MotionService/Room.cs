@@ -77,11 +77,10 @@ namespace HomeCenter.Services.MotionService
                 _turnOnConditionsValidator.WithCondition(new IsNightCondition(_messageBroker));
             }
 
-            //_turnOnConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
-            //_turnOffConditionsValidator.WithCondition(ConditionRelation.And, new IsEnabledAutomationCondition(this));
-            //_turnOffConditionsValidator.WithCondition(ConditionRelation.And, new IsTurnOffAutomaionCondition(this));
-
-            
+            _turnOnConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
+            _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
+            _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
+    
             _TurnOffTimeOut = new Timeout(_areaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
             _eventsDecoders?.ForEach(decoder => decoder.Init(this));
         }

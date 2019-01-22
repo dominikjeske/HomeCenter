@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using HomeCenter.Model.Conditions;
+﻿using HomeCenter.Model.Conditions;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Model
 {
@@ -10,14 +10,11 @@ namespace HomeCenter.Services.MotionService.Model
         public IsTurnOffAutomaionCondition(Room motionDescriptor)
         {
             _motionDescriptor = motionDescriptor;
-
-            //TODO
-            //WithExpression(() => _motionDescriptor.AreaDescriptor.TurnOffAutomationDisabled ? ConditionState.NotFulfilled : ConditionState.Fulfilled);
         }
 
         public override Task<bool> Validate()
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(_motionDescriptor.AutomationDisabled);
         }
     }
 }
