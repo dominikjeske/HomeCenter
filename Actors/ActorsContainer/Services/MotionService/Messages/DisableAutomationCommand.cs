@@ -11,6 +11,5 @@ namespace HomeCenter.Services.MotionService.Commands
             get => AsString(MotionProperties.RoomId);
             set => SetProperty(MotionProperties.RoomId, value);
         }
-
     }
 }

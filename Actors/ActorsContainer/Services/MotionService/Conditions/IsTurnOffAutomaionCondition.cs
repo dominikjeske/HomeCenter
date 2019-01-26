@@ -14,7 +14,7 @@ namespace HomeCenter.Services.MotionService.Model
 
         public override Task<bool> Validate()
         {
-            return Task.FromResult(_motionDescriptor.AutomationDisabled);
+            return Task.FromResult(!_motionDescriptor._areaDescriptor.TurnOffAutomationDisabled);
         }
     }
 }

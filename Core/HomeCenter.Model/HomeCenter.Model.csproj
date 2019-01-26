@@ -19,7 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="1.15.2" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="1.16.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />

@@ -32,7 +32,6 @@ namespace HomeCenter.Services.MotionService
 
         // Dynamic parameters
         internal bool AutomationDisabled { get; private set; }
-
         internal int NumberOfPersonsInArea { get; private set; }
         internal MotionStamp LastMotion { get; } = new MotionStamp();
         internal AreaDescriptor _areaDescriptor { get; }
@@ -42,7 +41,6 @@ namespace HomeCenter.Services.MotionService
         private DateTimeOffset _AutomationEnableOn { get; set; }
         private DateTimeOffset? _LastAutoIncrement;
         private readonly IConcurrencyProvider _concurrencyProvider;
-        private readonly IEnumerable<IEventDecoder> _eventsDecoders;
         private readonly ILogger _logger;
         private DateTimeOffset? _LastAutoTurnOff { get; set; }
         private Timeout _TurnOffTimeOut;
@@ -55,7 +53,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, IMessageBroker messageBroker,
-                    AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration, IEnumerable<IEventDecoder> eventsDecoders)
+                    AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
             _neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
@@ -63,11 +61,9 @@ namespace HomeCenter.Services.MotionService
             _logger = logger;
             _motionConfiguration = motionConfiguration;
             _concurrencyProvider = concurrencyProvider;
-            _eventsDecoders = eventsDecoders;
             _messageBroker = messageBroker;
             _areaDescriptor = areaDescriptor;
 
-            //TODO configure conditions
             if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
             {
                 _turnOnConditionsValidator.WithCondition(new IsDayCondition(_messageBroker));
@@ -80,9 +76,10 @@ namespace HomeCenter.Services.MotionService
             _turnOnConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
-    
+
             _TurnOffTimeOut = new Timeout(_areaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
-            _eventsDecoders?.ForEach(decoder => decoder.Init(this));
+
+            
         }
 
         internal void RegisterForLampChangeState()
@@ -102,8 +99,6 @@ namespace HomeCenter.Services.MotionService
             //_disposeContainer.Add(subscription);
         }
 
-        private void DecodeMessage(IList<Timestamped<PowerStateChangeEvent>> powerStateEvents) => _eventsDecoders?.ForEach(decoder => decoder.DecodeMessage(powerStateEvents));
-
         private void RegisterChangeStateSource()
         {
             //TODO
@@ -112,7 +107,7 @@ namespace HomeCenter.Services.MotionService
 
         private void PowerStateChangeHandler(PowerStateChangeEvent powerChangeEvent)
         {
-            if (powerChangeEvent.Value == false)
+            if (!powerChangeEvent.Value)
             {
                 ResetStatistics();
                 RegisterTurnOffTime();
@@ -314,13 +309,7 @@ namespace HomeCenter.Services.MotionService
 
         private void RegisterTurnOffTime() => _LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
 
-        private  Task<bool> CanTurnOnLamp()
-        {
-
-                return _turnOnConditionsValidator.Validate();
-
-            
-        }
+        private Task<bool> CanTurnOnLamp() => _turnOnConditionsValidator.Validate();
 
         private Task<bool> CanTurnOffLamp() => _turnOffConditionsValidator.Validate();
     }

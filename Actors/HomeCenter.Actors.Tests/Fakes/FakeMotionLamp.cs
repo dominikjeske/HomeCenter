@@ -14,7 +14,6 @@ namespace HomeCenter.Services.MotionService.Tests
         public void SetState(bool state)
         {
             IsTurnedOn = state;
-            Console.Write($"Lamp {Id}: {state}");
         }
 
         public string Id { get; }

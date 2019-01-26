@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Linq;
 
-namespace HomeCenter.Services.MotionService.Model
+namespace HomeCenter.Model.Core
 {
     public class ObservableTimer : IObservableTimer
     {

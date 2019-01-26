@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Services.MotionService.Model
+namespace HomeCenter.Model.Core
 {
     public interface IObservableTimer
     {

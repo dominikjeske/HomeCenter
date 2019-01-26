@@ -91,7 +91,7 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 _lamps[uid].SetState(true);
             }
-            else if (message is TurnOnCommand)
+            else if (message is TurnOffCommand)
             {
                 _lamps[uid].SetState(false);
             }

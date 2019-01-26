@@ -1,8 +1,10 @@
 ﻿using Force.DeepCloner;
+using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.MotionService.Commands;
@@ -13,7 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
@@ -27,10 +31,12 @@ namespace HomeCenter.Services.MotionService
         private readonly List<MotionVector> _confusedVectors = new List<MotionVector>();
         private readonly MotionConfiguration _motionConfiguration = new MotionConfiguration();
         private ImmutableDictionary<string, Room> _rooms;
+        private readonly IObservableTimer _observableTimer;
 
-        protected LightAutomationService(IConcurrencyProvider concurrencyProvider)
+        protected LightAutomationService(IConcurrencyProvider concurrencyProvider, IObservableTimer observableTimer)
         {
             _concurrencyProvider = concurrencyProvider;
+            _observableTimer = observableTimer;
         }
 
         protected override async Task OnStarted(Proto.IContext context)
@@ -67,7 +73,7 @@ namespace HomeCenter.Services.MotionService
         {
             _rooms.Values.ForEach(room => room.RegisterForLampChangeState());
 
-            //_disposables.Add(PeriodicCheck());
+            _disposables.Add(PeriodicCheck());
             _disposables.Add(CheckMotion());
         }
 
@@ -89,7 +95,7 @@ namespace HomeCenter.Services.MotionService
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
                 rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsList(MotionProperties.Neighbors), motionDetector.AsString(MotionProperties.Lamp),
-                                    _concurrencyProvider, Logger, MessageBroker, areas[motionDetector.AttachedArea], _motionConfiguration, Enumerable.Empty<IEventDecoder>()));
+                                    _concurrencyProvider, Logger, MessageBroker, areas[motionDetector.AttachedArea], _motionConfiguration));
             }
 
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
@@ -197,23 +203,15 @@ namespace HomeCenter.Services.MotionService
 
         private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
 
-        //TODO
-        //private IDisposable PeriodicCheck() => _observableTimer.GenerateTime(_motionConfiguration.PeriodicCheckTime)
-        //                                                       .ObserveOn(_concurrencyProvider.Task)
-        //                                                       .Subscribe(PeriodicCheck, HandleError);
+        private IDisposable PeriodicCheck() => _observableTimer.GenerateTime(_motionConfiguration.PeriodicCheckTime)
+                                                               .ObserveOn(_concurrencyProvider.Task)
+                                                               .Subscribe(PeriodicCheck, HandleError);
 
         //TODO change this to async?
         private void PeriodicCheck(DateTimeOffset currentTime)
         {
-            try
-            {
-                UpdateRooms().GetAwaiter().GetResult();
-                ResolveConfusions(currentTime).GetAwaiter().GetResult();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            UpdateRooms().GetAwaiter().GetResult();
+            ResolveConfusions(currentTime).GetAwaiter().GetResult();
         }
 
         private async Task ResolveConfusions(DateTimeOffset currentTime)

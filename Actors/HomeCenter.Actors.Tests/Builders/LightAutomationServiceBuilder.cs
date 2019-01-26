@@ -21,6 +21,7 @@ namespace HomeCenter.Services.MotionService.Tests
     {
         private string _workingTime;
         private TimeSpan? _confusionResolutionTime;
+        private TimeSpan? _periodicCheckTime;
 
         // private Func<IEventDecoder[]> _sampleDecoder;
         private List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
@@ -62,6 +63,12 @@ namespace HomeCenter.Services.MotionService.Tests
         public LightAutomationServiceBuilder WithConfusionResolutionTime(TimeSpan confusionResolutionTime)
         {
             _confusionResolutionTime = confusionResolutionTime;
+            return this;
+        }
+
+        public LightAutomationServiceBuilder WithPeriodicCheckTime(TimeSpan periodicCheckTimw)
+        {
+            _periodicCheckTime = periodicCheckTimw;
             return this;
         }
 
@@ -123,14 +130,16 @@ namespace HomeCenter.Services.MotionService.Tests
             var motionEvents = scheduler.CreateColdObservable<MotionEnvelope>(_motionEvents.ToArray());
             var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
 
+            var checkTime = _periodicCheckTime ?? TimeSpan.FromMilliseconds(1000);
+            var observableTimer = Mock.Of<IObservableTimer>();
+            Mock.Get(observableTimer).Setup(x => x.GenerateTime(checkTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), checkTime)));
+
             _container.RegisterInstance<IScheduler>(quartzScheduler);
             _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
             _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(new FakeLogger<LightAutomationServiceProxy>(scheduler));
             _container.RegisterInstance<IMessageBroker>(messageBroker);
-
-            //TODO
-            //Mock.Get(observableTimer).Setup(x => x.GenerateTime(motionConfiguration.PeriodicCheckTime)).Returns(scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(_timeDuration), motionConfiguration.PeriodicCheckTime)));
-
+            _container.RegisterInstance<IObservableTimer>(observableTimer);
+            
             var areProperties = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(_workingTime))
             {

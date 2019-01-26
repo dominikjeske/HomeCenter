@@ -44,6 +44,11 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message).ConfigureAwait(false), filter);
         }
 
+        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event
+        {
+            return _eventAggregator.Subscribe(action, filter);
+        }
+
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
                                                                               
         {
