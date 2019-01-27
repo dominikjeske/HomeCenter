@@ -26,6 +26,7 @@ namespace HomeCenter.Model.Components
 
         [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
+        [Map] private IList<Translator> _translators { get; set; } = new List<Translator>();
         [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
         protected override async Task OnStarted(IContext context)

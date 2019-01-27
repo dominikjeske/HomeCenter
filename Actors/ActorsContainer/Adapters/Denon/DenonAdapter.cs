@@ -229,10 +229,10 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task SetInput(InputSetCommand message)
         {
-            if (_fullState == null) throw new UnsupportedStateException("Cannot change input source on Denon device because device info was not downloaded from device");
+            if (_fullState == null) throw new ArgumentException("Cannot change input source on Denon device because device info was not downloaded from device");
             var inputName = message.AsString(MessageProperties.InputSource);
             var input = _fullState.TranslateInputName(inputName, _zone.ToString());
-            if (input?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
+            if (input?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on available device input sources");
 
             var control = new DenonControlQuery
             {
@@ -254,7 +254,7 @@ namespace HomeCenter.Adapters.Denon
             if (_zone != 1) return;
             var surroundMode = message.AsString(MessageProperties.SurroundMode);
             var mode = DenonSurroundModes.MapApiCommand(surroundMode);
-            if (mode?.Length == 0) throw new UnsupportedPropertyStateException($"Surroundmode {mode} was not found on available surround modes");
+            if (mode?.Length == 0) throw new ArgumentException($"Surroundmode {mode} was not found on available surround modes");
 
             var control = new DenonControlQuery
             {

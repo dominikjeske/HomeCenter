@@ -33,9 +33,7 @@
                   {
                     "Service": "MotionService",
                     "Properties": {
-                      "WorkingTime": "",
-                      "MaxPersonCapacity": "",
-                      "AreaType": ""
+
                     }
                   }
                 ]
@@ -331,8 +329,18 @@
             "Service": "MotionService",
             "Properties": {
               "Neighbors": "MotionSensorHallway, MotionSensorToilet",
-              "Lamp": "LivingRoomLamp",
-              "EventDecoder": "DisableAutomationDecoder"
+              "Lamp": "LivingRoomLamp"
+            }
+          }
+        ],
+        "Translators": [
+          {
+            "Type": "Event",
+            "From": {
+              "Type": "PropertyChangeEvent"
+            },
+            "To": {
+              "Type": "MotionChangeEvent"
             }
           }
         ]

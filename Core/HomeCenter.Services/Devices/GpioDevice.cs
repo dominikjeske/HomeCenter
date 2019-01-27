@@ -85,7 +85,7 @@ namespace HomeCenter.Services.Devices
                     return PinMode.InputPullUp;
             }
 
-            throw new UnsupportedPropertyStateException($"Pin mode {pinMode} is unsupported");
+            throw new ArgumentException($"Pin mode {pinMode} is unsupported");
         }
     }
 }

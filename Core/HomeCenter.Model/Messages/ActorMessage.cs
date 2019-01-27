@@ -1,11 +1,8 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using HomeCenter.Utils.Extensions;
-using System.Linq;
+﻿using HomeCenter.Model.Core;
 
 namespace HomeCenter.Model.Messages
 {
-    public abstract class ActorMessage : BaseObject
+    public class ActorMessage : BaseObject
     {
         public Proto.IContext Context { get; set; }
 

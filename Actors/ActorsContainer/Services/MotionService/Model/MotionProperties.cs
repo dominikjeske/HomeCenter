@@ -13,7 +13,6 @@
 
         public const string Neighbors = nameof(Neighbors);
         public const string Lamp = nameof(Lamp);
-        public const string EventDecoder = nameof(EventDecoder);
         public const string WorkingTime = nameof(WorkingTime);
         public const string MaxPersonCapacity = nameof(MaxPersonCapacity);
         public const string AreaType = nameof(AreaType);

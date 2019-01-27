@@ -10,6 +10,9 @@ namespace HomeCenter.Services.Configuration.DTO
         [JsonProperty("AdapterRefs")]
         public IList<AdapterReferenceDTO> Adapters { get; set; }
 
+        [JsonProperty("Translators")]
+        public IList<TranslatorDTO> Translators { get; set; }
+
         [JsonProperty("Adapter")]
         public AdapterDTO Adapter { get; set; }
 

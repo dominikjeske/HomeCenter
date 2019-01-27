@@ -169,7 +169,7 @@ namespace HomeCenter.Adapters.Sony
         protected async Task Handle(InputSetCommand message)
         {
             var inputName = message.AsString(MessageProperties.InputSource);
-            if (!_inputSourceMap.ContainsKey(inputName)) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on available device input sources");
+            if (!_inputSourceMap.ContainsKey(inputName)) throw new ArgumentException($"Input {inputName} was not found on available device input sources");
 
             var code = _inputSourceMap[inputName];
 

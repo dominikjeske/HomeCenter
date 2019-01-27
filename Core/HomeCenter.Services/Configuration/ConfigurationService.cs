@@ -12,7 +12,6 @@ using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
@@ -24,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration
@@ -51,7 +49,7 @@ namespace HomeCenter.Services.Configuration
         {
             var configPath = startFromConfigCommand.Configuration;
 
-            if(!File.Exists(configPath))
+            if (!File.Exists(configPath))
             {
                 throw new ConfigurationException($"Configuration file not found at {configPath}");
             }
@@ -73,7 +71,7 @@ namespace HomeCenter.Services.Configuration
             CheckForDuplicateUid(result);
 
             var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
-            
+
             var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
             var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
             var components = MapComponents(result);
@@ -85,12 +83,12 @@ namespace HomeCenter.Services.Configuration
         private void ResolveAttachedProperties(HomeCenterConfigDTO result)
         {
             var components = result.HomeCenter.Components.Where(c => c.AttachedProperties?.Count > 0);
-            foreach(var component in components)
+            foreach (var component in components)
             {
-                foreach(var property in component.AttachedProperties)
+                foreach (var property in component.AttachedProperties)
                 {
                     var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == property.Service);
-                    if(serviceDto == null) throw new MissingMemberException($"Service {property.Service} was not found in configuration");
+                    if (serviceDto == null) throw new MissingMemberException($"Service {property.Service} was not found in configuration");
 
                     var area = result.HomeCenter.Areas.Flatten(a => a.Areas).FirstOrDefault(a => a.ComponentsRefs?.Any(c => c.Uid.InvariantEquals(component.Uid)) ?? false);
                     if (area == null) throw new MissingMemberException($"Component {component.Uid} was not found in any area");
@@ -134,7 +132,7 @@ namespace HomeCenter.Services.Configuration
                         var propvalue = adapter.Properties[property];
                         if (propvalue.IndexOf("#") > -1)
                         {
-                            if (!component.TemplateProperties.ContainsKey(propvalue)) throw new MissingPropertyException($"Property '{propvalue}' was not found in component '{component.Uid}'");
+                            if (!component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Uid}'");
                             adapter.Properties[property] = component.TemplateProperties[propvalue];
                         }
                     }
@@ -143,7 +141,7 @@ namespace HomeCenter.Services.Configuration
                 resolved.Add(component, templateCopy);
             }
 
-            foreach(var comp in resolved.Keys)
+            foreach (var comp in resolved.Keys)
             {
                 result.HomeCenter.Components.Remove(comp);
                 result.HomeCenter.Components.Add(resolved[comp]);
@@ -152,7 +150,7 @@ namespace HomeCenter.Services.Configuration
 
         private void ResolveInlineAdapters(HomeCenterConfigDTO result)
         {
-            foreach(var component in result.HomeCenter.Components.Where(c => c.Adapter != null).Select(c => c))
+            foreach (var component in result.HomeCenter.Components.Where(c => c.Adapter != null).Select(c => c))
             {
                 result.HomeCenter.Adapters.Add(component.Adapter);
                 component.Adapters = new List<AdapterReferenceDTO>() { new AdapterReferenceDTO { Uid = component.Adapter.Uid, Type = component.Adapter.Type } };
@@ -202,7 +200,7 @@ namespace HomeCenter.Services.Configuration
         {
             var components = new Dictionary<string, PID>();
             List<ComponentProxy> comp = new List<ComponentProxy>();
-            
+
             foreach (var componentConfig in result.HomeCenter.Components)
             {
                 var localConfigCopy = componentConfig; // prevents override of componentConfig when executed in multi thread
@@ -225,7 +223,7 @@ namespace HomeCenter.Services.Configuration
                     var routing = GetRouting(actorConfig);
 
                     var actorType = types.Find(t => t.Name == $"{actorConfig.Type}Proxy");
-                    if (actorType == null) throw new MissingTypeException($"Could not find type for actor {actorType}");
+                    if (actorType == null) throw new ConfigurationException($"Could not find type for actor {actorType}");
                     var actor = _actorFactory.CreateActor(() => (Q)Mapper.Map(actorConfig, typeof(T), actorType), actorConfig.Uid, routing: routing);
 
                     actors.Add(actorConfig.Uid, actor);

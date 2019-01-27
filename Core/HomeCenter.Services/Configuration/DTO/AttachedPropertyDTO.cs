@@ -1,18 +1,11 @@
-﻿using HomeCenter.Model.Components;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
-
-    public class AttachedPropertyDTO
+    public class AttachedPropertyDTO : BaseDTO
     {
         [DefaultValue("Service")]
         public string Service { get; set; }
-
-        [JsonProperty("Properties")]
-        public Dictionary<string, string> Properties { get; set; }
 
         public string AttachedActor { get; set; }
 

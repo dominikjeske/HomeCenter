@@ -2,7 +2,6 @@
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
@@ -19,17 +18,15 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     internal class LightAutomationServiceBuilder
     {
+        private int _timeDuration = 20;
         private string _workingTime;
         private TimeSpan? _confusionResolutionTime;
         private TimeSpan? _periodicCheckTime;
-
-        // private Func<IEventDecoder[]> _sampleDecoder;
-        private List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
-
-        private List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
-        private int _timeDuration = 20;
         private Container _container;
+
         private readonly ActorContext _actorContext;
+        private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
+        private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
 
         public LightAutomationServiceBuilder(ActorContext actorContext)
         {
@@ -41,12 +38,6 @@ namespace HomeCenter.Services.MotionService.Tests
             _workingTime = wortkingTime;
             return this;
         }
-
-        //public LightAutomationServiceBuilder WithSampleDecoder(Func<IEventDecoder[]> sampleDecoder)
-        //{
-        //    _sampleDecoder = sampleDecoder;
-        //    return this;
-        //}
 
         public LightAutomationServiceBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
         {
@@ -111,8 +102,6 @@ namespace HomeCenter.Services.MotionService.Tests
 
             _container = new Container();
 
-
-
             var config = new MapperConfiguration(p =>
             {
                 p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
@@ -139,13 +128,13 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(new FakeLogger<LightAutomationServiceProxy>(scheduler));
             _container.RegisterInstance<IMessageBroker>(messageBroker);
             _container.RegisterInstance<IObservableTimer>(observableTimer);
-            
+
             var areProperties = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(_workingTime))
             {
                 areProperties.Add(MotionProperties.WorkingTime, _workingTime);
             }
-            
+
             var serviceDto = ConfigureRooms(lampDictionary, areProperties);
             if (_confusionResolutionTime.HasValue)
             {
@@ -156,7 +145,7 @@ namespace HomeCenter.Services.MotionService.Tests
             _actorContext.PID = _actorContext.Context.SpawnNamed(props, "motionService");
 
             _actorContext.IsAlive();
-            
+
             return
             (
                 motionEvents,

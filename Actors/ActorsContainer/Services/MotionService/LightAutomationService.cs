@@ -1,10 +1,9 @@
 ﻿using Force.DeepCloner;
-using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.MotionService.Commands;
@@ -17,7 +16,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
@@ -105,7 +103,7 @@ namespace HomeCenter.Services.MotionService
                                      .Distinct()
                                      .Except(_rooms.Keys)
                                      .ToList();
-            if (missingRooms.Count > 0) throw new Exception($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
+            if (missingRooms.Count > 0) throw new ConfigurationException($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
 
             _rooms.Values.ForEach(room => room.BuildNeighborsCache(GetNeighbors(room.Uid)));
         }

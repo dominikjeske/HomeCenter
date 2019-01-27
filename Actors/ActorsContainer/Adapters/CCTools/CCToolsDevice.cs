@@ -133,7 +133,7 @@ namespace HomeCenter.Adapters.Common
 
             if ((isPinInFirstPortRange && !_firstPortWriteMode) || (!isPinInFirstPortRange && !_secondPortWriteMode))
             {
-                throw new UnsupportedStateException($"Pin {pinNumber} on device {Uid} is configured for INPUT");
+                throw new ArgumentException($"Pin {pinNumber} on device {Uid} is configured for INPUT");
             }
 
             return pinNumber;

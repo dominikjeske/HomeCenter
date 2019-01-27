@@ -25,7 +25,7 @@ namespace HomeCenter.Model.Adapters
             {
                 if( additionalProperties == null || additionalProperties.Count != _requierdProperties.Count || !_requierdProperties.SequenceEqual(additionalProperties.Keys))
                 {
-                    throw new MissingPropertyException($"Update state on component {Uid} should be invoked with required properties: {string.Join(",", _requierdProperties)}");
+                    throw new ArgumentException($"Update state on component {Uid} should be invoked with required properties: {string.Join(",", _requierdProperties)}");
                 }
             }
 

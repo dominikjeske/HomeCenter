@@ -1,6 +1,7 @@
 ﻿namespace HomeCenter.Services.Configuration.DTO
 {
-    public class CommandDTO : ActorMessageDTO
+
+    public class ActorMessageDTO : BaseDTO
     {
     }
 }

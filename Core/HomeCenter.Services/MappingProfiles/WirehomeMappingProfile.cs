@@ -4,6 +4,7 @@ using HomeCenter.Model.Areas;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Triggers;
@@ -26,6 +27,8 @@ namespace HomeCenter.Services.Profiles
             CreateMap<EventDTO, Event>();
             CreateMap<AreaDTO, Area>();
             CreateMap<AttachedPropertyDTO, AttachedProperty>();
+            CreateMap<TranslatorDTO, Translator>();
+            CreateMap<ActorMessageDTO, ActorMessage>();
             CreateMap<ScheduleDTO, Schedule>();
             CreateMap<ConditionContainerDTO, ConditionContainer>().ForMember(s => s.Conditions, d => d.MapFrom<ConditionResolver>())
                                                                   .ConstructUsingServiceLocator();

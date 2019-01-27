@@ -2,6 +2,9 @@
 
 namespace HomeCenter.Model.Exceptions
 {
+    /// <summary>
+    /// Exception throwed when configuration is not properly formated
+    /// </summary>
     public class ConfigurationException : Exception
     {
         public ConfigurationException() : base()

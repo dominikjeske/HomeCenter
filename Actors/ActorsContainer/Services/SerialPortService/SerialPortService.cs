@@ -42,7 +42,7 @@ namespace HomeCenter.Services.Networking
         {
             if (_messageHandlers.ContainsKey(registration.MessageType))
             {
-                throw new MessageAlreadyRegistredException($"Message type {registration.MessageType} is already registered in {nameof(SerialPortService)}");
+                throw new ArgumentException($"Message type {registration.MessageType} is already registered in {nameof(SerialPortService)}");
             }
 
             _messageHandlers.Add(registration.MessageType, registration);
@@ -73,10 +73,10 @@ namespace HomeCenter.Services.Networking
 
                 if (!_messageHandlers.TryGetValue(messageType, out RegisterSerialCommand registration))
                 {
-                    throw new UnsupportedMessageException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
+                    throw new ArgumentException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
                 }
 
-                if (messageBodySize != registration.MessageSize) throw new UnsupportedMessageException($"Message type {messageType} have wrong size");
+                if (messageBodySize != registration.MessageSize) throw new ArgumentException($"Message type {messageType} have wrong size");
                 var result = ReadData(registration.ResultFormat, reader);
 
                 MessageBroker.Send(result, registration.Actor);
@@ -103,7 +103,7 @@ namespace HomeCenter.Services.Networking
                 }
                 else
                 {
-                    throw new UnsupportedResultException($"Result of type {format.ValueType} is not supported");
+                    throw new ArgumentException($"Result of type {format.ValueType} is not supported");
                 }
             }
 

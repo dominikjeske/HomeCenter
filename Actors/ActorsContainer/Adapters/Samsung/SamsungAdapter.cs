@@ -8,6 +8,7 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using Proto;
+using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Samsung
@@ -107,7 +108,7 @@ namespace HomeCenter.Adapters.Samsung
                 source = "KEY_TV";
             }
 
-            if (source?.Length == 0) throw new UnsupportedPropertyStateException($"Input {inputName} was not found on Samsung available device input sources");
+            if (source?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on Samsung available device input sources");
 
             var cmd = GetCommand(source);
             await MessageBroker.SendToService(cmd).ConfigureAwait(false);

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
 using Quartz;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -46,11 +47,11 @@ namespace HomeCenter.Model.Actors
         {
             if (message is ActorMessage actorMessage)
             {
-                throw new MissingHandlerException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type ?? actorMessage.GetType().Name}]");
+                throw new ArgumentException($"Component [{Uid}] cannot process message because there is no registered handler for [{actorMessage.Type ?? actorMessage.GetType().Name}]");
             }
             else
             {
-                throw new UnsupportedMessageException($"Component [{Uid}] cannot process message because type {message.GetType().Name} is not ActorMessage");
+                throw new ArgumentException($"Component [{Uid}] cannot process message because type {message.GetType().Name} is not ActorMessage");
             }
         }
 

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -32,6 +31,7 @@ namespace HomeCenter.Services.MotionService
 
         // Dynamic parameters
         internal bool AutomationDisabled { get; private set; }
+
         internal int NumberOfPersonsInArea { get; private set; }
         internal MotionStamp LastMotion { get; } = new MotionStamp();
         internal AreaDescriptor _areaDescriptor { get; }
@@ -78,25 +78,11 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
             _TurnOffTimeOut = new Timeout(_areaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
-
-            
         }
 
         internal void RegisterForLampChangeState()
         {
-            RegisterManualChangeDecodersSource();
             RegisterChangeStateSource();
-        }
-
-        private void RegisterManualChangeDecodersSource()
-        {
-            //TODO
-            //var manualEventSource = Lamp.PowerStateChange.Where(ev => ev.EventSource == PowerStateChangeEvent.ManualSource);
-            //var subscription = manualEventSource.Timestamp()
-            //                                    .Buffer(manualEventSource, _ => Observable.Timer(_motionConfiguration.ManualCodeWindow, _concurrencyProvider.Scheduler))
-            //                                    .Subscribe(DecodeMessage);
-
-            //_disposeContainer.Add(subscription);
         }
 
         private void RegisterChangeStateSource()

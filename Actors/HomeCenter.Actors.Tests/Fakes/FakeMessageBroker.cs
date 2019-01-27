@@ -106,6 +106,11 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
+        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event
+        {
+            throw new NotImplementedException();
+        }
+
         public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
         {
             return SubscriptionToken.Empty;

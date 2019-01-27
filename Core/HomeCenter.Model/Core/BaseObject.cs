@@ -128,62 +128,62 @@ namespace HomeCenter.Model.Core
 
         public bool AsBool(string propertyName, bool? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (bool.TryParse(_properties[propertyName], out bool value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper bool value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper bool value");
         }
 
         public int AsInt(string propertyName, int? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (int.TryParse(_properties[propertyName], out int value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper int value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper int value");
         }
 
         public byte AsByte(string propertyName, byte? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (byte.TryParse(_properties[propertyName], out byte value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper byte value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper byte value");
         }
 
         public DateTime AsDate(string propertyName, DateTime? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (DateTime.TryParse(_properties[propertyName], out DateTime value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper date value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper date value");
         }
 
         public TimeSpan AsTime(string propertyName, TimeSpan? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (TimeSpan.TryParse(_properties[propertyName], out TimeSpan value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
         }
 
         public TimeSpan AsIntTime(string propertyName, int? defaultValue = null)
@@ -194,7 +194,7 @@ namespace HomeCenter.Model.Core
                 {
                     return TimeSpan.FromMilliseconds(defaultValue.Value);
                 }
-                throw new MissingPropertyException(propertyName);
+                throw new ArgumentException(propertyName);
             }
 
             if (int.TryParse(_properties[propertyName], out int value))
@@ -202,57 +202,57 @@ namespace HomeCenter.Model.Core
                 return TimeSpan.FromMilliseconds(value);
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
         }
 
         public double AsDouble(string propertyName, double? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (double.TryParse(_properties[propertyName], out double value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper double value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper double value");
         }
 
         public uint AsUint(string propertyName, uint? defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             if (uint.TryParse(_properties[propertyName], out uint value))
             {
                 return value;
             }
 
-            throw new WrongPropertyFormatException($"Property {propertyName} value {_properties[propertyName]} is not proper uint value");
+            throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper uint value");
         }
 
         public string AsString(string propertyName, string defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             return _properties[propertyName];
         }
 
         public IList<string> AsList(string propertyName, IEnumerable<string> defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return (IList<string>)defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return (IList<string>)defaultValue ?? throw new ArgumentException(propertyName);
 
             return _properties[propertyName].Split(',').Select(x => x.Trim()).ToList();
         }
 
         public byte[] AsByteArray(string propertyName, byte[] defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             return _properties[propertyName].ToBytes();
         }
 
         public IDictionary<string, string> AsDictionary(string propertyName, IDictionary<string, string> defaultValue = null)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new MissingPropertyException(propertyName);
+            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             return JsonConvert.DeserializeObject<IDictionary<string, string>>(_properties[propertyName]);
         }

@@ -27,7 +27,7 @@ namespace HomeCenter.Services.Configuration
                 var converter = property.Value.Value<string>();
                 var converterType = types.FirstOrDefault(t => t.Name == converter);
 
-                if (converterType == null) throw new MissingConverterException($"Could not find converter {converter}");
+                if (converterType == null) throw new ConfigurationException($"Could not find converter {converter}");
 
                 result.Add(property.Key, (IValueConverter)Activator.CreateInstance(converterType));
             }
