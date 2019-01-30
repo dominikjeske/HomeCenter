@@ -28,7 +28,9 @@ namespace HomeCenter.CodeGeneration
             {
                 classDeclaration = GenerateClass(classSemantic, className);
 
-                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration);
+                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration, "HomeCenter.Model.Messages.Commands.Command", "CreateCommand", "Command");
+                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration, "HomeCenter.Model.Messages.Events.Event", "CreateEvent", "Event");
+                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration, "HomeCenter.Model.Messages.Queries.Query", "CreateQuery", "Query");
 
             }
             catch (Exception e)
@@ -61,14 +63,14 @@ namespace HomeCenter.CodeGeneration
             return NamespaceDeclaration((classSyntax.Parent as NamespaceDeclarationSyntax)?.Name).AddMembers(classDeclaration);
         }
 
-        private ClassDeclarationSyntax AddBuildMethod(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration)
+        private ClassDeclarationSyntax AddBuildMethod(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration, string returnType, string methodName, string typeName)
         {
-            var methodDeclaration = MethodDeclaration(ParseTypeName("Command"), "CreateCommand")
+            var methodDeclaration = MethodDeclaration(ParseTypeName(returnType), methodName)
                                                    .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword) }))
-                                                   .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("command")).WithType(QualifiedName(IdentifierName("HomeCenter.Messages"), IdentifierName("ProtoCommand"))))))
+                                                   .WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SingletonSeparatedList<ParameterSyntax>(SyntaxFactory.Parameter(SyntaxFactory.Identifier("message")).WithType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword))))))
                                                    .WithBody(Block(
-                                                       GenerateIfMap(classSyntax, model),
-                                                       GenerateLastReturn()
+                                                       GenerateIfMap(classSyntax, model, typeName),
+                                                       GenerateLastReturn(returnType)
                                                       )
                                                     );
 
@@ -76,12 +78,12 @@ namespace HomeCenter.CodeGeneration
             return classDeclaration;
         }
 
-        private StatementSyntax GenerateIfMap(ClassDeclarationSyntax classSyntax, SemanticModel model)
+        private StatementSyntax GenerateIfMap(ClassDeclarationSyntax classSyntax, SemanticModel model, string typeName)
         {
             var commands = model.Compilation
-                                  .GetSymbolsWithName(x => x.IndexOf("Command") > -1, SymbolFilter.Type)
+                                  .GetSymbolsWithName(x => x.IndexOf(typeName) > -1, SymbolFilter.Type)
                                   .OfType<INamedTypeSymbol>()
-                                  .Where(y => y.BaseType.Name == "Command");
+                                  .Where(y => y.BaseType.Name == typeName && !y.IsAbstract);
 
 
             var list = new List<IfStatementSyntax>();
@@ -94,15 +96,15 @@ namespace HomeCenter.CodeGeneration
 
         }
 
-        public ReturnStatementSyntax GenerateLastReturn()
+        public ReturnStatementSyntax GenerateLastReturn(string returnType)
         {
-            return ReturnStatement(ObjectCreationExpression(QualifiedName(IdentifierName("HomeCenter.Model.Messages.Commands"), IdentifierName("Command"))).WithArgumentList(ArgumentList()));
+            return ReturnStatement(ObjectCreationExpression(SyntaxFactory.IdentifierName(returnType)).WithArgumentList(ArgumentList()));
         }
 
 
         private IfStatementSyntax GetIfCommand(string commandName, string commandNamespace)
         {
-            return IfStatement(BinaryExpression(SyntaxKind.EqualsExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("command"), IdentifierName("Type")), LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(commandName))), Block(SingletonList<StatementSyntax>(ReturnStatement(ObjectCreationExpression(QualifiedName(IdentifierName(commandNamespace), IdentifierName(commandName))).WithArgumentList(ArgumentList())))));
+            return IfStatement(BinaryExpression(SyntaxKind.EqualsExpression, IdentifierName("message"), LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(commandName))), Block(SingletonList<StatementSyntax>(ReturnStatement(ObjectCreationExpression(QualifiedName(IdentifierName(commandNamespace), IdentifierName(commandName))).WithArgumentList(ArgumentList())))));
         }
 
 

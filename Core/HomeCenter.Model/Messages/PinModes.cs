@@ -1,5 +1,6 @@
 ﻿namespace HomeCenter.Model.Messages
 {
+    //TODO move
     public static class PinModes
     {
         public const string Input = nameof(Input);

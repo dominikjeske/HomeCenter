@@ -169,6 +169,9 @@ namespace HomeCenter.Model.Components
             if (_componentState.IsStateProvidingAdapter(propertyChanged.MessageSource, propertyChanged.PropertyChangedName)
                 && _componentState.TryUpdateState(propertyChanged.PropertyChangedName, propertyChanged.NewValue, out var oldValue))
             {
+                var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
+                //TOD Translate
+
                 await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
             }
         }
