@@ -2,13 +2,11 @@
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Services.Bootstrapper;
-using HomeCenter.Services.Controllers;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Roslyn;
 using Moq;
 using SimpleInjector;
 using System;
-using System.IO;
 
 namespace HomeCenter.Tests.ComponentModel
 {

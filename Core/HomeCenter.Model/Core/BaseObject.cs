@@ -37,12 +37,13 @@ namespace HomeCenter.Model.Core
             Type = GetType().Name;
         }
 
-        public BaseObject(IDictionary<string, string> properties)
+        public BaseObject SetProperties(IReadOnlyDictionary<string, string> properties)
         {
             foreach (var property in properties)
             {
                 SetProperty(property.Key, property.Value);
             }
+            return this;
         }
 
         public override string ToString() => GetProperties()?.ToFormatedString();

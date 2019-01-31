@@ -5,6 +5,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
@@ -91,6 +92,8 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();
             _container.RegisterSingleton<IObservableTimer, ObservableTimer>();
+            _container.RegisterSingleton<IMessageFactory, MessageFactory>();
+            
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
         }
 

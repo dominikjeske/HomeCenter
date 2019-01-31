@@ -1,21 +1,20 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Broker.Behaviors;
+using HomeCenter.Broker.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Tests.Dummies;
 using HomeCenter.Tests.Helpers;
-using HomeCenter.Tests.Mocks;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Tests
+namespace HomeCenter.Tests.MessageBroker
 {
     [TestClass]
     public class EventAggregatorTests : ReactiveTest
@@ -178,7 +177,6 @@ namespace HomeCenter.Tests
             Assert.AreEqual(1, result.Count);
         }
 
-
         [TestMethod]
         public async Task QueryAsync_WhenSubscribed_ShouldReturnProperResult()
         {
@@ -211,26 +209,26 @@ namespace HomeCenter.Tests
             Assert.AreEqual("Test", result);
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(Exception))]
-        //public async Task QueryAsync_WhenTwoSubscribed_ShouldThrow()
-        //{
-        //    var aggregator = InitAggregator();
+        [TestMethod]
+        [ExpectedException(typeof(QueryException))]
+        public async Task QueryAsync_WhenTwoSubscribed_ShouldThrow()
+        {
+            var aggregator = InitAggregator();
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(50).ConfigureAwait(false);
-        //        return "Slower";
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(50).ConfigureAwait(false);
+                return "Slower";
+            });
 
-        //    aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
-        //    {
-        //        await Task.Delay(10).ConfigureAwait(false);
-        //        return "Faster";
-        //    });
+            aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
+            {
+                await Task.Delay(10).ConfigureAwait(false);
+                return "Faster";
+            });
 
-        //    var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
-        //}
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+        }
 
         [TestMethod]
         public void QueryAsync_WhenSubscribedForWrongReturnType_ShouldThrowInvalidCastException()
@@ -487,40 +485,26 @@ namespace HomeCenter.Tests
             Assert.AreEqual(true, isWorking);
         }
 
-        //[TestMethod]
-        //public async Task Observe_ShouldWorkUntilDispose()
-        //{
-        //    var aggregator = InitAggregator();
-        //    int counter = 0;
+        [TestMethod]
+        public async Task Observe_ShouldWorkUntilDispose()
+        {
+            var aggregator = InitAggregator();
+            int counter = 0;
 
-        //    var messages = aggregator.Observe<TestMessage>();
+            var messages = aggregator.Observe<TestMessage>();
 
-        //    var subscription = messages.Subscribe(x =>
-        //    {
-        //        counter++;
-        //    });
+            var subscription = messages.Subscribe(x =>
+            {
+                counter++;
+            });
 
-        //    await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
 
-        //    subscription.Dispose();
+            subscription.Dispose();
 
-        //    await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
 
-        //    Assert.AreEqual(1, counter);
-        //}
-
-        //[TestMethod]
-        //public async Task RegisterHandlers_ShouldReristerHandlersFromContainer()
-        //{
-        //    var aggregator = InitAggregator();
-        //    var handler = new TestHandler();
-        //    var container = new Container(new ControllerOptions());
-        //    container.RegisterSingleton(typeof(TestHandler), handler);
-        //    aggregator.RegisterHandlers(container);
-
-        //    await aggregator.Publish(new MotionEvent("test"));
-
-        //    Assert.AreEqual(true, handler.IsHandled);
-        //}
+            Assert.AreEqual(1, counter);
+        }
     }
 }

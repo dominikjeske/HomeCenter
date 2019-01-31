@@ -16,7 +16,7 @@ namespace HomeCenter.Services.MotionService
         private readonly IList<EventDescriptor> EventDescriptors = new List<EventDescriptor>();
         private readonly Subject<Event> _eventStream = new Subject<Event>();
         private readonly DisposeContainer _disposables = new DisposeContainer();
-        private TimeSpan MaxMessageTime;
+        private readonly TimeSpan MaxMessageTime;
 
         public void Dispose() => _disposables.Dispose();
 

@@ -170,9 +170,15 @@ namespace HomeCenter.Model.Components
                 && _componentState.TryUpdateState(propertyChanged.PropertyChangedName, propertyChanged.NewValue, out var oldValue))
             {
                 var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
-                //TOD Translate
 
-                await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
+                if (translator != null)
+                {
+                    await MessageBroker.PublishEvent(MessageFactory.TransformMessage<Event>(translator.From, translator.To), Uid).ConfigureAwait(false);
+                }
+                else
+                {
+                    await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
+                }
             }
         }
 
