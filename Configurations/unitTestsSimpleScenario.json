@@ -1,0 +1,37 @@
+﻿{
+  "HomeCenter": {
+    "Areas": [
+      {
+        "Uid": "Backyard"
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "TestComponent",
+        "AdapterRefs": [
+          {
+            "Uid": "TestAdapter"
+          }
+        ],
+        "Translators": [
+          {
+            "Type": "Event",
+            "From": {
+              "Type": "PropertyChangeEvent"
+            },
+            "To": {
+              "Type": "MotionChangeEvent"
+            }
+          }
+        ]
+      }
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "TestAdapter",
+        "Type": "TestAdapter"
+      }
+    ]
+  }
+}

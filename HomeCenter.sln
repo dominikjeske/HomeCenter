@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 	ProjectSection(SolutionItems) = preProject
 		Configurations\componentConfiguration.json = Configurations\componentConfiguration.json
 		Configurations\oneComponentConfiguration.json = Configurations\oneComponentConfiguration.json
+		Configurations\unitTestsSimpleScenario.json = Configurations\unitTestsSimpleScenario.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Actors", "Actors\ActorsContainer\HomeCenter.Actors.csproj", "{9F030025-F0FB-49D1-BD42-2E83C69F2A4A}"
@@ -64,7 +65,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{3E06
 		Scripts\DeployToRaspberry.ps1 = Scripts\DeployToRaspberry.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Actors.Tests", "Actors\HomeCenter.Actors.Tests\HomeCenter.Actors.Tests.csproj", "{26456096-3022-4B01-882D-4260E77332B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Actors.Tests", "Actors\HomeCenter.Actors.Tests\HomeCenter.Actors.Tests.csproj", "{26456096-3022-4B01-882D-4260E77332B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40501378-D6AE-4B93-BA18-053304864083}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

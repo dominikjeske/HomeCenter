@@ -31,7 +31,6 @@
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
   </ItemGroup>
 
-
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
   </ItemGroup>

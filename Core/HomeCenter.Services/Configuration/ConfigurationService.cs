@@ -159,9 +159,9 @@ namespace HomeCenter.Services.Configuration
 
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
         {
-            var allUids = configuration.HomeCenter.Adapters.Select(a => a.Uid).ToList();
-            allUids.AddRange(configuration.HomeCenter.Components.Select(c => c.Uid));
-            allUids.AddRange(configuration.HomeCenter.Services.Select(c => c.Uid));
+            var allUids = configuration.HomeCenter?.Adapters?.Select(a => a.Uid).ToList();
+            allUids.AddRange(configuration.HomeCenter?.Components?.Select(c => c.Uid));
+            allUids.AddRange(configuration.HomeCenter?.Services?.Select(c => c.Uid));
 
             var duplicateKeys = allUids.GroupBy(x => x)
                                        .Where(group => group.Count() > 1)

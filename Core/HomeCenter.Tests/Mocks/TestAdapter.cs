@@ -1,49 +1,29 @@
-﻿using HomeCenter.Model.Adapters;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages.Commands;
+using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Tests.Dummies;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.Mocks
 {
-    public class TestAdapter : Adapter
+    [ProxyCodeGenerator]
+    public abstract class TestAdapter : Adapter
     {
-        private readonly object locki = new object();
-        public int Counter { get; private set; }
-
-        public DiscoveryResponse DiscoveryResponse { get; set; }
-
-        public TestAdapter(string uid)
+        protected DiscoveryResponse Handle(DiscoverQuery discoverQuery)
         {
-            Uid = uid;
-            DiscoveryResponse = new DiscoveryResponse(new PowerState());
+            return new DiscoveryResponse(new PowerState());
         }
 
-        protected async Task RefreshCommandHandler(Command messageEnvelope)
+        protected TestAdapter Handle(GetAdapterQuery getAdapterQuery)
         {
-            lock (locki)
-            {
-                Counter++;
-
-                if (Counter > 1)
-                {
-                    Counter += 100;
-                }
-            }
-
-            await Task.Delay(100).ConfigureAwait(false);
-
-            lock (locki)
-            {
-                Counter--;
-            }
+            return this;
         }
 
-        protected async Task<object> DiscoverCapabilitiesHandler(Command message)
+        public async Task PropertyChanged<T>(string state, T oldValue, T newValue)
         {
-            await Task.Delay(100).ConfigureAwait(false);
-
-            return DiscoveryResponse;
+            await UpdateState(state, oldValue, newValue).ConfigureAwait(false);
         }
     }
 }

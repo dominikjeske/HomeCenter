@@ -2,7 +2,6 @@
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
@@ -58,7 +57,7 @@ namespace HomeCenter.Adapters.Common
             await ConfigureDriver().ConfigureAwait(false);
             await FetchState().ConfigureAwait(false);
 
-            if(_firstPortWriteMode)
+            if (_firstPortWriteMode)
             {
                 for (int i = 0; i < 8; i++)
                 {

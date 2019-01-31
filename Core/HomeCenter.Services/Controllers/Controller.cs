@@ -1,7 +1,6 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Configuration;
@@ -34,12 +33,11 @@ namespace HomeCenter.Services.Controllers
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), confService);
         }
 
-
         protected override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
             return RunScheduler();
         }
-        
+
         private Task RunScheduler() => Scheduler.Start(_disposables.Token);
     }
 }

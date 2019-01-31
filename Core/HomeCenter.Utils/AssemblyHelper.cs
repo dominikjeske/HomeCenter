@@ -15,7 +15,7 @@ namespace HomeCenter.Utils
         /// </summary>
         /// <param name="ignoreTestAssemblies"></param>
         /// <returns></returns>
-        public static IEnumerable<Assembly> GetProjectAssemblies(bool ignoreTestAssemblies = true)
+        public static IEnumerable<Assembly> GetProjectAssemblies(bool ignoreTestAssemblies = false)
         {
             var mainAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
             var applicationNameName = mainAssemblyName.Substring(0, mainAssemblyName.IndexOf("."));

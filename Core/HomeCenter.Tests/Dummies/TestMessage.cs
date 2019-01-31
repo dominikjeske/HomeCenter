@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Tests.Dummies
+﻿using HomeCenter.Model.Messages.Commands;
+
+namespace HomeCenter.Tests.Dummies
 {
     public class TestMessage
     {
