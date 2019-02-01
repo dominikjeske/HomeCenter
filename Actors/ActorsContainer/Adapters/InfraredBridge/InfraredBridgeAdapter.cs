@@ -46,7 +46,7 @@ namespace HomeCenter.Adapters.InfraredBridge
             var system = serialResultCommand.AsByte("System");
             var code = serialResultCommand.AsUint("Code");
 
-            return MessageBroker.PublishEvent(InfraredEvent.Create(Uid, system, code), Uid);
+            return MessageBroker.Publish(InfraredEvent.Create(Uid, system, code), Uid);
         }
 
         protected Task Handle(SendCodeCommand message)

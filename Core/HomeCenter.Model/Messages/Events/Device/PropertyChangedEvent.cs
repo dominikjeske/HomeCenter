@@ -16,7 +16,7 @@ namespace HomeCenter.Model.Messages.Events.Device
 
         private static PropertyChangedEvent BuildEvent(string messageSource, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties)
         {
-            var propertyChangeEvent = new PropertyChangedEvent
+            var propertyChangedEvent = new PropertyChangedEvent
             {
                 PropertyChangedName = changedPropertyName,
                 MessageSource = messageSource,
@@ -25,18 +25,18 @@ namespace HomeCenter.Model.Messages.Events.Device
 
             if (oldValue != null)
             {
-                propertyChangeEvent.OldValue = oldValue;
+                propertyChangedEvent.OldValue = oldValue;
             }
 
             if (additionalProperties != null)
             {
                 foreach (var val in additionalProperties)
                 {
-                    propertyChangeEvent.SetProperty(val.Key, val.Value);
+                    propertyChangedEvent.SetProperty(val.Key, val.Value);
                 }
             }
 
-            return propertyChangeEvent;
+            return propertyChangedEvent;
         }
 
         public string PropertyChangedName

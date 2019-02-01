@@ -173,11 +173,11 @@ namespace HomeCenter.Model.Components
 
                 if (translator != null)
                 {
-                    await MessageBroker.PublishEvent(MessageFactory.TransformMessage<Event>(translator.From, translator.To), Uid).ConfigureAwait(false);
+                    await MessageBroker.PublishEventWithTranslate(translator.From, translator.To, Uid);
                 }
                 else
                 {
-                    await MessageBroker.PublishEvent(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
+                    await MessageBroker.Publish(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
                 }
             }
         }

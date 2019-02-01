@@ -1,5 +1,6 @@
 ﻿using ConcurrentCollections;
 using HomeCenter.Broker;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
@@ -13,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
 {
-    public class MessageBroker : IMessageBroker
+    [CommandBuilder]
+    public partial class MessageBroker : IMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IActorFactory _actorFactory;
@@ -82,10 +84,41 @@ namespace HomeCenter.Model.Core
             return query.Verify(result, expectedResult);
         }
 
-        public Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event
+        public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
         {
             return _eventAggregator.Publish(message, routingFilter);
         }
+        
+        //public Task PublishWithTranslate<T>(BaseObject source, BaseObject target, RoutingFilter routingFilter = null) where T : ActorMessage
+        //{
+        //    ActorMessage message;
+        //    if (typeof(T) == typeof(Event))
+        //    {
+        //        message = CreateEvent(target.Type, source);
+        //    }
+        //    else if (typeof(T) == typeof(Query))
+        //    {
+        //        message = CreateQuery(target.Type, source);
+        //    }
+        //    else if (typeof(T) == typeof(Command))
+        //    {
+        //        message = CreateCommand(target.Type, source);
+        //    }
+        //    else
+        //    {
+        //        throw new NotSupportedException($"Type {typeof(T).Name} is not supported");
+        //    }
+
+        //    foreach (var prop in target.GetPropetiesKeys())
+        //    {
+        //        message.SetProperty(prop, target[prop]);
+        //    }
+
+        //    return message as T;
+        //}
+
+        
+
 
         public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
         {

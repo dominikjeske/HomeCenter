@@ -21,7 +21,6 @@ namespace HomeCenter.Model.Actors
         [DI] protected IMessageBroker MessageBroker { get; set; }
         [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
-        [DI] protected IMessageFactory MessageFactory { get; set; }
 
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }

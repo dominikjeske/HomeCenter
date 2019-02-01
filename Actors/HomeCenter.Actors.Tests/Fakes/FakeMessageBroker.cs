@@ -35,7 +35,12 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
-        public Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event
+        public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PublishEventWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
         {
             throw new NotImplementedException();
         }

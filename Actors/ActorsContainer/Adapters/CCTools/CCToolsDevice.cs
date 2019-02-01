@@ -185,7 +185,7 @@ namespace HomeCenter.Adapters.Common
                     [MessageProperties.PinNumber] = pinNumber.ToString()
                 });
 
-                await MessageBroker.PublishEvent(properyChangeEvent, Uid).ConfigureAwait(false);
+                await MessageBroker.Publish(properyChangeEvent, Uid).ConfigureAwait(false);
 
                 Logger.LogInformation($"[{Uid}] Pin [{pinNumber}] state changed {oldPinState}->{newPinState}");
             }

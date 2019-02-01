@@ -242,7 +242,6 @@ namespace HomeCenter.CodeGeneration
             if (!CheckIfExists(parList, "ILogger"))
             {
                 parameters = parameters.AddParameters(Parameter(Identifier("logger")).WithType(GenericName(Identifier("ILogger")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(className))))));
-                
             }
 
             constructorDecclaration = constructorDecclaration.WithParameterList(parameters);

@@ -12,7 +12,7 @@ namespace HomeCenter.Model.Core
 {
     public interface IMessageBroker
     {
-        Task PublishEvent<T>(T message, RoutingFilter routingFilter = null) where T : Event;
+        Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage;
 
         Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
 
@@ -41,5 +41,8 @@ namespace HomeCenter.Model.Core
         IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event;
 
         SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event;
+
+        Task PublishEventWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null);
+
     }
 }

@@ -92,7 +92,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();
             _container.RegisterSingleton<IObservableTimer, ObservableTimer>();
-            _container.RegisterSingleton<IMessageFactory, MessageFactory>();
             
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
         }

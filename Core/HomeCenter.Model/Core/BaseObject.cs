@@ -37,9 +37,9 @@ namespace HomeCenter.Model.Core
             Type = GetType().Name;
         }
 
-        public BaseObject SetProperties(IReadOnlyDictionary<string, string> properties)
+        public BaseObject SetProperties(BaseObject source)
         {
-            foreach (var property in properties)
+            foreach (var property in source.GetProperties())
             {
                 SetProperty(property.Key, property.Value);
             }

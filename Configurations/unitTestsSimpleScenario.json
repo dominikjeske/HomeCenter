@@ -17,10 +17,10 @@
           {
             "Type": "Event",
             "From": {
-              "Type": "PropertyChangeEvent"
+              "Type": "PropertyChangedEvent"
             },
             "To": {
-              "Type": "MotionChangeEvent"
+              "Type": "MotionEvent"
             }
           }
         ]

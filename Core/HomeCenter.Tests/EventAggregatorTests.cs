@@ -308,6 +308,23 @@ namespace HomeCenter.Tests.MessageBroker
             await result;
         }
 
+
+        [TestMethod]
+        public async Task QueryAsync_Test()
+        {
+            var aggregator = InitAggregator();
+
+            aggregator.SubscribeForAsyncResult<DerivedTestMessage>(async handler =>
+            {
+                await Task.Delay(50).ConfigureAwait(false);
+                return "OK";
+            });
+
+       
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+         
+        }
+
         [TestMethod]
         public void IsSubscribed_WhenCheckForActiveSubscription_ShouldReturnTrue()
         {

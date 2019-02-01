@@ -53,7 +53,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                 return;
             }
 
-            await MessageBroker.PublishEvent(DipswitchEvent.Create(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString()), Uid).ConfigureAwait(false);
+            await MessageBroker.Publish(DipswitchEvent.Create(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString()), Uid).ConfigureAwait(false);
         }
 
         protected async Task TurnOn(TurnOnCommand message)

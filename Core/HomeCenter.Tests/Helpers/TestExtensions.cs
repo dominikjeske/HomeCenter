@@ -7,7 +7,7 @@ namespace HomeCenter.Tests.ComponentModel
 {
     public static class TestExtensions
     {
-        public static async Task<T> SubscribeAndWait<T>(this IMessageBroker broker, int timeout = 2000) where T : Event
+        public static async Task<T> SubscribeAndWait<T>(this IMessageBroker broker, int timeout = 15000) where T : Event
         {
             T result = default;
             var tcs = TaskHelper.GenerateTimeoutTaskSource<bool>(timeout);
@@ -15,7 +15,7 @@ namespace HomeCenter.Tests.ComponentModel
             {
                 result = ev.Message;
                 tcs.SetResult(true);
-            });
+            }, "*");
             await tcs.Task;
 
             return result;

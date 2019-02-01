@@ -75,7 +75,7 @@ namespace HomeCenter.Adapters.PC
 
         private Task OnPinChanged(PinChanged value)
         {
-            return MessageBroker.PublishEvent(PinValueChangedEvent.Create(Uid, value.PinNumber, value.IsRising));
+            return MessageBroker.Publish(PinValueChangedEvent.Create(Uid, value.PinNumber, value.IsRising));
         }
 
         protected void Handle(VolumeUpCommand command)
