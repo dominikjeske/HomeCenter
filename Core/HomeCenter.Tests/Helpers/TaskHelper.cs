@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.Helpers
@@ -11,6 +12,14 @@ namespace HomeCenter.Tests.Helpers
             var tcs = new TaskCompletionSource<T>();
             ts.Token.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: false);
             return tcs;
+        }
+
+        public static async Task<T> Execute<T>(Func<Task<T>> subscription, Action action)
+        {
+            var sub = subscription();
+            action();
+            var result = await sub;
+            return result;
         }
     }
 }

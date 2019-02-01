@@ -139,7 +139,18 @@ namespace HomeCenter.Model.Components
                 foreach (var adapter in _componentState.GetCommandAdapter(command))
                 {
                     var adapterCommand = _adapters.Single(a => a.Uid == adapter).GetDeviceCommand(command);
-                    MessageBroker.Send(adapterCommand, adapter);
+
+                    var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Command && e.From.Equals(adapterCommand));
+
+                    if (translator != null)
+                    {
+                        MessageBroker.SendWithTranslate(adapterCommand, translator.To, adapter);
+                    }
+                    else
+                    {
+                        MessageBroker.Send(adapterCommand, adapter);
+                    }
+
                     handled = true;
                 }
             }
@@ -173,7 +184,7 @@ namespace HomeCenter.Model.Components
 
                 if (translator != null)
                 {
-                    await MessageBroker.PublishEventWithTranslate(translator.From, translator.To, Uid);
+                    await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid);
                 }
                 else
                 {

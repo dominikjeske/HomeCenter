@@ -22,6 +22,18 @@
             "To": {
               "Type": "MotionEvent"
             }
+          },
+          {
+            "Type": "Command",
+            "From": {
+              "Type": "TurnOnCommand"
+            },
+            "To": {
+              "Type": "TurnOnCommand",
+              "Properties": {
+                "StateTime": "200"
+              }
+            }
           }
         ]
       }

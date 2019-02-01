@@ -46,6 +46,13 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message).ConfigureAwait(false), filter);
         }
 
+        private SubscriptionCache GetSubscription<T>(PID subscriber)
+        {
+            var rootActor = _actorFactory.GetRootActor(subscriber);
+            var sub = new SubscriptionCache(rootActor, typeof(T));
+            return sub;
+        }
+
         public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event
         {
             return _eventAggregator.Subscribe(action, filter);
@@ -69,6 +76,14 @@ namespace HomeCenter.Model.Core
             return result;
         }
 
+        public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
+                                                                                                                      where Q : class
+
+        {
+            var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
+            return query.Verify(result, expectedResult);
+        }
+
         public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
         {
             command = FormatMessage(command);
@@ -76,66 +91,30 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.Publish(command, filter);
         }
 
-        public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
-                                                                                                                        where Q : class
-                                                                                                                
-        {
-            var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
-            return query.Verify(result, expectedResult);
-        }
-
         public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
         {
             return _eventAggregator.Publish(message, routingFilter);
         }
         
-        //public Task PublishWithTranslate<T>(BaseObject source, BaseObject target, RoutingFilter routingFilter = null) where T : ActorMessage
-        //{
-        //    ActorMessage message;
-        //    if (typeof(T) == typeof(Event))
-        //    {
-        //        message = CreateEvent(target.Type, source);
-        //    }
-        //    else if (typeof(T) == typeof(Query))
-        //    {
-        //        message = CreateQuery(target.Type, source);
-        //    }
-        //    else if (typeof(T) == typeof(Command))
-        //    {
-        //        message = CreateCommand(target.Type, source);
-        //    }
-        //    else
-        //    {
-        //        throw new NotSupportedException($"Type {typeof(T).Name} is not supported");
-        //    }
-
-        //    foreach (var prop in target.GetPropetiesKeys())
-        //    {
-        //        message.SetProperty(prop, target[prop]);
-        //    }
-
-        //    return message as T;
-        //}
-
-        
-
-
         public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
         {
             return _eventAggregator.Observe<T>();
         }
 
-
-        private SubscriptionCache GetSubscription<T>(PID subscriber)
-        {
-            var rootActor = _actorFactory.GetRootActor(subscriber);
-            var sub = new SubscriptionCache(rootActor, typeof(T));
-            return sub;
-        }
+        
 
         public void Send(object message, PID destination)
         {
             _actorFactory.Context.Send(destination, message);
+        }
+
+        public void SendWithTranslate(ActorMessage source, ActorMessage destination, string address)
+        {
+            var command = CreateCommand(destination.Type);
+            command.SetProperties(source);
+            command.SetProperties(destination);
+            
+            Send(command, address);
         }
 
         public void Send(object message, string uid, string address = null)
