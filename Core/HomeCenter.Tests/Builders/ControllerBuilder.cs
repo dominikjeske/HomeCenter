@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Service;
-using HomeCenter.Tests.Dummies;
-using HomeCenter.Tests.Mocks;
+using HomeCenter.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using SimpleInjector;
 using System.Threading.Tasks;
 
@@ -18,20 +18,18 @@ namespace HomeCenter.Tests.ComponentModel
             return this;
         }
 
-        public async Task<(TestAdapter adapter, IMessageBroker broker)> BuildAndRun()
+        public async Task<(IMessageBroker broker, LogMock logs)> BuildAndRun()
         {
             var bootstrapper = new MockBootstrapper(_container, _configuration);
             var controller = await bootstrapper.BuildController().ConfigureAwait(false);
 
-            //var tcs = TaskHelper.GenerateTimeoutTaskSource<bool>(1000);
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = TaskHelper.GenerateTimeoutTaskSource<bool>(500);
+            //var tcs = new TaskCompletionSource<bool>();
             var broker = _container.GetInstance<IMessageBroker>();
             broker.SubscribeForEvent<SystemStartedEvent>(_ => tcs.SetResult(true));
             await tcs.Task;
 
-            var adapter = await broker.Request<GetAdapterQuery, TestAdapter>(new GetAdapterQuery(), "TestAdapter");
-
-            return (adapter, broker);
+            return (broker, bootstrapper.Logs);
         }
     }
 }

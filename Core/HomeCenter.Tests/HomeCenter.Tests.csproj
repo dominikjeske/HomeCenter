@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Services\HomeCenter.Services.csproj" />
+    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

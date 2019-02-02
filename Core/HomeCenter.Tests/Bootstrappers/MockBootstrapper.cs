@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Model.Contracts;
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
+using Microsoft.Extensions.Logging;
 using Moq;
 using SimpleInjector;
 using System.IO;
@@ -10,6 +11,7 @@ namespace HomeCenter.Tests.ComponentModel
     public class MockBootstrapper : Bootstrapper
     {
         private readonly string _configuration;
+        public LogMock Logs { get; } = new LogMock();
 
         public MockBootstrapper(Container container, string configuration) : base(container)
         {
@@ -33,6 +35,11 @@ namespace HomeCenter.Tests.ComponentModel
             {
                 ConfigurationLocation = Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), $@"Configurations\{_configuration}")
             });
+        }
+
+        protected override ILoggerProvider[] GetLogProviders()
+        {
+            return new ILoggerProvider[] { Logs };
         }
     }
 }

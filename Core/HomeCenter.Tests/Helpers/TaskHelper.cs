@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HomeCenter.Utils.Extensions;
 
 namespace HomeCenter.Tests.Helpers
 {
@@ -14,11 +15,11 @@ namespace HomeCenter.Tests.Helpers
             return tcs;
         }
 
-        public static async Task<T> Execute<T>(Func<Task<T>> subscription, Action action)
+        public static async Task<T> Execute<T>(Func<Task<T>> subscription, Action action, int millisecondsDelay = 100)
         {
             var sub = subscription();
             action();
-            var result = await sub;
+            var result = await sub.WhenDone(TimeSpan.FromMilliseconds(millisecondsDelay));
             return result;
         }
     }

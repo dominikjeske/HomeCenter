@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    // TODO - add transformation of input commands and output events
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {
@@ -27,7 +26,6 @@ namespace HomeCenter.Model.Components
         [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private IList<Translator> _translators { get; set; } = new List<Translator>();
-        [Map] private Dictionary<string, IValueConverter> _converters { get; set; } = new Dictionary<string, IValueConverter>();
 
         protected override async Task OnStarted(IContext context)
         {
@@ -63,7 +61,7 @@ namespace HomeCenter.Model.Components
         }
 
         /// <summary>
-        /// When trigger is attached to event from internal adapter we add requierd properties to routing filter if they are missing
+        /// When trigger is attached to event from internal adapter we add required properties to routing filter if they are missing
         /// </summary>
         /// <param name="ev"></param>
         /// <param name="attributes"></param>
@@ -184,7 +182,7 @@ namespace HomeCenter.Model.Components
 
                 if (translator != null)
                 {
-                    await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid);
+                    await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
                 }
                 else
                 {

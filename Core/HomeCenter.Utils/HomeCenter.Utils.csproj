@@ -5,6 +5,7 @@
     <Authors>HomeCenter</Authors>
     <Company>HomeCenter</Company>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

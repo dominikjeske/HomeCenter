@@ -15,6 +15,7 @@
         ],
         "Translators": [
           {
+            // Events that should be translated
             "Type": "Event",
             "From": {
               "Type": "PropertyChangedEvent"
@@ -23,6 +24,8 @@
               "Type": "MotionEvent"
             }
           },
+
+          // Command that should be translated
           {
             "Type": "Command",
             "From": {
@@ -36,6 +39,17 @@
             }
           }
         ]
+      },
+      {
+        "Uid": "RequiredPropertiesComponent",
+        "AdapterRefs": [
+          {
+            "Uid": "RequiredPropertiesAdapter",
+            "Properties": {
+              "PinNumber": 1
+            }
+          }
+        ]
       }
     ],
 
@@ -43,6 +57,10 @@
       {
         "Uid": "TestAdapter",
         "Type": "TestAdapter"
+      },
+      {
+        "Uid": "RequiredPropertiesAdapter",
+        "Type": "RequiredPropertiesAdapter"
       }
     ]
   }
