@@ -11,6 +11,7 @@ using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
+using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
@@ -35,6 +36,10 @@ namespace HomeCenter.Services.Configuration
         private readonly IActorFactory _actorFactory;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRoslynCompilerService _roslynCompilerService;
+
+        private IDictionary<string, PID> _services;
+        private IDictionary<string, PID> _adapters;
+        private IDictionary<string, PID> _components;
 
         protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
@@ -72,12 +77,32 @@ namespace HomeCenter.Services.Configuration
 
             var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
 
-            var services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
-            var adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
-            var components = MapComponents(result);
-            var areas = MapAreas(result, components);
+            _services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
+            _adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
+            _components = MapComponents(result);
+            var areas = MapAreas(result, _components);
 
             await MessageBroker.Publish(SystemStartedEvent.Default).ConfigureAwait(false);
+        }
+
+        protected async Task<bool> Handle(StopSystemQuery stopSystemCommand)
+        {
+            foreach (var service in _services.Values)
+            {
+                await service.StopAsync();
+            }
+
+            foreach (var adapter in _adapters.Values)
+            {
+                await adapter.StopAsync();
+            }
+
+            foreach (var component in _components.Values)
+            {
+                await component.StopAsync();
+            }
+
+            return true;
         }
 
         private void ResolveAttachedProperties(HomeCenterConfigDTO result)

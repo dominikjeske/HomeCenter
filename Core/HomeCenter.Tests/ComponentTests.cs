@@ -3,7 +3,8 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Tests.Dummies;
+using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Services.Controllers;
 using HomeCenter.Tests.Helpers;
 using HomeCenter.Tests.Mocks;
 using Microsoft.Extensions.Logging;
@@ -18,96 +19,96 @@ namespace HomeCenter.Tests.ComponentModel
     [TestClass]
     public class ComponentTests
     {
-        private static TestAdapter _adapter;
-        private static RequiredPropertiesAdapter _adapterWithRequiredProps;
-        private static IMessageBroker _messageBroker;
-        private static LogMock _logs;
+        private (IMessageBroker broker, LogMock logs, ITestAdapter adapter) _builder;
+        private IMessageBroker _broker => _builder.broker;
+        private ITestAdapter _adapter => _builder.adapter;
+        private LogMock _logs => _builder.logs;
 
-        [ClassInitialize]
-        public static async Task Init(TestContext context)
+        [TestCleanup]
+        public async Task CleanUp()
         {
-            var result = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").BuildAndRun().ConfigureAwait(false);
-            _messageBroker = result.broker;
-            _logs = result.logs;
-            _adapter = await _messageBroker.Request<GetAdapterQuery, TestAdapter>(new GetAdapterQuery(), "TestAdapter").ConfigureAwait(false);
-            _adapterWithRequiredProps = await _messageBroker.Request<GetAdapterQuery, RequiredPropertiesAdapter>(new GetAdapterQuery(), "RequiredPropertiesAdapter").ConfigureAwait(false);
-        }
-
-        [TestInitialize]
-        public void TestInit()
-        {
-            _logs.Clear();
+             await _broker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, nameof(Controller)).ConfigureAwait(false);
         }
 
         [TestMethod]
         public async Task Component_PropertyChangeEventTransform()
         {
+            _builder = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").WithAdapter("SimpleAdapter").BuildAndRun().ConfigureAwait(false);
+
             var motionEvent = await TaskHelper.Execute
             (
-                () => _messageBroker.SubscribeAsync<MotionEvent>(),
+                () => _broker.SubscribeAsync<MotionEvent>(),
                 async () => await _adapter.PropertyChanged(PowerState.StateName, false, true)
             );
 
             Assert.AreEqual(typeof(MotionEvent), motionEvent.GetType());
             Assert.AreEqual(nameof(MotionEvent), motionEvent.Type);
-            Assert.AreEqual("TestAdapter", motionEvent.MessageSource);
-            Assert.IsFalse(_logs.Messages.Any(x => x.LogLevel == LogLevel.Error));
+            Assert.AreEqual(_adapter.Uid, motionEvent.MessageSource);
+            Assert.IsFalse(_logs.HasErrors);
         }
 
         [TestMethod]
         public async Task Component_CommandTransform()
         {
+            _builder = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").WithAdapter("SimpleAdapter").BuildAndRun().ConfigureAwait(false);
+
             var command = await TaskHelper.Execute
             (
                 () => _adapter.CommandRecieved.FirstAsync().ToTask(),
-                () => _messageBroker.Send(TurnOnCommand.Default, "TestComponent")
+                () => _broker.Send(TurnOnCommand.Default, "TestComponent")
             );
 
             Assert.AreEqual(typeof(TurnOnCommand), command.GetType());
             Assert.IsTrue(command.ContainsProperty("StateTime"));
             Assert.AreEqual(command.AsInt("StateTime"), 200);
-            Assert.IsFalse(_logs.Messages.Any(x => x.LogLevel == LogLevel.Error));
+            Assert.IsFalse(_logs.HasErrors);
         }
 
         [TestMethod]
         public async Task Component_UnsupportedCommand()
         {
+            _builder = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").WithAdapter("SimpleAdapter").BuildAndRun().ConfigureAwait(false);
+
             var logentry = await TaskHelper.Execute
             (
                 () => _logs.MessageSink.Where(m => m.LogLevel == LogLevel.Error).FirstAsync().ToTask(),
-                () => _messageBroker.Send(VolumeDownCommand.Default, "TestComponent"), 1000
+                () => _broker.Send(VolumeDownCommand.Default, "TestComponent"), 1000
             );
 
-            Assert.IsTrue(logentry.Message.IndexOf("cannot process message because there is no registered handler for [VolumeDownCommand])") > -1);
+            Assert.IsTrue(logentry.Message.IndexOf("cannot process message because there is no registered handler for [VolumeDownCommand]") > -1);
         }
 
         [TestMethod]
         public async Task Component_ShouldAdd_RequiredProperties()
         {
+            _builder = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").WithAdapter("RequiredPropertiesAdapter").BuildAndRun().ConfigureAwait(false);
+
             var command = await TaskHelper.Execute
             (
-                () => _adapterWithRequiredProps.CommandRecieved.FirstAsync().ToTask(),
-                () => _messageBroker.Send(TurnOnCommand.Default, "RequiredPropertiesComponent")
+                () => _adapter.CommandRecieved.FirstAsync().ToTask(),
+                () => _broker.Send(TurnOnCommand.Default, "RequiredPropertiesComponent")
             );
 
-            Assert.IsFalse(_logs.Messages.Any(x => x.LogLevel == LogLevel.Error));
             Assert.IsTrue(command.ContainsProperty(MessageProperties.PinNumber));                          // Component should add this property
+            Assert.IsFalse(_logs.HasErrors);
         }
 
         [TestMethod]
         public async Task Component_PropertyChangeEvent_ShouldHaveRequiredProp()
         {
+            _builder = await new ControllerBuilder().WithConfiguration("unitTestsSimpleScenario.json").WithAdapter("RequiredPropertiesAdapter").BuildAndRun().ConfigureAwait(false);
+
             var ev = await TaskHelper.Execute
             (
-                () => _messageBroker.SubscribeAsync<PropertyChangedEvent>(),
-                async () => await _adapterWithRequiredProps.PropertyChanged(PowerState.StateName, false, true)
+                () => _broker.SubscribeAsync<PropertyChangedEvent>(),
+                async () => await _adapter.PropertyChanged(PowerState.StateName, false, true)
             );
 
             Assert.AreEqual(typeof(PropertyChangedEvent), ev.GetType());
             Assert.AreEqual(nameof(PropertyChangedEvent), ev.Type);
             Assert.AreEqual("RequiredPropertiesAdapter", ev.MessageSource);
-            Assert.IsFalse(_logs.Messages.Any(x => x.LogLevel == LogLevel.Error));
             Assert.IsTrue(ev.ContainsProperty(MessageProperties.PinNumber));
+            Assert.IsFalse(_logs.HasErrors);
         }
     }
 }

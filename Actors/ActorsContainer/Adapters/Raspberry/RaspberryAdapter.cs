@@ -22,12 +22,12 @@ namespace HomeCenter.Adapters.PC
         protected RaspberryAdapter(IGpioDevice gpioDevice)
         {
             _gpioDevice = gpioDevice;
-
-            _disposables.Add(_gpioDevice.PinChanged.SubscribeAsync(OnPinChanged));
         }
 
         protected override Task OnStarted(IContext context)
         {
+            _disposables.Add(_gpioDevice.PinChanged.SubscribeAsync(OnPinChanged));
+
             foreach (var pin in AsList(MessageProperties.PinChangeWithPullUp, Enumerable.Empty<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullUp);

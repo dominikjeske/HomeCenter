@@ -88,7 +88,7 @@ namespace HomeCenter.Model.Actors
             return pid;
         }
 
-        private PID CreatePidAddress(string uid, string address, IContext parent)
+        public PID CreatePidAddress(string uid, string address, IContext parent)
         {
             address = address ?? NONHOST;
 

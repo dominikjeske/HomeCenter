@@ -12,21 +12,24 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.Mocks
 {
-
     /// <summary>
     /// Adapter that have to be controlled with required properties when sending commands
     /// </summary>
     [ProxyCodeGenerator]
-    public abstract class RequiredPropertiesAdapter : Adapter
+    public abstract class RequiredPropertiesAdapter : Adapter, ITestAdapter
     {
-        
-        public Subject<Command> CommandRecieved = new Subject<Command>();
+        public Subject<Command> CommandRecieved { get; } = new Subject<Command>();
 
         protected DiscoveryResponse Handle(DiscoverQuery discoverQuery)
         {
             _requierdProperties.Add(MessageProperties.PinNumber);
 
             return new DiscoveryResponse(new string[] { MessageProperties.PinNumber }, new PowerState());
+        }
+
+        public void Handle(TurnOnCommand turnOnCommand)
+        {
+            CommandRecieved.OnNext(turnOnCommand);
         }
 
         protected RequiredPropertiesAdapter Handle(GetAdapterQuery getAdapterQuery)
@@ -37,11 +40,6 @@ namespace HomeCenter.Tests.Mocks
         public async Task PropertyChanged<T>(string state, T oldValue, T newValue)
         {
             await UpdateState(state, oldValue, newValue, new Dictionary<string, string> { [MessageProperties.PinNumber] = "1" }).ConfigureAwait(false);
-        }
-
-        public void Handle(TurnOnCommand turnOnCommand)
-        {
-            CommandRecieved.OnNext(turnOnCommand);
         }
     }
 }

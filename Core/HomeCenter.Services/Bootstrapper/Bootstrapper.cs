@@ -78,7 +78,8 @@ namespace HomeCenter.Services.Bootstrapper
         private PID CreateController()
         {
             var actorFactory = _container.GetInstance<IActorFactory>();
-            return actorFactory.CreateActor<Controller>();
+
+            return actorFactory.CreateActor<Controller>(nameof(Controller));
         }
 
         protected virtual void RegisterBaseDependencies()

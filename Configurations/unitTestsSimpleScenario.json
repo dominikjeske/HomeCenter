@@ -10,7 +10,7 @@
         "Uid": "TestComponent",
         "AdapterRefs": [
           {
-            "Uid": "TestAdapter"
+            "Uid": "SimpleAdapter"
           }
         ],
         "Translators": [
@@ -55,8 +55,8 @@
 
     "Adapters": [
       {
-        "Uid": "TestAdapter",
-        "Type": "TestAdapter"
+        "Uid": "SimpleAdapter",
+        "Type": "SimpleAdapter"
       },
       {
         "Uid": "RequiredPropertiesAdapter",

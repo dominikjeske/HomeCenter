@@ -15,7 +15,7 @@ namespace HomeCenter.Tests.Helpers
             return tcs;
         }
 
-        public static async Task<T> Execute<T>(Func<Task<T>> subscription, Action action, int millisecondsDelay = 100)
+        public static async Task<T> Execute<T>(Func<Task<T>> subscription, Action action, int millisecondsDelay = 5000)
         {
             var sub = subscription();
             action();

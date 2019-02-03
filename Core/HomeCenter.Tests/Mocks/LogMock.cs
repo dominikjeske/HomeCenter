@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Subjects;
 
 namespace HomeCenter.Tests.ComponentModel
@@ -26,11 +27,12 @@ namespace HomeCenter.Tests.ComponentModel
             MessageSink.OnNext(entry);
         }
 
+        public bool HasErrors => Messages.Any(x => x.LogLevel == LogLevel.Error);
+
         public void Clear()
         {
             Messages.Clear();
         }
-
 
         public class CustomConsoleLogger : ILogger
         {
