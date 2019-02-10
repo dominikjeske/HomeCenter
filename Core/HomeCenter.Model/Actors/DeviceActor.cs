@@ -35,9 +35,9 @@ namespace HomeCenter.Model.Actors
             }
             catch (System.Exception e)
             {
-                //throw;
+                throw;
                 //TODO finish exception handling
-                Logger.LogError(e, $"Exception in device {Uid}: {e}");
+                //Logger.LogError(e, $"Exception in device {Uid}: {e}");
             }
         }
 
@@ -142,13 +142,13 @@ namespace HomeCenter.Model.Actors
 
         protected virtual Task OnStop(IContext context)
         {
-            //TODO check if this is executed only once
-            _disposables.Dispose();
             return Task.CompletedTask;
         }
 
         protected virtual Task OnStopped(IContext context)
         {
+            _disposables.Dispose();
+
             return Task.CompletedTask;
         }
 

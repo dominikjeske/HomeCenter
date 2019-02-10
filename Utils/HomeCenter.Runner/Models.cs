@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Actors;
+﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using Quartz;
 using System;
@@ -6,59 +7,83 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner.Codegen
 {
+    [TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
+    public partial class MyBuilder
+    {
+        
+    }
+
+
+
+
+
+
+
+    public class TestBuilderSample
+    {
+        public string Name { get; set; }
+
+        public int Date { get; set; }
+
+        public TimeSpan Prefix_Time { get; set; }
+    }
+
+   
+    
+
     //[ProxyCodeGenerator]
-    public class Device : DeviceActor
-    {
-        public Device(IScheduler scheduler)
-        {
-        }
+    //public class Device : DeviceActor
+    //{
+    //    public Device(IScheduler scheduler)
+    //    {
+    //    }
 
-        //protected Task Invoke(Event command)
-        //{
-        //    return Task.CompletedTask;
-        //}
+    //    //protected Task Invoke(Event command)
+    //    //{
+    //    //    return Task.CompletedTask;
+    //    //}
 
-        //protected Task Invoke(SonyRegisterQuery command)
-        //{
-        //    return Task.CompletedTask;
-        //}
+    //    //protected Task Invoke(SonyRegisterQuery command)
+    //    //{
+    //    //    return Task.CompletedTask;
+    //    //}
 
-        [Subscribe]
-        protected byte[] Handle(HttpPostQuery query)
-        {
+    //    [Subscribe]
+    //    protected byte[] Handle(HttpPostQuery query)
+    //    {
             
-            return Array.Empty<byte>();
+    //        return Array.Empty<byte>();
             
-        }
+    //    }
 
-        [Subscribe]
-        protected int Handle2(HttpPostQuery query)
-        {
+    //    [Subscribe]
+    //    protected int Handle2(HttpPostQuery query)
+    //    {
 
-            return 0;
+    //        return 0;
 
-        }
-    }
+    //    }
+    //}
 
-    public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
-    {
+    //public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
+    //{
       
-    }
+    //}
 
-    public abstract class HttpPostQuery : Query
-    {
+    //public abstract class HttpPostQuery : Query
+    //{
        
-    }
+    //}
 
-    public abstract class Query
-    {
+    //public abstract class Query
+    //{
 
-    }
+    //}
 
-    public interface IFormatableMessage<T>
-    {
+    //public interface IFormatableMessage<T>
+    //{
      
-    }
+    //}
 
     //[CommandBuilder]
     //public class CommandBuilder : Command

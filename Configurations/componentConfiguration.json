@@ -294,19 +294,30 @@
           }
         ]
       },
+      //{
+      //  "Uid": "RoomTemperature",
+      //  "AdapterRefs": [
+      //    {
+      //      "Uid": "TemperatureBridge",
+      //      "Properties": {
+      //        "PinNumber": "4"
+      //      }
+      //    },
+      //    {
+      //      "Uid": "HumidityBridge",
+      //      "Properties": {
+      //        "PinNumber": "4"
+      //      }
+      //    }
+      //  ]
+      //},
       {
-        "Uid": "RoomTemperature",
+        "Uid": "CurrentTest",
         "AdapterRefs": [
           {
-            "Uid": "TemperatureBridge",
+            "Uid": "CurrentBridge",
             "Properties": {
-              "PinNumber": "4"
-            }
-          },
-          {
-            "Uid": "HumidityBridge",
-            "Properties": {
-              "PinNumber": "4"
+              "PinNumber": "0"
             }
           }
         ]
@@ -426,6 +437,13 @@
       {
         "Uid": "HumidityBridge",
         "Type": "HumidityBridgeAdapter",
+        "Properties": {
+          "Address": 50
+        }
+      },
+      {
+        "Uid": "CurrentBridge",
+        "Type": "CurrentBridgeAdapter",
         "Properties": {
           "Address": 50
         }

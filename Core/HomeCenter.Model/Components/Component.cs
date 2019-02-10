@@ -12,12 +12,29 @@ using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
 using Proto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
+
+    [TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
+    public partial class MyBuilder
+    {
+
+    }
+
+    public class TestBuilderSample
+    {
+        public string Name { get; set; }
+
+        public int Date { get; set; }
+
+        public TimeSpan Prefix_Time { get; set; }
+    }
+
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {

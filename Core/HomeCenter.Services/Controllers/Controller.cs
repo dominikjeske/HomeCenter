@@ -24,16 +24,19 @@ namespace HomeCenter.Services.Controllers
             _startupConfiguration = startupConfiguration;
         }
 
-        protected override async Task OnStarted(Proto.IContext context)
+        protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            StartSystemFromConfiguration();
+            StartSystemFromConfiguration(context);
         }
 
-        private void StartSystemFromConfiguration()
+        private void StartSystemFromConfiguration(IContext context)
         {
-            _configService = _actorFactory.CreateActor<ConfigurationService>();
+            _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
+
+
+
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), _configService);
         }
 

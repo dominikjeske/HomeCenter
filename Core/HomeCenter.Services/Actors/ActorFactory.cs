@@ -55,7 +55,7 @@ namespace HomeCenter.Model.Actors
         {
             if (routing == 0)
             {
-                return GetOrCreateActor(id, address, parent, () => CreateActor(typeof(object), id, parent, () => WithGuardiad(Props.FromProducer(actorProducer))));
+                return GetOrCreateActor(id, address, parent, () => CreateActor(typeof(object), id, parent, () => WithGuardiad(Props.FromProducer(actorProducer), parent)));
             }
             return GetOrCreateActor(id, address, parent, () => CreateActor(typeof(object), id, parent, () => Router.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
         }
@@ -63,13 +63,20 @@ namespace HomeCenter.Model.Actors
         private PID CreateActorFromType(Type actorType, string id = default, string address = default, IContext parent = default)
         {
             id = id ?? actorType.FullName;
-            return GetOrCreateActor(id, address, parent, () => CreateActor(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)))));
+            return GetOrCreateActor(id, address, parent, () => CreateActor(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)), parent)));
         }
 
 
-        private Props WithGuardiad(Props props)
+        private Props WithGuardiad(Props props, IContext parent)
         {
-            return props.WithGuardianSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
+            if (parent == null)
+            {
+                return props.WithGuardianSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
+            }
+            else
+            {
+                return props.WithChildSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
+            }
         }
 
         private Props WithChildGuardiad(Props props)
@@ -106,7 +113,7 @@ namespace HomeCenter.Model.Actors
         {
             _logger.LogError(reason, $"Exception in device {pid}: {reason}");
 
-            return SupervisorDirective.Escalate;
+            return SupervisorDirective.Resume;
         }
 
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)

@@ -41,6 +41,7 @@ namespace HomeCenter.Services.Configuration
         private IDictionary<string, PID> _adapters;
         private IDictionary<string, PID> _components;
 
+
         protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

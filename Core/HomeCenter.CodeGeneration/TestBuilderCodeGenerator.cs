@@ -8,11 +8,11 @@ using Validation;
 
 namespace HomeCenter.CodeGeneration
 {
-    public class ProxyCodeGenerator : IRichCodeGenerator
+    public class TestBuilderCodeGenerator : IRichCodeGenerator
     {
         private readonly AttributeData _attributeData;
 
-        public ProxyCodeGenerator(AttributeData attributeData)
+        public TestBuilderCodeGenerator(AttributeData attributeData)
         {
             Requires.NotNull(attributeData, nameof(attributeData));
             _attributeData = attributeData;
@@ -25,10 +25,12 @@ namespace HomeCenter.CodeGeneration
 
         public Task<RichGenerationResult> GenerateRichAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
-            var proxy = new ProxyGenerator().Generate(context);
+            var par = _attributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
+            var from = _attributeData.ConstructorArguments[1].Value as string;
+            var to = _attributeData.ConstructorArguments[2].Value as string;
+
+            var proxy = new TestBuilerGenerator().Generate(context, par, from, to);
             return Task.FromResult(proxy);
         }
     }
-
-
 }

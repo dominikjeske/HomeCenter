@@ -5,6 +5,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Tests.Dummies;
+using Proto;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
@@ -35,5 +36,7 @@ namespace HomeCenter.Tests.Mocks
         {
             await UpdateState(state, oldValue, newValue).ConfigureAwait(false);
         }
+
+
     }
 }

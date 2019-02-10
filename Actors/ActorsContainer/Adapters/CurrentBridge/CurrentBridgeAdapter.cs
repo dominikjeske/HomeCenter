@@ -16,7 +16,9 @@ namespace HomeCenter.Adapters.CurrentBridge
     [ProxyCodeGenerator]
     public abstract class CurrentBridgeAdapter : Adapter
     {
-        private readonly Dictionary<byte, byte> _state = new Dictionary<byte, byte>();
+        private const int I2C_ACTION_CURRENT = 5;
+        private readonly Dictionary<int, double> _state = new Dictionary<int, double>();
+        private int _i2cAddress;
 
         protected CurrentBridgeAdapter()
         {
@@ -27,12 +29,12 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             await base.OnStarted(context).ConfigureAwait(false);
 
-            var _i2cAddress = AsInt(MessageProperties.Address);
+            _i2cAddress = AsInt(MessageProperties.Address);
 
-            var registration = new RegisterSerialCommand(Self, 5, new Format[]
+            var registration = new RegisterSerialCommand(Self, I2C_ACTION_CURRENT, new Format[]
             {
-                new Format(1, typeof(byte), "Pin"),
-                new Format(2, typeof(byte), "Current")
+                new Format(1, typeof(byte), MessageProperties.PinNumber),
+                new Format(2, typeof(float), MessageProperties.Value)
             });
 
             await MessageBroker.SendToService(registration).ConfigureAwait(false);
@@ -40,16 +42,35 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected async Task Handle(SerialResultEvent serialResult)
         {
-            var pin = serialResult.AsByte("Pin");
-            var currentExists = serialResult.AsByte("Current");
-            var previousValue = _state[pin];
+            var pin = serialResult.AsByte(MessageProperties.PinNumber);
+            var current = serialResult.AsDouble(MessageProperties.Value);
 
-            _state[pin] = await UpdateState(HumidityState.StateName, previousValue, currentExists).ConfigureAwait(false);
+            if (_state.ContainsKey(pin))
+            {
+                var oldValue = _state[pin];
+
+                _state[pin] = await UpdateState(CurrentState.StateName, oldValue, current, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
+            }
         }
 
-        protected DiscoveryResponse DeviceDiscoveryQuery(DiscoverQuery message)
+        protected DiscoveryResponse Discover(DiscoverQuery message)
         {
+            RegisterPinNumber(message);
+
             return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteMode.Read));
+        }
+
+        private void RegisterPinNumber(DiscoverQuery message)
+        {
+            var pin = message.AsByte(MessageProperties.PinNumber);
+            var registrationMessage = new byte[] { I2C_ACTION_CURRENT, pin };
+
+            if (!_state.ContainsKey(pin))
+            {
+                _state.Add(pin, 0);
+            }
+
+            MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, registrationMessage));
         }
     }
 }

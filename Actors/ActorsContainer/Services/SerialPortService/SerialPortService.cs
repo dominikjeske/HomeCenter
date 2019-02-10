@@ -2,7 +2,6 @@
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Service;
