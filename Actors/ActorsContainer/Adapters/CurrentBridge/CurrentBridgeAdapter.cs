@@ -7,7 +7,9 @@ using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
+using Microsoft.Extensions.Logging;
 using Proto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,6 +50,8 @@ namespace HomeCenter.Adapters.CurrentBridge
             if (_state.ContainsKey(pin))
             {
                 var oldValue = _state[pin];
+
+                Logger.LogWarning($"CURRENT: {current} => {Math.Abs(oldValue - current)}");
 
                 _state[pin] = await UpdateState(CurrentState.StateName, oldValue, current, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
             }

@@ -7,9 +7,10 @@ ACS712::ACS712()
 
 int ACS712::calibrate(ACS712_type type, uint8_t _pin) 
 {
-    pin = _pin;
+  pin = _pin;
 
-	switch (type) {
+	switch (type) 
+	{
 		case ACS712_05B:
 			sensitivity = 0.185;
 			break;
@@ -19,7 +20,7 @@ int ACS712::calibrate(ACS712_type type, uint8_t _pin)
 		case ACS712_30A:
 			sensitivity = 0.066;
 			break;
-	    case ACS723:
+	  case ACS723:
 			sensitivity = 0.400;
 			break;
 	}
@@ -31,27 +32,6 @@ int ACS712::calibrate(ACS712_type type, uint8_t _pin)
 	}
 	zero = acc / 10;
 	return zero;
-}
-
-void ACS712::setZeroPoint(int _zero) 
-{
-	zero = _zero;
-}
-
-void ACS712::setSensitivity(float sens) 
-{
-	sensitivity = sens;
-}
-
-float ACS712::getCurrentDC() 
-{
-	int16_t acc = 0;
-	for (int i = 0; i < 10; i++) 
-	{
-		acc += analogRead(pin) - zero;
-	}
-	float I = (float)acc / 10.0 / ADC_SCALE * VREF / sensitivity;
-	return I;
 }
 
 float ACS712::getCurrentAC(uint16_t frequency) 

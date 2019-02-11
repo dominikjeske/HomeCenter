@@ -12,13 +12,7 @@ namespace HomeCenter.Runner.Codegen
     {
         
     }
-
-
-
-
-
-
-
+    
     public class TestBuilderSample
     {
         public string Name { get; set; }

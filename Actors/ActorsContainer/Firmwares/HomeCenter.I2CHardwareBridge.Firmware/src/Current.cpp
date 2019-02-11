@@ -55,17 +55,19 @@ void Current::ReadCurrent()
 	for (uint8_t i = 0; i < Current::PinsIndex; i++)
 	{
 		float readValue = Current::Readers[i].getCurrentAC();
-        float lastValue = Current::Cache[i];
 
-		uint8_t forceCheck = Current::Pins[i][1];
-		
-		forceCheck = Current::Pins[i][1];
-		
-		if((readValue != lastValue) || forceCheck)
+		if(readValue < ZERO_LEVEL)    // current below 100mA will be treated as 0
 		{
-			Current::Pins[i][1] = 0;        // Reset force pin
-			Current::Cache[i] = readValue;
+			readValue = 0.0;
+		}
 
+		float lastValue = Current::Cache[i];
+		uint8_t forceCheck = Current::Pins[i][1];
+		Current::Pins[i][1] = 0;        // Reset force pin
+
+        if(lastValue == 0.00 && readValue > 0.00 || ((abs(readValue - lastValue) / lastValue) * 100.0) > MIN_DIFF || forceCheck)
+		{
+			Current::Cache[i] = readValue;
 			converter.value = readValue;
 
 			Serial.write(4 + 1);
@@ -76,7 +78,7 @@ void Current::ReadCurrent()
 			Serial.write(converter.bytes.b2);
 			Serial.write(converter.bytes.b3);
 			Serial.flush();
-		}
+		} 
 	}
 }
 
