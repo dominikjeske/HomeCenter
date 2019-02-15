@@ -3,7 +3,7 @@
 #include "Infrared.h"
 #include "LPD433.h"
 #include "Dht.h"
-#include "Current.h"
+#include "Dimmer.h"
 #include "common.h"
 
 #define IS_HIGH(pin) (PIND & (1<<pin))
@@ -69,9 +69,9 @@ void handleI2CWrite(int dataLength)
 			Infrared::Send(package, packageLength);
 			break;
 		}
-		case I2C_ACTION_Current:
+		case I2C_ACTION_Dimmer:
 		{
-			Current::Register(package, packageLength);
+			Dimmer::Register(package, packageLength);
 			break;
 		}
 		case I2C_ACTION_DEBUG:
@@ -92,6 +92,7 @@ void setup()
 	SerialEx::Init();
 	Infrared::Init();
 	LPD433::Init();
+	//Dimmer::Test();
 
 	Wire.begin(I2C_SLAVE_ADDRESS);
 	Wire.onReceive(handleI2CWrite);
@@ -108,5 +109,5 @@ void loop()
 
 	DHT::ProcessLoop();
 
-	Current::ProcessLoop();
+	Dimmer::ProcessLoop();
 }

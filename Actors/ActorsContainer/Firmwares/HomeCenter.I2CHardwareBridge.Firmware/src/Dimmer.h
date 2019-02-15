@@ -2,10 +2,7 @@
 #include <Arduino.h>
 #include "ACS712.h"
 
-#define ZERO_LEVEL 0.1 
-#define MIN_DIFF 5.0 
-
-class Current
+class Dimmer
 {
   private:
     static uint8_t Pins[8][2];
@@ -15,9 +12,11 @@ class Current
     static unsigned long LastMillies;
     static uint8_t GetPinIndex(uint8_t pin);
     static void ReadCurrent();
+    static float RawValues[10];
     
   public:
     static void ProcessLoop();
     static void Register(uint8_t package[], uint8_t packageLength);
+    static void Test();
 };
 

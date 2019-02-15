@@ -16,13 +16,13 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.CurrentBridge
 {
     [ProxyCodeGenerator]
-    public abstract class CurrentBridgeAdapter : Adapter
+    public abstract class DimmerBridgeAdapter : Adapter
     {
-        private const int I2C_ACTION_CURRENT = 5;
+        private const int I2C_ACTION_DIMMER = 5;
         private readonly Dictionary<int, double> _state = new Dictionary<int, double>();
         private int _i2cAddress;
 
-        protected CurrentBridgeAdapter()
+        protected DimmerBridgeAdapter()
         {
             _requierdProperties.Add(MessageProperties.PinNumber);
         }
@@ -33,7 +33,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             _i2cAddress = AsInt(MessageProperties.Address);
 
-            var registration = new RegisterSerialCommand(Self, I2C_ACTION_CURRENT, new Format[]
+            var registration = new RegisterSerialCommand(Self, I2C_ACTION_DIMMER, new Format[]
             {
                 new Format(1, typeof(byte), MessageProperties.PinNumber),
                 new Format(2, typeof(float), MessageProperties.Value)
@@ -67,7 +67,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         private void RegisterPinNumber(DiscoverQuery message)
         {
             var pin = message.AsByte(MessageProperties.PinNumber);
-            var registrationMessage = new byte[] { I2C_ACTION_CURRENT, pin };
+            var registrationMessage = new byte[] { I2C_ACTION_DIMMER, pin };
 
             if (!_state.ContainsKey(pin))
             {

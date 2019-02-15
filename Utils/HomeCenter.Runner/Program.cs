@@ -14,6 +14,8 @@ namespace HomeCenter.Runner
 
             int programNumber = 3;
             string input = "";
+
+
             string remote = configuration.GetValue<string>("Address");
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

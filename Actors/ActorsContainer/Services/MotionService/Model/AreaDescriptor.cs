@@ -11,5 +11,7 @@ namespace HomeCenter.Services.MotionService.Model
         public double? LightIntensityAtNight { get; set; }           // When using dimmers we would like to make intensity different at night
         public TimeSpan TurnOffTimeout { get; set; }
         public bool TurnOffAutomationDisabled { get; set; }          // When we want only turn on light but not turn off by automation
+
+        public AreaDescriptor Clone() => (AreaDescriptor)MemberwiseClone();
     }
 }

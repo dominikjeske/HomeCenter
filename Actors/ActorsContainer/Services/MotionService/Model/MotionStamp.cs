@@ -1,5 +1,4 @@
-﻿using Force.DeepCloner;
-using System;
+﻿using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
@@ -15,7 +14,7 @@ namespace HomeCenter.Services.MotionService.Model
         {
             if (Time.HasValue)
             {
-                Previous = this.ShallowClone();
+                Previous = Clone();
             }
 
             Time = time;
@@ -23,5 +22,7 @@ namespace HomeCenter.Services.MotionService.Model
         }
 
         public void UnConfuze() => CanConfuze = false;
+
+        public MotionStamp Clone() => (MotionStamp)MemberwiseClone();
     }
 }

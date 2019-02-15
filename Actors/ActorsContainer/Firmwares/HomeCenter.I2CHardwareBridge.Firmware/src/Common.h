@@ -13,7 +13,7 @@
 #define I2C_ACTION_433MHz 2
 #define I2C_ACTION_Infrared 3
 #define I2C_ACTION_Infrared_RAW 4
-#define I2C_ACTION_Current 5
+#define I2C_ACTION_Dimmer 5
 #define I2C_ACTION_HUMANITY 6
 #define I2C_ACTION_DEBUG 10
 

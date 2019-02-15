@@ -312,10 +312,10 @@
       //  ]
       //},
       {
-        "Uid": "CurrentTest",
+        "Uid": "DimmerTest",
         "AdapterRefs": [
           {
-            "Uid": "CurrentBridge",
+            "Uid": "DimmerBridge",
             "Properties": {
               "PinNumber": "0"
             }
@@ -442,8 +442,8 @@
         }
       },
       {
-        "Uid": "CurrentBridge",
-        "Type": "CurrentBridgeAdapter",
+        "Uid": "DimmerBridge",
+        "Type": "DimmerBridgeAdapter",
         "Properties": {
           "Address": 50
         }

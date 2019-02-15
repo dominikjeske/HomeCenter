@@ -1,5 +1,4 @@
-﻿using Force.DeepCloner;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
@@ -147,7 +146,7 @@ namespace HomeCenter.Services.MotionService
         protected AreaDescriptor Handle(AreaDescriptorQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _rooms[roomId]._areaDescriptor.ShallowClone();
+            return _rooms[roomId]._areaDescriptor.Clone();
         }
 
         protected MotionStatus Handle(MotionServiceStatusQuery query)
@@ -184,7 +183,7 @@ namespace HomeCenter.Services.MotionService
 
             if (confusionPoints.Count == 0)
             {
-                //TODO change this to async?
+                //TODO change this to Async?
                 MarkVector(motionVector).GetAwaiter().GetResult();
             }
             else if (_rooms[motionVector.Start.Uid].NumberOfPersonsInArea > 0)
