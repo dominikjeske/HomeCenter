@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace HomeCenter.Utils.Extensions
 {
@@ -31,7 +32,28 @@ namespace HomeCenter.Utils.Extensions
             {
                 return new byte[] { Convert.ToByte(byteString, 16) };
             }
-            
+        }
+
+        public static bool ParseAsDouble(this string input, out double value)
+        {
+            var separator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            if (separator == ",")
+            {
+                input = input.Replace(".", ",");
+            }
+            else
+            {
+                input = input.Replace(",", ".");
+            }
+
+            if (double.TryParse(input, out double number))
+            {
+                value = number;
+                return true;
+            }
+
+            value = 0;
+            return false;
         }
     }
 }

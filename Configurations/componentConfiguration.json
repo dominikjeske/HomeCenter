@@ -312,13 +312,10 @@
       //  ]
       //},
       {
-        "Uid": "DimmerTest",
+        "Uid": "DimmerComponent",
         "AdapterRefs": [
           {
-            "Uid": "DimmerBridge",
-            "Properties": {
-              "PinNumber": "0"
-            }
+            "Uid": "Dimmer"
           }
         ]
       },
@@ -447,10 +444,21 @@
         "Properties": {
           "Address": 50
         }
+      },
+      {
+        "Uid": "Dimmer",
+        "Type": "DimmerSCO812Adapter",
+        "Properties": {
+          "PowerAdapter": "HSRel8_1",
+          "PowerAdapterPin": 0,
+          "PowerLevelAdapterUid": "DimmerBridge",
+          "PowerLevelAdapterPin": 0,
+          "TimeToFullLight": 2500,
+          "MinimumCurrent": 0.13,
+          "MaximumCurrent": 0.31
+        }
       }
-
     ],
-
     "Services": [
       {
         "Uid": "HttpService",

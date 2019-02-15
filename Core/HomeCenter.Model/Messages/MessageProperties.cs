@@ -1,5 +1,7 @@
 ﻿namespace HomeCenter.Model.Messages
 {
+
+
     public static class MessageProperties
     {
         //Common
@@ -22,6 +24,8 @@
         public const string Repeat = nameof(Repeat);
         public const string Code = nameof(Code);
         public const string StateTime = nameof(StateTime);
+        public const string PowerLevel = nameof(PowerLevel);
+        public const string Delta = nameof(Delta);
 
         //Events
         public const string OldValue = nameof(OldValue);
@@ -60,6 +64,8 @@
         public const string InfraredAdapter = nameof(InfraredAdapter);
         public const string FirstPortWriteMode = nameof(FirstPortWriteMode);
         public const string SecondPortWriteMode = nameof(SecondPortWriteMode);
+        public const string Minimum = nameof(Minimum);
+        public const string Maximum = nameof(Maximum);
 
         //Services
         public const string Body = nameof(Body);

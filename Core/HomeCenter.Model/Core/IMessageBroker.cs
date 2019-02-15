@@ -37,12 +37,15 @@ namespace HomeCenter.Model.Core
         SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
 
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
-        
+
         IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event;
 
         SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event;
 
         Task PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null);
+
         void SendWithTranslate(ActorMessage source, ActorMessage destination, string address);
+
+        SubscriptionToken SubscribeForEvent<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter = null) where T : Event;
     }
 }

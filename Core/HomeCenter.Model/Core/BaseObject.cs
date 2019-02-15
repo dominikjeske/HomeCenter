@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Broker;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Utils.Extensions;
 using Newtonsoft.Json;
@@ -18,7 +17,7 @@ namespace HomeCenter.Model.Core
             get => AsString(MessageProperties.Uid, GetType().Name);
             set
             {
-                // Prevent for setting UID null during initialisation
+                // Prevent for setting UID null during initialization
                 if (value != null)
                 {
                     SetProperty(MessageProperties.Uid, value);
@@ -210,7 +209,7 @@ namespace HomeCenter.Model.Core
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (double.TryParse(_properties[propertyName], out double value))
+            if (_properties[propertyName].ParseAsDouble(out double value))
             {
                 return value;
             }

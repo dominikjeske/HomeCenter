@@ -58,6 +58,12 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.Subscribe(action, filter);
         }
 
+        public SubscriptionToken SubscribeForEvent<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter = null) where T : Event
+        {
+            return _eventAggregator.SubscribeAsync(action, filter);
+        }
+
+
         public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
                                                                               
         {

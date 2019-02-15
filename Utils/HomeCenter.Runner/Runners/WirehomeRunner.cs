@@ -25,7 +25,8 @@ namespace HomeCenter.Runner
                 new SonyRunner("SonyComponent"),
                 new RemoteSocketRunner("RemoteLamp3"),
                 new RaspberryRunner("RaspberryLed"),
-                new CCToolsLampRunner("CCToolsLamp")
+                new CCToolsLampRunner("CCToolsLamp"),
+                new DimmerRunner("DimmerComponent")
             };
 
             _tasks = _runners.Select(x => x.Uid).ToArray();

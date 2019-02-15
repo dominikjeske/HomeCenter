@@ -51,8 +51,6 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 var oldValue = _state[pin];
 
-                Logger.LogWarning($"CURRENT: {current} => {Math.Abs(oldValue - current)}");
-
                 _state[pin] = await UpdateState(CurrentState.StateName, oldValue, current, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
             }
         }
@@ -61,7 +59,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             RegisterPinNumber(message);
 
-            return new DiscoveryResponse(RequierdProperties(), new CurrentState(ReadWriteMode.Read));
+            return new DiscoveryResponse(RequierdProperties(), new CurrentState());
         }
 
         private void RegisterPinNumber(DiscoverQuery message)
