@@ -205,10 +205,25 @@ namespace HomeCenter.Model.Core
             throw new FormatException($"Property {propertyName} value {_properties[propertyName]} is not proper time value");
         }
 
-        public double AsDouble(string propertyName, double? defaultValue = null)
+        public double AsDouble(string propertyName, double defaultValue = double.MinValue)
         {
-            if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
+            if (!_properties.ContainsKey(propertyName))
+            {
+                if (defaultValue != double.MinValue) return defaultValue;
+                throw new ArgumentException(propertyName);
+            }
+            return AsDoubleInner(propertyName);
+        }
 
+        public double? AsNullableDouble(string propertyName)
+        {
+            if (!_properties.ContainsKey(propertyName)) return null;
+
+            return AsDoubleInner(propertyName);
+        }
+
+        private double AsDoubleInner(string propertyName)
+        {
             if (_properties[propertyName].ParseAsDouble(out double value))
             {
                 return value;

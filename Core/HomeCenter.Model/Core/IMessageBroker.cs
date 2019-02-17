@@ -46,6 +46,5 @@ namespace HomeCenter.Model.Core
 
         void SendWithTranslate(ActorMessage source, ActorMessage destination, string address);
 
-        SubscriptionToken SubscribeForEvent<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter = null) where T : Event;
     }
 }
