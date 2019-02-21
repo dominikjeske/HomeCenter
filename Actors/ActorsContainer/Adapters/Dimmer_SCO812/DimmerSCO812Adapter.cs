@@ -7,6 +7,7 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -26,19 +27,11 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? _Minimum;
         private double? _Maximum;
 
-        private Behavior _behavior = new Behavior();
-        private double? _Spectrum;
+        
+        private double? _Range;
         private double? _PowerLevel;
         private double? _CurrentValue;
 
-        protected DimmerSCO812Adapter()
-        {
-            _behavior.Become(StandardMode);
-        }
-
-        public override Task ReceiveAsyncInternal(IContext context) => _behavior.ReceiveAsync(context);
-
-        protected Task StandardMode(IContext context) => base.ReceiveAsyncInternal(context);
 
         protected override async Task OnStarted(IContext context)
         {
@@ -48,7 +41,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             _PowerAdapterPin = AsInt("PowerAdapterPin");
             _PowerLevelAdapterUid = AsString("PowerLevelAdapterUid");
             _PowerLevelAdapterPin = AsInt("PowerLevelAdapterPin");
-            _TimeToFullLight = AsTime("TimeToFullLight");
+            _TimeToFullLight = AsIntTime("TimeToFullLight");
             _Minimum = AsNullableDouble("Minimum");
             _Maximum = AsNullableDouble("Maximum");
 
@@ -56,13 +49,24 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             _disposables.Add(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, _PowerLevelAdapterUid));
 
-            if (TryCalculateSpectrum())
+            if (!TryCalculateSpectrum())
             {
-                _behavior.Become(CalibrationCheckState);
+                Logger.LogWarning($"Calibration of {Uid} : Start");
+                Become(CalibrationCheckState);
 
                 // We change state to check in which state we are
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
+        }
+
+        private bool TryCalculateSpectrum()
+        {
+            if (_Minimum.HasValue && _Maximum.HasValue)
+            {
+                _Range = _Maximum.Value - _Minimum.Value;
+                return true;
+            }
+            return false;
         }
 
         private async Task CalibrationCheckState(IContext context)
@@ -75,72 +79,86 @@ namespace HomeCenter.Adapters.CurrentBridge
                 // I we changed OFF => ON we have to turn off before start
                 if (newValue > oldValue)
                 {
+                    Logger.LogWarning($"Calibration of {Uid} : detect ON state. Dimmer will be turned off");
+
                     ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
+
+                    await Task.Delay(CHANGE_POWER_STATE_TIME * 4);
                 }
 
-                var longStateCommand = TurnOnCommand.Create((int)_TimeToFullLight.TotalMilliseconds);
 
-                _behavior.Become(CalibrationMaximumLight);
+                Logger.LogWarning($"Calibration of {Uid} : waiting to reach MAX state");
+
+                var measureTime = _TimeToFullLight + TimeSpan.FromMilliseconds(2000);
+                var longStateCommand = TurnOnCommand.Create((int)measureTime.TotalMilliseconds);
+
+                Become(CalibrationMaximumLight);
 
                 ForwardToPowerAdapter(longStateCommand);
 
-                await Scheduler.DelayCommandExecution(_TimeToFullLight + TimeSpan.FromMilliseconds(200), longStateCommand, Self.Id);
+                await Scheduler.DelayCommandExecution(measureTime + TimeSpan.FromMilliseconds(500), StopCommand.Default, Self.Id);
 
                 return;
             }
-
-            await UnhandledMessage(context.Message);
+            else
+            {
+                await StandardMode(context).ConfigureAwait(false);
+            }
         }
 
         private async Task CalibrationMaximumLight(IContext context)
         {
-            if (context.Message is TurnOnCommand longStateCommand)
+            if (context.Message is StopCommand stopCommand)
             {
-                _behavior.Become(CalibrationMinimumLight);
+                Become(CalibrationMinimumLight);
 
+                Logger.LogWarning($"Calibration of {Uid} : waiting to reach MIN state");
+
+                var measureTime = _TimeToFullLight + TimeSpan.FromMilliseconds(2500);
+                var longStateCommand = TurnOnCommand.Create((int)measureTime.TotalMilliseconds);
                 ForwardToPowerAdapter(longStateCommand);
 
-                await Scheduler.DelayCommandExecution(_TimeToFullLight + TimeSpan.FromMilliseconds(200), longStateCommand, Self.Id);
+                await Scheduler.DelayCommandExecution(measureTime + TimeSpan.FromMilliseconds(500), StopCommand.Default, Self.Id);
 
                 return;
             }
             else if (context.Message is PropertyChangedEvent maximumState)
             {
                 _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
-            }
 
-            await UnhandledMessage(context.Message);
+                Logger.LogWarning($"Calibration of {Uid} : new MAX was received {_Maximum}");
+            }
+            else
+            {
+                await StandardMode(context).ConfigureAwait(false);
+            }
         }
 
-        private Task CalibrationMinimumLight(IContext context)
+        private async Task CalibrationMinimumLight(IContext context)
         {
-            if (context.Message is TurnOnCommand longStateCommand)
+            if (context.Message is StopCommand longStateCommand)
             {
-                _behavior.Become(StandardMode);
+                Become(StandardMode);
 
                 TryCalculateSpectrum();
 
-                ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
+                Logger.LogWarning($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE {_Range}");
 
-                return Task.CompletedTask;
+                ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
             else if (context.Message is PropertyChangedEvent minimumState)
             {
                 _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
+
+                Logger.LogWarning($"Calibration of {Uid} : new MIN was received {_Minimum}");
             }
-
-            return UnhandledMessage(context.Message);
-        }
-
-        private bool TryCalculateSpectrum()
-        {
-            if (_Minimum.HasValue && _Maximum.HasValue)
+            else
             {
-                _Spectrum = _Maximum.Value - _Minimum.Value;
-                return true;
+                await StandardMode(context).ConfigureAwait(false);
             }
-            return false;
         }
+
+        
 
         protected async Task Handle(PropertyChangedEvent propertyChangedEvent)
         {
@@ -160,7 +178,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected void Handle(TurnOnCommand turnOnCommand)
         {
-            ForwardToPowerAdapter(turnOnCommand);
+            ForwardToPowerAdapter((Command)turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME));
         }
 
         protected void Handle(TurnOffCommand turnOnCommand)
@@ -212,9 +230,9 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? GetPowerLevel(double actual)
         {
             if (actual < _Minimum) return 0;
-            if (!_Minimum.HasValue || !_Spectrum.HasValue) return null;
+            if (!_Minimum.HasValue || !_Range.HasValue) return null;
 
-            return ((actual - _Minimum.Value) / _Spectrum.Value) * 100.0;
+            return ((actual - _Minimum.Value) / _Range.Value) * 100.0;
         }
 
         private void ForwardToPowerAdapter(Command command)

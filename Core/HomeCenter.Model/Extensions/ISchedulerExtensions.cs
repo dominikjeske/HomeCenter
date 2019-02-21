@@ -99,7 +99,7 @@ namespace HomeCenter.Model.Extensions
 
             var tb = TriggerBuilder.Create()
                                    .WithIdentity(GetUniqueName(uid))
-                                   .WithSimpleSchedule(s => s.WithInterval(delay));
+                                   .StartAt(DateBuilder.FutureDate((int)delay.TotalMilliseconds, IntervalUnit.Millisecond));
 
             await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
 
@@ -121,7 +121,7 @@ namespace HomeCenter.Model.Extensions
 
             var tb = TriggerBuilder.Create()
                                    .WithIdentity(GetUniqueName(uid))
-                                   .WithSimpleSchedule(s => s.WithInterval(delay));
+                                   .StartAt(DateBuilder.FutureDate((int)delay.TotalMilliseconds, IntervalUnit.Millisecond));
 
             await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
 

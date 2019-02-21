@@ -22,26 +22,27 @@ namespace HomeCenter.Model.Actors
         [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
+        private Behavior Behavior = new Behavior();
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
+        protected List<string> Tags { get; private set; } = new List<string>();
 
-        public List<string> Tags { get; private set; } = new List<string>();
-
-        public async Task ReceiveAsync(IContext context)
+        protected DeviceActor()
         {
-            try
-            {
-                await ReceiveAsyncInternal(context).ConfigureAwait(false);
-            }
-            catch (System.Exception e)
-            {
-                throw;
-                //TODO finish exception handling
-                //Logger.LogError(e, $"Exception in device {Uid}: {e}");
-            }
+            Behavior.Become(StandardMode);
         }
 
-        public virtual Task ReceiveAsyncInternal(IContext context) => Task.CompletedTask;
+
+        public Task ReceiveAsync(IContext context) => Behavior.ReceiveAsync(context);
+
+        protected Task StandardMode(IContext context) => ReceiveAsyncInternal(context);
+
+        protected void Become(Receive receive)
+        {
+            Behavior.Become(receive);
+        }
+
+        protected virtual Task ReceiveAsyncInternal(IContext context) => Task.CompletedTask;
 
         protected virtual Task UnhandledMessage(object message)
         {
@@ -124,6 +125,7 @@ namespace HomeCenter.Model.Actors
         {
             Logger.LogInformation($"Device '{Uid}' started with id '{context.Self.Id}'");
             Self = context.Self;
+
 
             Subscribe<SystemStartedEvent>();
 
