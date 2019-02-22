@@ -31,8 +31,8 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? _Range;
         private double? _PowerLevel;
         private double? _CurrentValue;
-        private DateTimeOffset? _Start;
-        private DateTimeOffset? _End;
+        private DateTimeOffset _Start;
+        private DateTimeOffset _End;
 
         protected override async Task OnStarted(IContext context)
         {
@@ -89,16 +89,10 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 Logger.LogWarning($"Calibration of {Uid} : waiting to reach MAX state");
 
-                var measureTime = _TimeToFullLight + TimeSpan.FromMilliseconds(2000);
-                var longStateCommand = TurnOnCommand.Create((int)measureTime.TotalMilliseconds);
-
                 Become(CalibrationMaximumLight);
 
-                ForwardToPowerAdapter(longStateCommand);
-
                 _Start = SystemTime.Now;
-
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Default), measureTime + TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
+                ForwardToPowerAdapter(TurnOnCommand.Default);
 
                 return;
             }
@@ -113,19 +107,23 @@ namespace HomeCenter.Adapters.CurrentBridge
             if (context.Message is StopCommand stopCommand)
             {
                 Become(CalibrationMinimumLight);
+                ForwardToPowerAdapter(TurnOffCommand.Default);
+                Logger.LogWarning($"Calibration of {Uid} : MAX was read after {SystemTime.Now - _Start}");
 
+                await Task.Delay(500);
+
+                _Start = SystemTime.Now;
                 Logger.LogWarning($"Calibration of {Uid} : waiting to reach MIN state");
 
-                var measureTime = _TimeToFullLight + TimeSpan.FromMilliseconds(2500);
-                var longStateCommand = TurnOnCommand.Create((int)measureTime.TotalMilliseconds);
-                ForwardToPowerAdapter(longStateCommand);
-
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Default), measureTime + TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
+                ForwardToPowerAdapter(TurnOnCommand.Default);
 
                 return;
             }
             else if (context.Message is PropertyChangedEvent maximumState)
             {
+                // Resend stop message to cancel scheduled message
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(500), true).ConfigureAwait(false);
+
                 _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
 
                 Logger.LogWarning($"Calibration of {Uid} : new MAX was received {_Maximum}");
@@ -138,18 +136,31 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         private async Task CalibrationMinimumLight(IContext context)
         {
-            if (context.Message is StopCommand longStateCommand)
+            if (context.Message is StopCommand stopCommand)
             {
+                if (stopCommand[MessageProperties.Context] == "MAX")
+                {
+                    return;
+                }
+
                 Become(StandardMode);
+
+                ForwardToPowerAdapter(TurnOffCommand.Default);
+                _TimeToFullLight = SystemTime.Now - _Start;
+                Logger.LogWarning($"Calibration of {Uid} : MIN was read after {_TimeToFullLight}");
 
                 TryCalculateSpectrum();
 
-                Logger.LogWarning($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE {_Range}");
+                Logger.LogWarning($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}, TIME: {_TimeToFullLight}");
+
+                await Task.Delay(500);
 
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
             else if (context.Message is PropertyChangedEvent minimumState)
             {
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1000)).ConfigureAwait(false);
+
                 _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
 
                 Logger.LogWarning($"Calibration of {Uid} : new MIN was received {_Minimum}");

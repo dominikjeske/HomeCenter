@@ -11,6 +11,7 @@
         public const string Type = nameof(Type);
         public const string Uid = nameof(Uid);
         public const string TimeOut = nameof(TimeOut);
+        public const string Context = nameof(Context);
 
         //Command
         public const string IsFinishComand = nameof(IsFinishComand);
