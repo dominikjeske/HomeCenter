@@ -19,7 +19,7 @@ namespace HomeCenter.Model.Actors
         [DI] protected IMessageBroker MessageBroker { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
-        private Behavior Behavior = new Behavior();
+        private readonly Behavior Behavior = new Behavior();
         protected readonly DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
         protected List<string> Tags { get; private set; } = new List<string>();
@@ -35,6 +35,8 @@ namespace HomeCenter.Model.Actors
 
         protected void Become(Receive receive)
         {
+            Logger.LogInformation($"Device '{Uid}' changed behavior to '{receive.Method.Name}'");
+
             Behavior.Become(receive);
         }
 

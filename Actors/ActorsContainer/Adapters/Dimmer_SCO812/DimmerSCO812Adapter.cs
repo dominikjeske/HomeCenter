@@ -6,6 +6,7 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using Microsoft.Extensions.Logging;
@@ -46,16 +47,19 @@ namespace HomeCenter.Adapters.CurrentBridge
             _Minimum = AsNullableDouble("Minimum");
             _Maximum = AsNullableDouble("Maximum");
 
-            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid);
+            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid).ConfigureAwait(false);
 
             _disposables.Add(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, _PowerLevelAdapterUid));
+        }
+
+        protected override async Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
+        {
+            await base.OnSystemStarted(systemStartedEvent).ConfigureAwait(false);
 
             if (!TryCalculateSpectrum())
             {
-                Logger.LogWarning($"Calibration of {Uid} : Start");
-                Become(CalibrationCheckState);
-
-                // We change state to check in which state we are
+                Logger.LogInformation($"Calibration of {Uid} : Start");
+                Become(CalibrationFirstStateCheck);
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
         }
@@ -70,31 +74,38 @@ namespace HomeCenter.Adapters.CurrentBridge
             return false;
         }
 
-        private async Task CalibrationCheckState(IContext context)
+        private async Task CalibrationFirstStateCheck(IContext context)
+        {
+            if (context.Message is PropertyChangedEvent property)
+            {
+                _CurrentValue = property.AsDouble(MessageProperties.NewValue);
+                Become(CalibrationSecondStateCheck);
+                ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
+            }
+            else
+            {
+                await StandardMode(context).ConfigureAwait(false);
+            }
+        }
+
+        private async Task CalibrationSecondStateCheck(IContext context)
         {
             if (context.Message is PropertyChangedEvent property)
             {
                 var newValue = property.AsDouble(MessageProperties.NewValue);
-                var oldValue = property.AsDouble(MessageProperties.OldValue);
 
                 // I we changed OFF => ON we have to turn off before start
-                if (newValue > oldValue)
+                if (newValue > _CurrentValue)
                 {
-                    Logger.LogWarning($"Calibration of {Uid} : detect ON state. Dimmer will be turned off");
-
+                    Logger.LogInformation($"Calibration of {Uid} : detect ON state. Dimmer will be turned off");
                     ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
-
-                    await Task.Delay(CHANGE_POWER_STATE_TIME * 4);
+                    await Task.Delay(CHANGE_POWER_STATE_TIME * 4).ConfigureAwait(false);
                 }
 
-                Logger.LogWarning($"Calibration of {Uid} : waiting to reach MAX state");
-
-                Become(CalibrationMaximumLight);
-
                 _Start = SystemTime.Now;
+                Logger.LogInformation($"Calibration of {Uid} : waiting to reach MAX state");
+                Become(CalibrationMaximumLight);
                 ForwardToPowerAdapter(TurnOnCommand.Default);
-
-                return;
             }
             else
             {
@@ -108,25 +119,20 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 Become(CalibrationMinimumLight);
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                Logger.LogWarning($"Calibration of {Uid} : MAX was read after {SystemTime.Now - _Start}");
+                Logger.LogInformation($"Calibration of {Uid} : MAX was read after {_End - _Start}");
 
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
 
                 _Start = SystemTime.Now;
-                Logger.LogWarning($"Calibration of {Uid} : waiting to reach MIN state");
-
+                Logger.LogInformation($"Calibration of {Uid} : waiting to reach MIN state");
                 ForwardToPowerAdapter(TurnOnCommand.Default);
-
-                return;
             }
             else if (context.Message is PropertyChangedEvent maximumState)
             {
                 // Resend stop message to cancel scheduled message
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(500), true).ConfigureAwait(false);
-
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(1500), true).ConfigureAwait(false);
                 _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
-
-                Logger.LogWarning($"Calibration of {Uid} : new MAX was received {_Maximum}");
+                _End = SystemTime.Now;
             }
             else
             {
@@ -146,24 +152,20 @@ namespace HomeCenter.Adapters.CurrentBridge
                 Become(StandardMode);
 
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                _TimeToFullLight = SystemTime.Now - _Start;
-                Logger.LogWarning($"Calibration of {Uid} : MIN was read after {_TimeToFullLight}");
-
+                _TimeToFullLight = _End - _Start;
+                Logger.LogInformation($"Calibration of {Uid} : MIN was read after {_TimeToFullLight}");
                 TryCalculateSpectrum();
+                Logger.LogInformation($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}, TIME: {_TimeToFullLight}");
 
-                Logger.LogWarning($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}, TIME: {_TimeToFullLight}");
-
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
 
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
             else if (context.Message is PropertyChangedEvent minimumState)
             {
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1000)).ConfigureAwait(false);
-
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1500)).ConfigureAwait(false);
                 _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
-
-                Logger.LogWarning($"Calibration of {Uid} : new MIN was received {_Minimum}");
+                _End = SystemTime.Now;
             }
             else
             {

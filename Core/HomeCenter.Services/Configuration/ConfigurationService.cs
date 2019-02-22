@@ -323,7 +323,7 @@ namespace HomeCenter.Services.Configuration
             }
         }
 
-        private async Task LoadCalendars()
+        private Task LoadCalendars()
         {
             foreach (var calendarType in AssemblyHelper.GetAllTypes<ICalendar>())
             {
@@ -332,6 +332,8 @@ namespace HomeCenter.Services.Configuration
                 //TODO ADD Calendars
                 //await Scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

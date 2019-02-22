@@ -26,9 +26,6 @@ namespace HomeCenter.Model.Messages.Scheduler
 
         public string GetMessageUid()
         {
-            Console.WriteLine($"!!!!!!!!!!!!!!!!!!! {Actor.Id} | {Commands[0].Type} | {Commands.Count}");
-
-
             return $"{Actor.Id}-{string.Join("-", Commands.Select(c => c.Type))}";
         }
 

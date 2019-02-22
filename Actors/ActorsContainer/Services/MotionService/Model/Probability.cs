@@ -3,7 +3,9 @@ using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    #pragma warning disable CS0618 // Type or member is obsolete
     public class Probability : ValueObject<Probability>
+    #pragma warning restore CS0618 // Type or member is obsolete
     {
         public static readonly Probability Zero = new Probability(0.0);
         public static readonly Probability Full = new Probability(1.0);
