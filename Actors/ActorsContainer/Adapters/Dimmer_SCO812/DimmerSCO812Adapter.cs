@@ -1,12 +1,13 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Scheduler;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;
@@ -27,11 +28,11 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? _Minimum;
         private double? _Maximum;
 
-        
         private double? _Range;
         private double? _PowerLevel;
         private double? _CurrentValue;
-
+        private DateTimeOffset? _Start;
+        private DateTimeOffset? _End;
 
         protected override async Task OnStarted(IContext context)
         {
@@ -86,7 +87,6 @@ namespace HomeCenter.Adapters.CurrentBridge
                     await Task.Delay(CHANGE_POWER_STATE_TIME * 4);
                 }
 
-
                 Logger.LogWarning($"Calibration of {Uid} : waiting to reach MAX state");
 
                 var measureTime = _TimeToFullLight + TimeSpan.FromMilliseconds(2000);
@@ -96,7 +96,9 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 ForwardToPowerAdapter(longStateCommand);
 
-                await Scheduler.DelayCommandExecution(measureTime + TimeSpan.FromMilliseconds(500), StopCommand.Default, Self.Id);
+                _Start = SystemTime.Now;
+
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Default), measureTime + TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
 
                 return;
             }
@@ -118,7 +120,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 var longStateCommand = TurnOnCommand.Create((int)measureTime.TotalMilliseconds);
                 ForwardToPowerAdapter(longStateCommand);
 
-                await Scheduler.DelayCommandExecution(measureTime + TimeSpan.FromMilliseconds(500), StopCommand.Default, Self.Id);
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Default), measureTime + TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
 
                 return;
             }
@@ -157,8 +159,6 @@ namespace HomeCenter.Adapters.CurrentBridge
                 await StandardMode(context).ConfigureAwait(false);
             }
         }
-
-        
 
         protected async Task Handle(PropertyChangedEvent propertyChangedEvent)
         {

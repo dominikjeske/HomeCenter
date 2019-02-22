@@ -2,10 +2,10 @@
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -40,8 +40,8 @@ namespace HomeCenter.Adapters.Denon
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
             _zone = AsInt(MessageProperties.Zone);
 
-            await DelayDeviceRefresh<RefreshStateJob>(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-            await ScheduleDeviceRefresh<RefreshLightStateJob>(_poolInterval).ConfigureAwait(false);
+            await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, RefreshCommand.Default), TimeSpan.FromSeconds(1));
+            await ScheduleDeviceLightRefresh(_poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

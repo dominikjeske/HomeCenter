@@ -8,10 +8,13 @@ using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Services;
+using HomeCenter.Model.Messages.Scheduler;
 using Microsoft.Reactive.Testing;
 using Proto;
+using Quartz;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
@@ -85,6 +88,11 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
+        public Task<JobKey> ScheduleInterval<M>(M message, PID actor, TimeSpan interval, CancellationToken token = default(CancellationToken)) where M : ActorMessage
+        {
+            throw new NotImplementedException();
+        }
+
         public void Send(object message, PID destination)
         {
             throw new NotImplementedException();
@@ -106,7 +114,32 @@ namespace HomeCenter.Services.MotionService.Tests
             }
         }
 
+        public Task SendAfterDelay(ActorMessageContext message, TimeSpan delay, bool cancelExisting = true, CancellationToken token = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendAtTime(ActorMessageContext message, DateTimeOffset time, CancellationToken token = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default(CancellationToken), string calendar = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default(CancellationToken), string calendar = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendWithSimpleRepeat(ActorMessageContext message, TimeSpan interval, CancellationToken token = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

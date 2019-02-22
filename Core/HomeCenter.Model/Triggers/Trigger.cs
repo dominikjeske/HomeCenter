@@ -3,6 +3,7 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
+using HomeCenter.Model.Messages.Scheduler;
 using Proto;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,14 @@ namespace HomeCenter.Model.Triggers
 
         public Task<bool> ValidateCondition() => Condition.Validate();
 
-        public TriggerJobDataDTO ToJobData(PID actor) => new TriggerJobDataDTO
+        public ActorMessageContext ToActorContext(PID actor) => new ActorMessageContext
         {
             Condition = Condition,
             Actor = actor,
             Commands = Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToList()
         };
 
-        public TriggerJobDataDTO ToJobDataWithFinish(PID actor) => new TriggerJobDataDTO
+        public ActorMessageContext ToActorContextWithFinish(PID actor) => new ActorMessageContext
         {
             Condition = Condition,
             Actor = actor,

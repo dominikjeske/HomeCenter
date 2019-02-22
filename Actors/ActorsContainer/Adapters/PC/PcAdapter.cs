@@ -38,7 +38,7 @@ namespace HomeCenter.Adapters.PC
             _mac = AsString(MessageProperties.MAC);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+            await ScheduleDeviceRefresh(_poolInterval).ConfigureAwait(false);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

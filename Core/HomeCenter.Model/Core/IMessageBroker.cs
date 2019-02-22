@@ -4,8 +4,10 @@ using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
+using HomeCenter.Model.Messages.Scheduler;
 using Proto;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Core
@@ -46,5 +48,14 @@ namespace HomeCenter.Model.Core
 
         void SendWithTranslate(ActorMessage source, ActorMessage destination, string address);
 
+        Task SendWithSimpleRepeat(ActorMessageContext message, TimeSpan interval, CancellationToken token = default);
+
+        Task SendAfterDelay(ActorMessageContext message, TimeSpan delay, bool cancelExisting = true, CancellationToken token = default);
+
+        Task SendAtTime(ActorMessageContext message, DateTimeOffset time, CancellationToken token = default);
+
+        Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string calendar = default);
+
+        Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default);
     }
 }

@@ -1,9 +1,7 @@
 ﻿using HomeCenter.Model.Actors;
-using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
-using Proto;
-using Quartz;
+using HomeCenter.Model.Messages.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +19,9 @@ namespace HomeCenter.Model.Adapters
         {
             if (newValue == null || EqualityComparer<T>.Default.Equals(oldValue, newValue)) return oldValue;
 
-            if(_requierdProperties.Count > 0)
+            if (_requierdProperties.Count > 0)
             {
-                if( additionalProperties == null || additionalProperties.Count != _requierdProperties.Count || !_requierdProperties.SequenceEqual(additionalProperties.Keys))
+                if (additionalProperties == null || additionalProperties.Count != _requierdProperties.Count || !_requierdProperties.SequenceEqual(additionalProperties.Keys))
                 {
                     throw new ArgumentException($"Update state on component {Uid} should be invoked with required properties: {string.Join(",", _requierdProperties)}");
                 }
@@ -33,8 +31,10 @@ namespace HomeCenter.Model.Adapters
             return newValue;
         }
 
-        protected Task ScheduleDeviceRefresh<T>(TimeSpan interval) where T : IJob => Scheduler.ScheduleInterval<T, PID>(interval, Self, Uid, _disposables.Token);
+        protected Task ScheduleDeviceRefresh(TimeSpan interval) => MessageBroker.SendWithSimpleRepeat(ActorMessageContext.Create(Self, RefreshCommand.Default), interval, _disposables.Token);
 
-        protected Task DelayDeviceRefresh<T>(TimeSpan interval) where T : IJob => Scheduler.DelayExecution<T, PID>(interval, Self, Uid, _disposables.Token);
+        protected Task ScheduleDeviceLightRefresh(TimeSpan interval) => MessageBroker.SendWithSimpleRepeat(ActorMessageContext.Create(Self, RefreshLightCommand.Default), interval, _disposables.Token);
+
+        protected Task DelayDeviceRefresh(TimeSpan interval) => MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, RefreshLightCommand.Default), interval, false, _disposables.Token);
     }
 }

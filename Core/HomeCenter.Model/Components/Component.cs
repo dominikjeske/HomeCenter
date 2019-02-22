@@ -3,38 +3,21 @@ using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
 using Proto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-
-    [TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
-    public partial class MyBuilder
-    {
-
-    }
-
-    public class TestBuilderSample
-    {
-        public string Name { get; set; }
-
-        public int Date { get; set; }
-
-        public TimeSpan Prefix_Time { get; set; }
-    }
-
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {
@@ -107,14 +90,14 @@ namespace HomeCenter.Model.Components
             {
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    await Scheduler.ScheduleCron<TriggerJob, TriggerJobDataDTO>(trigger.ToJobDataWithFinish(Self), trigger.Schedule.CronExpression, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    await MessageBroker.SendWithCronRepeat(trigger.ToActorContextWithFinish(Self), trigger.Schedule.CronExpression, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        await Scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Start, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        await Scheduler.ScheduleDailyTimeInterval<TriggerJob, TriggerJobDataDTO>(trigger.ToJobData(Self), manualTrigger.Finish, Uid, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Start, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Finish, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
                     }
                 }
             }
@@ -219,7 +202,7 @@ namespace HomeCenter.Model.Components
                         var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
                         var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
 
-                        await Scheduler.DelayCommandExecution(executionDelay, command, Uid, cancelPrevious).ConfigureAwait(false);
+                        await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, command), executionDelay, cancelPrevious).ConfigureAwait(false);
                         continue;
                     }
 

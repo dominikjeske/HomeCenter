@@ -47,11 +47,8 @@ namespace HomeCenter.Runner
                     break;
                 case 5:
 
-                    var scheduler = Container.GetInstance<IScheduler>();
-                    var logger = Container.GetInstance<ILogger<object>>();
 
-                    logger.LogWarning("Schedule");
-                    await scheduler.DelayExecution<TestJob, ILogger>(TimeSpan.FromMilliseconds(3000), logger, "uid");
+                    //await MessageBroker.SendAfterDelay<TestJob, ILogger>(TimeSpan.FromMilliseconds(3000), logger, "uid");
 
                     return;
                     break;

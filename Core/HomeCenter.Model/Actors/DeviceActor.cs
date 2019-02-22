@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events.Service;
@@ -8,7 +7,6 @@ using HomeCenter.Model.Messages.Queries;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
-using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +17,6 @@ namespace HomeCenter.Model.Actors
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
         [DI] protected IMessageBroker MessageBroker { get; set; }
-        [DI] protected IScheduler Scheduler { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
         private Behavior Behavior = new Behavior();
@@ -31,7 +28,6 @@ namespace HomeCenter.Model.Actors
         {
             Behavior.Become(StandardMode);
         }
-
 
         public Task ReceiveAsync(IContext context) => Behavior.ReceiveAsync(context);
 
@@ -112,7 +108,7 @@ namespace HomeCenter.Model.Actors
                 return true;
             }
 
-            if(msg is SystemStartedEvent started)
+            if (msg is SystemStartedEvent started)
             {
                 await OnSystemStarted(started).ConfigureAwait(false);
                 return true;
@@ -125,7 +121,6 @@ namespace HomeCenter.Model.Actors
         {
             Logger.LogInformation($"Device '{Uid}' started with id '{context.Self.Id}'");
             Self = context.Self;
-
 
             Subscribe<SystemStartedEvent>();
 
@@ -163,7 +158,6 @@ namespace HomeCenter.Model.Actors
         {
             return Task.CompletedTask;
         }
-
 
         protected virtual Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {

@@ -7,6 +7,7 @@ using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Services.Configuration;
 using Proto;
+using Quartz;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Controllers
@@ -17,11 +18,13 @@ namespace HomeCenter.Services.Controllers
         private readonly StartupConfiguration _startupConfiguration;
         private readonly IActorFactory _actorFactory;
         private PID _configService;
+        private readonly IScheduler _scheduler;
 
-        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory)
+        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory, IScheduler scheduler)
         {
             _actorFactory = actorFactory;
             _startupConfiguration = startupConfiguration;
+            _scheduler = scheduler;
         }
 
         protected override async Task OnStarted(IContext context)
@@ -49,7 +52,7 @@ namespace HomeCenter.Services.Controllers
         {
             await MessageBroker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, _configService);
             await _configService.StopAsync();
-            await Scheduler.Shutdown();
+            await _scheduler.Shutdown();
             Mapper.Reset(); // TODO configuration is using static mapper - fix this because second execution need this static reset
 
             _actorFactory.GetExistingActor(nameof(Controller)).Stop();
@@ -58,6 +61,6 @@ namespace HomeCenter.Services.Controllers
             
         }
 
-        private Task RunScheduler() => Scheduler.Start(_disposables.Token);
+        private Task RunScheduler() => _scheduler.Start(_disposables.Token);
     }
 }

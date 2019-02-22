@@ -328,7 +328,9 @@ namespace HomeCenter.Services.Configuration
             foreach (var calendarType in AssemblyHelper.GetAllTypes<ICalendar>())
             {
                 var cal = calendarType.CreateInstance<ICalendar>();
-                await Scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
+
+                //TODO ADD Calendars
+                //await Scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
             }
         }
     }

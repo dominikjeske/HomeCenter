@@ -44,7 +44,7 @@ namespace HomeCenter.Adapters.Kodi
             _Password = AsString(MessageProperties.Password);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-            await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+            await ScheduleDeviceRefresh(_poolInterval).ConfigureAwait(false);
         }
 
         protected Task Refresh(RefreshCommand message)

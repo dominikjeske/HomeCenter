@@ -23,7 +23,7 @@ namespace HomeCenter.Runner
     {
         public async Task<string> Generate(string code)
         {
-            var generator = new TestBuilerGenerator();
+            var generator = new CommandBuilerGenerator();
             var models = await GetModels(code);
 
             var syntaxTree = models.syntaxTree;
@@ -36,47 +36,27 @@ namespace HomeCenter.Runner
             NamespaceDeclarationSyntax newNamespace = oldNamespace;
             var classList = new List<MemberDeclarationSyntax>();
 
-            //foreach (var classModel in classToDecorate)
-            //{
-            //    var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
-
-
-            // if (HasBaseType(classSemantic, "DeviceActor"))
-            // {
-            // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
-
-            //var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
-            //var result = generator.Generate(proxy);
-
-            //foreach (var res in result.Members)
-            //{
-            //    ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
-            //    ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
-
-            //    classList.Add(res);
-            //}
-            // }
-            //}
-
-
-            var ctd = classToDecorate.First(c => c.Identifier.Text == "MyBuilder");
-            var dc = classToDecorate.First(c => c.Identifier.Text == "TestBuilderSample");
-
-            var classSemantic = semanticModel.GetDeclaredSymbol(ctd);
-            var modelSemantic = semanticModel.GetDeclaredSymbol(dc);
-
-            var proxy = new TransformationContext(ctd, semanticModel, models.compilation, "", null, null);
-            var result = generator.Generate(proxy, modelSemantic, "Prefix_", "");
-
-            foreach (var res in result.Members)
+            foreach (var classModel in classToDecorate)
             {
-                ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
-                ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
+                var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
 
-                classList.Add(res);
+
+                if (HasBaseType(classSemantic, "DeviceActor"))
+                {
+                   // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
+
+                   var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
+                    var result = generator.Generate(proxy);
+
+                    foreach (var res in result.Members)
+                    {
+                        ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
+                        ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
+
+                        classList.Add(res);
+                    }
+                }
             }
-
-
 
 
             foreach (var proxyClass in classList)

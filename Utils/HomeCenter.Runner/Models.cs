@@ -7,76 +7,88 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner.Codegen
 {
-    [TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
-    public partial class MyBuilder
-    {
-        
-    }
-    
-    public class TestBuilderSample
-    {
-        public string Name { get; set; }
+    //[TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
+    //public partial class MyBuilder
+    //{
 
-        public int Date { get; set; }
+    //}
 
-        public TimeSpan Prefix_Time { get; set; }
-    }
+    //public class TestBuilderSample
+    //{
+    //    public string Name { get; set; }
 
-   
-    
+    //    public int Date { get; set; }
+
+    //    public TimeSpan Prefix_Time { get; set; }
+    //}
+
+
+
 
     //[ProxyCodeGenerator]
-    //public class Device : DeviceActor
-    //{
-    //    public Device(IScheduler scheduler)
-    //    {
-    //    }
+    public class Device : DeviceActor
+    {
+        public Device(IScheduler scheduler)
+        {
+        }
 
-    //    //protected Task Invoke(Event command)
-    //    //{
-    //    //    return Task.CompletedTask;
-    //    //}
+        //protected Task Invoke(Event command)
+        //{
+        //    return Task.CompletedTask;
+        //}
 
-    //    //protected Task Invoke(SonyRegisterQuery command)
-    //    //{
-    //    //    return Task.CompletedTask;
-    //    //}
+        //protected Task Invoke(SonyRegisterQuery command)
+        //{
+        //    return Task.CompletedTask;
+        //}
 
-    //    [Subscribe]
-    //    protected byte[] Handle(HttpPostQuery query)
-    //    {
-            
-    //        return Array.Empty<byte>();
-            
-    //    }
+        //[Subscribe]
+        //protected byte[] Handle(HttpPostQuery query)
+        //{
 
-    //    [Subscribe]
-    //    protected int Handle2(HttpPostQuery query)
-    //    {
+        //    return Array.Empty<byte>();
 
-    //        return 0;
+        //}
 
-    //    }
-    //}
+        //[Subscribe]
+        //protected int Handle2(HttpPostQuery query)
+        //{
+
+        //    return 0;
+
+        //}
+    }
 
     //public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
     //{
-      
-    //}
-
-    //public abstract class HttpPostQuery : Query
-    //{
-       
-    //}
-
-    //public abstract class Query
-    //{
 
     //}
+
+   
+    public class TestEvent : Event
+    {
+
+    }
+
+    public class TestCommand : Command
+    {
+
+    }
+
+   
+
+    public abstract class Event
+    {
+
+    }
+
+    public abstract class Command
+    {
+    }
 
     //public interface IFormatableMessage<T>
     //{
-     
+
     //}
 
     //[CommandBuilder]
@@ -84,9 +96,7 @@ namespace HomeCenter.Runner.Codegen
     //{
     //}
 
-    //public class Command
-    //{
-    //}
+
 
     //[ProxyCodeGenerator]
     //public class HttpService : Actor

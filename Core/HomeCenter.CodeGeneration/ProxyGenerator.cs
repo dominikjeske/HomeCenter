@@ -56,7 +56,6 @@ namespace HomeCenter.CodeGeneration
         {
             var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
             
-            _usingSyntax.Add(UsingDirective(IdentifierName("Quartz")));
             _usingSyntax.Add(UsingDirective(IdentifierName("System")));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Threading")), IdentifierName("Tasks"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
@@ -231,10 +230,7 @@ namespace HomeCenter.CodeGeneration
             var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
 
             // TODO add this basing on DI attribute
-            if (!CheckIfExists(parList, "IScheduler"))
-            {
-                parameters = parameters.AddParameters(Parameter(Identifier("scheduler")).WithType(IdentifierName("IScheduler")));
-            }
+            
             if (!CheckIfExists(parList, "IMessageBroker"))
             {
                 parameters = parameters.AddParameters(Parameter(Identifier("messageBroker")).WithType(IdentifierName("IMessageBroker")));
@@ -254,9 +250,8 @@ namespace HomeCenter.CodeGeneration
 
             var logger = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Logger"), IdentifierName("logger")));
             var broker = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("MessageBroker"), IdentifierName("messageBroker")));
-            var scheduler = ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Scheduler"), IdentifierName("scheduler")));
 
-            constructorDecclaration = constructorDecclaration.WithBody(Block(logger, broker, scheduler));
+            constructorDecclaration = constructorDecclaration.WithBody(Block(logger, broker));
             return constructorDecclaration;
         }
 
