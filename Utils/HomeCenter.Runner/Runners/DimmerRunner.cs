@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Utils.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace HomeCenter.Runner
     {
         public DimmerRunner(string uid) : base(uid)
         {
-            _tasks = new string[] { "TurnOn", "TurnOff" };
+            _tasks = new string[] { "TurnOn", "TurnOff", "SetDimmerLevel" };
         }
 
         public override Task RunTask(int taskId)
@@ -25,6 +26,13 @@ namespace HomeCenter.Runner
 
                 case 1:
                     cmd = new TurnOffCommand();
+                    break;
+
+                case 2:
+                    ConsoleEx.WriteTitleLine("Enter dimmer level [0-100]:");
+                    var level = ConsoleEx.ReadNumber();
+                    cmd = new SetPowerLevelCommand();
+                    ((SetPowerLevelCommand)cmd).PowerLevel = level;
                     break;
             }
 

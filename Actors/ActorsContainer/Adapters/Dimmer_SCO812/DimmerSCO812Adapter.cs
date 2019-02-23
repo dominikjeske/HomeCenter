@@ -20,6 +20,8 @@ namespace HomeCenter.Adapters.CurrentBridge
     public abstract class DimmerSCO812Adapter : Adapter
     {
         private const int CHANGE_POWER_STATE_TIME = 200;
+        private const int SWITCH_POWER_STATE_TIME = 400;
+        private const int WAIT_AFTER_CHANGE = 800;
 
         private string _PowerAdapterUid;
         private int _PowerAdapterPin;
@@ -32,6 +34,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? _Range;
         private double? _PowerLevel;
         private double? _CurrentValue;
+        private double? _PreviousCurrentValue;
         private DateTimeOffset _Start;
         private DateTimeOffset _End;
 
@@ -99,7 +102,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 {
                     Logger.LogInformation($"Calibration of {Uid} : detect ON state. Dimmer will be turned off");
                     ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
-                    await Task.Delay(CHANGE_POWER_STATE_TIME * 4).ConfigureAwait(false);
+                    await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
                 }
 
                 _Start = SystemTime.Now;
@@ -119,7 +122,6 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 Become(CalibrationMinimumLight);
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                Logger.LogInformation($"Calibration of {Uid} : MAX was read after {_End - _Start}");
 
                 await Task.Delay(500).ConfigureAwait(false);
 
@@ -152,8 +154,10 @@ namespace HomeCenter.Adapters.CurrentBridge
                 Become(StandardMode);
 
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                _TimeToFullLight = _End - _Start;
-                Logger.LogInformation($"Calibration of {Uid} : MIN was read after {_TimeToFullLight}");
+                _TimeToFullLight = _End - _Start - TimeSpan.FromMilliseconds(500);
+                _CurrentValue = 0;
+                _PreviousCurrentValue = 0;
+                _PowerLevel = 0;
                 TryCalculateSpectrum();
                 Logger.LogInformation($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}, TIME: {_TimeToFullLight}");
 
@@ -175,6 +179,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected async Task Handle(PropertyChangedEvent propertyChangedEvent)
         {
+            _PreviousCurrentValue = _CurrentValue;
             _CurrentValue = propertyChangedEvent.AsDouble(MessageProperties.NewValue);
             var newLevel = GetPowerLevel(_CurrentValue.Value);
 
@@ -196,26 +201,36 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected void Handle(TurnOffCommand turnOnCommand)
         {
-            ForwardToPowerAdapter(turnOnCommand);
+            ForwardToPowerAdapter((Command)turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME));
         }
 
-        protected void Handle(SetPowerLevelCommand powerLevel)
+        protected Task Handle(SetPowerLevelCommand powerLevel)
         {
             var destinationLevel = powerLevel.PowerLevel;
 
-            ControlDimmer(destinationLevel);
+            return ControlDimmer(destinationLevel);
         }
 
         protected void Handle(CalibrateCommand calibrateCommand)
         {
         }
 
-        private void ControlDimmer(double destinationLevel)
+        private async Task ControlDimmer(double destinationLevel)
         {
             int powerOnTime = 0;
 
             if (destinationLevel > _PowerLevel)
             {
+                var time = _TimeToFullLight.TotalMilliseconds;
+                // If last time dimmer was increasing its value we have to change direction by short time power on
+                if (_CurrentValue > _PreviousCurrentValue && _CurrentValue > 0)
+                {
+                    ForwardToPowerAdapter(TurnOnCommand.Create(SWITCH_POWER_STATE_TIME));
+                    time += SWITCH_POWER_STATE_TIME;
+
+                    await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+                }
+
                 var diff = destinationLevel - _PowerLevel;
 
                 //TODO linear for start
@@ -228,7 +243,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 powerOnTime = (int)(destinationLevel / 100.0 * _TimeToFullLight.TotalMilliseconds);
             }
 
-            MessageBroker.Send(TurnOnCommand.Create(powerOnTime), _PowerAdapterUid);
+            ForwardToPowerAdapter(TurnOnCommand.Create(powerOnTime));
         }
 
         protected void Handle(AdjustPowerLevelCommand powerLevel)
@@ -240,12 +255,12 @@ namespace HomeCenter.Adapters.CurrentBridge
             ControlDimmer(destinationLevel);
         }
 
-        private double? GetPowerLevel(double actual)
+        private double? GetPowerLevel(double currentValue)
         {
-            if (actual < _Minimum) return 0;
             if (!_Minimum.HasValue || !_Range.HasValue) return null;
-
-            return ((actual - _Minimum.Value) / _Range.Value) * 100.0;
+            if (currentValue < _Minimum) return 0;
+            
+            return ((currentValue - _Minimum.Value) / _Range.Value) * 100.0;
         }
 
         private void ForwardToPowerAdapter(Command command)
