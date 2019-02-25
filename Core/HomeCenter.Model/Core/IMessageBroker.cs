@@ -57,5 +57,6 @@ namespace HomeCenter.Model.Core
         Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string calendar = default);
 
         Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default);
+        PID GetPID(string uid, string address = null);
     }
 }

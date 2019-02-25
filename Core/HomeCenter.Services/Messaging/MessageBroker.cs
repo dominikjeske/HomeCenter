@@ -185,5 +185,10 @@ namespace HomeCenter.Model.Core
 
             await _scheduler.ScheduleDailyTimeInterval<ActorMessageJob, ActorMessageContext>(time, message, uid, token);
         }
+
+        public PID GetPID(string uid, string address = null)
+        {
+            return _actorFactory.GetExistingActor(uid, address);
+        }
     }
 }

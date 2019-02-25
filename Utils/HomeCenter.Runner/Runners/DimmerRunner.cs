@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Utils.ConsoleExtentions;
@@ -22,10 +23,19 @@ namespace HomeCenter.Runner
             {
                 case 0:
                     cmd = new TurnOnCommand();
+
+                    ConsoleEx.WriteTitleLine("Time:");
+                    var time = ConsoleEx.ReadNumber();
+                    cmd.SetProperty(MessageProperties.StateTime, time);
+
                     break;
 
                 case 1:
-                    cmd = new TurnOffCommand();
+                    //cmd = new TurnOffCommand();
+                    cmd = new TurnOnCommand();
+
+                    cmd.SetProperty(MessageProperties.StateTime, 100);
+
                     break;
 
                 case 2:
