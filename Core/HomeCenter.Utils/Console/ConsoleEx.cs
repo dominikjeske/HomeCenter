@@ -86,7 +86,7 @@ namespace HomeCenter.Utils.ConsoleExtentions
                     Console.CursorLeft = cli;
                     key = Console.ReadKey(true);
                 }
-                else if (Char.IsLetterOrDigit(key.KeyChar) || Char.IsWhiteSpace(key.KeyChar))
+                else if (Char.IsLetterOrDigit(key.KeyChar) || Char.IsWhiteSpace(key.KeyChar) || (key.KeyChar == '-' && buffer.Length == 0))
                 {
                     var cli = Console.CursorLeft;
                     buffer.Insert(cli, key.KeyChar);

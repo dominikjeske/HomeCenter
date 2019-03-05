@@ -20,7 +20,7 @@ namespace HomeCenter.Adapters.CurrentBridge
     {
         private const int CHANGE_POWER_STATE_TIME = 200;
         private const int SWITCH_CHANGE_DIRECTION = 400;
-        private const int WAIT_AFTER_CHANGE = 800;
+        private const int WAIT_AFTER_CHANGE = 500;
 
         private string _PowerAdapterUid;
         private int _PowerAdapterPin;
