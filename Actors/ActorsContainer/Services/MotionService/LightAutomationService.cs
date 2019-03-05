@@ -184,6 +184,9 @@ namespace HomeCenter.Services.MotionService
             if (confusionPoints.Count == 0)
             {
                 //TODO change this to Async?
+                //https://github.com/dotnet/reactive/issues/459
+                //https://stackoverflow.com/questions/23006852/howto-call-back-async-function-from-rx-subscribe
+                //https://stackoverflow.com/questions/37412129/how-to-subscribe-with-async-method-in-rx
                 MarkVector(motionVector).GetAwaiter().GetResult();
             }
             else if (_rooms[motionVector.Start.Uid].NumberOfPersonsInArea > 0)

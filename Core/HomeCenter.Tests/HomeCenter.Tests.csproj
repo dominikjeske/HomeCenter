@@ -15,14 +15,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.63" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.102" />
     <PackageReference Include="Moq" Version="4.10.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
     <PackageReference Include="SimpleInjector" Version="4.4.3" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.63" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
   </ItemGroup>
 
   <ItemGroup>

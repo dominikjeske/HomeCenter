@@ -29,6 +29,11 @@ namespace HomeCenter.Services.MotionService.Tests
             _lamps = lamps;
         }
 
+        public PID GetPID(string uid, string address = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
         {
             if(typeof(T) == typeof(MotionEvent))

@@ -76,7 +76,6 @@
           "PowerAdapterPin": 0,
           "PowerLevelAdapterUid": "DimmerBridge",
           "PowerLevelAdapterPin": 0,
-          "TimeToFullLight": 2500
           //"Minimum": 0.12,
           //"Maximum": 0.32
         }

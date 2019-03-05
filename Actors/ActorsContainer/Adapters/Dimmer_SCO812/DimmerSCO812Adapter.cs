@@ -1,7 +1,6 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
@@ -20,14 +19,13 @@ namespace HomeCenter.Adapters.CurrentBridge
     public abstract class DimmerSCO812Adapter : Adapter
     {
         private const int CHANGE_POWER_STATE_TIME = 200;
-        private const int SWITCH_POWER_STATE_TIME = 400;
+        private const int SWITCH_CHANGE_DIRECTION = 400;
         private const int WAIT_AFTER_CHANGE = 800;
 
         private string _PowerAdapterUid;
         private int _PowerAdapterPin;
         private string _PowerLevelAdapterUid;
         private int _PowerLevelAdapterPin;
-        private TimeSpan _TimeToFullLight;
         private double? _Minimum;
         private double? _Maximum;
 
@@ -35,8 +33,6 @@ namespace HomeCenter.Adapters.CurrentBridge
         private double? _PowerLevel;
         private double? _CurrentValue;
         private double? _PreviousCurrentValue;
-        private DateTimeOffset _Start;
-        private DateTimeOffset _End;
 
         protected override async Task OnStarted(IContext context)
         {
@@ -46,7 +42,6 @@ namespace HomeCenter.Adapters.CurrentBridge
             _PowerAdapterPin = AsInt("PowerAdapterPin");
             _PowerLevelAdapterUid = AsString("PowerLevelAdapterUid");
             _PowerLevelAdapterPin = AsInt("PowerLevelAdapterPin");
-            _TimeToFullLight = AsIntTime("TimeToFullLight");
             _Minimum = AsNullableDouble("Minimum");
             _Maximum = AsNullableDouble("Maximum");
 
@@ -59,12 +54,12 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             await base.OnSystemStarted(systemStartedEvent).ConfigureAwait(false);
 
-            //if (!TryCalculateSpectrum())
-            //{
-            //    Logger.LogInformation($"Calibration of {Uid} : Start");
-            //    Become(CalibrationFirstStateCheck);
-            //    await ChangePowerState();
-            //}
+            if (!TryCalculateSpectrum())
+            {
+                Logger.LogInformation($"Calibration of {Uid} : Start");
+                Become(CalibrationFirstStateCheck);
+                await ChangePowerState();
+            }
         }
 
         private async Task CalibrationFirstStateCheck(IContext context)
@@ -87,7 +82,6 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 var newValue = property.AsDouble(MessageProperties.NewValue);
 
-
                 // I we changed OFF => ON we have to turn off before start
                 if (newValue > _CurrentValue)
                 {
@@ -95,7 +89,6 @@ namespace HomeCenter.Adapters.CurrentBridge
                     await ChangePowerState();
                 }
 
-                _Start = SystemTime.Now;
                 Logger.LogInformation($"Calibration of {Uid} : waiting to reach MAX state");
                 Become(CalibrationMaximumLight);
                 ForwardToPowerAdapter(TurnOnCommand.Default);
@@ -112,9 +105,8 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 Become(CalibrationMinimumLight);
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                await Task.Delay(500).ConfigureAwait(false);
+                await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
 
-                _Start = SystemTime.Now;
                 Logger.LogInformation($"Calibration of {Uid} : waiting to reach MIN state");
                 ForwardToPowerAdapter(TurnOnCommand.Default);
             }
@@ -123,7 +115,6 @@ namespace HomeCenter.Adapters.CurrentBridge
                 // Resend stop message to cancel scheduled message
                 await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(1500), true).ConfigureAwait(false);
                 _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
-                _End = SystemTime.Now;
             }
             else
             {
@@ -135,6 +126,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             if (context.Message is StopCommand stopCommand)
             {
+                // Ignore previous commands if we receive any
                 if (stopCommand[MessageProperties.Context] == "MAX")
                 {
                     return;
@@ -143,14 +135,14 @@ namespace HomeCenter.Adapters.CurrentBridge
                 Become(StandardMode);
 
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                _TimeToFullLight = _End - _Start - TimeSpan.FromMilliseconds(200);
-                _CurrentValue = 0;
-                _PreviousCurrentValue = 0;
-                _PowerLevel = 0;
-                TryCalculateSpectrum();
-                Logger.LogInformation($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}, TIME: {_TimeToFullLight}");
 
-                await Task.Delay(500).ConfigureAwait(false);
+                ResetStateValues();
+
+                TryCalculateSpectrum();
+
+                Logger.LogInformation($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}");
+
+                await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
 
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
@@ -158,12 +150,18 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1500)).ConfigureAwait(false);
                 _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
-                _End = SystemTime.Now;
             }
             else
             {
                 await StandardMode(context).ConfigureAwait(false);
             }
+        }
+
+        private void ResetStateValues()
+        {
+            _CurrentValue = 0;
+            _PreviousCurrentValue = 0;
+            _PowerLevel = 0;
         }
 
         protected async Task Handle(PropertyChangedEvent propertyChangedEvent)
@@ -180,6 +178,9 @@ namespace HomeCenter.Adapters.CurrentBridge
             _CurrentValue = value;
 
             var newLevel = GetPowerLevel(value);
+
+            Logger.LogInformation($"NEW: {newLevel}, MAX: {_Maximum}, MIN: {_Minimum}");
+
             _PowerLevel = await UpdateState(PowerLevelState.StateName, _PowerLevel, newLevel);
         }
 
@@ -190,20 +191,50 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected void Handle(TurnOnCommand turnOnCommand)
         {
+            if (!turnOnCommand.ContainsProperty(MessageProperties.StateTime))
+            {
+                // When we don't get state time and we already turned on we ignore this
+                // When state time is set by the sender we always allow to pass threw
+                if (_PowerLevel > 0) return;
+
+                turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME);
+            }
+
             ForwardToPowerAdapter(turnOnCommand);
-            //ForwardToPowerAdapter((Command)turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME));
         }
 
-        protected void Handle(TurnOffCommand turnOnCommand)
+        protected async Task Handle(TurnOffCommand turnOnCommand)
         {
-            ForwardToPowerAdapter((Command)turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME));
+            if (_PowerLevel == 0) return;
+
+            await ChangePowerState();
         }
 
         protected Task Handle(SetPowerLevelCommand powerLevel)
         {
             var destinationLevel = powerLevel.PowerLevel;
 
+            if (!_PowerLevel.HasValue) return Task.CompletedTask;
+
             return ControlDimmer(destinationLevel);
+        }
+
+        protected async Task Handle(AdjustPowerLevelCommand powerLevel)
+        {
+            if (!_PowerLevel.HasValue) return;
+
+            var destinationLevel = _PowerLevel.Value + powerLevel.Delta;
+
+            if (destinationLevel > 100)
+            {
+                destinationLevel = 100.0;
+            }
+            else if (destinationLevel < 0)
+            {
+                destinationLevel = 0;
+            }
+
+            await ControlDimmer(destinationLevel);
         }
 
         protected void Handle(CalibrateCommand calibrateCommand)
@@ -213,41 +244,54 @@ namespace HomeCenter.Adapters.CurrentBridge
         private async Task ControlDimmer(double destinationLevel)
         {
             int powerOnTime = 0;
+            var dest = TimeForPercentage(destinationLevel);
+            var current = TimeForPercentage(_PowerLevel.Value);
 
             if (destinationLevel > _PowerLevel)
             {
-                var time = _TimeToFullLight.TotalMilliseconds;
                 // If last time dimmer was increasing its value we have to change direction by short time power on
                 if (_CurrentValue > _PreviousCurrentValue && _CurrentValue > 0)
                 {
-                    ForwardToPowerAdapter(TurnOnCommand.Create(SWITCH_POWER_STATE_TIME));
-                    time += SWITCH_POWER_STATE_TIME;
-
-                    await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+                    // We add time that we consume on direction change
+                    powerOnTime += await ChangeDimmerDirection();
                 }
 
-                var diff = destinationLevel - _PowerLevel;
+                powerOnTime += (int)(dest - current);
 
-                //TODO linear for start
-                powerOnTime = (int)(diff / 100.0 * _TimeToFullLight.TotalMilliseconds);
+                Logger.LogInformation($"Set dimmer to {destinationLevel} by waiting {powerOnTime}ms");
             }
             else
             {
-                MessageBroker.Send(TurnOffCommand.Default, _PowerAdapterUid);
+                // If last time dimmer was decreasing its value we have to change direction by short time power on
+                if (_PreviousCurrentValue > _CurrentValue && _CurrentValue > 0)
+                {
+                    powerOnTime += await ChangeDimmerDirection();
+                }
 
-                powerOnTime = (int)(destinationLevel / 100.0 * _TimeToFullLight.TotalMilliseconds);
+                powerOnTime += (int)(current - dest);
             }
 
             ForwardToPowerAdapter(TurnOnCommand.Create(powerOnTime));
         }
 
-        protected void Handle(AdjustPowerLevelCommand powerLevel)
+        private async Task<int> ChangeDimmerDirection()
         {
-            if (!_PowerLevel.HasValue) return;
+            ForwardToPowerAdapter(TurnOnCommand.Create(SWITCH_CHANGE_DIRECTION));
 
-            var destinationLevel = _PowerLevel.Value + powerLevel.Delta;
+            await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+            return SWITCH_CHANGE_DIRECTION;
+        }
 
-            ControlDimmer(destinationLevel);
+        /// <summary>
+        /// Characteristic of dimmer read by measurements give equation of Time = 0.23 * percentage^2 + 500
+        /// </summary>
+        /// <param name="percentage"></param>
+        /// <returns></returns>
+        private double TimeForPercentage(double percentage)
+        {
+            if (percentage == 0) return 0;
+
+            return (0.23 * percentage * percentage) + 500;
         }
 
         private double GetPowerLevel(double currentValue)
@@ -257,17 +301,17 @@ namespace HomeCenter.Adapters.CurrentBridge
             return ((currentValue - _Minimum.Value) / _Range.Value) * 100.0;
         }
 
+        private async Task ChangePowerState()
+        {
+            ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
+            await Task.Delay(WAIT_AFTER_CHANGE);
+        }
+
         private void ForwardToPowerAdapter(Command command)
         {
             command.SetProperty(MessageProperties.PinNumber, _PowerAdapterPin);
 
             MessageBroker.Send(command, _PowerAdapterUid);
-        }
-
-        private async Task ChangePowerState()
-        {
-            ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
-            await Task.Delay(WAIT_AFTER_CHANGE);
         }
 
         private bool TryCalculateSpectrum()
