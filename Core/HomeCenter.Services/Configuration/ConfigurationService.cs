@@ -150,9 +150,12 @@ namespace HomeCenter.Services.Configuration
             {
                 var template = result.HomeCenter.Templates.Single(t => t.Uid == component.Template);
                 var templateCopy = _mapper.Map<ComponentDTO>(template);
+                templateCopy.Uid = component.Uid;
 
                 foreach (var adapter in templateCopy.Adapters)
                 {
+                    adapter.Uid = GetTemplateValueOrDefault(adapter.Uid, component.TemplateProperties);
+
                     foreach (var property in adapter.Properties.Keys.ToList())
                     {
                         var propvalue = adapter.Properties[property];
@@ -160,6 +163,19 @@ namespace HomeCenter.Services.Configuration
                         {
                             if (!component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Uid}'");
                             adapter.Properties[property] = component.TemplateProperties[propvalue];
+                        }
+                    }
+                }
+
+                foreach (var attachedProperty in templateCopy.AttachedProperties)
+                {
+                    foreach (var property in attachedProperty.Properties.Keys.ToList())
+                    {
+                        var propvalue = attachedProperty.Properties[property];
+                        if (propvalue.IndexOf("#") > -1)
+                        {
+                            if (!component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Uid}'");
+                            attachedProperty.Properties[property] = component.TemplateProperties[propvalue];
                         }
                     }
                 }
@@ -172,6 +188,15 @@ namespace HomeCenter.Services.Configuration
                 result.HomeCenter.Components.Remove(comp);
                 result.HomeCenter.Components.Add(resolved[comp]);
             }
+        }
+
+        private string GetTemplateValueOrDefault(string varible, IDictionary<string, string> templateValues)
+        {
+            if(templateValues.ContainsKey(varible))
+            {
+                return templateValues[varible];
+            }
+            return varible;
         }
 
         private void ResolveInlineAdapters(HomeCenterConfigDTO result)

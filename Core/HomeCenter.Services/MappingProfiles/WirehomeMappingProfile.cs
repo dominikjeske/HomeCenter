@@ -19,6 +19,7 @@ namespace HomeCenter.Services.Profiles
         {
             ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
 
+            CreateMap<ComponentDTO, ComponentDTO>();
             CreateMap<ComponentDTO, ComponentProxy>().ConstructUsingServiceLocator();
             CreateMap<AdapterReferenceDTO, AdapterReference>();
             CreateMap<TriggerDTO, Trigger>().ForMember(s => s.Commands, d => d.MapFrom<CommandResolver>())
