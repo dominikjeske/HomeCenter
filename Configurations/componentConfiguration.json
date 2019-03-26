@@ -256,8 +256,8 @@
           {
             "Uid": "RemoteSocket",
             "Properties": {
-              "System": "Switch2",
-              "Unit": "B",
+              "System": "AllOn",
+              "Unit": "D",
               "Repeat": 1
             }
           }
