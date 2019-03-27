@@ -4,6 +4,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
+using HomeCenter.Model.Calendars;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
@@ -12,6 +13,7 @@ using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
+using HomeCenter.Model.Triggers.Calendars;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
@@ -40,15 +42,17 @@ namespace HomeCenter.Services.Configuration
         private IDictionary<string, PID> _services;
         private IDictionary<string, PID> _adapters;
         private IDictionary<string, PID> _components;
+        private readonly IScheduler _scheduler;
 
-
-        protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory, IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService)
+        protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory,
+                                       IServiceProvider serviceProvider, IRoslynCompilerService roslynCompilerService, IScheduler scheduler)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger;
             _actorFactory = actorFactory;
             _serviceProvider = serviceProvider;
             _roslynCompilerService = roslynCompilerService;
+            _scheduler = scheduler;
         }
 
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
@@ -64,8 +68,6 @@ namespace HomeCenter.Services.Configuration
 
             var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
 
-            await LoadCalendars().ConfigureAwait(false);
-
             LoadDynamicAdapters(startFromConfigCommand.AdapterMode);
 
             ResolveTemplates(result);
@@ -76,7 +78,15 @@ namespace HomeCenter.Services.Configuration
 
             CheckForDuplicateUid(result);
 
-            var types = RegisterTypesInAutomapper(startFromConfigCommand.AdapterMode);
+            // force to load HomeCenter.ActorsContainer into memory
+            if (startFromConfigCommand.AdapterMode == "Embedded")
+            {
+                var testAdapter = typeof(Actors.ForceAssemblyLoadType);
+            }
+
+            await LoadCalendars().ConfigureAwait(false);
+
+            var types = RegisterTypesInAutomapper();
 
             _services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
             _adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
@@ -192,7 +202,7 @@ namespace HomeCenter.Services.Configuration
 
         private string GetTemplateValueOrDefault(string varible, IDictionary<string, string> templateValues)
         {
-            if(templateValues.ContainsKey(varible))
+            if (templateValues.ContainsKey(varible))
             {
                 return templateValues[varible];
             }
@@ -297,15 +307,9 @@ namespace HomeCenter.Services.Configuration
             return 0;
         }
 
-        private Dictionary<Type, List<Type>> RegisterTypesInAutomapper(string adapterMode)
+        private Dictionary<Type, List<Type>> RegisterTypesInAutomapper()
         {
             Dictionary<Type, List<Type>> types = new Dictionary<Type, List<Type>>();
-
-            // force to load HomeCenter.ActorsContainer into memory
-            if (adapterMode == "Embedded")
-            {
-                var testAdapter = typeof(Actors.ForceAssemblyLoadType);
-            }
 
             types[typeof(AdapterDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Adapter>(false));
             types[typeof(ServiceDTO)] = new List<Type>(AssemblyHelper.GetAllTypes<Service>(false));
@@ -348,17 +352,15 @@ namespace HomeCenter.Services.Configuration
             }
         }
 
-        private Task LoadCalendars()
+        private async Task LoadCalendars()
         {
-            foreach (var calendarType in AssemblyHelper.GetAllTypes<ICalendar>())
+            foreach (var calendarType in AssemblyHelper.GetAllTypes<IDayOffProvider>())
             {
-                var cal = calendarType.CreateInstance<ICalendar>();
+                var dayOffProvider = calendarType.CreateInstance<IDayOffProvider>();
+                var calendar = new QuartzCalendar(dayOffProvider);
 
-                //TODO ADD Calendars
-                //await Scheduler.AddCalendar(calendarType.Name, cal, false, false).ConfigureAwait(false);
+                await _scheduler.AddCalendar(dayOffProvider.Name, calendar, false, false).ConfigureAwait(false);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
