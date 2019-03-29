@@ -98,6 +98,9 @@ namespace HomeCenter.Model.Core
 
         public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
         {
+            var ss = message.GetType().Name;
+            var ss2 = typeof(T).Name;
+
             return _eventAggregator.Publish(message, routingFilter);
         }
 
@@ -122,8 +125,7 @@ namespace HomeCenter.Model.Core
 
         public Task PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
         {
-            var ev = _messageGenerator.CreateEvent(source, destination);
-            return Publish(ev, filter);
+            return _messageGenerator.PublishEvent(source, destination, this, filter);
         }
 
         public void Send(object message, string uid, string address = null)

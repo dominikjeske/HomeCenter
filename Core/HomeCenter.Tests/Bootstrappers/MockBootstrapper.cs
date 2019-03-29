@@ -33,12 +33,14 @@ namespace HomeCenter.Tests.ComponentModel
         {
             _container.RegisterInstance(new StartupConfiguration
             {
-                ConfigurationLocation = Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..")), $@"Configurations\{_configuration}")
+                ConfigurationLocation = Path.Combine(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\")), $@"Configurations\{_configuration}")
             });
         }
 
         protected override ILoggerProvider[] GetLogProviders()
         {
+            _container.RegisterInstance<ILoggerProvider>(Logs);
+
             return new ILoggerProvider[] { Logs };
         }
     }

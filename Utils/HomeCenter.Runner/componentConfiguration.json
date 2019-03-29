@@ -2,88 +2,88 @@
   "HomeCenter": {
     "Areas": [
       {
-        //"Uid": "Backyard",
-        //"Areas": [
-        //  {
-        //    "Uid": "House",
-        //    "Areas": [
-          //    {
-          //      "Uid": "Kitchen",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorKitchen"
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Bedroom",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorBedroom"
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Toilet",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorToilet"
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Bathroom",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorBathroom"
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Livingroom",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "DenonComponent"
-          //        },
-          //        {
-          //          "Uid": "MotionSensorLivingroom"
-          //        }
-          //      ],
-          //      "AttachedProperties": [
-          //        {
-          //          "Service": "MotionService",
-          //          "Properties": {
+        "Uid": "Backyard",
+        "Areas": [
+          {
+            "Uid": "House",
+            "Areas": [
+              {
+                "Uid": "Kitchen",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorKitchen"
+                  }
+                ]
+              },
+              {
+                "Uid": "Bedroom",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorBedroom"
+                  }
+                ]
+              },
+              {
+                "Uid": "Toilet",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorToilet"
+                  }
+                ]
+              },
+              {
+                "Uid": "Bathroom",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorBathroom"
+                  }
+                ]
+              },
+              {
+                "Uid": "Livingroom",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "DenonComponent"
+                  },
+                  {
+                    "Uid": "MotionSensorLivingroom"
+                  }
+                ],
+                "AttachedProperties": [
+                  {
+                    "Service": "MotionService",
+                    "Properties": {
 
-          //          }
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Balcony",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorBalcony"
-          //        }
-          //      ]
-          //    },
-          //    {
-          //      "Uid": "Hallway",
-          //      "ComponentsRefs": [
-          //        {
-          //          "Uid": "MotionSensorHallwayLivingroom"
-          //        },
-          //        {
-          //          "Uid": "MotionSensorHallwayToilet"
-          //        }
-          //      ]
-          //    }
+                    }
+                  }
+                ]
+              },
+              {
+                "Uid": "Balcony",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorBalcony"
+                  }
+                ]
+              },
+              {
+                "Uid": "Hallway",
+                "ComponentsRefs": [
+                  {
+                    "Uid": "MotionSensorHallwayLivingroom"
+                  },
+                  {
+                    "Uid": "MotionSensorHallwayToilet"
+                  }
+                ]
+              }
 
-          //  ]
-          //},
-          //{
-          //  "Uid": "Staircase"
-          //}
-       // ]
+            ]
+          },
+          {
+            "Uid": "Staircase"
+          }
+        ]
       }
     ],
     "Components": [
@@ -351,89 +351,89 @@
             "Uid": "Dimmer"
           }
         ]
-      }
+      },
 
       /* Motion sensors */
-      //{
-      //  "Uid": "MotionSensorBalcony",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayLivingroom",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorLivingroom",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayLivingroom, MotionSensorBalcony",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorHallwayLivingroom",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorLivingroom, MotionSensorBathroom, MotionSensorHallwayToilet",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorBathroom",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayLivingroom",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorHallwayToilet",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorBedroom, MotionSensorHallwayLivingroom, MotionSensorKitchen",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorBedroom",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayToilet",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorKitchen",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayToilet",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //},
-      //{
-      //  "Uid": "MotionSensorToilet",
-      //  "Template": "MotionSensorTemplate",
-      //  "TemplateProperties": {
-      //    "#InputAdapter": "HSPE16InputOnly_1",
-      //    "#InputPin": "0",
-      //    "#Neighbors": "MotionSensorHallwayToilet",
-      //    "#Lamp": "LivingroomLamp"
-      //  }
-      //}
+      {
+        "Uid": "MotionSensorLivingroom",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "0",
+          "#Neighbors": "MotionSensorHallwayLivingroom, MotionSensorBalcony",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorBedroom",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "1",
+          "#Neighbors": "MotionSensorHallwayToilet",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorBathroom",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "2",
+          "#Neighbors": "MotionSensorHallwayLivingroom",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorToilet",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "3",
+          "#Neighbors": "MotionSensorHallwayToilet",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorKitchen",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "4",
+          "#Neighbors": "MotionSensorHallwayToilet",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorHallwayToilet",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "5",
+          "#Neighbors": "MotionSensorBedroom, MotionSensorHallwayLivingroom, MotionSensorKitchen",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorHallwayLivingroom",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "6",
+          "#Neighbors": "MotionSensorLivingroom, MotionSensorBathroom, MotionSensorHallwayToilet",
+          "#Lamp": "LivingroomLamp"
+        }
+      },
+      {
+        "Uid": "MotionSensorBalcony",
+        "Template": "MotionSensorTemplate",
+        "TemplateProperties": {
+          "#InputAdapter": "HSPE16InputOnly_2",
+          "#InputPin": "7",
+          "#Neighbors": "MotionSensorHallwayLivingroom",
+          "#Lamp": "LivingroomLamp"
+        }
+      }
     ]
     /* Motion sensors END*/
     ,

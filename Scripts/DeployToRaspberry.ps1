@@ -8,7 +8,7 @@ $configuration = 'componentConfiguration.json'
 $scriptDir = $PSScriptRoot
 $projectDir  = Join-Path -Path $scriptDir -ChildPath ..\Utils\HomeCenter.Runner\HomeCenter.Runner.csproj
 $publishDir  = Join-Path -Path $scriptDir -ChildPath ..\Utils\HomeCenter.Runner\bin\Debug\netcoreapp2.2\linux-arm\publish
-$configurationDir  = Join-Path -Path $scriptDir -ChildPath ..\Configurations
+$configurationDir  = Join-Path -Path $scriptDir -ChildPath ..\Utils\HomeCenter.Runner
 $passwordFile  = Join-Path -Path $scriptDir -ChildPath password.txt
 
 $sw = [Diagnostics.Stopwatch]::StartNew()

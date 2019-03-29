@@ -39,17 +39,6 @@
             }
           }
         ]
-      },
-      {
-        "Uid": "RequiredPropertiesComponent",
-        "AdapterRefs": [
-          {
-            "Uid": "RequiredPropertiesAdapter",
-            "Properties": {
-              "PinNumber": 1
-            }
-          }
-        ]
       }
     ],
 
@@ -57,10 +46,6 @@
       {
         "Uid": "SimpleAdapter",
         "Type": "SimpleAdapter"
-      },
-      {
-        "Uid": "RequiredPropertiesAdapter",
-        "Type": "RequiredPropertiesAdapter"
       }
     ]
   }

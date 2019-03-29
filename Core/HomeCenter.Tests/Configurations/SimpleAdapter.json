@@ -1,0 +1,26 @@
+﻿{
+  "HomeCenter": {
+    "Areas": [
+      {
+        "Uid": "Backyard"
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "TestComponent",
+        "AdapterRefs": [
+          {
+            "Uid": "SimpleAdapter"
+          }
+        ]
+      }
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "SimpleAdapter",
+        "Type": "SimpleAdapter"
+      }
+    ]
+  }
+}
