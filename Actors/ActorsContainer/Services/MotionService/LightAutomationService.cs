@@ -91,8 +91,10 @@ namespace HomeCenter.Services.MotionService
             List<Room> rooms = new List<Room>();
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
+
+
                 rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsList(MotionProperties.Neighbors), motionDetector.AsString(MotionProperties.Lamp),
-                                    _concurrencyProvider, Logger, MessageBroker, areas[motionDetector.AttachedArea], _motionConfiguration));
+                                    _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
 
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);

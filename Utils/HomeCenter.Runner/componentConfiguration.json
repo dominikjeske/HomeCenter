@@ -572,7 +572,8 @@
       },
       {
         "Uid": "MotionService",
-        "Type": "LightAutomationService"
+        "Type": "LightAutomationService",
+        "IsEnabled": false
       }
     ],
 

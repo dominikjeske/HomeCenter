@@ -34,9 +34,9 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
+        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event
         {
-            if(typeof(T) == typeof(MotionEvent))
+            if (typeof(T) == typeof(MotionEvent))
             {
                 return (IObservable<IMessageEnvelope<T>>)_motionData;
             }

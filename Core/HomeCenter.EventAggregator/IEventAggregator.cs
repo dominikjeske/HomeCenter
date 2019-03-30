@@ -27,7 +27,7 @@ namespace HomeCenter.Broker
 
         SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter filter = null);
 
-        IObservable<IMessageEnvelope<T>> Observe<T>();
+        IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null);
 
         Func<BehaviorChain> DefaultBehavior { get; set; }
 

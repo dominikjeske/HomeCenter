@@ -105,16 +105,16 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            var discoveryRequests = (await _adapters.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
+            var discoveryResponses = (await _adapters.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
 
-            foreach (var discovery in discoveryRequests)
+            foreach (var response in discoveryResponses)
             {
-                discovery.Input.AddRequierdProperties(discovery.Result.RequierdProperties);
+                response.Input.AddRequierdProperties(response.Result.RequierdProperties);
 
-                Subscribe<Event>(discovery.Input.GetRoutingFilter());
+                Subscribe<Event>(response.Input.GetRoutingFilter());
             }
 
-            _componentState = new ComponentState(discoveryRequests.ToDictionary(k => k.Input, v => v.Result));
+            _componentState = new ComponentState(discoveryResponses.ToDictionary(k => k.Input, v => v.Result));
         }
 
         /// <summary>

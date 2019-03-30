@@ -40,7 +40,7 @@ namespace HomeCenter.Model.Core
 
         SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
 
-        IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event;
+        IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event;
 
         SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event;
 

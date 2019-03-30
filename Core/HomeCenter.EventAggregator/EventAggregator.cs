@@ -164,9 +164,9 @@ namespace HomeCenter.Broker
             return new SubscriptionToken(_subscriptions.Register(messageType, actionFactory, filter), this);
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>()
+        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null)
         {
-            return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext));
+            return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext, routingFilter));
         }
         
         public void UnSubscribe(Guid token)

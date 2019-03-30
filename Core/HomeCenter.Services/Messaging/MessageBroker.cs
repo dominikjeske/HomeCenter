@@ -104,9 +104,9 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.Publish(message, routingFilter);
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>() where T : Event
+        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event
         {
-            return _eventAggregator.Observe<T>();
+            return _eventAggregator.Observe<T>(routingFilter);
         }
 
         public void Send(object message, PID destination)

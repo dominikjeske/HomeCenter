@@ -16,14 +16,17 @@ namespace HomeCenter.Tests.Mocks
     /// Adapter that have to be controlled with required properties when sending commands
     /// </summary>
     [ProxyCodeGenerator]
-    public abstract class RequiredPropertiesAdapter : Adapter, ITestAdapter
+    public abstract class RequiredPropertiesAdapter : Adapter
     {
         public Subject<Command> CommandRecieved { get; } = new Subject<Command>();
 
-        protected DiscoveryResponse Handle(DiscoverQuery discoverQuery)
+        public RequiredPropertiesAdapter()
         {
             _requierdProperties.Add(MessageProperties.PinNumber);
+        }
 
+        protected DiscoveryResponse Handle(DiscoverQuery discoverQuery)
+        {
             return new DiscoveryResponse(new string[] { MessageProperties.PinNumber }, new PowerState());
         }
 
@@ -37,9 +40,12 @@ namespace HomeCenter.Tests.Mocks
             return this;
         }
 
-        public async Task PropertyChanged<T>(string state, T oldValue, T newValue)
+        public async Task PropertyChanged<T>(string state, T oldValue, T newValue, int pinNumber = 1)
         {
-            await UpdateState(state, oldValue, newValue, new Dictionary<string, string> { [MessageProperties.PinNumber] = "1" }).ConfigureAwait(false);
+            await UpdateState(state, oldValue, newValue, new Dictionary<string, string>
+            {
+                [MessageProperties.PinNumber] = pinNumber.ToString()
+            }).ConfigureAwait(false);
         }
     }
 }

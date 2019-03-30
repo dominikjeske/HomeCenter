@@ -4,6 +4,8 @@ namespace HomeCenter.Services.MotionService.Model
 {
     public class AreaDescriptor
     {
+        public static AreaDescriptor Default = new AreaDescriptor();
+
         public string WorkingTime { get; set; }
         public int MaxPersonCapacity { get; set; }                   // How many persons can be at once in single room
         public string AreaType { get; set; }

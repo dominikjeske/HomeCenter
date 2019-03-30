@@ -1,0 +1,40 @@
+﻿{
+  "HomeCenter": {
+    "Areas": [
+      {
+        "Uid": "Backyard"
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "C1",
+        "AdapterRefs": [
+          {
+            "Uid": "RequiredPropertiesAdapter",
+            "Properties": {
+              "PinNumber": 1
+            }
+          }
+        ]
+      },
+      {
+        "Uid": "C2",
+        "AdapterRefs": [
+          {
+            "Uid": "RequiredPropertiesAdapter",
+            "Properties": {
+              "PinNumber": 2
+            }
+          }
+        ]
+      }
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "RequiredPropertiesAdapter",
+        "Type": "RequiredPropertiesAdapter"
+      }
+    ]
+  }
+}

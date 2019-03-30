@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
+using FastDeepCloner;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
@@ -123,16 +124,18 @@ namespace HomeCenter.Services.Configuration
             {
                 foreach (var property in component.AttachedProperties)
                 {
-                    var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == property.Service);
-                    if (serviceDto == null) throw new MissingMemberException($"Service {property.Service} was not found in configuration");
+                    var propertyCopy = DeepCloner.Clone(property);
+
+                    var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == propertyCopy.Service);
+                    if (serviceDto == null) throw new MissingMemberException($"Service {propertyCopy.Service} was not found in configuration");
 
                     var area = result.HomeCenter.Areas.Flatten(a => a.Areas).FirstOrDefault(a => a.ComponentsRefs?.Any(c => c.Uid.InvariantEquals(component.Uid)) ?? false);
                     if (area == null) throw new MissingMemberException($"Component {component.Uid} was not found in any area");
 
-                    property.AttachedActor = component.Uid;
-                    property.AttachedArea = area.Uid;
+                    propertyCopy.AttachedActor = component.Uid;
+                    propertyCopy.AttachedArea = area.Uid;
 
-                    serviceDto.ComponentsAttachedProperties.Add(property);
+                    serviceDto.ComponentsAttachedProperties.Add(propertyCopy);
                 }
             }
 
@@ -159,7 +162,7 @@ namespace HomeCenter.Services.Configuration
             foreach (var component in templatedComponents)
             {
                 var template = result.HomeCenter.Templates.Single(t => t.Uid == component.Template);
-                var templateCopy = _mapper.Map<ComponentDTO>(template);
+                var templateCopy = DeepCloner.Clone(template);
                 templateCopy.Uid = component.Uid;
 
                 foreach (var adapter in templateCopy.Adapters)

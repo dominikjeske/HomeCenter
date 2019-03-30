@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Tests.Mocks
 {
     [ProxyCodeGenerator]
-    public abstract class SimpleAdapter : Adapter, ITestAdapter
+    public abstract class SimpleAdapter : Adapter
     {
         public Subject<Command> CommandRecieved { get; } = new Subject<Command>();
 

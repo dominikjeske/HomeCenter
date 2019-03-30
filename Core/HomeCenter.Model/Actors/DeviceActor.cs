@@ -58,7 +58,7 @@ namespace HomeCenter.Model.Actors
         {
             if (rawMessage is ActorMessage message)
             {
-                Logger.Log(message.LogLevel, $"[{Uid}]: {message}");
+                Logger.Log(message.LogLevel, $"<{Uid}>: {message}");
             }
 
             return rawMessage;

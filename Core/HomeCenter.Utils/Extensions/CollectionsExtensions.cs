@@ -103,6 +103,12 @@ namespace HomeCenter.Utils.Extensions
             return dic?.Select(x => x.Key + "=" + x.Value)?.Aggregate((s1, s2) => s1 + ";" + s2);
         }
 
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key, TValue def)
+        {
+            if (dic.ContainsKey(key)) return dic[key];
+            return def;
+        }
+
         public static void AddRangeNewOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic, IDictionary<TKey, TValue> dicToAdd)
         {
             dicToAdd.ForEach(x => { if (!dic.ContainsKey(x.Key)) dic.Add(x.Key, x.Value); });

@@ -1,8 +1,11 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Tests.Helpers;
 using HomeCenter.Utils.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
@@ -18,7 +21,7 @@ namespace HomeCenter.Tests.ComponentModel
             var subscription = broker.SubscribeForEvent<T>(ev =>
             {
                 result = ev.Message;
-                tcs.SetResult(true);
+                tcs.TrySetResult(true);
             }, "*");
 
             _ = Task.Run(() => messageGenerator());
@@ -29,6 +32,25 @@ namespace HomeCenter.Tests.ComponentModel
 
             return result;
         }
+
+        public async static Task<IEnumerable<T>> WaitForEvents<T>(this IMessageBroker broker, Action messageGenerator = null, RoutingFilter routingFilter = null, int timeout = 500) where T : Event
+        {
+            var list = new List<T>();
+
+            broker.Observe<T>(routingFilter).Subscribe((x) =>
+            {
+                list.Add(x.Message);
+            });
+
+            messageGenerator();
+
+            await Task.Delay(timeout);
+            
+            return list;
+
+        }
+
+
 
         public static async Task<T> WaitForMessage<T>(this Task<T> task, Action messageGenerator = null, int timeout = 500) where T : class
         {

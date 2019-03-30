@@ -2,11 +2,12 @@
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Tests.Dummies;
-using HomeCenter.Tests.Mocks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleInjector;
 using System.Threading.Tasks;
+
+[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.ClassLevel)]
 
 namespace HomeCenter.Tests.ComponentModel
 {
@@ -16,7 +17,16 @@ namespace HomeCenter.Tests.ComponentModel
         protected IMessageBroker Broker => Container.GetInstance<IMessageBroker>();
         protected LogMock Logs => Container.GetInstance<ILoggerProvider>() as LogMock;
 
-        protected async Task<ITestAdapter> GetAdapter(string adapterName) => await Broker.Request<GetAdapterQuery, ITestAdapter>(new GetAdapterQuery(), adapterName).ConfigureAwait(false);
+        protected async Task<T> GetAdapter<T>(string adapterName = null)
+        {
+            if(adapterName == null)
+            {
+                adapterName = typeof(T).Name;
+            }
+
+            var result = await Broker.Request<GetAdapterQuery, T>(new GetAdapterQuery(), adapterName).ConfigureAwait(false);
+            return result;
+        }
 
         [TestCleanup]
         public async Task CleanUp()

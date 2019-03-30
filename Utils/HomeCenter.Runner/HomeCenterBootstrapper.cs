@@ -26,7 +26,7 @@ namespace HomeCenter.Runner
 
         protected override void RegisterConfiguration()
         {
-            _container.RegisterInstance(new StartupConfiguration { ConfigurationLocation = @"..\..\..\..\..\Configurations\componentConfiguration.json" });
+            _container.RegisterInstance(new StartupConfiguration { ConfigurationLocation = @"..\..\..\componentConfiguration.json" });
         }
     }
 
