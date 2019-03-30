@@ -123,7 +123,7 @@ namespace HomeCenter.Model.Core
             Send(command, address);
         }
 
-        public Task PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
+        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
         {
             return _messageGenerator.PublishEvent(source, destination, this, filter);
         }

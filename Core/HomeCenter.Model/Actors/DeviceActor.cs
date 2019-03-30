@@ -35,7 +35,7 @@ namespace HomeCenter.Model.Actors
 
         protected void Become(Receive receive)
         {
-            Logger.LogInformation($"Device '{Uid}' changed behavior to '{receive.Method.Name}'");
+            Logger.LogInformation($"<{Uid}> changed behavior to '{receive.Method.Name}'");
 
             Behavior.Become(receive);
         }
@@ -69,7 +69,7 @@ namespace HomeCenter.Model.Actors
             // If actor is disabled we are ignoring all messages
             if (!IsEnabled)
             {
-                Logger.LogInformation($"Device '{Uid}' is disabled and message type '{context.Message.GetType().Name}' will be ignored");
+                Logger.LogInformation($"<{Uid}> is disabled and message type '{context.Message.GetType().Name}' will be ignored");
                 return true;
             }
 
@@ -121,7 +121,7 @@ namespace HomeCenter.Model.Actors
 
         protected virtual Task OnStarted(IContext context)
         {
-            Logger.LogInformation($"Device '{Uid}' started with id '{context.Self.Id}'");
+            Logger.LogInformation($"<{Uid}> Started with id '{context.Self.Id}'");
             Self = context.Self;
 
             Subscribe<SystemStartedEvent>();

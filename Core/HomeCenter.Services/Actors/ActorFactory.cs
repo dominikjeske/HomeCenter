@@ -118,8 +118,6 @@ namespace HomeCenter.Model.Actors
 
         private PID CreateActor(Type actorType, string id, IContext parent, Func<Props> producer)
         {
-            _logger.LogInformation($"Creating actor {id}");
-
             if (!_actorPropsRegistry.RegisteredProps.TryGetValue(actorType, out var props))
             {
                 props = x => x;

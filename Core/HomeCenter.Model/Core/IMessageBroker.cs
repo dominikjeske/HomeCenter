@@ -44,7 +44,7 @@ namespace HomeCenter.Model.Core
 
         SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event;
 
-        Task PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null);
+        Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null);
 
         void SendWithTranslate(ActorMessage source, ActorMessage destination, string address);
 

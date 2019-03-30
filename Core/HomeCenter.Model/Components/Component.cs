@@ -11,6 +11,7 @@ using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using Proto;
 using System.Collections.Generic;
 using System.Linq;
@@ -180,14 +181,18 @@ namespace HomeCenter.Model.Components
             {
                 var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
 
+                Event eventPublished;
                 if (translator != null)
                 {
-                    await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
+                    eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
                 }
                 else
                 {
-                    await MessageBroker.Publish(PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue), Uid).ConfigureAwait(false);
+                    eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
+                    await MessageBroker.Publish(eventPublished, Uid).ConfigureAwait(false);
                 }
+
+                Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
             }
         }
 

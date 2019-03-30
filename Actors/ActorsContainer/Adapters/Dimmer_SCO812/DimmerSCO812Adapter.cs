@@ -56,7 +56,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             if (!TryCalculateSpectrum())
             {
-                Logger.LogInformation($"Calibration of {Uid} : Start");
+                Logger.LogInformation($"<{Uid}> Calibration start");
                 Become(CalibrationFirstStateCheck);
                 await ChangePowerState();
             }
@@ -85,11 +85,11 @@ namespace HomeCenter.Adapters.CurrentBridge
                 // I we changed OFF => ON we have to turn off before start
                 if (newValue > _CurrentValue)
                 {
-                    Logger.LogInformation($"Calibration of {Uid} : detect ON state. Dimmer will be turned off");
+                    Logger.LogInformation($"<{Uid}> Calibration detected ON state. Dimmer will be turned off");
                     await ChangePowerState();
                 }
 
-                Logger.LogInformation($"Calibration of {Uid} : waiting to reach MAX state");
+                Logger.LogInformation($"<{Uid}> Calibration waiting to reach MAX state");
                 Become(CalibrationMaximumLight);
                 ForwardToPowerAdapter(TurnOnCommand.Default);
             }
@@ -107,7 +107,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 ForwardToPowerAdapter(TurnOffCommand.Default);
                 await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
 
-                Logger.LogInformation($"Calibration of {Uid} : waiting to reach MIN state");
+                Logger.LogInformation($"<{Uid}> Calibration waiting to reach MIN state");
                 ForwardToPowerAdapter(TurnOnCommand.Default);
             }
             else if (context.Message is PropertyChangedEvent maximumState)
@@ -140,7 +140,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 TryCalculateSpectrum();
 
-                Logger.LogInformation($"Calibration of {Uid} : calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}");
+                Logger.LogInformation($"<{Uid}> Calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}");
 
                 await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
 
@@ -258,7 +258,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 powerOnTime += (int)(dest - current);
 
-                Logger.LogInformation($"Set dimmer to {destinationLevel} by waiting {powerOnTime}ms");
+                Logger.LogInformation($"<{Uid}> Set dimmer to {destinationLevel} by waiting {powerOnTime}ms");
             }
             else
             {

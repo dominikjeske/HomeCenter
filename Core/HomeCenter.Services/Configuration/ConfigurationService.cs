@@ -336,8 +336,7 @@ namespace HomeCenter.Services.Configuration
         //TODO move to separate service?
         private void LoadDynamicAdapters(string adapterMode)
         {
-            Logger.LogInformation($"Loading adapters in mode: {adapterMode}");
-
+            
             if (adapterMode == "Compiled")
             {
                 //var result = _roslynCompilerService.CompileAssemblies(_controllerOptions.AdapterRepoName);
@@ -349,10 +348,7 @@ namespace HomeCenter.Services.Configuration
                 //    Assembly.LoadFrom(adapter.Value);
                 //}
             }
-            else
-            {
-                Logger.LogInformation($"Using only build in adapters");
-            }
+            
         }
 
         private async Task LoadCalendars()
