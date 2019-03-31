@@ -615,7 +615,8 @@
           {
             "Uid": "#InputAdapter",
             "Properties": {
-              "PinNumber": "#InputPin"
+              "PinNumber": "#InputPin",
+              "@NewValue":  "True"
             }
           }
         ],

@@ -48,7 +48,7 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
-        public Task PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
+        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
         {
             throw new NotImplementedException();
         }
@@ -173,5 +173,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             throw new NotImplementedException();
         }
+
+       
     }
 }

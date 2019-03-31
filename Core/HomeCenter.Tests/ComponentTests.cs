@@ -16,36 +16,6 @@ namespace HomeCenter.Tests.ComponentModel
     public class ComponentTests : BaseTest
     {
         [TestMethod]
-        public async Task Component_PropertyChangeEventTransform()
-        {
-            var controller = await new ControllerBuilder(Container).WithConfiguration("TranslateAdapter.json").BuildAndRun();
-            var adapter = await GetAdapter<SimpleAdapter>();
-
-            var motionEvent = await Broker.WaitForEvent<MotionEvent>(async () => await adapter.PropertyChanged(PowerState.StateName, false, true));
-
-            Assert.IsFalse(Logs.HasErrors);
-            Assert.AreEqual(typeof(MotionEvent), motionEvent.GetType());
-            Assert.AreEqual(nameof(MotionEvent), motionEvent.Type);
-            Assert.AreEqual(adapter.Uid, motionEvent.MessageSource);
-        }
-
-        [TestMethod]
-        public async Task Component_CommandTransform()
-        {
-            var controller = await new ControllerBuilder(Container).WithConfiguration("TranslateAdapter.json").BuildAndRun();
-            var adapter = await GetAdapter<SimpleAdapter>();
-
-            var command = await adapter.CommandRecieved
-                                       .ToFirstTask()
-                                       .WaitForMessage(() => Broker.Send(TurnOnCommand.Default, "TestComponent"));
-
-            Assert.AreEqual(typeof(TurnOnCommand), command.GetType());
-            Assert.IsTrue(command.ContainsProperty("StateTime"));
-            Assert.AreEqual(command.AsInt("StateTime"), 200);
-            Assert.IsFalse(Logs.HasErrors);
-        }
-
-        [TestMethod]
         public async Task Component_UnsupportedCommand()
         {
             var controller = await new ControllerBuilder(Container).WithConfiguration("SimpleAdapter.json").BuildAndRun();
@@ -60,7 +30,39 @@ namespace HomeCenter.Tests.ComponentModel
         }
 
         [TestMethod]
-        public async Task Component_ShouldAdd_RequiredProperties()
+        public async Task Component_Translate_Event()
+        {
+            var controller = await new ControllerBuilder(Container).WithConfiguration("TranslateAdapter.json").BuildAndRun();
+            var adapter = await GetAdapter<SimpleAdapter>();
+
+            var motionEvent = await Broker.WaitForEvent<MotionEvent>(async () => await adapter.PropertyChanged(PowerState.StateName, false, true));
+
+            Assert.IsFalse(Logs.HasErrors);
+            Assert.AreEqual(typeof(MotionEvent), motionEvent.GetType());
+            Assert.AreEqual(nameof(MotionEvent), motionEvent.Type);
+            Assert.AreEqual(adapter.Uid, motionEvent.MessageSource);
+        }
+
+        [TestMethod]
+        public async Task Component_Translate_Command()
+        {
+            var controller = await new ControllerBuilder(Container).WithConfiguration("TranslateAdapter.json").BuildAndRun();
+            var adapter = await GetAdapter<SimpleAdapter>();
+
+            var command = await adapter.CommandRecieved
+                                       .ToFirstTask()
+                                       .WaitForMessage(() => Broker.Send(TurnOnCommand.Default, "TestComponent"));
+
+            Assert.AreEqual(typeof(TurnOnCommand), command.GetType());
+            Assert.IsTrue(command.ContainsProperty("StateTime"));
+            Assert.AreEqual(command.AsInt("StateTime"), 200);
+            Assert.IsFalse(Logs.HasErrors);
+        }
+
+       
+
+        [TestMethod]
+        public async Task Component_RequiredProperties_AddToCommand()
         {
             var controller = await new ControllerBuilder(Container).WithConfiguration("RequiredProperties.json").BuildAndRun();
             var adapter = await GetAdapter<RequiredPropertiesAdapter>();
@@ -74,7 +76,7 @@ namespace HomeCenter.Tests.ComponentModel
         }
 
         [TestMethod]
-        public async Task Component_PropertyChangeEvent_ShouldHaveRequiredProp()
+        public async Task Component_RequiredProperties_FilterEvent()
         {
             var controller = await new ControllerBuilder(Container).WithConfiguration("RequiredProperties.json").BuildAndRun();
             var adapter = await GetAdapter<RequiredPropertiesAdapter>();
@@ -90,7 +92,7 @@ namespace HomeCenter.Tests.ComponentModel
 
 
         [TestMethod]
-        public async Task Component_PropertyChangeEvent_SharedAdapter()
+        public async Task Component_SharedAdapter_EventFiltering()
         {
             var controller = await new ControllerBuilder(Container).WithConfiguration("SharedAdapter.json").BuildAndRun();
             var adapter = await GetAdapter<RequiredPropertiesAdapter>();

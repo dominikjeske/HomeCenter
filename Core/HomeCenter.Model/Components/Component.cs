@@ -181,18 +181,17 @@ namespace HomeCenter.Model.Components
             {
                 var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
 
-                Event eventPublished;
                 if (translator != null)
                 {
-                    eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
+                    var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
+                    Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
                 else
                 {
-                    eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
+                    var eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
                     await MessageBroker.Publish(eventPublished, Uid).ConfigureAwait(false);
+                    Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
-
-                Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
             }
         }
 

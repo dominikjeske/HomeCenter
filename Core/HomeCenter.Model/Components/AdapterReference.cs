@@ -26,7 +26,7 @@ namespace HomeCenter.Model.Components
                 routerAttributes.Add(adapterProperty, this[adapterProperty]);
             }
             routerAttributes.Add(MessageProperties.MessageSource, Uid);
-            routerAttributes.Add(MessageProperties.Type, nameof(PropertyChangedEvent));
+            routerAttributes.Add(MessageProperties.Type, nameof(PropertyChangedEvent)); // TODO consider Event
 
             return new RoutingFilter(Uid, routerAttributes);
         }

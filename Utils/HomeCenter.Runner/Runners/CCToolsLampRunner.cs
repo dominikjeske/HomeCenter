@@ -16,7 +16,7 @@ namespace HomeCenter.Runner
 
         public CCToolsLampRunner(string uid) : base(uid)
         {
-            _tasks = new string[] { "TurnOn", "TurnOff", "Refresh", "Switch", "TestMotion"};
+            _tasks = new string[] { "TurnOn", "TurnOff", "Refresh", "Switch", "TestMotion", "TestMotion2" };
         }
 
         public override void RunnerReset()
@@ -60,6 +60,15 @@ namespace HomeCenter.Runner
                     });
 
                     await MessageBroker.Publish(properyChangeEvent, inputUid).ConfigureAwait(false);
+                    return;
+                case 5:
+                    var inputUid2 = "HSPE16InputOnly_2";
+                    var properyChangeEvent2 = PropertyChangedEvent.Create(inputUid2, PowerState.StateName, true, false, new Dictionary<string, string>()
+                    {
+                        [MessageProperties.PinNumber] = 0.ToString()
+                    });
+
+                    await MessageBroker.Publish(properyChangeEvent2, inputUid2).ConfigureAwait(false);
                     return;
             }
 
