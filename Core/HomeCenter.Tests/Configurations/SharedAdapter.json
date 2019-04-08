@@ -15,7 +15,10 @@
               "PinNumber": 1
             }
           }
-        ]
+        ],
+        "Properties": {
+          "RelayNotTranslatedEvents":  true
+        }
       },
       {
         "Uid": "C2",
@@ -26,7 +29,10 @@
               "PinNumber": 2
             }
           }
-        ]
+        ],
+        "Properties": {
+          "RelayNotTranslatedEvents": true
+        }
       }
     ],
 

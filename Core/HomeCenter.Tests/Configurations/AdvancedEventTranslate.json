@@ -1,0 +1,40 @@
+﻿{
+  "HomeCenter": {
+    "Areas": [
+      {
+        "Uid": "Backyard"
+      }
+    ],
+    "Components": [
+      {
+        "Uid": "TestComponentWithValueTranslate",
+        "AdapterRefs": [
+          {
+            "Uid": "SimpleAdapter"
+          }
+        ],
+        "Translators": [
+          {
+            "Type": "Event",
+            "From": {
+              "Type": "PropertyChangedEvent",
+              "Properties": {
+                "NewValue": "True"
+              }
+            },
+            "To": {
+              "Type": "MotionEvent"
+            }
+          }
+        ]
+      }
+    ],
+
+    "Adapters": [
+      {
+        "Uid": "SimpleAdapter",
+        "Type": "SimpleAdapter"
+      }
+    ]
+  }
+}

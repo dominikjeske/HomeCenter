@@ -44,6 +44,22 @@ namespace HomeCenter.Tests.ComponentModel
         }
 
         [TestMethod]
+        public async Task Component_Translate_EventWithProperties()
+        {
+            var controller = await new ControllerBuilder(Container).WithConfiguration("AdvancedEventTranslate.json").BuildAndRun();
+            var adapter = await GetAdapter<SimpleAdapter>();
+
+            var motionEvent = await Broker.WaitForEvent<MotionEvent>(async () => await adapter.PropertyChanged(PowerState.StateName, false, true));
+
+            Assert.IsFalse(Logs.HasErrors);
+            Assert.AreEqual(typeof(MotionEvent), motionEvent.GetType());
+            Assert.AreEqual(nameof(MotionEvent), motionEvent.Type);
+            Assert.AreEqual(adapter.Uid, motionEvent.MessageSource);
+        }
+
+        
+
+        [TestMethod]
         public async Task Component_Translate_Command()
         {
             var controller = await new ControllerBuilder(Container).WithConfiguration("TranslateAdapter.json").BuildAndRun();

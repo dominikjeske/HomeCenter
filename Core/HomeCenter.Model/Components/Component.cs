@@ -28,6 +28,11 @@ namespace HomeCenter.Model.Components
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private IList<Translator> _translators { get; set; } = new List<Translator>();
 
+        /// <summary>
+        /// Decides if we want to re send event from adapters if there is no translator attached
+        /// </summary>
+        protected bool RelayNotTranslatedEvents => AsBool("RelayNotTranslatedEvents", false);
+
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context).ConfigureAwait(false);
@@ -186,7 +191,7 @@ namespace HomeCenter.Model.Components
                     var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
                     Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
-                else
+                else if(RelayNotTranslatedEvents)
                 {
                     var eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
                     await MessageBroker.Publish(eventPublished, Uid).ConfigureAwait(false);
