@@ -307,14 +307,6 @@
           }
         ]
       },
-      //{
-      //  "Uid": "CCToolsLampFromTemplate",
-      //  "Template": "CCToolsLampTemplate",
-      //  "TemplateProperties": {
-      //    "#In": 2,
-      //    "#Out": 1
-      //  }
-      //},
       {
         "Uid": "RaspberryLed",
         "AdapterRefs": [
@@ -344,14 +336,7 @@
       //    }
       //  ]
       //},
-      //{
-      //  "Uid": "DimmerComponent",
-      //  "AdapterRefs": [
-      //    {
-      //      "Uid": "Dimmer"
-      //    }
-      //  ]
-      //}
+
       /* Motion sensors */
       {
         "Uid": "MotionSensorLivingroom",
