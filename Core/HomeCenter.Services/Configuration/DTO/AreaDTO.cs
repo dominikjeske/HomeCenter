@@ -6,12 +6,13 @@ namespace HomeCenter.Services.Configuration.DTO
     public class AreaDTO : BaseDTO
     {
         [JsonProperty("Areas")]
-        public IList<AreaDTO> Areas { get; set; }
+        public IList<AreaDTO> Areas { get; set; } = new List<AreaDTO>();
 
-        [JsonProperty("ComponentsRefs")]
-        public IList<ComponentDTO> ComponentsRefs { get; set; }
+        [JsonProperty("Components")]
+        public IList<ComponentDTO> Components { get; set; } = new List<ComponentDTO>();
 
         [JsonProperty("AttachedProperties")]
         public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
+
     }
 }

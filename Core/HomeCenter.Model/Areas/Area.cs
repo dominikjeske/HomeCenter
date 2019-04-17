@@ -1,20 +1,17 @@
-﻿using HomeCenter.Model.Core;
-using Proto;
+﻿using HomeCenter.Model.Actors;
+using HomeCenter.Model.Components;
+using HomeCenter.Model.Core;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.Areas
 {
-    public class Area : BaseObject
+    public class Area : DeviceActor
     {
         [Map] private List<Area> _areas { get; set; } = new List<Area>();
-        private IDictionary<string, PID> _components = new Dictionary<string, PID>();
+
+        [Map] private IList<Component> _components { get; set; } = new List<Component>();
 
         public IReadOnlyCollection<Area> Areas => _areas.AsReadOnly();
-
-        public void AddComponent(string uid, PID component)
-        {
-            _components.Add(uid, component);
-        }
 
         public override string ToString() => $"{Uid} with {_components.Count} components";
     }

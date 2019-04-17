@@ -5,14 +5,11 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class HomeCenterDTO
     {
-        [JsonProperty("Components")]
-        public IList<ComponentDTO> Components { get; set; } = new List<ComponentDTO>();
+        [JsonProperty("SharedAdapters")]
+        public IList<AdapterDTO> SharedAdapters { get; set; } = new List<AdapterDTO>();
 
-        [JsonProperty("Adapters")]
-        public IList<AdapterDTO> Adapters { get; set; } = new List<AdapterDTO>();
-
-        [JsonProperty("Areas")]
-        public IList<AreaDTO> Areas { get; set; } = new List<AreaDTO>();
+        [JsonProperty("MainArea")]
+        public AreaDTO MainArea { get; set; }
 
         [JsonProperty("Services")]
         public IList<ServiceDTO> Services { get; set; } = new List<ServiceDTO>();

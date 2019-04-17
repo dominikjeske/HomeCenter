@@ -42,7 +42,8 @@ namespace HomeCenter.Services.Configuration
 
         private IDictionary<string, PID> _services;
         private IDictionary<string, PID> _adapters;
-        private IDictionary<string, PID> _components;
+        private PID _mainArea;
+
         private readonly IScheduler _scheduler;
 
         protected ConfigurationService(IMapper mapper, ILogger<ConfigurationService> logger, IActorFactory actorFactory,
@@ -73,8 +74,6 @@ namespace HomeCenter.Services.Configuration
 
             ResolveTemplates(result);
 
-            ResolveInlineAdapters(result);
-
             ResolveAttachedProperties(result);
 
             CheckForDuplicateUid(result);
@@ -90,9 +89,8 @@ namespace HomeCenter.Services.Configuration
             var types = RegisterTypesInAutomapper();
 
             _services = CreataActors<ServiceDTO, Service>(result.HomeCenter.Services, types[typeof(ServiceDTO)]);
-            _adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.Adapters, types[typeof(AdapterDTO)]);
-            _components = MapComponents(result);
-            var areas = MapAreas(result, _components);
+            _adapters = CreataActors<AdapterDTO, Adapter>(result.HomeCenter.SharedAdapters, types[typeof(AdapterDTO)]);
+            _mainArea = MapAreas(result);
 
             await MessageBroker.Publish(SystemStartedEvent.Default).ConfigureAwait(false);
         }
@@ -109,37 +107,86 @@ namespace HomeCenter.Services.Configuration
                 await adapter.StopAsync();
             }
 
-            foreach (var component in _components.Values)
-            {
-                await component.StopAsync();
-            }
+            await _mainArea.StopAsync();
 
             return true;
         }
 
+        private IEnumerable<(ComponentDTO Component, AreaDTO Area)> GetFlatComponentList(AreaDTO rootArea)
+        {
+            foreach(var component in rootArea.Components)
+            {
+                yield return (component, rootArea);
+            }
+            foreach(var area in rootArea.Areas)
+            {
+                foreach(var component in GetFlatComponentList(area))
+                {
+                    yield return component;
+                }
+            }
+        }
+
+        private void ResolveTemplates(HomeCenterConfigDTO result)
+        {
+            foreach (var component in GetFlatComponentList(result.HomeCenter.MainArea).Where(c => !string.IsNullOrWhiteSpace(c.Component.Template)).ToList())
+            {
+                var template = result.HomeCenter.Templates.Single(t => t.Uid == component.Component.Template);
+                var templateCopy = template.Clone();
+                templateCopy.Uid = component.Component.Uid;
+
+                foreach (var adapter in templateCopy.Adapters)
+                {
+                    adapter.Uid = GetTemplateValueOrDefault(adapter.Uid, component.Component.TemplateProperties);
+
+                    foreach (var property in adapter.Properties.Keys.ToList())
+                    {
+                        var propvalue = adapter.Properties[property];
+                        if (propvalue.IndexOf("#") > -1)
+                        {
+                            if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");
+                            adapter.Properties[property] = component.Component.TemplateProperties[propvalue];
+                        }
+                    }
+                }
+
+                foreach (var attachedProperty in templateCopy.AttachedProperties)
+                {
+                    foreach (var property in attachedProperty.Properties.Keys.ToList())
+                    {
+                        var propvalue = attachedProperty.Properties[property];
+                        if (propvalue.IndexOf("#") > -1)
+                        {
+                            if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");
+                            attachedProperty.Properties[property] = component.Component.TemplateProperties[propvalue];
+                        }
+                    }
+                }
+
+                component.Area.Components.Remove(component.Component);
+                component.Area.Components.Add(templateCopy);
+            }
+        }
+
         private void ResolveAttachedProperties(HomeCenterConfigDTO result)
         {
-            var components = result.HomeCenter.Components.Where(c => c.AttachedProperties?.Count > 0);
-            foreach (var component in components)
+            foreach (var component in GetFlatComponentList(result.HomeCenter.MainArea).Where(c => c.Component.AttachedProperties?.Count > 0))
             {
-                foreach (var property in component.AttachedProperties)
+                foreach (var property in component.Component.AttachedProperties)
                 {
-                    var propertyCopy = DeepCloner.Clone(property);
+                    var propertyCopy = property.Clone();
 
                     var serviceDto = result.HomeCenter.Services.FirstOrDefault(s => s.Uid == propertyCopy.Service);
                     if (serviceDto == null) throw new MissingMemberException($"Service {propertyCopy.Service} was not found in configuration");
 
-                    var area = result.HomeCenter.Areas.Flatten(a => a.Areas).FirstOrDefault(a => a.ComponentsRefs?.Any(c => c.Uid.InvariantEquals(component.Uid)) ?? false);
-                    if (area == null) throw new MissingMemberException($"Component {component.Uid} was not found in any area");
-
-                    propertyCopy.AttachedActor = component.Uid;
-                    propertyCopy.AttachedArea = area.Uid;
+                    propertyCopy.AttachedActor = component.Component.Uid;
+                    propertyCopy.AttachedArea = component.Area.Uid;
 
                     serviceDto.ComponentsAttachedProperties.Add(propertyCopy);
                 }
             }
 
-            var areas = result.HomeCenter.Areas.Flatten(a => a.Areas).Where(c => c.AttachedProperties?.Count > 0);
+            var areas = result.HomeCenter.MainArea.Areas.Flatten(a => a.Areas).Where(c => c.AttachedProperties?.Count > 0);
 
             foreach (var area in areas)
             {
@@ -154,54 +201,7 @@ namespace HomeCenter.Services.Configuration
             }
         }
 
-        private void ResolveTemplates(HomeCenterConfigDTO result)
-        {
-            var templatedComponents = result.HomeCenter.Components.Where(c => !string.IsNullOrWhiteSpace(c.Template));
-            var resolved = new Dictionary<ComponentDTO, ComponentDTO>();
-
-            foreach (var component in templatedComponents)
-            {
-                var template = result.HomeCenter.Templates.Single(t => t.Uid == component.Template);
-                var templateCopy = DeepCloner.Clone(template);
-                templateCopy.Uid = component.Uid;
-
-                foreach (var adapter in templateCopy.Adapters)
-                {
-                    adapter.Uid = GetTemplateValueOrDefault(adapter.Uid, component.TemplateProperties);
-
-                    foreach (var property in adapter.Properties.Keys.ToList())
-                    {
-                        var propvalue = adapter.Properties[property];
-                        if (propvalue.IndexOf("#") > -1)
-                        {
-                            if (!component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Uid}'");
-                            adapter.Properties[property] = component.TemplateProperties[propvalue];
-                        }
-                    }
-                }
-
-                foreach (var attachedProperty in templateCopy.AttachedProperties)
-                {
-                    foreach (var property in attachedProperty.Properties.Keys.ToList())
-                    {
-                        var propvalue = attachedProperty.Properties[property];
-                        if (propvalue.IndexOf("#") > -1)
-                        {
-                            if (!component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Uid}'");
-                            attachedProperty.Properties[property] = component.TemplateProperties[propvalue];
-                        }
-                    }
-                }
-
-                resolved.Add(component, templateCopy);
-            }
-
-            foreach (var comp in resolved.Keys)
-            {
-                result.HomeCenter.Components.Remove(comp);
-                result.HomeCenter.Components.Add(resolved[comp]);
-            }
-        }
+      
 
         private string GetTemplateValueOrDefault(string varible, IDictionary<string, string> templateValues)
         {
@@ -212,19 +212,10 @@ namespace HomeCenter.Services.Configuration
             return varible;
         }
 
-        private void ResolveInlineAdapters(HomeCenterConfigDTO result)
-        {
-            foreach (var component in result.HomeCenter.Components.Where(c => c.Adapter != null).Select(c => c))
-            {
-                result.HomeCenter.Adapters.Add(component.Adapter);
-                component.Adapters = new List<AdapterReferenceDTO>() { new AdapterReferenceDTO { Uid = component.Adapter.Uid, Type = component.Adapter.Type } };
-            }
-        }
-
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
         {
-            var allUids = configuration.HomeCenter?.Adapters?.Select(a => a.Uid).ToList();
-            allUids.AddRange(configuration.HomeCenter?.Components?.Select(c => c.Uid));
+            var allUids = configuration.HomeCenter?.SharedAdapters?.Select(a => a.Uid).ToList();
+            allUids.AddRange(GetFlatComponentList(configuration.HomeCenter.MainArea).Select(c => c.Component.Uid));
             allUids.AddRange(configuration.HomeCenter?.Services?.Select(c => c.Uid));
 
             var duplicateKeys = allUids.GroupBy(x => x)
@@ -236,48 +227,35 @@ namespace HomeCenter.Services.Configuration
             }
         }
 
-        private IList<Area> MapAreas(HomeCenterConfigDTO result, IDictionary<string, PID> components)
-        {
-            var areas = _mapper.Map<IList<AreaDTO>, IList<Area>>(result.HomeCenter.Areas);
-            MapComponentsToArea(result.HomeCenter.Areas, components, areas);
+        private PID MapAreas(HomeCenterConfigDTO result) => CreateArea(result.HomeCenter.MainArea, null);
 
-            return areas;
-        }
-
-        private void MapComponentsToArea(IList<AreaDTO> areasFromConfig, IDictionary<string, PID> components, IList<Area> areas)
+        private PID CreateArea(AreaDTO area, PID parent)
         {
-            var configAreas = areasFromConfig.Expand(a => a.Areas);
-            foreach (var area in areas.Expand(a => a.Areas))
+            var context = new ActorContext(null, parent);
+
+            var mainArea = _actorFactory.CreateActor(() =>
             {
-                var areInConfig = configAreas.FirstOrDefault(a => a.Uid == area.Uid);
-                if (areInConfig?.ComponentsRefs != null)
-                {
-                    foreach (var component in areInConfig?.ComponentsRefs)
-                    {
-                        //area.AddComponent(component.Uid, components[component.Uid]);
-                    }
-                }
-            }
-        }
+                var mapped = _mapper.Map<Area>(area);
+                return mapped;
+            }, area.Uid, parent: context);
 
-        private IDictionary<string, PID> MapComponents(HomeCenterConfigDTO result)
-        {
-            var components = new Dictionary<string, PID>();
-            List<ComponentProxy> comp = new List<ComponentProxy>();
-
-            foreach (var componentConfig in result.HomeCenter.Components)
+            foreach(var component in area.Components)
             {
-                var localConfigCopy = componentConfig; // prevents override of componentConfig when executed in multi thread
-
-                var component = _actorFactory.CreateActor(() =>
+                var localConfigCopy = component; // prevents override of componentConfig when executed in multi thread
+                _actorFactory.CreateActor(() =>
                 {
                     var mapped = _mapper.Map<ComponentProxy>(localConfigCopy);
                     return mapped;
                 }, localConfigCopy.Uid);
-                components.Add(localConfigCopy.Uid, component);
             }
 
-            return components;
+            foreach (var subArea in area.Areas)
+            {
+                var subAreaConfig = subArea; // prevents override of componentConfig when executed in multi thread
+                CreateArea(subAreaConfig, mainArea);
+            }
+
+            return mainArea;
         }
 
         private Dictionary<string, PID> CreataActors<T, Q>(IEnumerable<T> config, List<Type> types) where T : BaseDTO

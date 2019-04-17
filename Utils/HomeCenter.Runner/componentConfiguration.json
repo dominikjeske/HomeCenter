@@ -1,428 +1,238 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard",
-        "Areas": [
-          {
-            "Uid": "House",
-            "Areas": [
-              {
-                "Uid": "Kitchen",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorKitchen"
+    "MainArea": {
+      "Uid": "Backyard",
+      "Areas": [
+        {
+          "Uid": "House",
+          "Areas": [
+            {
+              "Uid": "Kitchen",
+              "Components": [
+                {
+                  "Uid": "MotionSensorKitchen",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "4",
+                    "#Neighbors": "MotionSensorHallwayToilet",
+                    "#Lamp": "LivingroomLamp"
                   }
-                ]
-              },
-              {
-                "Uid": "Bedroom",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorBedroom"
-                  }
-                ]
-              },
-              {
-                "Uid": "Toilet",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorToilet"
-                  }
-                ]
-              },
-              {
-                "Uid": "Bathroom",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorBathroom"
-                  }
-                ]
-              },
-              {
-                "Uid": "Livingroom",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "DenonComponent"
+                }
+              ]
+            },
+            {
+              "Uid": "Bedroom",
+              "Components": [
+                {
+                  "Uid": "SonyComponent",
+                  "Properties": {
+                    "FriendlyName": "Sony"
                   },
-                  {
-                    "Uid": "MotionSensorLivingroom"
-                  }
-                ],
-                "AttachedProperties": [
-                  {
-                    "Service": "MotionService",
+                  "Adapter": {
+                    "Uid": "Sony",
+                    "Type": "SonyBraviaAdapter",
                     "Properties": {
-
+                      "Hostname": "192.168.0.109",
+                      "MAC": "D8:D4:3C:D3:90:B6",
+                      "ClientID": "SonyHomeCenterTest",
+                      "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
                     }
                   }
-                ]
-              },
-              {
-                "Uid": "Balcony",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorBalcony"
-                  }
-                ]
-              },
-              {
-                "Uid": "Hallway",
-                "ComponentsRefs": [
-                  {
-                    "Uid": "MotionSensorHallwayLivingroom"
-                  },
-                  {
-                    "Uid": "MotionSensorHallwayToilet"
-                  }
-                ]
-              }
-
-            ]
-          },
-          {
-            "Uid": "Staircase"
-          }
-        ]
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "DenonComponent",
-        "IsEnabled": true,
-        "Properties": {
-          "FriendlyName": "Denon"
-        },
-        "Adapter": {
-          "Uid": "Denon",
-          "Type": "DenonAdapter",
-          "IsEnabled": true,
-          "Properties": {
-            "Hostname": "192.168.0.100",
-            "PoolInterval": 500,
-            "Zone": 1
-          }
-        }
-      },
-      {
-        "Uid": "KodiComponent",
-        "Properties": {
-          "FriendlyName": "Kodi"
-        },
-        "Adapter": {
-          "Uid": "Kodi",
-          "Type": "KodiAdapter",
-          "IsEnabled": false,
-          "Properties": {
-            "Hostname": "192.168.0.102",
-            "Port": 500,
-            "PoolInterval": 500,
-            "UserName": "dnf",
-            "Password": "Kodi123"
-          }
-        }
-      },
-      {
-        "Uid": "PcComponent",
-        "Properties": {
-          "FriendlyName": "PC"
-        },
-        "Adapter": {
-          "Uid": "PC",
-          "Type": "PcAdapter",
-          "IsEnabled": false,
-          "Properties": {
-            "Hostname": "192.168.0.102",
-            "Port": 500,
-            "PoolInterval": 500,
-            "MAC": "9C-5C-8E-C2-01-62"
-          }
-        }
-      },
-      {
-        "Uid": "SamsungComponent",
-        "Properties": {
-          "FriendlyName": "Samsung"
-        },
-        "Adapter": {
-          "Uid": "Samsung",
-          "Type": "SamsungAdapter",
-          "Properties": {
-            "Hostname": "192.168.0.105",
-            "MAC": "0C-89-10-CD-43-28",
-            "InfraredAdapter": "RemoteIR"
-          }
-        }
-      },
-      {
-        "Uid": "SonyComponent",
-        "Properties": {
-          "FriendlyName": "Sony"
-        },
-        "Adapter": {
-          "Uid": "Sony",
-          "Type": "SonyBraviaAdapter",
-          "Properties": {
-            "Hostname": "192.168.0.109",
-            "MAC": "D8:D4:3C:D3:90:B6",
-            "ClientID": "SonyHomeCenterTest",
-            "AuthKey": "fff6e478813c5d29cebb9d8265833b85fb76c96e8b379e1ddbc2813afba5e91c"
-          }
-        }
-      },
-      {
-        "Uid": "RemoteLamp",
-        "Triggers": [
-          {
-            "Schedule": {
-              "CronExpression": "0 0/1 * * * ?", //  https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
-              "Calendar": "PolishCalendar",
-              "WorkingTime": "00:00:05"
-            },
-            "Condition": { //TODO add check in event triggers
-              "Conditions": [
-                {
-                  "Type": "IsNightCondition"
-                }
-              ]
-              // default is AND for all but we can change it: "DefaultOperator": "OR" or build custom expression "Expression": "C1 and C2"
-            },
-            "Commands": [
-              {
-                "Type": "TurnOnCommand"
-              },
-              {
-                "Type": "TurnOffCommand",
-                "Properties": {
-                  "IsFinishComand": true
-                }
-              }
-            ]
-          }
-        ],
-        "AdapterRefs": [
-          {
-            "Uid": "RemoteSocket",
-            "Properties": {
-              "System": "AllOn", // AllOff, Switch1, Switch2, Switch3, Switch4, Switch5, AllOn
-              "Unit": "A" // A, B, C, D
-            }
-          }
-        ]
-      },
-      {
-        "Uid": "RemoteLamp2",
-        "Triggers": [
-          {
-            // Add custom c# scheduler
-            "Schedule": {
-              "ManualSchedules": [
-                {
-                  "Start": "22:22:00",
-                  "Finish": "22:23:00"
                 },
                 {
-                  "Start": "22:22:00",
-                  "WorkingTime": "00:00:05" // Finish: 22:22:05
+                  "Uid": "MotionSensorBedroom",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "1",
+                    "#Neighbors": "MotionSensorHallwayToilet",
+                    "#Lamp": "LivingroomLamp"
+                  }
                 }
               ]
             },
-            "Commands": [
-              {
-                "Type": "TurnOnCommand"
-              },
-              {
-                "Type": "TurnOffCommand",
-                "Properties": {
-                  "IsFinishComand": true
+            {
+              "Uid": "Toilet",
+              "Components": [
+                {
+                  "Uid": "MotionSensorToilet",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "3",
+                    "#Neighbors": "MotionSensorHallwayToilet",
+                    "#Lamp": "LivingroomLamp"
+                  }
                 }
-              }
-            ]
-          }
-        ],
-        "AdapterRefs": [
-          {
-            "Uid": "RemoteSocket",
-            "Properties": {
-              "System": "AllOn",
-              "Unit": "D"
-            }
-          }
-        ]
-      },
-      {
-        "Uid": "RemoteLamp3",
-        "AdapterRefs": [
-          {
-            "Uid": "RemoteSocket",
-            "Properties": {
-              "System": "AllOn",
-              "Unit": "D",
-              "Repeat": 1
-            }
-          }
-        ]
-      },
-      {
-        "Uid": "CCToolsLamp",
-        "AdapterRefs": [
-          {
-            "Uid": "HSPE16InputOnly_1",
-            "Properties": {
-              "PinNumber": 0
-            }
-          },
-          {
-            "Uid": "HSPE16InputOnly_1",
-            "Properties": {
-              "PinNumber": 1,
-              "PowerState": "Read"
-            }
-          },
-          {
-            "Uid": "HSRel8_1",
-            "Properties": {
-              "PinNumber": 0
-            }
-          }
-        ],
-        "Triggers": [
-          {
-            "Event": {
-              "Type": "PropertyChangedEvent",
-              "Properties": {
-                "MessageSource": "HSPE16InputOnly_1",
-                "PinNumber": 0,
-                "NewValue": "True"
-              }
+              ]
             },
-            "Commands": [
-              {
-                "Type": "TurnOnCommand",
-                "Properties": {
-                  "StateTime": 200
+            {
+              "Uid": "Bathroom",
+              "Components": [
+                {
+                  "Uid": "MotionSensorBathroom",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "2",
+                    "#Neighbors": "MotionSensorHallwayLivingroom",
+                    "#Lamp": "LivingroomLamp"
+                  }
                 }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "Uid": "RaspberryLed",
-        "AdapterRefs": [
-          {
-            "Uid": "Raspberry",
-            "Properties": {
-              "PinNumber": "16",
-              "ReversePinLevel": true
+              ]
+            },
+            {
+              "Uid": "Livingroom",
+              "Components": [
+                {
+                  "Uid": "MotionSensorLivingroom",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "0",
+                    "#Neighbors": "MotionSensorHallwayLivingroom, MotionSensorBalcony",
+                    "#Lamp": "LivingroomLamp"
+                  }
+                },
+                {
+                  "Uid": "DenonComponent",
+                  "IsEnabled": true,
+                  "Properties": {
+                    "FriendlyName": "Denon"
+                  },
+                  "Adapter": {
+                    "Uid": "Denon",
+                    "Type": "DenonAdapter",
+                    "IsEnabled": true,
+                    "Properties": {
+                      "Hostname": "192.168.0.100",
+                      "PoolInterval": 500,
+                      "Zone": 1
+                    }
+                  }
+                },
+                {
+                  "Uid": "KodiComponent",
+                  "Properties": {
+                    "FriendlyName": "Kodi"
+                  },
+                  "Adapter": {
+                    "Uid": "Kodi",
+                    "Type": "KodiAdapter",
+                    "IsEnabled": false,
+                    "Properties": {
+                      "Hostname": "192.168.0.102",
+                      "Port": 500,
+                      "PoolInterval": 500,
+                      "UserName": "dnf",
+                      "Password": "Kodi123"
+                    }
+                  }
+                },
+                {
+                  "Uid": "PcComponent",
+                  "Properties": {
+                    "FriendlyName": "PC"
+                  },
+                  "Adapter": {
+                    "Uid": "PC",
+                    "Type": "PcAdapter",
+                    "IsEnabled": false,
+                    "Properties": {
+                      "Hostname": "192.168.0.102",
+                      "Port": 500,
+                      "PoolInterval": 500,
+                      "MAC": "9C-5C-8E-C2-01-62"
+                    }
+                  }
+                },
+                {
+                  "Uid": "SamsungComponent",
+                  "Properties": {
+                    "FriendlyName": "Samsung"
+                  },
+                  "Adapter": {
+                    "Uid": "Samsung",
+                    "Type": "SamsungAdapter",
+                    "Properties": {
+                      "Hostname": "192.168.0.105",
+                      "MAC": "0C-89-10-CD-43-28",
+                      "InfraredAdapter": "RemoteIR"
+                    }
+                  }
+                }
+              ],
+              "AttachedProperties": [
+                {
+                  "Service": "MotionService",
+                  "Properties": {
+
+                  }
+                }
+              ]
+            },
+            {
+              "Uid": "Balcony",
+              "Components": [
+                {
+                  "Uid": "MotionSensorBalcony",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "7",
+                    "#Neighbors": "MotionSensorHallwayLivingroom",
+                    "#Lamp": "LivingroomLamp"
+                  }
+                }
+              ]
+            },
+            {
+              "Uid": "Hallway",
+              "Components": [
+                {
+                  "Uid": "RaspberryLed",
+                  "AdapterRefs": [
+                    {
+                      "Uid": "Raspberry",
+                      "Properties": {
+                        "PinNumber": "16",
+                        "ReversePinLevel": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Uid": "MotionSensorHallwayToilet",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "5",
+                    "#Neighbors": "MotionSensorBedroom, MotionSensorHallwayLivingroom, MotionSensorKitchen",
+                    "#Lamp": "LivingroomLamp"
+                  }
+                },
+                {
+                  "Uid": "MotionSensorHallwayLivingroom",
+                  "Template": "MotionSensorTemplate",
+                  "TemplateProperties": {
+                    "#InputAdapter": "HSPE16InputOnly_2",
+                    "#InputPin": "6",
+                    "#Neighbors": "MotionSensorLivingroom, MotionSensorBathroom, MotionSensorHallwayToilet",
+                    "#Lamp": "LivingroomLamp"
+                  }
+                }
+              ]
             }
-          }
-        ]
-      },
-      //{
-      //  "Uid": "RoomTemperature",
-      //  "AdapterRefs": [
-      //    {
-      //      "Uid": "TemperatureBridge",
-      //      "Properties": {
-      //        "PinNumber": "4"
-      //      }
-      //    },
-      //    {
-      //      "Uid": "HumidityBridge",
-      //      "Properties": {
-      //        "PinNumber": "4"
-      //      }
-      //    }
-      //  ]
-      //},
 
-      /* Motion sensors */
-      {
-        "Uid": "MotionSensorLivingroom",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "0",
-          "#Neighbors": "MotionSensorHallwayLivingroom, MotionSensorBalcony",
-          "#Lamp": "LivingroomLamp"
+          ]
+        },
+        {
+          "Uid": "Staircase"
         }
-      },
-      {
-        "Uid": "MotionSensorBedroom",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "1",
-          "#Neighbors": "MotionSensorHallwayToilet",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorBathroom",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "2",
-          "#Neighbors": "MotionSensorHallwayLivingroom",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorToilet",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "3",
-          "#Neighbors": "MotionSensorHallwayToilet",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorKitchen",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "4",
-          "#Neighbors": "MotionSensorHallwayToilet",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorHallwayToilet",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "5",
-          "#Neighbors": "MotionSensorBedroom, MotionSensorHallwayLivingroom, MotionSensorKitchen",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorHallwayLivingroom",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "6",
-          "#Neighbors": "MotionSensorLivingroom, MotionSensorBathroom, MotionSensorHallwayToilet",
-          "#Lamp": "LivingroomLamp"
-        }
-      },
-      {
-        "Uid": "MotionSensorBalcony",
-        "Template": "MotionSensorTemplate",
-        "TemplateProperties": {
-          "#InputAdapter": "HSPE16InputOnly_2",
-          "#InputPin": "7",
-          "#Neighbors": "MotionSensorHallwayLivingroom",
-          "#Lamp": "LivingroomLamp"
-        }
-      }
-    ]
-    /* Motion sensors END*/
-    ,
-
-    "Adapters": [
+      ]
+    },
+    "SharedAdapters": [
       {
         "Uid": "HSRel8_1",
         "Type": "CCToolsAdapter",
@@ -509,7 +319,7 @@
         "Properties": {
           "Address": 50
         }
-      },
+      }
       //{
       //  "Uid": "Dimmer",
       //  "Type": "DimmerSCO812Adapter",

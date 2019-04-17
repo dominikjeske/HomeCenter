@@ -19,7 +19,7 @@
       }
     ],
 
-    "Adapters": [
+    "SharedAdapters": [
       {
         "Uid": "RequiredPropertiesAdapter",
         "Type": "RequiredPropertiesAdapter"

@@ -1,0 +1,158 @@
+{
+  {
+    "Uid": "RemoteLamp",
+    "Triggers": [
+      {
+        "Schedule": {
+          "CronExpression": "0 0/1 * * * ?", //  https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html
+          "Calendar": "PolishCalendar",
+          "WorkingTime": "00:00:05"
+        },
+        "Condition": { //TODO add check in event triggers
+          "Conditions": [
+            {
+              "Type": "IsNightCondition"
+            }
+          ]
+          // default is AND for all but we can change it: "DefaultOperator": "OR" or build custom expression "Expression": "C1 and C2"
+        },
+        "Commands": [
+          {
+            "Type": "TurnOnCommand"
+          },
+          {
+            "Type": "TurnOffCommand",
+            "Properties": {
+              "IsFinishComand": true
+            }
+          }
+        ]
+      }
+    ],
+    "AdapterRefs": [
+      {
+        "Uid": "RemoteSocket",
+        "Properties": {
+          "System": "AllOn", // AllOff, Switch1, Switch2, Switch3, Switch4, Switch5, AllOn
+          "Unit": "A" // A, B, C, D
+        }
+      }
+    ]
+  },
+  {
+    "Uid": "RemoteLamp2",
+    "Triggers": [
+      {
+        // Add custom c# scheduler
+        "Schedule": {
+          "ManualSchedules": [
+            {
+              "Start": "22:22:00",
+              "Finish": "22:23:00"
+            },
+            {
+              "Start": "22:22:00",
+              "WorkingTime": "00:00:05" // Finish: 22:22:05
+            }
+          ]
+        },
+        "Commands": [
+          {
+            "Type": "TurnOnCommand"
+          },
+          {
+            "Type": "TurnOffCommand",
+            "Properties": {
+              "IsFinishComand": true
+            }
+          }
+        ]
+      }
+    ],
+    "AdapterRefs": [
+      {
+        "Uid": "RemoteSocket",
+        "Properties": {
+          "System": "AllOn",
+          "Unit": "D"
+        }
+      }
+    ]
+  },
+  {
+    "Uid": "RemoteLamp3",
+    "AdapterRefs": [
+      {
+        "Uid": "RemoteSocket",
+        "Properties": {
+          "System": "AllOn",
+          "Unit": "D",
+          "Repeat": 1
+        }
+      }
+    ]
+  },
+  {
+    "Uid": "CCToolsLamp",
+    "AdapterRefs": [
+      {
+        "Uid": "HSPE16InputOnly_1",
+        "Properties": {
+          "PinNumber": 0
+        }
+      },
+      {
+        "Uid": "HSPE16InputOnly_1",
+        "Properties": {
+          "PinNumber": 1,
+          "PowerState": "Read"
+        }
+      },
+      {
+        "Uid": "HSRel8_1",
+        "Properties": {
+          "PinNumber": 0
+        }
+      }
+    ],
+    "Triggers": [
+      {
+        "Event": {
+          "Type": "PropertyChangedEvent",
+          "Properties": {
+            "MessageSource": "HSPE16InputOnly_1",
+            "PinNumber": 0,
+            "NewValue": "True"
+          }
+        },
+        "Commands": [
+          {
+            "Type": "TurnOnCommand",
+            "Properties": {
+              "StateTime": 200
+            }
+          }
+        ]
+      }
+    ]
+  }
+
+  //{
+  //  "Uid": "RoomTemperature",
+  //  "AdapterRefs": [
+  //    {
+  //      "Uid": "TemperatureBridge",
+  //      "Properties": {
+  //        "PinNumber": "4"
+  //      }
+  //    },
+  //    {
+  //      "Uid": "HumidityBridge",
+  //      "Properties": {
+  //        "PinNumber": "4"
+  //      }
+  //    }
+  //  ]
+  //},
+
+}

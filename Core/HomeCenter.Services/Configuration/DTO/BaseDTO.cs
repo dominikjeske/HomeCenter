@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
+    [DebuggerDisplay("[{Uid}] [{Type}]")]
     public class BaseDTO
     {
         [JsonProperty("Uid")]

@@ -42,7 +42,7 @@
       }
     ],
 
-    "Adapters": [
+    "SharedAdapters": [
       {
         "Uid": "SimpleAdapter",
         "Type": "SimpleAdapter"
