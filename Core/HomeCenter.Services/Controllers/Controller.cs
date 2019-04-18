@@ -53,7 +53,6 @@ namespace HomeCenter.Services.Controllers
             await MessageBroker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, _configService);
             await _configService.StopAsync();
             await _scheduler.Shutdown();
-            Mapper.Reset(); // TODO configuration is using static mapper - fix this because second execution need this static reset
 
             _actorFactory.GetExistingActor(nameof(Controller)).Stop();
 

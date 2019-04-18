@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.Broker
 {
-    public interface IPropertiesSource
+    public interface IPropertySource
     {
         string this[string propertyName] { get; set; }
 

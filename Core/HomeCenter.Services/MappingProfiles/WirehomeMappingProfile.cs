@@ -23,6 +23,7 @@ namespace HomeCenter.Services.Profiles
             CreateMap<AttachedPropertyDTO, AttachedPropertyDTO>();
 
             CreateMap<ComponentDTO, ComponentProxy>().ConstructUsingServiceLocator();
+            CreateMap<AreaDTO, AreaProxy>().ConstructUsingServiceLocator();
             CreateMap<AdapterReferenceDTO, AdapterReference>();
             CreateMap<TriggerDTO, Trigger>().ForMember(s => s.Commands, d => d.MapFrom<CommandResolver>())
                                             .ForMember(c => c.Condition, d => d.MapFrom<ConditionContainerResolver>())

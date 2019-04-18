@@ -23,10 +23,6 @@ namespace HomeCenter.Services.Configuration.DTO
         [JsonProperty("Triggers")]
         public IList<TriggerDTO> Triggers { get; set; }
 
-        [DefaultValue("Component")]
-        [JsonProperty("Type", DefaultValueHandling = DefaultValueHandling.Populate)]
-        public new string Type { get; set; }
-
         [DefaultValue("Template")]
         public string Template { get; set; }
 
@@ -35,5 +31,11 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonProperty("AttachedProperties")]
         public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
+
+        public ComponentDTO()
+        {
+            Type = "Component";
+        }
+
     }
 }

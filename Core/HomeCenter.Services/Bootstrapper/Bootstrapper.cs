@@ -5,6 +5,7 @@ using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
+using HomeCenter.Services.Actors;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
@@ -43,8 +44,6 @@ namespace HomeCenter.Services.Bootstrapper
             RegisterBaseDependencies();
 
             RegisterLogging();
-
-            RegisterAutomapper();
 
             await RegisterQuartz().ConfigureAwait(false);
 
@@ -88,6 +87,7 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterInstance(actorRegistry);
             _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
             _container.RegisterSingleton<IActorFactory, ActorFactory>();
+            _container.RegisterSingleton<ITypeLoader, TypeLoader>();
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();
@@ -105,21 +105,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterInstance<IJobFactory>(jobFactory);
             _container.RegisterInstance<ISchedulerFactory>(jobSchedulerFactory);
             _container.RegisterInstance(scheduler);
-        }
-
-        protected virtual void RegisterAutomapper()
-        {
-            var mce = new MapperConfigurationExpression();
-            mce.ConstructServicesUsing(_container.GetInstance);
-
-            foreach (var profile in AssemblyHelper.GetAllTypes<Profile>())
-            {
-                mce.AddProfile(profile);
-            }
-
-            var mapper = new Mapper(new MapperConfiguration(mce), t => _container.GetInstance(t));
-
-            _container.RegisterInstance<IMapper>(mapper);
         }
 
         protected virtual ILoggerProvider[] GetLogProviders()

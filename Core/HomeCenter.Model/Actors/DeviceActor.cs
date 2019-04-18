@@ -116,6 +116,12 @@ namespace HomeCenter.Model.Actors
                 return true;
             }
 
+            if (msg is ActorContextQuery)
+            {
+                context.Respond(context);
+                return true;
+            }
+
             return false;
         }
 

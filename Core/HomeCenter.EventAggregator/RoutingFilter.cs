@@ -34,7 +34,7 @@ namespace HomeCenter.Broker
             if (RoutingAttributes.Count > 0)
             {
                 // If message is IPropertiesSource we check properties from message directly
-                if (message is IPropertiesSource propertiesSource)
+                if (message is IPropertySource propertiesSource)
                 {
                     foreach (var attribute in RoutingAttributes)
                     {

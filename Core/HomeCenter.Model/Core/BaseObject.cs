@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HomeCenter.Model.Core
 {
-    public class BaseObject : IPropertiesSource
+    public class BaseObject : IPropertySource, IBaseObject
     {
         [Map] private Dictionary<string, string> _properties { get; set; } = new Dictionary<string, string>();
 

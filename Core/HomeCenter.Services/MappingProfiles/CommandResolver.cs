@@ -26,16 +26,4 @@ namespace HomeCenter.Services.Profiles
             return commands;
         }
     }
-
-    public class ConditionContainerResolver : IValueResolver<TriggerDTO, Trigger, IValidable>
-    {
-        public IValidable Resolve(TriggerDTO source, Trigger destination, IValidable destMember, ResolutionContext context)
-        {
-            if (source.Condition != null)
-            {
-                return context.Mapper.Map(source.Condition, typeof(ConditionContainerDTO), typeof(ConditionContainer)) as IValidable;
-            }
-            return EmptyCondition.Default;
-        }
-    }
 }

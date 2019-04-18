@@ -14,5 +14,9 @@ namespace HomeCenter.Services.Configuration.DTO
         [JsonProperty("AttachedProperties")]
         public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
 
+        public AreaDTO()
+        {
+            Type = "Area";
+        }
     }
 }

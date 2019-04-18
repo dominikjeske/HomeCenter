@@ -1,5 +1,8 @@
-﻿using HomeCenter.Model.Contracts;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Contracts;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Services.Actors;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Router;
@@ -14,13 +17,17 @@ namespace HomeCenter.Model.Actors
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
         private readonly ILogger<ActorFactory> _logger;
+        private readonly ITypeLoader _typeLoader;
+
         public RootContext Context { get; } = new RootContext();
 
-        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger, ActorPropsRegistry actorPropsRegistry)
+        public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger,
+                            ITypeLoader typeLoader, ActorPropsRegistry actorPropsRegistry)
         {
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;
             _logger = logger;
+            _typeLoader = typeLoader;
         }
 
         public PID GetExistingActor(string id, string address = default, IContext parent = default)
@@ -46,6 +53,21 @@ namespace HomeCenter.Model.Actors
             return actor;
         }
 
+        public PID CreateActor<C>(C actorConfig, IContext parent = null) where C : IBaseObject, IPropertySource
+        {
+            return CreateActor(() => _typeLoader.GetProxyType(actorConfig), actorConfig.Uid, routing: GetRouting(actorConfig), parent: parent);
+        }
+
+        private int GetRouting(IPropertySource actorConfig)
+        {
+            if (actorConfig.ContainsProperty("Routing"))
+            {
+                return int.Parse(actorConfig["Routing"]);
+            }
+
+            return 0;
+        }
+
         public PID CreateActor<T>(string id = default, string address = default, IContext parent = default) where T : class, IActor
         {
             return CreateActorFromType(typeof(T), id, address, parent);
@@ -65,7 +87,6 @@ namespace HomeCenter.Model.Actors
             id = id ?? actorType.FullName;
             return GetOrCreateActor(id, address, parent, () => CreateActor(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)), parent)));
         }
-
 
         private Props WithGuardiad(Props props, IContext parent)
         {
