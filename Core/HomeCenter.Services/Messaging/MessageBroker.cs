@@ -53,8 +53,8 @@ namespace HomeCenter.Model.Core
 
         private SubscriptionCache GetSubscription<T>(PID subscriber)
         {
-            var rootActor = _actorFactory.GetRootActor(subscriber);
-            var sub = new SubscriptionCache(rootActor, typeof(T));
+            //var rootActor = _actorFactory.GetRootActor(subscriber);
+            var sub = new SubscriptionCache(subscriber, typeof(T));
             return sub;
         }
 
@@ -98,9 +98,6 @@ namespace HomeCenter.Model.Core
 
         public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
         {
-            var ss = message.GetType().Name;
-            var ss2 = typeof(T).Name;
-
             return _eventAggregator.Publish(message, routingFilter);
         }
 

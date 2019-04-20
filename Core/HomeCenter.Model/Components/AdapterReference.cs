@@ -12,6 +12,8 @@ namespace HomeCenter.Model.Components
     {
         public List<string> RequierdProperties { get; } = new List<string>();
 
+        public bool IsMainAdapter { get; set; }
+
         public void AddRequierdProperties(IList<string> requierdProperties)
         {
             RequierdProperties.AddRange(requierdProperties);

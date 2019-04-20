@@ -66,16 +66,16 @@ namespace HomeCenter.Model.Actors
 
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
-            // If actor is disabled we are ignoring all messages
-            if (!IsEnabled)
-            {
-                Logger.LogInformation($"<{Uid}> is disabled and message type '{context.Message.GetType().Name}' will be ignored");
-                return true;
-            }
-
             var msg = context.Message;
+
             if (msg is Started)
             {
+                if (!IsEnabled)
+                {
+                    Logger.LogInformation($"<{Uid}> is disabled and all messages will be ignored");
+                    return true;
+                }
+
                 await OnStarted(context).ConfigureAwait(false);
                 return true;
             }
@@ -119,6 +119,12 @@ namespace HomeCenter.Model.Actors
             if (msg is ActorContextQuery)
             {
                 context.Respond(context);
+                return true;
+            }
+
+            // If actor is disabled we are ignoring all non system messages
+            if (!IsEnabled)
+            {
                 return true;
             }
 
