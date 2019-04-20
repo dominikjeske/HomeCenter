@@ -45,12 +45,24 @@ namespace HomeCenter.Model.Actors
             return pid;
         }
 
+        public PID GetParentActor(PID actor)
+        {
+            var rootSeparator = actor.Id.LastIndexOf("/");
+            if (rootSeparator > -1)
+            {
+                var rootId = actor.Id.Substring(0, rootSeparator);
+                var pid = new PID(actor.Address, rootId);
+                return pid;
+            }
+            return actor;
+        }
+
         public PID CreateActor<C>(C actorConfig, IContext parent = default) where C : IBaseObject, IPropertySource
         {
             var routing = GetRouting(actorConfig);
             var id = actorConfig.Uid;
             Func<IActor> actorProducer = () => _typeLoader.GetProxyType(actorConfig);
-          
+
             if (routing == 0)
             {
                 return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => WithGuardiad(Props.FromProducer(actorProducer), parent)));
@@ -64,7 +76,6 @@ namespace HomeCenter.Model.Actors
             id = id ?? actorType.FullName;
             return GetOrCreateActor(id, null, parent, () => CreateActorInternal(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)), parent)));
         }
-
 
         private Props WithGuardiad(Props props, IContext parent)
         {
@@ -83,6 +94,13 @@ namespace HomeCenter.Model.Actors
             return props.WithChildSupervisorStrategy(new OneForOneStrategy(Decide, 3, null));
         }
 
+        private SupervisorDirective Decide(PID pid, Exception reason)
+        {
+            _logger.LogError(reason, $"Exception in device {pid}: {reason}");
+
+            return SupervisorDirective.Resume;
+        }
+
         private PID GetOrCreateActor(string uid, string address, IContext parent, Func<PID> create)
         {
             var pid = CreatePidAddress(uid, address, parent);
@@ -92,7 +110,7 @@ namespace HomeCenter.Model.Actors
                 pid = create();
             }
 
-            if(!_actorsCache.ContainsKey(uid))
+            if (!_actorsCache.ContainsKey(uid))
             {
                 _actorsCache.Add(uid, pid);
             }
@@ -112,13 +130,6 @@ namespace HomeCenter.Model.Actors
 
             var pid = new PID(address, pidId);
             return pid;
-        }
-
-        private SupervisorDirective Decide(PID pid, Exception reason)
-        {
-            _logger.LogError(reason, $"Exception in device {pid}: {reason}");
-
-            return SupervisorDirective.Resume;
         }
 
         private PID CreateActorInternal(Type actorType, string id, IContext parent, Func<Props> producer)

@@ -2,7 +2,6 @@
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Utils.Extensions;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class HttpMessagingService : Service
     {
-        [Subscribe]
+        [Subscribe(true)]
         protected async Task<object> SendGetRequest(HttpGetQuery httpMessage)
         {
             using (var httpClient = new HttpClient())
@@ -28,7 +27,7 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        [Subscribe]
+        [Subscribe(true)]
         protected async Task<object> SendPostRequest(HttpPostQuery httpMessage)
         {
             //TODO Assert messages required properties
@@ -70,7 +69,7 @@ namespace HomeCenter.Services.Networking
 
                 if (!httpMessage.IgnoreReturnStatus)
                 {
-                    response.EnsureSuccessStatusCode(); 
+                    response.EnsureSuccessStatusCode();
                 }
 
                 var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);

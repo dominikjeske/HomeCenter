@@ -33,8 +33,13 @@ namespace HomeCenter.Model.Core
             _scheduler = scheduler;
         }
 
-        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
+        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
         {
+            if(subscribeOnParent)
+            {
+                subscriber = _actorFactory.GetParentActor(subscriber);
+            }
+
             var sub = GetSubscription<T>(subscriber);
 
             if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;
@@ -42,8 +47,13 @@ namespace HomeCenter.Model.Core
             return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
         }
 
-        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query
+        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query
         {
+            if (subscribeOnParent)
+            {
+                subscriber = _actorFactory.GetParentActor(subscriber);
+            }
+
             var sub = GetSubscription<T>(subscriber);
 
             if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;

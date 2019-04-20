@@ -13,5 +13,6 @@ namespace HomeCenter.Model.Contracts
         PID CreateActor<T>(string id = default, IContext parent = default) where T : class, IActor;
 
         PID CreateActor<C>(C actorConfig, IContext parent = null) where C : IBaseObject, IPropertySource;
+        PID GetParentActor(PID actor);
     }
 }

@@ -54,7 +54,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                Subscribe<Event>(GetRoutingFilterFromProperties(trigger.Event));
+                Subscribe<Event>(false, GetRoutingFilterFromProperties(trigger.Event));
             }
         }
 
@@ -117,7 +117,7 @@ namespace HomeCenter.Model.Components
             {
                 response.Input.AddRequierdProperties(response.Result.RequierdProperties);
 
-                Subscribe<Event>(response.Input.GetRoutingFilter());
+                Subscribe<Event>(false, response.Input.GetRoutingFilter());
             }
 
             _componentState = new ComponentState(discoveryResponses.ToDictionary(k => k.Input, v => v.Result));
@@ -126,7 +126,7 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Subscribe for commands addressed to this component via event aggregator
         /// </summary>
-        private void SubscribeForRemoteCommands() => Subscribe<Command>(new RoutingFilter(Uid));
+        private void SubscribeForRemoteCommands() => Subscribe<Command>(false, new RoutingFilter(Uid));
 
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters

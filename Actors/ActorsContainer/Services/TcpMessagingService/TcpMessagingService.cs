@@ -14,7 +14,7 @@ namespace HomeCenter.Services.Networking
     [ProxyCodeGenerator]
     public class TcpMessagingService : Service
     {
-        [Subscribe]
+        [Subscribe(true)]
         protected async Task Handle(TcpCommand tcpCommand)
         {
             using (var socket = new TcpClient())
@@ -28,7 +28,7 @@ namespace HomeCenter.Services.Networking
             }
         }
 
-        [Subscribe]
+        [Subscribe(true)]
         protected async Task<string> Handle(TcpQuery tcpCommand)
         {
             using (var socket = new TcpClient())

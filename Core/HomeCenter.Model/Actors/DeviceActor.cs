@@ -178,14 +178,14 @@ namespace HomeCenter.Model.Actors
             return Task.CompletedTask;
         }
 
-        protected void Subscribe<T>(RoutingFilter filter = null) where T : ActorMessage
+        protected void Subscribe<T>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : ActorMessage
         {
-            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, subscribeOnParent, filter));
         }
 
-        protected void Subscribe<T, R>(RoutingFilter filter = null) where T : Query
+        protected void Subscribe<T, R>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : Query
         {
-            _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, subscribeOnParent, filter));
         }
     }
 }

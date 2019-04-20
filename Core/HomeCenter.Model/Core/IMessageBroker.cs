@@ -36,9 +36,9 @@ namespace HomeCenter.Model.Core
 
         void Send(object message, string uid, string address = null);
 
-        SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage;
+        SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage;
 
-        SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query;
+        SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query;
 
         IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event;
 
