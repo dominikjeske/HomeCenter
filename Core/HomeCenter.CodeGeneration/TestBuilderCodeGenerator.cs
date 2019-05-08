@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Validation;
 
 namespace HomeCenter.CodeGeneration
 {
@@ -14,7 +13,6 @@ namespace HomeCenter.CodeGeneration
 
         public TestBuilderCodeGenerator(AttributeData attributeData)
         {
-            Requires.NotNull(attributeData, nameof(attributeData));
             _attributeData = attributeData;
         }
 
