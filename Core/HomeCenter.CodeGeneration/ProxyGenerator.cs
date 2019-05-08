@@ -55,7 +55,7 @@ namespace HomeCenter.CodeGeneration
         private SyntaxList<UsingDirectiveSyntax> GenerateUsingStatements()
         {
             var usingSyntaxFinal = new List<UsingDirectiveSyntax>();
-            
+
             _usingSyntax.Add(UsingDirective(IdentifierName("System")));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Threading")), IdentifierName("Tasks"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
@@ -114,8 +114,8 @@ namespace HomeCenter.CodeGeneration
             var commands = GetMethodList(classSyntax, model, "Command", "Subscribe");
             var events = GetMethodList(classSyntax, model, "Event", "Subscribe");
             var queries = GetMethodList(classSyntax, model, "Query", "Subscribe");
-            
-            if(commands.Count + queries.Count + events.Count > 0)
+
+            if (commands.Count + queries.Count + events.Count > 0)
             {
                 var baseClassInvoke = ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, BaseExpression(), IdentifierName("OnStarted"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(IdentifierName("context"))))), IdentifierName("ConfigureAwait"))).WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))))));
 
@@ -126,52 +126,82 @@ namespace HomeCenter.CodeGeneration
 
                 foreach (var method in commands)
                 {
-                    var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
-
-                    statementSyntaxes.Add(registration);
+                    var parentSubscription = IsSubscribeToParent(method);
+                 
+                    var invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))));
+                    if (parentSubscription)
+                    {
+                        invocation = invocation.WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.TrueLiteralExpression)))));
+                    }
+                    
+                    statementSyntaxes.Add(ExpressionStatement(invocation));
                 }
 
                 foreach (var method in events)
                 {
-                    var registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name))))));
+                    var parentSubscription = IsSubscribeToParent(method);
 
-                    statementSyntaxes.Add(registration);
+                    var invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))));
+
+                    if (parentSubscription)
+                    {
+                        invocation = invocation.WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.TrueLiteralExpression)))));
+                    }
+
+                    statementSyntaxes.Add(ExpressionStatement(invocation));
                 }
 
                 foreach (var method in queries)
                 {
-                    ExpressionStatementSyntax registration;
+                    var parentSubscription = IsSubscribeToParent(method);
+
+                    InvocationExpressionSyntax invocation;
                     if (method.ReturnType is INamedTypeSymbol namedSymbol && namedSymbol.TypeArguments.Length > 0)
                     {
                         var arg = namedSymbol.TypeArguments[0];
 
-                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(arg.Name) })))));
+                        invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(arg.Name) }))));
                     }
-                    else if(!string.IsNullOrWhiteSpace(method.ReturnType.Name))
+                    else if (!string.IsNullOrWhiteSpace(method.ReturnType.Name))
                     {
-                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) })))));
+                        invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) }))));
                     }
-                    //if (method.ReturnType is IArrayTypeSymbol arraySymbol)
-                    //{
-                    //    registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.Name) })))));
-                    //}
                     else
                     {
-                        registration = ExpressionStatement(InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.ToString()) })))));
+                        invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { IdentifierName(method.Parameter.Type.Name), Token(SyntaxKind.CommaToken), IdentifierName(method.ReturnType.ToString()) }))));
                     }
-                    //
 
+                    if (parentSubscription)
+                    {
+                        invocation = invocation.WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.TrueLiteralExpression)))));
+                    }
 
-                    statementSyntaxes.Add(registration);
+                    statementSyntaxes.Add(ExpressionStatement(invocation));
                 }
 
                 var subscriptions = MethodDeclaration(IdentifierName("Task"), Identifier("OnStarted")).WithModifiers(TokenList(new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.OverrideKeyword), Token(SyntaxKind.AsyncKeyword) })).WithParameterList(ParameterList(SingletonSeparatedList<ParameterSyntax>(Parameter(Identifier("context")).WithType(QualifiedName(IdentifierName("Proto"), IdentifierName("IContext")))))).WithBody(Block(statementSyntaxes));
 
                 classDeclaration = classDeclaration.AddMembers(subscriptions);
-
             }
 
             return classDeclaration;
+        }
+
+        private bool IsSubscribeToParent(MethodDescription method)
+        {
+            try
+            {
+                var attribute = method.Method.AttributeLists.SelectMany(x => x.Attributes.Where(y => y.Name.ToString() == "Subscribe")).FirstOrDefault();
+                var firstArgument = attribute.ArgumentList.Arguments.First();
+                var value = firstArgument.Expression.NormalizeWhitespace().ToFullString();
+                if (value.IndexOf("true") > -1) return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return false;
         }
 
         private ClassDeclarationSyntax AddConstructor(ClassDeclarationSyntax classDeclaration, INamedTypeSymbol classSemantic, string className)
@@ -230,7 +260,7 @@ namespace HomeCenter.CodeGeneration
             var parameters = ParameterList(SeparatedList<ParameterSyntax>(parList.Take(parList.Count - 1)));
 
             // TODO add this basing on DI attribute
-            
+
             if (!CheckIfExists(parList, "IMessageBroker"))
             {
                 parameters = parameters.AddParameters(Parameter(Identifier("messageBroker")).WithType(IdentifierName("IMessageBroker")));
@@ -413,13 +443,12 @@ namespace HomeCenter.CodeGeneration
             var filter = classSyntax.DescendantNodes()
                                 .OfType<MethodDeclarationSyntax>()
                                 .Where(m => m.ParameterList.Parameters.Count == 1 && !m.Modifiers.Any(x => x.ValueText == "private"));
-            
+
             if (attributeType != null)
             {
                 filter = filter.Where(m => m.AttributeLists.Any(a => a.Attributes.Any(x => x.Name.ToString() == attributeType)));
             }
 
-           
             var result = filter.Select(c => new MethodDescription
             {
                 Method = c,
@@ -441,7 +470,7 @@ namespace HomeCenter.CodeGeneration
             public MethodDeclarationSyntax Method { get; set; }
             public IParameterSymbol Parameter { get; set; }
             public ITypeSymbol ReturnType { get; set; }
+            public AttributeSyntax Attribute { get; set; }
         }
     }
-
 }

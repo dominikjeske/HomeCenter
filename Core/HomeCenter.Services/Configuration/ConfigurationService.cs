@@ -27,11 +27,12 @@ namespace HomeCenter.Services.Configuration
     {
         private readonly IActorFactory _actorFactory;
         private readonly ITypeLoader _typeLoader;
-
-        private IDictionary<string, PID> _services;
-        private IDictionary<string, PID> _adapters;
-        private PID _mainArea;
         private readonly IMessageBroker _messageBroker;
+
+        private IDictionary<string, PID> _services = new Dictionary<string, PID>();
+        private IDictionary<string, PID> _adapters = new Dictionary<string, PID>();
+        private IDictionary<string, PID> _components = new Dictionary<string, PID>();
+        private PID _mainArea;
 
         protected ConfigurationService(IActorFactory actorFactory, ITypeLoader typeLoader, IMessageBroker messageBroker)
         {
@@ -70,9 +71,9 @@ namespace HomeCenter.Services.Configuration
 
         private async Task LoadActors(HomeCenterConfigDTO result)
         {
-            _services = CreataActors(result.HomeCenter.Services);
-            _adapters = CreataActors(result.HomeCenter.SharedAdapters);
-            _mainArea = await CreateAreas(result.HomeCenter.MainArea, null);
+            _services.AddRangeNewOnly(CreataActors(result.HomeCenter.Services));
+            _adapters.AddRangeNewOnly(CreataActors(result.HomeCenter.SharedAdapters));
+            _mainArea = await CreateAreaWithChildren(result.HomeCenter.MainArea);
         }
 
         private Dictionary<string, PID> CreataActors<T>(IEnumerable<T> config) where T : IBaseObject, IPropertySource
@@ -86,7 +87,7 @@ namespace HomeCenter.Services.Configuration
             return actors;
         }
 
-        private async Task<PID> CreateAreas(AreaDTO area, IContext parent)
+        private async Task<PID> CreateAreaWithChildren(AreaDTO area, IContext parent = null)
         {
             var areaActor = _actorFactory.CreateActor(area, parent);
 
@@ -94,12 +95,27 @@ namespace HomeCenter.Services.Configuration
 
             foreach (var component in area.Components)
             {
-                var componentActor = _actorFactory.CreateActor(component.Clone(), actorContext); // clone to prevents override of componentConfig when executed in multi thread
+                var componentCopy = component.Clone(); // clone to prevents override of componentConfig when executed in multi thread
+                if (componentCopy.Adapter != null)
+                {
+                    componentCopy.AdapterReferences.Add(new AdapterReferenceDTO { IsMainAdapter = true, Uid = componentCopy.Adapter.Uid });
+                }
+
+                var componentActor = _actorFactory.CreateActor(componentCopy, actorContext);
+                _components.Add(componentCopy.Uid, componentActor);
+                var componentContext = await _messageBroker.Request<ActorContextQuery, IContext>(ActorContextQuery.Default, componentActor);
+
+                if (component.Adapter != null)
+                {
+                    var adapterCopy = component.Adapter.Clone();
+                    var adapterActor = _actorFactory.CreateActor(adapterCopy, componentContext);
+                    _adapters.Add(adapterCopy.Uid, adapterActor);
+                }
             }
 
             foreach (var subArea in area.Areas)
             {
-                await CreateAreas(subArea.Clone(), actorContext); // clone to prevents override of componentConfig when executed in multi thread
+                await CreateAreaWithChildren(subArea.Clone(), actorContext);
             }
 
             return areaActor;
@@ -145,7 +161,7 @@ namespace HomeCenter.Services.Configuration
                 var templateCopy = template.Clone();
                 templateCopy.Uid = component.Component.Uid;
 
-                foreach (var adapter in templateCopy.Adapters)
+                foreach (var adapter in templateCopy.AdapterReferences)
                 {
                     adapter.Uid = GetTemplateValueOrDefault(adapter.Uid, component.Component.TemplateProperties);
 

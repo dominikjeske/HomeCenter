@@ -23,7 +23,7 @@ namespace HomeCenter.Runner
     {
         public async Task<string> Generate(string code)
         {
-            var generator = new CommandBuilerGenerator();
+            var generator = new ProxyGenerator();
             var models = await GetModels(code);
 
             var syntaxTree = models.syntaxTree;

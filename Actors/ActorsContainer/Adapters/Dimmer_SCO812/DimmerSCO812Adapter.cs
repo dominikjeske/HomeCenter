@@ -47,7 +47,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
             await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid).ConfigureAwait(false);
 
-            _disposables.Add(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, _PowerLevelAdapterUid));
+            _disposables.Add(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, false, _PowerLevelAdapterUid));
         }
 
         protected override async Task OnSystemStarted(SystemStartedEvent systemStartedEvent)

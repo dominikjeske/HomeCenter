@@ -4,6 +4,7 @@ using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Utils.Extensions;
@@ -269,5 +270,6 @@ namespace HomeCenter.Adapters.Denon
 
             _surround = await UpdateState(SurroundSoundState.StateName, _surround, surroundMode).ConfigureAwait(false);
         }
+
     }
 }

@@ -7,12 +7,12 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
-using Proto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace HomeCenter.Model.Components
     {
         private ComponentState _componentState;
 
-        [Map] private IList<AdapterReference> _adapters { get; set; } = new List<AdapterReference>();
+        [Map] private IList<AdapterReference> _adapterReferences { get; set; } = new List<AdapterReference>();
         [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
         [Map] private IList<Translator> _translators { get; set; } = new List<Translator>();
 
@@ -33,11 +33,11 @@ namespace HomeCenter.Model.Components
         /// </summary>
         protected bool RelayNotTranslatedEvents => AsBool("RelayNotTranslatedEvents", false);
 
-        protected override async Task OnStarted(IContext context)
+        protected async override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
-
             if (!IsEnabled) return;
+
+            await base.OnSystemStarted(systemStartedEvent);
 
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace HomeCenter.Model.Components
         {
             foreach (var trigger in _triggers.Where(x => x.Schedule == null))
             {
-                Subscribe<Event>(GetRoutingFilterFromProperties(trigger.Event));
+                Subscribe<Event>(false, GetRoutingFilterFromProperties(trigger.Event));
             }
         }
 
@@ -75,7 +75,7 @@ namespace HomeCenter.Model.Components
         {
             if (ev.ContainsProperty(MessageProperties.MessageSource))
             {
-                var adapter = _adapters.FirstOrDefault(a => a.Uid == ev.MessageSource);
+                var adapter = _adapterReferences.FirstOrDefault(a => a.Uid == ev.MessageSource);
                 if (adapter != null)
                 {
                     foreach (var property in adapter.RequierdProperties)
@@ -111,13 +111,13 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            var discoveryResponses = (await _adapters.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
+            var discoveryResponses = (await _adapterReferences.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
 
             foreach (var response in discoveryResponses)
             {
                 response.Input.AddRequierdProperties(response.Result.RequierdProperties);
 
-                Subscribe<Event>(response.Input.GetRoutingFilter());
+                Subscribe<Event>(false, response.Input.GetRoutingFilter());
             }
 
             _componentState = new ComponentState(discoveryResponses.ToDictionary(k => k.Input, v => v.Result));
@@ -126,7 +126,7 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Subscribe for commands addressed to this component via event aggregator
         /// </summary>
-        private void SubscribeForRemoteCommands() => Subscribe<Command>(new RoutingFilter(Uid));
+        private void SubscribeForRemoteCommands() => Subscribe<Command>(false, new RoutingFilter(Uid));
 
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters
@@ -142,7 +142,7 @@ namespace HomeCenter.Model.Components
                 // TODO use value converter before publish
                 foreach (var adapter in _componentState.GetCommandAdapter(command))
                 {
-                    var adapterCommand = _adapters.Single(a => a.Uid == adapter).GetDeviceCommand(command);
+                    var adapterCommand = _adapterReferences.Single(a => a.Uid == adapter).GetDeviceCommand(command);
 
                     var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Command && e.From.Equals(adapterCommand));
 
@@ -191,7 +191,7 @@ namespace HomeCenter.Model.Components
                     var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
                     Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
-                else if(RelayNotTranslatedEvents)
+                else if (RelayNotTranslatedEvents)
                 {
                     var eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
                     await MessageBroker.Publish(eventPublished, Uid).ConfigureAwait(false);

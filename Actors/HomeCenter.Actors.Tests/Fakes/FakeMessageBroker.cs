@@ -164,12 +164,12 @@ namespace HomeCenter.Services.MotionService.Tests
             throw new NotImplementedException();
         }
 
-        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, RoutingFilter filter = null) where T : ActorMessage
+        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
         {
             return SubscriptionToken.Empty;
         }
 
-        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, RoutingFilter filter = null) where T : Query
+        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query
         {
             throw new NotImplementedException();
         }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages.Commands.Service;
@@ -38,8 +37,6 @@ namespace HomeCenter.Services.Controllers
         {
             _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
 
-
-
             MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), _configService);
         }
 
@@ -57,7 +54,6 @@ namespace HomeCenter.Services.Controllers
             _actorFactory.GetExistingActor(nameof(Controller)).Stop();
 
             return true;
-            
         }
 
         private Task RunScheduler() => _scheduler.Start(_disposables.Token);

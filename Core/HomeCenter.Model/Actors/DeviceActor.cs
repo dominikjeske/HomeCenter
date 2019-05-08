@@ -66,16 +66,16 @@ namespace HomeCenter.Model.Actors
 
         protected virtual async Task<bool> HandleSystemMessages(IContext context)
         {
-            // If actor is disabled we are ignoring all messages
-            if (!IsEnabled)
-            {
-                Logger.LogInformation($"<{Uid}> is disabled and message type '{context.Message.GetType().Name}' will be ignored");
-                return true;
-            }
-
             var msg = context.Message;
+
             if (msg is Started)
             {
+                if (!IsEnabled)
+                {
+                    Logger.LogInformation($"<{Uid}> is disabled and all messages will be ignored");
+                    return true;
+                }
+
                 await OnStarted(context).ConfigureAwait(false);
                 return true;
             }
@@ -119,6 +119,12 @@ namespace HomeCenter.Model.Actors
             if (msg is ActorContextQuery)
             {
                 context.Respond(context);
+                return true;
+            }
+
+            // If actor is disabled we are ignoring all non system messages
+            if (!IsEnabled)
+            {
                 return true;
             }
 
@@ -172,14 +178,14 @@ namespace HomeCenter.Model.Actors
             return Task.CompletedTask;
         }
 
-        protected void Subscribe<T>(RoutingFilter filter = null) where T : ActorMessage
+        protected void Subscribe<T>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : ActorMessage
         {
-            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, subscribeOnParent, filter));
         }
 
-        protected void Subscribe<T, R>(RoutingFilter filter = null) where T : Query
+        protected void Subscribe<T, R>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : Query
         {
-            _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, filter));
+            _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, subscribeOnParent, filter));
         }
     }
 }

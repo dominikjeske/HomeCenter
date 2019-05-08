@@ -8,7 +8,7 @@ namespace HomeCenter.Services.Configuration.DTO
     public class ComponentDTO : ActorBaseDTO
     {
         [JsonProperty("AdapterRefs")]
-        public IList<AdapterReferenceDTO> Adapters { get; set; }
+        public IList<AdapterReferenceDTO> AdapterReferences { get; set; } = new List<AdapterReferenceDTO>(); 
 
         [JsonProperty("Translators")]
         public IList<TranslatorDTO> Translators { get; set; }

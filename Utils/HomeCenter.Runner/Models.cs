@@ -1,6 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands.Device;
 using Quartz;
 using System;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace HomeCenter.Runner.Codegen
 
 
 
-    //[ProxyCodeGenerator]
+    [ProxyCodeGenerator]
     public class Device : DeviceActor
     {
         public Device(IScheduler scheduler)
@@ -42,13 +43,12 @@ namespace HomeCenter.Runner.Codegen
         //    return Task.CompletedTask;
         //}
 
-        //[Subscribe]
-        //protected byte[] Handle(HttpPostQuery query)
-        //{
+        [Subscribe(true)]
+        protected void Handle(TurnOnCommand command)
+        {
 
-        //    return Array.Empty<byte>();
 
-        //}
+        }
 
         //[Subscribe]
         //protected int Handle2(HttpPostQuery query)
@@ -65,26 +65,26 @@ namespace HomeCenter.Runner.Codegen
     //}
 
    
-    public class TestEvent : Event
-    {
+    //public class TestEvent : Event
+    //{
 
-    }
+    //}
 
-    public class TestCommand : Command
-    {
+    //public class TestCommand : Command
+    //{
 
-    }
+    //}
 
    
 
-    public abstract class Event
-    {
+    //public abstract class Event
+    //{
 
-    }
+    //}
 
-    public abstract class Command
-    {
-    }
+    //public abstract class Command
+    //{
+    //}
 
     //public interface IFormatableMessage<T>
     //{
