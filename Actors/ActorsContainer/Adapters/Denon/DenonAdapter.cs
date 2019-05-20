@@ -100,8 +100,6 @@ namespace HomeCenter.Adapters.Denon
             {
                 _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
             }
-
-            Logger.LogInformation("Remote message received");
         }
 
         protected async Task Handle(TurnOffCommand message)

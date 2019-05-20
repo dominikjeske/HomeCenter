@@ -29,7 +29,20 @@ namespace HomeCenter.Model.Actors
             Behavior.Become(StandardMode);
         }
 
-        public Task ReceiveAsync(IContext context) => Behavior.ReceiveAsync(context);
+        public Task ReceiveAsync(IContext context)
+        {
+            try
+            {
+                //MessageBroker.SendAfterDelay
+
+                return Behavior.ReceiveAsync(context);
+            }
+            catch (Exception ee)
+            {
+                throw;
+            }
+            
+        }
 
         protected Task StandardMode(IContext context) => ReceiveAsyncInternal(context);
 
