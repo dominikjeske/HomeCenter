@@ -1,21 +1,23 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard"
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "TestComponent",
-        "AdapterRefs": [
-          {
-            "Uid": "SimpleAdapter"
-          }
-        ]
-      }
-    ],
-
+    "MainArea": {
+      "Uid": "House",
+      "Areas": [
+        {
+          "Uid": "Kitchen",
+          "Components": [
+            {
+              "Uid": "TestComponent",
+              "AdapterRefs": [
+                {
+                  "Uid": "SimpleAdapter"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "SharedAdapters": [
       {
         "Uid": "SimpleAdapter",

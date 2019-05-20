@@ -3,6 +3,7 @@ using HomeCenter.Model.Messages.Events.Service;
 using Proto;
 using SimpleInjector;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.ComponentModel
@@ -25,22 +26,33 @@ namespace HomeCenter.Tests.ComponentModel
             return this;
         }
 
-        public async Task<PID> BuildAndRun()
+        public async Task<PID> BuildAndRun(int numberOfComponents = 1)
         {
             var bootstrapper = new MockBootstrapper(_container, _configuration);
             _controller = await bootstrapper.BuildController().ConfigureAwait(false);
             _broker = _container.GetInstance<IMessageBroker>();
 
-            await WaitToStart();
+            await WaitToStart(numberOfComponents);
 
             return _controller;
         }
 
-        private async Task WaitToStart()
+        private async Task WaitToStart(int numberOfComponents = 1)
         {
+            var m_currentCount = numberOfComponents;
             //var tcs = TaskHelper.GenerateTimeoutTaskSource<bool>(500);
             var tcs = new TaskCompletionSource<bool>();
-            _broker.SubscribeForEvent<SystemStartedEvent>(_ => tcs.SetResult(true));
+            _broker.SubscribeForEvent<ComponentStartedEvent>(_ =>
+            {
+                if (m_currentCount > 1)
+                {
+                    Interlocked.Decrement(ref m_currentCount);
+                }
+                else
+                {
+                    tcs.SetResult(true);
+                }
+                }, "*");
             await tcs.Task;
         }
     }

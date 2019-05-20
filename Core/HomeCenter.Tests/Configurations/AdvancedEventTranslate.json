@@ -1,35 +1,37 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard"
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "TestComponentWithValueTranslate",
-        "AdapterRefs": [
-          {
-            "Uid": "SimpleAdapter"
-          }
-        ],
-        "Translators": [
-          {
-            "Type": "Event",
-            "From": {
-              "Type": "PropertyChangedEvent",
-              "Properties": {
-                "NewValue": "True"
-              }
-            },
-            "To": {
-              "Type": "MotionEvent"
+    "MainArea": {
+      "Uid": "House",
+      "Areas": [
+        {
+          "Uid": "Kitchen",
+          "Components": [
+            {
+              "Uid": "TestComponentWithValueTranslate",
+              "AdapterRefs": [
+                {
+                  "Uid": "SimpleAdapter"
+                }
+              ],
+              "Translators": [
+                {
+                  "Type": "Event",
+                  "From": {
+                    "Type": "PropertyChangedEvent",
+                    "Properties": {
+                      "NewValue": "True"
+                    }
+                  },
+                  "To": {
+                    "Type": "MotionEvent"
+                  }
+                }
+              ]
             }
-          }
-        ]
-      }
-    ],
-
+          ]
+        }
+      ]
+    },
     "SharedAdapters": [
       {
         "Uid": "SimpleAdapter",

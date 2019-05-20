@@ -31,10 +31,11 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
         /// </summary>
-        protected bool RelayNotTranslatedEvents => AsBool("RelayNotTranslatedEvents", false);
+        protected bool RelayNotTranslatedEvents => AsBool(MessageProperties.RelayNotTranslatedEvents, false);
 
         protected async override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
+            //TODO Is this proper?
             if (!IsEnabled) return;
 
             await base.OnSystemStarted(systemStartedEvent);
@@ -42,6 +43,8 @@ namespace HomeCenter.Model.Components
             await InitializeAdapters().ConfigureAwait(false);
             await InitializeTriggers().ConfigureAwait(false);
             SubscribeForRemoteCommands();
+
+            await MessageBroker.Publish(ComponentStartedEvent.Create(Uid), Uid);
         }
 
         private Task InitializeTriggers()

@@ -1,41 +1,43 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard"
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "C1",
-        "AdapterRefs": [
-          {
-            "Uid": "RequiredPropertiesAdapter",
-            "Properties": {
-              "PinNumber": 1
+    "MainArea": {
+      "Uid": "House",
+      "Areas": [
+        {
+          "Uid": "Kitchen",
+          "Components": [
+            {
+              "Uid": "C1",
+              "AdapterRefs": [
+                {
+                  "Uid": "RequiredPropertiesAdapter",
+                  "Properties": {
+                    "PinNumber": 1
+                  }
+                }
+              ],
+              "Properties": {
+                "RelayNotTranslatedEvents": true
+              }
+            },
+            {
+              "Uid": "C2",
+              "AdapterRefs": [
+                {
+                  "Uid": "RequiredPropertiesAdapter",
+                  "Properties": {
+                    "PinNumber": 2
+                  }
+                }
+              ],
+              "Properties": {
+                "RelayNotTranslatedEvents": true
+              }
             }
-          }
-        ],
-        "Properties": {
-          "RelayNotTranslatedEvents": true
+          ]
         }
-      },
-      {
-        "Uid": "C2",
-        "AdapterRefs": [
-          {
-            "Uid": "RequiredPropertiesAdapter",
-            "Properties": {
-              "PinNumber": 2
-            }
-          }
-        ],
-        "Properties": {
-          "RelayNotTranslatedEvents": true
-        }
-      }
-    ],
-
+      ]
+    },
     "SharedAdapters": [
       {
         "Uid": "RequiredPropertiesAdapter",

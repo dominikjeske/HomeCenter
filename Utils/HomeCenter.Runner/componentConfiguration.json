@@ -1,5 +1,6 @@
 ﻿{
-  "HomeCenter": {
+  "HomeCenter": 
+  {
     "MainArea": {
       "Uid": "Backyard",
       "Areas": [
@@ -370,7 +371,6 @@
         "IsEnabled": false
       }
     ],
-
     "Templates": [
       {
         "Uid": "CCToolsLampTemplate",

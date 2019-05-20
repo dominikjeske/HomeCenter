@@ -1,11 +1,10 @@
 ﻿namespace HomeCenter.Model.Messages
 {
-
-
     public static class MessageProperties
     {
         //Common
         public const string MessageSource = nameof(MessageSource);
+
         public const string MessageDestination = nameof(MessageDestination);
         public const string LogLevel = nameof(LogLevel);
         public const string Type = nameof(Type);
@@ -15,6 +14,7 @@
 
         //Command
         public const string IsFinishComand = nameof(IsFinishComand);
+
         public const string ExecutionDelay = nameof(ExecutionDelay);
         public const string CancelPrevious = nameof(CancelPrevious);
         public const string StateName = nameof(StateName);
@@ -30,6 +30,7 @@
 
         //Events
         public const string OldValue = nameof(OldValue);
+
         public const string NewValue = nameof(NewValue);
         public const string EventTime = nameof(EventTime);
         public const string CommandCode = nameof(CommandCode);
@@ -37,6 +38,7 @@
 
         //Adapter
         public const string Address = nameof(Address);
+
         public const string PinNumber = nameof(PinNumber);
         public const string PinMode = nameof(PinMode);
         public const string ReversePinLevel = nameof(ReversePinLevel);
@@ -78,5 +80,9 @@
         public const string Headers = nameof(Headers);
         public const string Creditionals = nameof(Creditionals);
         public const string Initialize = nameof(Initialize);
+
+        //Components
+        public const string RelayNotTranslatedEvents = nameof(RelayNotTranslatedEvents);
+        public const string ComponentId = nameof(ComponentId);
     }
 }

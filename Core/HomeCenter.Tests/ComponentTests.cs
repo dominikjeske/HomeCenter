@@ -110,7 +110,7 @@ namespace HomeCenter.Tests.ComponentModel
         [TestMethod]
         public async Task Component_SharedAdapter_EventFiltering()
         {
-            var controller = await new ControllerBuilder(Container).WithConfiguration("SharedAdapter.json").BuildAndRun();
+            var controller = await new ControllerBuilder(Container).WithConfiguration("SharedAdapter.json").BuildAndRun(2);
             var adapter = await GetAdapter<RequiredPropertiesAdapter>();
 
             var messages = await Broker.WaitForEvents<PropertyChangedEvent>(async () => await adapter.PropertyChanged(PowerState.StateName, false, true, 1), "*", 1000);

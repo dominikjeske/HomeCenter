@@ -1,6 +1,5 @@
 ﻿namespace HomeCenter.Model.Messages
 {
-
     public static class MessageType
     {
         public const string Event = nameof(Event);

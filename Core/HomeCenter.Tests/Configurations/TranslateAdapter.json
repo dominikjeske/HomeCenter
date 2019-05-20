@@ -1,47 +1,49 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard"
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "TestComponent",
-        "AdapterRefs": [
-          {
-            "Uid": "SimpleAdapter"
-          }
-        ],
-        "Translators": [
-          {
-            // Events that should be translated
-            "Type": "Event",
-            "From": {
-              "Type": "PropertyChangedEvent"
-            },
-            "To": {
-              "Type": "MotionEvent"
-            }
-          },
+    "MainArea": {
+      "Uid": "House",
+      "Areas": [
+        {
+          "Uid": "Kitchen",
+          "Components": [
+            {
+              "Uid": "TestComponent",
+              "AdapterRefs": [
+                {
+                  "Uid": "SimpleAdapter"
+                }
+              ],
+              "Translators": [
+                {
+                  // Events that should be translated
+                  "Type": "Event",
+                  "From": {
+                    "Type": "PropertyChangedEvent"
+                  },
+                  "To": {
+                    "Type": "MotionEvent"
+                  }
+                },
 
-          // Command that should be translated
-          {
-            "Type": "Command",
-            "From": {
-              "Type": "TurnOnCommand"
-            },
-            "To": {
-              "Type": "TurnOnCommand",
-              "Properties": {
-                "StateTime": "200"
-              }
+                // Command that should be translated
+                {
+                  "Type": "Command",
+                  "From": {
+                    "Type": "TurnOnCommand"
+                  },
+                  "To": {
+                    "Type": "TurnOnCommand",
+                    "Properties": {
+                      "StateTime": "200"
+                    }
+                  }
+                }
+              ]
             }
-          }
-        ]
-      }
-    ],
-
+          ]
+        }
+      ]
+    },
     "SharedAdapters": [
       {
         "Uid": "SimpleAdapter",

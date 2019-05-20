@@ -1,24 +1,26 @@
 ﻿{
   "HomeCenter": {
-    "Areas": [
-      {
-        "Uid": "Backyard"
-      }
-    ],
-    "Components": [
-      {
-        "Uid": "RequiredPropertiesComponent",
-        "AdapterRefs": [
-          {
-            "Uid": "RequiredPropertiesAdapter",
-            "Properties": {
-              "PinNumber": 1
+    "MainArea": {
+      "Uid": "House",
+      "Areas": [
+        {
+          "Uid": "Kitchen",
+          "Components": [
+            {
+              "Uid": "RequiredPropertiesComponent",
+              "AdapterRefs": [
+                {
+                  "Uid": "RequiredPropertiesAdapter",
+                  "Properties": {
+                    "PinNumber": 1
+                  }
+                }
+              ]
             }
-          }
-        ]
-      }
-    ],
-
+          ]
+        }
+      ]
+    },
     "SharedAdapters": [
       {
         "Uid": "RequiredPropertiesAdapter",
