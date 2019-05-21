@@ -9,7 +9,7 @@ namespace HomeCenter.Services.MotionService.Tests
         public TestConcurrencyProvider(TestScheduler scheduler)
         {
             Scheduler = scheduler;
-            Task = scheduler;//TaskPoolScheduler.Default;
+            Task = scheduler;
             Thread = NewThreadScheduler.Default;
         }
 
