@@ -40,7 +40,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public LightAutomationEnviromentBuilder WithMotions(Dictionary<int, string> motions)
         {
-            _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(x.Key, Notification.CreateOnNext(new MotionEnvelope(x.Value)))));
+            _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Key), Notification.CreateOnNext(new MotionEnvelope(x.Value)))));
             
             return this;
         }

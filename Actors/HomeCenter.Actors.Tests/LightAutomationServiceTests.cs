@@ -175,7 +175,7 @@ namespace HomeCenter.Services.MotionService.Tests
             AdvanceTo(TimeSpan.FromMilliseconds(11000));
 
             var num = await Query<int>(NumberOfPeopleQuery.Create(Detectors.kitchenDetector));
-            num.Should().Be(1); // 2!!!!
+            num.Should().Be(2);
         }
 
         //[TestMethod]
@@ -369,7 +369,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public async Task Move_SplitFromOneRoom_ShouldCOuntPeople()
+        public async Task Move_SplitFromOneRoom_ShouldCountPeople()
         {
             new LightAutomationEnviromentBuilder(_context).WithServiceConfig(DefaultServiceConfig().Build()).WithMotions(new Dictionary<int, string>
             {
@@ -427,28 +427,28 @@ namespace HomeCenter.Services.MotionService.Tests
 
         private LightAutomationServiceBuilder DefaultServiceConfig()
         {
-            var lightAutomationServiceBuilder = new LightAutomationServiceBuilder();
+            var builder = new LightAutomationServiceBuilder();
 
-            lightAutomationServiceBuilder.WithArea(Areas.Hallway);
-            lightAutomationServiceBuilder.WithArea(Areas.Badroom);
-            lightAutomationServiceBuilder.WithArea(Areas.Balcony);
-            lightAutomationServiceBuilder.WithArea(Areas.Bathroom);
-            lightAutomationServiceBuilder.WithArea(Areas.Kitchen);
-            lightAutomationServiceBuilder.WithArea(Areas.Livingroom);
-            lightAutomationServiceBuilder.WithArea(Areas.Staircase);
-            lightAutomationServiceBuilder.WithArea(Areas.Toilet).WithAreaProperty(Areas.Toilet, MotionProperties.MaxPersonCapacity, "1");
+            builder.WithArea(Areas.Hallway);
+            builder.WithArea(Areas.Badroom);
+            builder.WithArea(Areas.Balcony);
+            builder.WithArea(Areas.Bathroom);
+            builder.WithArea(Areas.Kitchen);
+            builder.WithArea(Areas.Livingroom);
+            builder.WithArea(Areas.Staircase);
+            builder.WithArea(Areas.Toilet).WithAreaProperty(Areas.Toilet, MotionProperties.MaxPersonCapacity, "1");
 
-            lightAutomationServiceBuilder.WithDetector(Detectors.hallwayDetectorToilet, Areas.Hallway, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector });
-            lightAutomationServiceBuilder.WithDetector(Detectors.hallwayDetectorLivingRoom, Areas.Hallway, new List<string> { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet });
-            lightAutomationServiceBuilder.WithDetector(Detectors.livingRoomDetector, Areas.Livingroom, new List<string> { Detectors.livingRoomDetector });
-            lightAutomationServiceBuilder.WithDetector(Detectors.balconyDetector, Areas.Balcony, new List<string> { Detectors.hallwayDetectorLivingRoom });
-            lightAutomationServiceBuilder.WithDetector(Detectors.kitchenDetector, Areas.Kitchen, new List<string> { Detectors.hallwayDetectorToilet });
-            lightAutomationServiceBuilder.WithDetector(Detectors.bathroomDetector, Areas.Bathroom, new List<string> { Detectors.hallwayDetectorLivingRoom });
-            lightAutomationServiceBuilder.WithDetector(Detectors.badroomDetector, Areas.Badroom, new List<string> { Detectors.hallwayDetectorLivingRoom });
-            lightAutomationServiceBuilder.WithDetector(Detectors.staircaseDetector, Areas.Staircase, new List<string> { Detectors.hallwayDetectorToilet });
-            lightAutomationServiceBuilder.WithDetector(Detectors.toiletDetector, Areas.Toilet, new List<string> { Detectors.hallwayDetectorToilet });
+            builder.WithDetector(Detectors.hallwayDetectorToilet, Areas.Hallway, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector });
+            builder.WithDetector(Detectors.hallwayDetectorLivingRoom, Areas.Hallway, new List<string> { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet });
+            builder.WithDetector(Detectors.livingRoomDetector, Areas.Livingroom, new List<string> { Detectors.livingRoomDetector });
+            builder.WithDetector(Detectors.balconyDetector, Areas.Balcony, new List<string> { Detectors.hallwayDetectorLivingRoom });
+            builder.WithDetector(Detectors.kitchenDetector, Areas.Kitchen, new List<string> { Detectors.hallwayDetectorToilet });
+            builder.WithDetector(Detectors.bathroomDetector, Areas.Bathroom, new List<string> { Detectors.hallwayDetectorLivingRoom });
+            builder.WithDetector(Detectors.badroomDetector, Areas.Badroom, new List<string> { Detectors.hallwayDetectorLivingRoom });
+            builder.WithDetector(Detectors.staircaseDetector, Areas.Staircase, new List<string> { Detectors.hallwayDetectorToilet });
+            builder.WithDetector(Detectors.toiletDetector, Areas.Toilet, new List<string> { Detectors.hallwayDetectorToilet });
 
-            return lightAutomationServiceBuilder;
+            return builder;
         }
 
         private void AdvanceToEnd() => _context.Scheduler.AdvanceToEnd(_context.MotionEvents);
