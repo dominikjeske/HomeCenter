@@ -61,7 +61,7 @@ namespace HomeCenter.WindowsService
                     if (ex != null)
                     {
                         var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
-                        await context.Response.WriteAsync(err).ConfigureAwait(false);
+                        await context.Response.WriteAsync(err);
                     }
 
                     var logger = loggerFactory.CreateLogger("GlobalExceptionHandler");

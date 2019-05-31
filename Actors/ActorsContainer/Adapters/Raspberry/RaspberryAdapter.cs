@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.PC
 
         protected override Task OnStarted(IContext context)
         {
-            _disposables.Add(_gpioDevice.PinChanged.SubscribeAsync(OnPinChanged));
+            ProtectResource(_gpioDevice.PinChanged.Subscribe(OnPinChanged));
 
             foreach (var pin in AsList(MessageProperties.PinChangeWithPullUp, Enumerable.Empty<string>()))
             {

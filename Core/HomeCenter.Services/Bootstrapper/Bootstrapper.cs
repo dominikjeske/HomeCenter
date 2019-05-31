@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration;
-using HomeCenter.Broker;
+﻿using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Contracts;
@@ -45,7 +43,7 @@ namespace HomeCenter.Services.Bootstrapper
 
             RegisterLogging();
 
-            await RegisterQuartz().ConfigureAwait(false);
+            await RegisterQuartz();
 
             RegisterActorProxies();
 
@@ -91,7 +89,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();
-            _container.RegisterSingleton<IObservableTimer, ObservableTimer>();
 
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
         }
@@ -100,7 +97,7 @@ namespace HomeCenter.Services.Bootstrapper
         {
             var jobFactory = new SimpleInjectorJobFactory(_container);
             var jobSchedulerFactory = new SimpleInjectorSchedulerFactory(jobFactory);
-            var scheduler = await jobSchedulerFactory.GetScheduler().ConfigureAwait(false);
+            var scheduler = await jobSchedulerFactory.GetScheduler();
 
             _container.RegisterInstance<IJobFactory>(jobFactory);
             _container.RegisterInstance<ISchedulerFactory>(jobSchedulerFactory);

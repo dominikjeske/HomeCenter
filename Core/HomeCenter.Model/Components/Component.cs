@@ -40,8 +40,8 @@ namespace HomeCenter.Model.Components
 
             await base.OnSystemStarted(systemStartedEvent);
 
-            await InitializeAdapters().ConfigureAwait(false);
-            await InitializeTriggers().ConfigureAwait(false);
+            await InitializeAdapters();
+            await InitializeTriggers();
             SubscribeForRemoteCommands();
 
             await MessageBroker.Publish(ComponentStartedEvent.Create(Uid), Uid);
@@ -99,14 +99,14 @@ namespace HomeCenter.Model.Components
             {
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
-                    await MessageBroker.SendWithCronRepeat(trigger.ToActorContextWithFinish(Self), trigger.Schedule.CronExpression, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                    await MessageBroker.SendWithCronRepeat(trigger.ToActorContextWithFinish(Self), trigger.Schedule.CronExpression, _disposables.Token, trigger.Schedule.Calendar);
                 }
                 else if (trigger.Schedule.ManualSchedules.Count > 0)
                 {
                     foreach (var manualTrigger in trigger.Schedule.ManualSchedules)
                     {
-                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Start, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
-                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Finish, _disposables.Token, trigger.Schedule.Calendar).ConfigureAwait(false);
+                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Start, _disposables.Token, trigger.Schedule.Calendar);
+                        await MessageBroker.SendDailyAt(trigger.ToActorContext(Self), manualTrigger.Finish, _disposables.Token, trigger.Schedule.Calendar);
                     }
                 }
             }
@@ -164,7 +164,7 @@ namespace HomeCenter.Model.Components
 
             if (!handled)
             {
-                await base.UnhandledMessage(actorMessage).ConfigureAwait(false);
+                await base.UnhandledMessage(actorMessage);
             }
         }
 
@@ -173,12 +173,12 @@ namespace HomeCenter.Model.Components
             var trigger = _triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
             if (trigger != null)
             {
-                await HandleEventInTrigger(trigger).ConfigureAwait(false);
+                await HandleEventInTrigger(trigger);
             }
 
             if (ev is PropertyChangedEvent propertyChanged)
             {
-                await HandlePropertyChange(propertyChanged).ConfigureAwait(false);
+                await HandlePropertyChange(propertyChanged);
             }
         }
 
@@ -191,13 +191,13 @@ namespace HomeCenter.Model.Components
 
                 if (translator != null)
                 {
-                    var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid).ConfigureAwait(false);
+                    var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid);
                     Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
                 else if (RelayNotTranslatedEvents)
                 {
                     var eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
-                    await MessageBroker.Publish(eventPublished, Uid).ConfigureAwait(false);
+                    await MessageBroker.Publish(eventPublished, Uid);
                     Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
                 }
             }
@@ -214,7 +214,7 @@ namespace HomeCenter.Model.Components
                         var executionDelay = command.AsTime(MessageProperties.ExecutionDelay);
                         var cancelPrevious = command.AsBool(MessageProperties.CancelPrevious, false);
 
-                        await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, command), executionDelay, cancelPrevious).ConfigureAwait(false);
+                        await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, command), executionDelay, cancelPrevious);
                         continue;
                     }
 

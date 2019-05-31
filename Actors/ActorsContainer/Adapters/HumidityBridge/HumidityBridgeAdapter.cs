@@ -27,7 +27,7 @@ namespace HomeCenter.Adapters.HumidityBridge
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _i2cAddress = AsInt(MessageProperties.Address);
 
@@ -36,7 +36,7 @@ namespace HomeCenter.Adapters.HumidityBridge
                 new Format(1, typeof(byte), MessageProperties.PinNumber),
                 new Format(2, typeof(float), MessageProperties.Value)
             });
-            await MessageBroker.SendToService(registration).ConfigureAwait(false);
+            await MessageBroker.SendToService(registration);
         }
 
         protected async Task Handle(SerialResultEvent serialResult)
@@ -48,7 +48,7 @@ namespace HomeCenter.Adapters.HumidityBridge
             {
                 var oldValue = _state[pin];
 
-                _state[pin] = await UpdateState(HumidityState.StateName, oldValue, humidity, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
+                _state[pin] = await UpdateState(HumidityState.StateName, oldValue, humidity, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() });
             }
         }
 

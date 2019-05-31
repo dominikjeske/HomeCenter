@@ -29,7 +29,7 @@ namespace HomeCenter.Tests.ComponentModel
         public async Task<PID> BuildAndRun(int numberOfComponents = 1)
         {
             var bootstrapper = new MockBootstrapper(_container, _configuration);
-            _controller = await bootstrapper.BuildController().ConfigureAwait(false);
+            _controller = await bootstrapper.BuildController();
             _broker = _container.GetInstance<IMessageBroker>();
 
             await WaitToStart(numberOfComponents);

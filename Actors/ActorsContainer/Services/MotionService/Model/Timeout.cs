@@ -1,28 +1,50 @@
-﻿using System;
+﻿using HomeCenter.Utils.Extensions;
+using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    /// <summary>
+    /// Timeout after person inactivity in room
+    /// </summary>
     public class Timeout
     {
         private TimeSpan _baseTime;
         private TimeSpan _currentExtension = TimeSpan.FromTicks(0);
         private int _counter;
-        private double _incrementFactor;
+        private readonly MotionConfiguration _motionConfiguration;
 
+        /// <summary>
+        /// Value of timeout
+        /// </summary>
         public TimeSpan Value => _baseTime + _currentExtension;
 
-        public Timeout(TimeSpan baseTime, double incrementFactor)
+        /// <summary>
+        /// Timeout constructor
+        /// </summary>
+        /// <param name="baseTime">Base time used to calculate final timeout</param>
+        /// <param name="incrementFactor">Factor used to increment <paramref name="baseTime"/></param>
+        public Timeout(TimeSpan baseTime, MotionConfiguration motionConfiguration)
         {
             _baseTime = baseTime;
-            _incrementFactor = incrementFactor;
+            _motionConfiguration = motionConfiguration;
         }
 
-        public void UpdateBaseTime(TimeSpan baseTime) => _baseTime = baseTime;
+        public (bool result, TimeSpan before, TimeSpan after) TryIncreaseTime(DateTimeOffset moveTime, DateTimeOffset? lastTurnOffTime)
+        {
+            if (!moveTime.Between(lastTurnOffTime).IsLessThen(_motionConfiguration.MotionTimeWindow)) return (false, _baseTime, _baseTime);
 
+            var before = _baseTime;
+            _baseTime = _baseTime.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutExtenderFactor);
+            return (true, before, _baseTime);
+        }
+
+        /// <summary>
+        /// Increment timeout on each move in the room
+        /// </summary>
         public void IncrementCounter()
         {
             _counter++;
-            var factor = _counter * _incrementFactor;
+            var factor = _counter * _motionConfiguration.TurnOffTimeoutIncrementFactor;
             var value = TimeSpan.FromTicks((long)(Value.Ticks * factor));
             _currentExtension = _currentExtension.Add(value);
         }

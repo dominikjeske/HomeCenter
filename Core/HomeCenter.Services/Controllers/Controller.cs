@@ -28,7 +28,7 @@ namespace HomeCenter.Services.Controllers
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             StartSystemFromConfiguration(context);
         }
@@ -56,6 +56,6 @@ namespace HomeCenter.Services.Controllers
             return true;
         }
 
-        private Task RunScheduler() => _scheduler.Start(_disposables.Token);
+        private Task RunScheduler() => _scheduler.Start(Token);
     }
 }

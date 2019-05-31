@@ -34,7 +34,7 @@ namespace HomeCenter.Model.Extensions
                                              .WithSimpleSchedule(x => x.WithInterval(interval).RepeatForever())
                                              .Build();
 
-            await scheduler.ScheduleJob(job, trigger, token).ConfigureAwait(false);
+            await scheduler.ScheduleJob(job, trigger, token);
 
             return job.Key;
         }
@@ -60,7 +60,7 @@ namespace HomeCenter.Model.Extensions
                                    .WithIdentity(GetUniqueName(uid))
                                    .StartAt(DateBuilder.FutureDate((int)delay.TotalMilliseconds, IntervalUnit.Millisecond));
 
-            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+            await scheduler.ScheduleJob(job, tb.Build(), token);
 
             return job.Key;
         }
@@ -86,7 +86,7 @@ namespace HomeCenter.Model.Extensions
                                    .WithIdentity(GetUniqueName(uid))
                                    .StartAt(date);
 
-            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+            await scheduler.ScheduleJob(job, tb.Build(), token);
 
             return job.Key;
         }
@@ -118,7 +118,7 @@ namespace HomeCenter.Model.Extensions
                 tb.ModifiedByCalendar(calendar);
             }
 
-            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+            await scheduler.ScheduleJob(job, tb.Build(), token);
 
             return job.Key;
         }
@@ -151,7 +151,7 @@ namespace HomeCenter.Model.Extensions
                 tb.ModifiedByCalendar(calendar);
             }
 
-            await scheduler.ScheduleJob(job, tb.Build(), token).ConfigureAwait(false);
+            await scheduler.ScheduleJob(job, tb.Build(), token);
 
             return job.Key;
         }
@@ -167,7 +167,7 @@ namespace HomeCenter.Model.Extensions
             var current = (await scheduler.GetJobKeys(searchPattern).ConfigureAwait(false)).FirstOrDefault();
             if (current != null)
             {
-                await scheduler.DeleteJob(current).ConfigureAwait(false);
+                await scheduler.DeleteJob(current);
             }
         }
 

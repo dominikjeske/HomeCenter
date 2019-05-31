@@ -36,7 +36,7 @@ namespace HomeCenter.Adapters.Kodi
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _hostname = AsString(MessageProperties.Hostname);
             _port = AsInt(MessageProperties.Port);
@@ -44,7 +44,7 @@ namespace HomeCenter.Adapters.Kodi
             _Password = AsString(MessageProperties.Password);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-            await ScheduleDeviceRefresh(_poolInterval).ConfigureAwait(false);
+            await ScheduleDeviceRefresh(_poolInterval);
         }
 
         protected Task Refresh(RefreshCommand message)
@@ -84,54 +84,54 @@ namespace HomeCenter.Adapters.Kodi
                 Message = new ProcessPost { ProcessName = "kodi", Start = true },
                 Port = 5000
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, true);
         }
 
         protected async Task Handle(TurnOffCommand message)
         {
             var cmd = GetKodiCommand("Application.Quit");
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false);
         }
 
         protected async Task Handle(VolumeUpCommand command)
         {
             var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetKodiCommand("Application.SetVolume", new { volume = (int)volume });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeDownCommand command)
         {
             var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetKodiCommand("Application.SetVolume", new { volume = (int)volume });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeSetCommand command)
         {
             var volume = command.AsDouble(MessageProperties.Value);
             var cmd = GetKodiCommand("Application.SetVolume", new { volume });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(MuteCommand message)
         {
             var cmd = GetKodiCommand("Application.SetMute", new { mute = true });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _mute = await UpdateState(MuteState.StateName, _mute, true);
         }
 
         protected async Task Handle(UnmuteCommand message)
         {
             var cmd = GetKodiCommand("Application.SetMute", new { mute = false });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _mute = await UpdateState(MuteState.StateName, _mute, false);
         }
 
         protected async Task Handle(PlayCommand message)
@@ -140,8 +140,8 @@ namespace HomeCenter.Adapters.Kodi
             if (_speed != 0) return;
 
             var cmd = GetKodiCommand("Player.PlayPause", new { playerid = PlayerId.GetValueOrDefault() });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _speed = await UpdateState(PlaybackState.StateName, _speed, 1.0).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _speed = await UpdateState(PlaybackState.StateName, _speed, 1.0);
         }
 
         protected async Task Handle(StopCommand message)
@@ -150,8 +150,8 @@ namespace HomeCenter.Adapters.Kodi
             if (_speed != 0) return;
 
             var cmd = GetKodiCommand("Player.Stop", new { playerid = PlayerId.GetValueOrDefault() });
-            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd).ConfigureAwait(false);
-            _speed = await UpdateState(PlaybackState.StateName, _speed, 1.0).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<KodiCommand, JsonRpcResponse>(cmd);
+            _speed = await UpdateState(PlaybackState.StateName, _speed, 1.0);
         }
     }
 }

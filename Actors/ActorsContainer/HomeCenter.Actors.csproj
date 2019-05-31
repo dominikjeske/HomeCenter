@@ -28,6 +28,10 @@
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\HomeCenter.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <Folder Include="Adapters\Common\" />

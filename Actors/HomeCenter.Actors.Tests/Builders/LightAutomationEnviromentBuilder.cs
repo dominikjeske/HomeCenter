@@ -69,15 +69,14 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public IMapper Bootstrap(IMessageBroker messageBroker, IObservableTimer observableTimer)
+        public IMapper Bootstrap(IMessageBroker messageBroker)
         {
             MapperConfiguration config = ConfigureMapper();
 
             var concurrencyProvider = new TestConcurrencyProvider(_scheduler);
             _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
             _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(new FakeLogger<LightAutomationServiceProxy>(_scheduler));
-            _container.RegisterInstance<IMessageBroker>(messageBroker);
-            _container.RegisterInstance<IObservableTimer>(observableTimer);
+            _container.RegisterInstance(messageBroker);
 
             return config.CreateMapper();
         }
@@ -104,10 +103,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var checkTime = _periodicCheckTime ?? TimeSpan.FromMilliseconds(1000);
             var timeDuration = _timeDuration ?? 20;
 
-            var observableTimer = Mock.Of<IObservableTimer>();
-            Mock.Get(observableTimer).Setup(x => x.GenerateTime(checkTime)).Returns(_scheduler.CreateColdObservable(GenerateTestTime(TimeSpan.FromSeconds(timeDuration), checkTime)));
-
-            var mapper = Bootstrap(messageBroker, observableTimer);
+            var mapper = Bootstrap(messageBroker);
             var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
 
             _actorContext.Lamps = lampDictionary;
@@ -137,21 +133,6 @@ namespace HomeCenter.Services.MotionService.Tests
             return lampDictionary;
         }
 
-        public Recorded<Notification<DateTimeOffset>>[] GenerateTestTime(TimeSpan duration, TimeSpan frequency)
-        {
-            var time = new List<Recorded<Notification<DateTimeOffset>>>();
-            var durationSoFar = TimeSpan.FromTicks(0);
-            var dateSoFar = new DateTimeOffset(1, 1, 1, 0, 0, 0, TimeSpan.FromTicks(0));
-            while (true)
-            {
-                durationSoFar = durationSoFar.Add(frequency);
-                if (durationSoFar > duration) break;
 
-                dateSoFar = dateSoFar.Add(frequency);
-                time.Add(new Recorded<Notification<DateTimeOffset>>(durationSoFar.Ticks, Notification.CreateOnNext(dateSoFar)));
-            }
-
-            return time.ToArray();
-        }
     }
 }

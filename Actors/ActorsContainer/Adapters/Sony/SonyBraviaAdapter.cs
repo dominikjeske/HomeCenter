@@ -42,7 +42,7 @@ namespace HomeCenter.Adapters.Sony
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _hostname = AsString(MessageProperties.Hostname);
             _authorisationKey = AsString(MessageProperties.AuthKey);
@@ -50,7 +50,7 @@ namespace HomeCenter.Adapters.Sony
             _mac = AsString(MessageProperties.MAC);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-           // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval).ConfigureAwait(false);
+           // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
 
         private SonyControlQuery GetControlCommand(string code)
@@ -98,10 +98,10 @@ namespace HomeCenter.Adapters.Sony
         protected async Task Handle(RefreshCommand message)
         {
             var cmd = GetJsonCommand("system", "getPowerStatus");
-            var power = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyPowerResult>(cmd).ConfigureAwait(false);
+            var power = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyPowerResult>(cmd);
 
             cmd = GetJsonCommand("audio", "getVolumeInformation");
-            var audio = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            var audio = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
             //TODO save audio and power state
             //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
@@ -110,60 +110,60 @@ namespace HomeCenter.Adapters.Sony
         protected async Task Handle(TurnOnCommand message)
         {
             var command = WakeOnLanCommand.Create(_mac);
-            await MessageBroker.SendToService(command).ConfigureAwait(false);
+            await MessageBroker.SendToService(command);
             //var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
 
-            _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, true);
         }
 
         protected async Task Handle(TurnOffCommand message)
         {
             var cmd = GetControlCommand("AAAAAQAAAAEAAAAvAw==");
-            await MessageBroker.QueryService<SonyControlQuery, string>(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
+            await MessageBroker.QueryService<SonyControlQuery, string>(cmd);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false);
         }
 
         protected async Task Handle(VolumeUpCommand command)
         {
             var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
-            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeDownCommand command)
         {
             var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
-            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeSetCommand command)
         {
             var volume = command.AsDouble(MessageProperties.Value);
             var cmd = GetJsonCommand("audio", "setAudioVolume", new SonyAudioVolumeRequest("speaker", ((int)volume).ToString()));
-            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(MuteCommand message)
         {
             var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(true));
-            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, true);
         }
 
         protected async Task Handle(UnmuteCommand message)
         {
             var cmd = GetJsonCommand("audio", "setAudioMute", new SonyAudioMuteRequest(false));
-            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, false);
         }
 
         protected async Task Handle(InputSetCommand message)
@@ -174,9 +174,9 @@ namespace HomeCenter.Adapters.Sony
             var code = _inputSourceMap[inputName];
 
             var cmd = GetControlCommand(code);
-            await MessageBroker.QueryService<SonyControlQuery, string>(cmd).ConfigureAwait(false);
+            await MessageBroker.QueryService<SonyControlQuery, string>(cmd);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, inputName);
         }
 
        

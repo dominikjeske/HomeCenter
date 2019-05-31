@@ -20,7 +20,7 @@ namespace HomeCenter.Tests.ComponentModel
             container.Conditions.Add(c1);
             container.Conditions.Add(c2);
 
-            var result = await container.Validate().ConfigureAwait(false);
+            var result = await container.Validate();
 
             Assert.IsTrue(result);
         }
@@ -38,7 +38,7 @@ namespace HomeCenter.Tests.ComponentModel
             container.Conditions.Add(c1);
             container.Conditions.Add(c2);
 
-            var result = await container.Validate().ConfigureAwait(false);
+            var result = await container.Validate();
 
             Assert.IsFalse(result);
         }
@@ -55,7 +55,7 @@ namespace HomeCenter.Tests.ComponentModel
             container.Conditions.Add(c2);
             container.Expression = "C1 and (not C2)";
 
-            var result = await container.Validate().ConfigureAwait(false);
+            var result = await container.Validate();
 
             Assert.IsTrue(result);
         }

@@ -35,14 +35,14 @@ namespace HomeCenter.Adapters.Denon
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _hostName = AsString(MessageProperties.Hostname);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
             _zone = AsInt(MessageProperties.Zone);
 
             await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, RefreshCommand.Default), TimeSpan.FromSeconds(1));
-            await ScheduleDeviceLightRefresh(_poolInterval).ConfigureAwait(false);
+            await ScheduleDeviceLightRefresh(_poolInterval);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -58,13 +58,13 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Handle(RefreshCommand message)
         {
-            _fullState = await MessageBroker.QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName }).ConfigureAwait(false);
-            var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName }).ConfigureAwait(false);
+            _fullState = await MessageBroker.QueryService<DenonStatusQuery, DenonDeviceInfo>(new DenonStatusQuery { Address = _hostName });
+            var mapping = await MessageBroker.QueryService<DenonMappingQuery, DenonDeviceInfo>(new DenonMappingQuery { Address = _hostName });
             _fullState.FriendlyName = mapping.FriendlyName;
             _fullState.InputMap = mapping.InputMap;
 
-            _surround = await UpdateState(SurroundSoundState.StateName, _surround, _fullState.Surround).ConfigureAwait(false);
-            _description = await UpdateState(DescriptionState.StateName, _description, GetDescription()).ConfigureAwait(false);
+            _surround = await UpdateState(SurroundSoundState.StateName, _surround, _fullState.Surround);
+            _description = await UpdateState(DescriptionState.StateName, _description, GetDescription());
         }
 
         private string GetDescription() => $"{_fullState.FriendlyName} [Model: {_fullState.Model}, Zone: {_zone}, Address: {_hostName}]";
@@ -77,12 +77,12 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            var state = await MessageBroker.QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery).ConfigureAwait(false);
+            var state = await MessageBroker.QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
-            _mute = await UpdateState(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput);
+            _mute = await UpdateState(MuteState.StateName, _mute, state.Mute);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus);
+            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume);
         }
 
         protected async Task Handle(TurnOnCommand message)
@@ -98,7 +98,7 @@ namespace HomeCenter.Adapters.Denon
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "ON").ConfigureAwait(false))
             {
-                _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
+                _powerState = await UpdateState(PowerState.StateName, _powerState, true);
             }
         }
 
@@ -115,7 +115,7 @@ namespace HomeCenter.Adapters.Denon
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "OFF").ConfigureAwait(false))
             {
-                _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
+                _powerState = await UpdateState(PowerState.StateName, _powerState, false);
             }
         }
 
@@ -138,8 +138,8 @@ namespace HomeCenter.Adapters.Denon
                 };
 
                 // Results are unpredictable so we ignore them
-                await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
-                _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+                await MessageBroker.QueryService<DenonControlQuery, string>(control);
+                _volume = await UpdateState(VolumeState.StateName, _volume, volume);
             }
         }
 
@@ -161,8 +161,8 @@ namespace HomeCenter.Adapters.Denon
                 };
 
                 // Results are unpredictable so we ignore them
-                await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
-                _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+                await MessageBroker.QueryService<DenonControlQuery, string>(control);
+                _volume = await UpdateState(VolumeState.StateName, _volume, volume);
             }
         }
 
@@ -180,8 +180,8 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            await MessageBroker.QueryService<DenonControlQuery, string>(control);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         private string NormalizeVolume(double volume)
@@ -205,7 +205,7 @@ namespace HomeCenter.Adapters.Denon
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "on").ConfigureAwait(false))
             {
-                _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
+                _mute = await UpdateState(MuteState.StateName, _mute, true);
             }
         }
 
@@ -222,7 +222,7 @@ namespace HomeCenter.Adapters.Denon
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "off").ConfigureAwait(false))
             {
-                _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
+                _mute = await UpdateState(MuteState.StateName, _mute, false);
             }
         }
 
@@ -242,9 +242,9 @@ namespace HomeCenter.Adapters.Denon
                 Address = _hostName
             };
 
-            await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
+            await MessageBroker.QueryService<DenonControlQuery, string>(control);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, inputName);
         }
 
         protected async Task Handle(ModeSetCommand message)
@@ -264,9 +264,9 @@ namespace HomeCenter.Adapters.Denon
                 Address = _hostName
             };
 
-            await MessageBroker.QueryService<DenonControlQuery, string>(control).ConfigureAwait(false);
+            await MessageBroker.QueryService<DenonControlQuery, string>(control);
 
-            _surround = await UpdateState(SurroundSoundState.StateName, _surround, surroundMode).ConfigureAwait(false);
+            _surround = await UpdateState(SurroundSoundState.StateName, _surround, surroundMode);
         }
 
     }

@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Common
 {
-    // TODO add reverse state - to interprate true as false and oposite
+    // TODO add reverse state - to interpreted true as false and opposite
     [ProxyCodeGenerator]
     public abstract class CCToolsAdapter : Adapter
     {
@@ -38,7 +38,7 @@ namespace HomeCenter.Adapters.Common
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold, 2000);
             _i2cAddress = AsInt(MessageProperties.Address);
@@ -54,21 +54,21 @@ namespace HomeCenter.Adapters.Common
                 }));
             }
 
-            await ConfigureDriver().ConfigureAwait(false);
-            await FetchState().ConfigureAwait(false);
+            await ConfigureDriver();
+            await FetchState();
 
             if (_firstPortWriteMode)
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    await SetPortState(i, false).ConfigureAwait(false);
+                    await SetPortState(i, false);
                 }
             }
             if (_secondPortWriteMode)
             {
                 for (int i = 8; i < 15; i++)
                 {
-                    await SetPortState(i, false).ConfigureAwait(false);
+                    await SetPortState(i, false);
                 }
             }
         }
@@ -94,12 +94,12 @@ namespace HomeCenter.Adapters.Common
         {
             int pinNumber = ValidatePin(message);
 
-            await SetPortState(pinNumber, true).ConfigureAwait(false);
+            await SetPortState(pinNumber, true);
 
             if (message.ContainsProperty(MessageProperties.StateTime))
             {
-                await Task.Delay(message.AsIntTime(MessageProperties.StateTime)).ConfigureAwait(false);
-                await SetPortState(pinNumber, false).ConfigureAwait(false);
+                await Task.Delay(message.AsIntTime(MessageProperties.StateTime));
+                await SetPortState(pinNumber, false);
             }
         }
 
@@ -144,7 +144,7 @@ namespace HomeCenter.Adapters.Common
 
             try
             {
-                await MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, newState)).ConfigureAwait(false);
+                await MessageBroker.SendToService(I2cCommand.Create(_i2cAddress, newState));
                 _driver.AcceptNewState();
             }
             catch (Exception)
@@ -160,7 +160,7 @@ namespace HomeCenter.Adapters.Common
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var newState = await ReadFromBus().ConfigureAwait(false);
+            var newState = await ReadFromBus();
 
             stopwatch.Stop();
 
@@ -185,7 +185,7 @@ namespace HomeCenter.Adapters.Common
                     [MessageProperties.PinNumber] = pinNumber.ToString()
                 });
 
-                await MessageBroker.Publish(properyChangeEvent, Uid).ConfigureAwait(false);
+                await MessageBroker.Publish(properyChangeEvent, Uid);
 
                 Logger.LogTrace($"[{Uid}] Pin [{pinNumber}] state changed {oldPinState}->{newPinState}");
             }
@@ -206,7 +206,7 @@ namespace HomeCenter.Adapters.Common
         private async Task<byte[]> ReadFromBus()
         {
             var query = I2cQuery.Create(_i2cAddress, _driver.GetReadTable(), _driver.BufferSize);
-            var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query).ConfigureAwait(false);
+            var result = await MessageBroker.QueryService<I2cQuery, byte[]>(query);
             return result;
         }
     }

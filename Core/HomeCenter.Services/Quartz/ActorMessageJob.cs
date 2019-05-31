@@ -20,7 +20,7 @@ namespace HomeCenter.Model.Messages.Scheduler
 
             if (actorMessageContext.Condition != null)
             {
-                var validationResult = await actorMessageContext.Condition.Validate().ConfigureAwait(false);
+                var validationResult = await actorMessageContext.Condition.Validate();
                 if (!validationResult) return;
             }
 

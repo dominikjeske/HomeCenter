@@ -31,14 +31,14 @@ namespace HomeCenter.Adapters.PC
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _hostname = AsString(MessageProperties.Hostname);
             _port = AsInt(MessageProperties.Port);
             _mac = AsString(MessageProperties.MAC);
             _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-            await ScheduleDeviceRefresh(_poolInterval).ConfigureAwait(false);
+            await ScheduleDeviceRefresh(_poolInterval);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -61,21 +61,21 @@ namespace HomeCenter.Adapters.PC
                 Service = "Status"
             };
 
-            var state = await MessageBroker.QueryJsonService<ComputerQuery, ComputerStatus>(cmd).ConfigureAwait(false);
+            var state = await MessageBroker.QueryJsonService<ComputerQuery, ComputerStatus>(cmd);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume.Value).ConfigureAwait(false);
-            _mute = await UpdateState(MuteState.StateName, _mute, state.Mute).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput);
+            _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume.Value);
+            _mute = await UpdateState(MuteState.StateName, _mute, state.Mute);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, state.PowerStatus);
         }
 
         protected async Task Handle(TurnOnCommand message)
         {
             var cmd = WakeOnLanCommand.Create(_mac);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
             //TODO check state before update the state
-            _powerState = await UpdateState(PowerState.StateName, _powerState, true).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, true);
         }
 
         protected async Task Handle(TurnOffCommand message)
@@ -86,8 +86,8 @@ namespace HomeCenter.Adapters.PC
                 Service = "Power",
                 Message = new PowerPost { State = 0 } //Hibernate
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false);
         }
 
         protected async Task Handle(VolumeUpCommand command)
@@ -99,8 +99,8 @@ namespace HomeCenter.Adapters.PC
                 Service = "Volume",
                 Message = new VolumePost { Volume = volume }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeDownCommand command)
@@ -112,9 +112,9 @@ namespace HomeCenter.Adapters.PC
                 Service = "Volume",
                 Message = new VolumePost { Volume = volume }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(VolumeSetCommand command)
@@ -126,9 +126,9 @@ namespace HomeCenter.Adapters.PC
                 Service = "Volume",
                 Message = new VolumePost { Volume = volume }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _volume = await UpdateState(VolumeState.StateName, _volume, volume).ConfigureAwait(false);
+            _volume = await UpdateState(VolumeState.StateName, _volume, volume);
         }
 
         protected async Task Handle(MuteCommand message)
@@ -139,9 +139,9 @@ namespace HomeCenter.Adapters.PC
                 Service = "Mute",
                 Message = new MutePost { Mute = true }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, true).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, true);
         }
 
         protected async Task Handle(UnmuteCommand message)
@@ -152,9 +152,9 @@ namespace HomeCenter.Adapters.PC
                 Service = "Mute",
                 Message = new MutePost { Mute = false }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _mute = await UpdateState(MuteState.StateName, _mute, false).ConfigureAwait(false);
+            _mute = await UpdateState(MuteState.StateName, _mute, false);
         }
 
         protected async Task Handle(InputSetCommand message)
@@ -167,9 +167,9 @@ namespace HomeCenter.Adapters.PC
                 Service = "InputSource",
                 Message = new InputSourcePost { Input = inputName }
             };
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, inputName);
         }
     }
 }

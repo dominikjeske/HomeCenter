@@ -36,7 +36,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _PowerAdapterUid = AsString("PowerAdapter");
             _PowerAdapterPin = AsInt("PowerAdapterPin");
@@ -45,14 +45,14 @@ namespace HomeCenter.Adapters.CurrentBridge
             _Minimum = AsNullableDouble("Minimum");
             _Maximum = AsNullableDouble("Maximum");
 
-            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid).ConfigureAwait(false);
+            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid);
 
-            _disposables.Add(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, false, _PowerLevelAdapterUid));
+            ProtectResource(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, false, _PowerLevelAdapterUid));
         }
 
         protected override async Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {
-            await base.OnSystemStarted(systemStartedEvent).ConfigureAwait(false);
+            await base.OnSystemStarted(systemStartedEvent);
 
             if (!TryCalculateSpectrum())
             {
@@ -72,7 +72,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             }
             else
             {
-                await StandardMode(context).ConfigureAwait(false);
+                await StandardMode(context);
             }
         }
 
@@ -95,7 +95,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             }
             else
             {
-                await StandardMode(context).ConfigureAwait(false);
+                await StandardMode(context);
             }
         }
 
@@ -105,7 +105,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 Become(CalibrationMinimumLight);
                 ForwardToPowerAdapter(TurnOffCommand.Default);
-                await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+                await Task.Delay(WAIT_AFTER_CHANGE);
 
                 Logger.LogInformation($"<{Uid}> Calibration waiting to reach MIN state");
                 ForwardToPowerAdapter(TurnOnCommand.Default);
@@ -113,12 +113,12 @@ namespace HomeCenter.Adapters.CurrentBridge
             else if (context.Message is PropertyChangedEvent maximumState)
             {
                 // Resend stop message to cancel scheduled message
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(1500), true).ConfigureAwait(false);
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(1500), true);
                 _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
             }
             else
             {
-                await StandardMode(context).ConfigureAwait(false);
+                await StandardMode(context);
             }
         }
 
@@ -142,18 +142,18 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 Logger.LogInformation($"<{Uid}> Calibration finished with MIN: {_Minimum}, MAX: {_Maximum}, RANGE: {_Range}");
 
-                await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+                await Task.Delay(WAIT_AFTER_CHANGE);
 
                 ForwardToPowerAdapter(TurnOnCommand.Create(CHANGE_POWER_STATE_TIME));
             }
             else if (context.Message is PropertyChangedEvent minimumState)
             {
-                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1500)).ConfigureAwait(false);
+                await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1500));
                 _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
             }
             else
             {
-                await StandardMode(context).ConfigureAwait(false);
+                await StandardMode(context);
             }
         }
 
@@ -278,7 +278,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             ForwardToPowerAdapter(TurnOnCommand.Create(SWITCH_CHANGE_DIRECTION));
 
-            await Task.Delay(WAIT_AFTER_CHANGE).ConfigureAwait(false);
+            await Task.Delay(WAIT_AFTER_CHANGE);
             return SWITCH_CHANGE_DIRECTION;
         }
 

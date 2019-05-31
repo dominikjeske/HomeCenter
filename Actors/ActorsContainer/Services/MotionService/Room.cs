@@ -19,38 +19,32 @@ namespace HomeCenter.Services.MotionService
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
         private readonly ConditionContainer _turnOffConditionsValidator = new ConditionContainer();
-
         private readonly MotionConfiguration _motionConfiguration;
         private readonly DisposeContainer _disposeContainer = new DisposeContainer();
+        private readonly IConcurrencyProvider _concurrencyProvider;
+        private readonly ILogger _logger;
+        private readonly IMessageBroker _messageBroker;
+        private readonly string _lamp;
 
         // Configuration parameters
-        public string Uid { get; }
+        internal string Uid { get; }
 
         internal IEnumerable<string> _neighbors { get; }
         internal IReadOnlyCollection<Room> NeighborsCache { get; private set; }
 
-        // Dynamic parameters
         internal bool AutomationDisabled { get; private set; }
-
         internal int NumberOfPersonsInArea { get; private set; }
         internal MotionStamp LastMotion { get; } = new MotionStamp();
-        internal AreaDescriptor _areaDescriptor { get; }
-        internal MotionVector LastVectorEnter { get; private set; }
+        internal AreaDescriptor AreaDescriptor { get; }
 
-        private Probability _PresenceProbability { get; set; } = Probability.Zero;
-        private DateTimeOffset _AutomationEnableOn { get; set; }
-        private DateTimeOffset? _LastAutoIncrement;
-        private readonly IConcurrencyProvider _concurrencyProvider;
-        private readonly ILogger _logger;
-        private DateTimeOffset? _LastAutoTurnOff { get; set; }
-        private Timeout _TurnOffTimeOut;
-        private readonly IMessageBroker _messageBroker;
-        private readonly string _lamp;
+        private Probability _presenceProbability = Probability.Zero;
+        private DateTimeOffset _AutomationEnableOn;
+        private DateTimeOffset? _lastAutoIncrement;
+        private DateTimeOffset? _lastAutoTurnOff;
+        private readonly Timeout _turnOffTimeOut;
+        private MotionVector _lastVectorEnter;
 
-        public override string ToString()
-        {
-            return $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}]";
-        }
+        public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}]";
 
         public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, IMessageBroker messageBroker,
                     AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
@@ -62,7 +56,7 @@ namespace HomeCenter.Services.MotionService
             _motionConfiguration = motionConfiguration;
             _concurrencyProvider = concurrencyProvider;
             _messageBroker = messageBroker;
-            _areaDescriptor = areaDescriptor;
+            AreaDescriptor = areaDescriptor;
 
             if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
             {
@@ -77,12 +71,143 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            _TurnOffTimeOut = new Timeout(_areaDescriptor.TurnOffTimeout, _motionConfiguration.TurnOffPresenceFactor);
+            _turnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration);
         }
 
-        internal void RegisterForLampChangeState()
+        /// <summary>
+        /// Take action when there is a move in the room
+        /// </summary>
+        /// <param name="motionTime"></param>
+        /// <returns></returns>
+        public async Task MarkMotion(DateTimeOffset motionTime)
+        {
+            TryTuneTurnOffTimeOut(motionTime);
+            LastMotion.SetTime(motionTime);
+            await SetProbability(Probability.Full);
+            CheckAutoIncrementForOnePerson(motionTime);
+
+            _turnOffTimeOut.IncrementCounter();
+        }
+
+        /// <summary>
+        /// Update room state on time intervals
+        /// </summary>
+        /// <returns></returns>
+        public async Task PeriodicUpdate()
+        {
+            CheckForTurnOnAutomationAgain();
+            await RecalculateProbability();
+        }
+
+        /// <summary>
+        /// Marks entrance of last motion vector
+        /// </summary>
+        /// <param name="vector"></param>
+        public void MarkEnter(MotionVector vector)
+        {
+            _lastVectorEnter = vector;
+            IncrementNumberOfPersons(vector.End.TimeStamp);
+        }
+
+        public async Task MarkLeave(MotionVector vector)
+        {
+            DecrementNumberOfPersons();
+
+            if (AreaDescriptor.MaxPersonCapacity == 1)
+            {
+                await SetProbability(Probability.Zero);
+            }
+            else
+            {
+                //TODO change this value
+                await SetProbability(Probability.FromValue(0.1));
+            }
+        }
+
+        public void BuildNeighborsCache(IEnumerable<Room> neighbors) => NeighborsCache = new ReadOnlyCollection<Room>(neighbors.ToList());
+
+        public void DisableAutomation()
+        {
+            AutomationDisabled = true;
+            _logger.LogInformation($"Room {Uid} automation disabled");
+        }
+
+        public void EnableAutomation()
+        {
+            AutomationDisabled = false;
+            _logger.LogInformation($"Room {Uid} automation enabled");
+        }
+
+        public void DisableAutomation(TimeSpan time)
+        {
+            DisableAutomation();
+            _AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
+        }
+
+        public bool HasSameLastTimeVector(MotionVector motionVector) => _lastVectorEnter?.EqualsWithStartTime(motionVector) ?? false;
+
+        /// <summary>
+        /// Get confusion point from all neighbors
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public IList<MotionPoint> GetConfusingPoints(MotionVector vector) => NeighborsCache.ToList()
+                                                                                           .AddChained(this)
+                                                                                           .Where(room => room.Uid != vector.Start.Uid)
+                                                                                           .Select(room => room.GetConfusion(vector.End.TimeStamp))
+                                                                                           .Where(y => y != null)
+                                                                                           .ToList();
+
+        public void Dispose() => _disposeContainer.Dispose();
+
+        public void RegisterForLampChangeState()
         {
             RegisterChangeStateSource();
+        }
+
+        /// <summary>
+        /// If light is turned off too early area TurnOffTimeout is too low and we have to update it
+        /// </summary>
+        /// <param name="time"></param>
+        private void TryTuneTurnOffTimeOut(DateTimeOffset time)
+        {
+            if (_presenceProbability == Probability.Zero)
+            {
+                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseTime(time, _lastAutoTurnOff);
+                if (result) _logger.LogInformation($"[{Uid}] Turn-off time out updated {before} -> {after}");
+            }
+        }
+
+        /// <summary>
+        /// Decrease probability of person in room after each time interval
+        /// </summary>
+        /// <returns></returns>
+        private async Task RecalculateProbability()
+        {
+            var probabilityDelta = 1.0 / (_turnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
+
+            await SetProbability(_presenceProbability.Decrease(probabilityDelta));
+        }
+
+        /// <summary>
+        /// Set probability of occurrence of the person in the room
+        /// </summary>
+        /// <param name="probability"></param>
+        /// <returns></returns>
+        private async Task SetProbability(Probability probability)
+        {
+            if (probability == _presenceProbability) return;
+
+            _presenceProbability = probability;
+
+            if (_presenceProbability.IsFullProbability)
+            {
+                await TryTurnOnLamp();
+            }
+            else if (_presenceProbability.IsNoProbability)
+            {
+                await TryTurnOffLamp();
+            }
         }
 
         private void RegisterChangeStateSource()
@@ -96,94 +221,10 @@ namespace HomeCenter.Services.MotionService
             if (!powerChangeEvent.Value)
             {
                 ResetStatistics();
-                RegisterTurnOffTime();
             }
 
             _logger.LogInformation($"[{Uid} Light] = {powerChangeEvent.Value} | Source: {powerChangeEvent.EventTriggerSource}");
         }
-
-        public async Task MarkMotion(DateTimeOffset time)
-        {
-            CheckTurnOffTimeOut(time);
-            LastMotion.SetTime(time);
-            await SetProbability(Probability.Full).ConfigureAwait(false);
-            CheckAutoIncrementForOnePerson(time);
-
-            _TurnOffTimeOut.IncrementCounter();
-        }
-
-        private void CheckTurnOffTimeOut(DateTimeOffset time)
-        {
-            // if light is turned off to early area TurnOffTimeout is too low and we have to update it
-            if (_PresenceProbability == Probability.Zero && time.HappendInPrecedingTimeWindow(_LastAutoTurnOff, _motionConfiguration.MotionTimeWindow))
-            {
-                UpdateAreaTurnoffTimeOut();
-                _TurnOffTimeOut.UpdateBaseTime(_areaDescriptor.TurnOffTimeout);
-            }
-        }
-
-        private void UpdateAreaTurnoffTimeOut()
-        {
-            var newTimeOut = _areaDescriptor.TurnOffTimeout.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutIncrementPercentage);
-            _logger.LogInformation($"[{Uid} turn-off time out] {_areaDescriptor.TurnOffTimeout} -> {newTimeOut}");
-            _areaDescriptor.TurnOffTimeout = newTimeOut;
-        }
-
-        public async Task Update()
-        {
-            CheckForTurnOnAutomationAgain();
-            await RecalculateProbability().ConfigureAwait(false);
-        }
-
-        public void MarkEnter(MotionVector vector)
-        {
-            LastVectorEnter = vector;
-            IncrementNumberOfPersons(vector.End.TimeStamp);
-        }
-
-        public async Task MarkLeave(MotionVector vector)
-        {
-            DecrementNumberOfPersons();
-
-            if (_areaDescriptor.MaxPersonCapacity == 1)
-            {
-                await SetProbability(Probability.Zero).ConfigureAwait(false);
-            }
-            else
-            {
-                //TODO change this value
-                await SetProbability(Probability.FromValue(0.1)).ConfigureAwait(false);
-            }
-        }
-
-        public void Dispose() => _disposeContainer.Dispose();
-
-        internal void BuildNeighborsCache(IEnumerable<Room> neighbors) => NeighborsCache = new ReadOnlyCollection<Room>(neighbors.ToList());
-
-        internal void DisableAutomation()
-        {
-            AutomationDisabled = true;
-            _logger.LogInformation($"Room {Uid} automation disabled");
-        }
-
-        internal void EnableAutomation()
-        {
-            AutomationDisabled = false;
-            _logger.LogInformation($"Room {Uid} automation enabled");
-        }
-
-        internal void DisableAutomation(TimeSpan time)
-        {
-            DisableAutomation();
-            _AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
-        }
-
-        internal IList<MotionPoint> GetConfusingPoints(MotionVector vector) => NeighborsCache.ToList()
-                                                                                             .AddChained(this)
-                                                                                             .Where(room => room.Uid != vector.Start.Uid)
-                                                                                             .Select(room => room.GetConfusion(vector.End.TimeStamp))
-                                                                                             .Where(y => y != null)
-                                                                                             .ToList();
 
         /// <summary>
         /// When we don't detect motion vector previously but there is move in room and currently we have 0 person so we know that there is a least one
@@ -192,14 +233,23 @@ namespace HomeCenter.Services.MotionService
         {
             if (NumberOfPersonsInArea == 0)
             {
-                _LastAutoIncrement = time;
+                _lastAutoIncrement = time;
                 NumberOfPersonsInArea++;
+            }
+        }
+
+        //TODO maybe do it differently
+        private void CheckForTurnOnAutomationAgain()
+        {
+            if (AutomationDisabled && _concurrencyProvider.Scheduler.Now > _AutomationEnableOn)
+            {
+                EnableAutomation();
             }
         }
 
         private void IncrementNumberOfPersons(DateTimeOffset time)
         {
-            if (!_LastAutoIncrement.HasValue || time.HappendBeforePrecedingTimeWindow(_LastAutoIncrement, TimeSpan.FromMilliseconds(100)))
+            if (!_lastAutoIncrement.HasValue || time.HappendBeforePrecedingTimeWindow(_lastAutoIncrement, TimeSpan.FromMilliseconds(100)))
             {
                 NumberOfPersonsInArea++;
             }
@@ -233,42 +283,13 @@ namespace HomeCenter.Services.MotionService
                   lastMotion?.Time != null
                && lastMotion.CanConfuze
                && timeOfMotion.IsMovePhisicallyPosible(lastMotion.Time.Value, _motionConfiguration.MotionMinDiff)
-               && timeOfMotion.HappendInPrecedingTimeWindow(lastMotion.Time, _areaDescriptor.MotionDetectorAlarmTime)
+               && timeOfMotion.HappendInPrecedingTimeWindow(lastMotion.Time, AreaDescriptor.MotionDetectorAlarmTime)
             )
             {
                 return new MotionPoint(Uid, lastMotion.Time.Value);
             }
 
             return null;
-        }
-
-        private async Task RecalculateProbability()
-        {
-            var probabilityDelta = 1.0 / (_TurnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
-
-            await SetProbability(_PresenceProbability.Decrease(probabilityDelta)).ConfigureAwait(false);
-        }
-
-        private void CheckForTurnOnAutomationAgain()
-        {
-            if (AutomationDisabled && _concurrencyProvider.Scheduler.Now > _AutomationEnableOn)
-            {
-                EnableAutomation();
-            }
-        }
-
-        private async Task SetProbability(Probability probability)
-        {
-            _PresenceProbability = probability;
-
-            if (_PresenceProbability.IsFullProbability)
-            {
-                await TryTurnOnLamp().ConfigureAwait(false);
-            }
-            else if (_PresenceProbability.IsNoProbability)
-            {
-                await TryTurnOffLamp().ConfigureAwait(false);
-            }
         }
 
         private async Task TryTurnOnLamp()
@@ -283,17 +304,19 @@ namespace HomeCenter.Services.MotionService
         {
             if (await CanTurnOffLamp().ConfigureAwait(false))
             {
+                _logger.LogInformation($"[{Uid}] Turn off");
+
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
+
+                _lastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
         }
 
         private void ResetStatistics()
         {
             NumberOfPersonsInArea = 0;
-            _TurnOffTimeOut.Reset();
+            _turnOffTimeOut.Reset();
         }
-
-        private void RegisterTurnOffTime() => _LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
 
         private Task<bool> CanTurnOnLamp() => _turnOnConditionsValidator.Validate();
 

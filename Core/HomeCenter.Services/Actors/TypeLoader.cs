@@ -59,7 +59,7 @@ namespace HomeCenter.Services.Actors
                 var dayOffProvider = calendarType.CreateInstance<IDayOffProvider>();
                 var calendar = new QuartzCalendar(dayOffProvider);
 
-                await _scheduler.AddCalendar(dayOffProvider.Name, calendar, false, false).ConfigureAwait(false);
+                await _scheduler.AddCalendar(dayOffProvider.Name, calendar, false, false);
             }
         }
 

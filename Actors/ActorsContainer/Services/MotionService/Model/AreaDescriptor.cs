@@ -1,10 +1,11 @@
-﻿using System;
+﻿using HomeCenter.Utils.Extensions;
+using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
     public class AreaDescriptor
     {
-        public static AreaDescriptor Default = new AreaDescriptor();
+        public static AreaDescriptor Default => new AreaDescriptor();
 
         public string WorkingTime { get; set; }
         public int MaxPersonCapacity { get; set; }                   // How many persons can be at once in single room
@@ -15,5 +16,6 @@ namespace HomeCenter.Services.MotionService.Model
         public bool TurnOffAutomationDisabled { get; set; }          // When we want only turn on light but not turn off by automation
 
         public AreaDescriptor Clone() => (AreaDescriptor)MemberwiseClone();
+
     }
 }

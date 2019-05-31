@@ -45,7 +45,7 @@ namespace HomeCenter.Tests.Mocks
             await UpdateState(state, oldValue, newValue, new Dictionary<string, string>
             {
                 [MessageProperties.PinNumber] = pinNumber.ToString()
-            }).ConfigureAwait(false);
+            });
         }
     }
 }

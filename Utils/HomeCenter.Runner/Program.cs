@@ -41,16 +41,16 @@ namespace HomeCenter.Runner
             switch (programNumber)
             {
                 case 1:
-                    await StartController().ConfigureAwait(false);
+                    await StartController();
                     break;
 
                 case 2:
-                    await StartCluster().ConfigureAwait(false);
+                    await StartCluster();
                     Console.ReadLine();
                     break;
 
                 case 3:
-                    await GenerateDebuging().ConfigureAwait(false);
+                    await GenerateDebuging();
                     Console.ReadLine();
                     break;
             }
@@ -81,9 +81,9 @@ namespace HomeCenter.Runner
         {
             try
             {
-                var code = await File.ReadAllTextAsync(@"..\..\..\Models.cs").ConfigureAwait(false);
+                var code = await File.ReadAllTextAsync(@"..\..\..\Models.cs");
 
-                var result = await new ProxyGeneratorTest().Generate(code).ConfigureAwait(false);
+                var result = await new ProxyGeneratorTest().Generate(code);
 
                 Console.ReadLine();
                 Console.WriteLine(result);

@@ -20,7 +20,7 @@ namespace HomeCenter.Services.Networking
 
                 socket.Connect(uri.Host, uri.Port);
                 socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 0);
-                await socket.SendAsync(udpCommand.Body, udpCommand.Body.Length).ConfigureAwait(false);
+                await socket.SendAsync(udpCommand.Body, udpCommand.Body.Length);
             }
         }
     }

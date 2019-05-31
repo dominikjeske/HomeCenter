@@ -9,6 +9,7 @@ using Proto;
 using Proto.Mailbox;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Actors
@@ -20,9 +21,13 @@ namespace HomeCenter.Model.Actors
         [DI] protected ILogger Logger { get; set; }
 
         private readonly Behavior Behavior = new Behavior();
-        protected readonly DisposeContainer _disposables = new DisposeContainer();
+        protected private DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
         protected List<string> Tags { get; private set; } = new List<string>();
+
+        //Add resource to container that will be released when actor is about to be released
+        protected void ProtectResource(IDisposable resource) => _disposables.Add(resource);
+        protected CancellationToken Token => _disposables.Token;
 
         protected DeviceActor()
         {
@@ -89,43 +94,43 @@ namespace HomeCenter.Model.Actors
                     return true;
                 }
 
-                await OnStarted(context).ConfigureAwait(false);
+                await OnStarted(context);
                 return true;
             }
             else if (msg is Restarting)
             {
-                await OnRestarting(context).ConfigureAwait(false);
+                await OnRestarting(context);
                 return true;
             }
             else if (msg is Restart)
             {
-                await OnRestart(context).ConfigureAwait(false);
+                await OnRestart(context);
                 return true;
             }
             else if (msg is Stop)
             {
-                await OnStop(context).ConfigureAwait(false);
+                await OnStop(context);
                 return true;
             }
             else if (msg is Stopped)
             {
-                await OnStopped(context).ConfigureAwait(false);
+                await OnStopped(context);
                 return true;
             }
             else if (msg is Stopping)
             {
-                await Stopping(context).ConfigureAwait(false);
+                await Stopping(context);
                 return true;
             }
             else if (msg is SystemMessage)
             {
-                await OtherSystemMessage(context).ConfigureAwait(false);
+                await OtherSystemMessage(context);
                 return true;
             }
 
             if (msg is SystemStartedEvent started)
             {
-                await OnSystemStarted(started).ConfigureAwait(false);
+                await OnSystemStarted(started);
                 return true;
             }
 

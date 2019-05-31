@@ -16,7 +16,7 @@ namespace HomeCenter.Services.MotionService
         private readonly IList<EventDescriptor> EventDescriptors = new List<EventDescriptor>();
         private readonly Subject<Event> _eventStream = new Subject<Event>();
         private readonly DisposeContainer _disposables = new DisposeContainer();
-        private readonly TimeSpan MaxMessageTime;
+        private readonly TimeSpan _maxMessageTime;
 
         public void Dispose() => _disposables.Dispose();
 
@@ -31,7 +31,7 @@ namespace HomeCenter.Services.MotionService
             }
 
             _disposables.Add(_eventStream.Timestamp()
-                                         .Buffer(_eventStream, _ => Observable.Timer(MaxMessageTime, concurrencyProvider.Scheduler))
+                                         .Buffer(_eventStream, _ => Observable.Timer(_maxMessageTime, concurrencyProvider.Scheduler))
                                          .Subscribe(DecodeMessage)
                             );
         }

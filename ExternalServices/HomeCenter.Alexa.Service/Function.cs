@@ -19,11 +19,11 @@ namespace HomeCenter.Alexa.Service
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.PostAsync(HandlerUri, new StringContent(request.ToString(), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                    var response = await httpClient.PostAsync(HandlerUri, new StringContent(request.ToString(), Encoding.UTF8, "application/json"));
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
-                        return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        return await response.Content.ReadAsStringAsync();
                     }
                 }
             }

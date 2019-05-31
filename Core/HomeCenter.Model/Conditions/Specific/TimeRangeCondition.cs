@@ -48,8 +48,8 @@ namespace HomeCenter.Model.Conditions.Specific
 
         public override async Task<bool> Validate()
         {
-            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? AsTime(ConditionProperies.StartTime) : await _startValueProvider().ConfigureAwait(false);
-            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? AsTime(ConditionProperies.EndTime) : await _endValueProvider().ConfigureAwait(false);
+            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? AsTime(ConditionProperies.StartTime) : await _startValueProvider();
+            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? AsTime(ConditionProperies.EndTime) : await _endValueProvider();
 
             if (!startValue.HasValue || !endValue.HasValue) return false;
 

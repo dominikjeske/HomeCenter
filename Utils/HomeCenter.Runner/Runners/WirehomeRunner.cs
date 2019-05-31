@@ -46,7 +46,7 @@ namespace HomeCenter.Runner
                 _bootstrapper = new HomeCenterBootstrapper(container);
             }
 
-            var controller = await _bootstrapper.BuildController().ConfigureAwait(false);
+            var controller = await _bootstrapper.BuildController();
 
             foreach (var runner in _runners)
             {
@@ -56,12 +56,12 @@ namespace HomeCenter.Runner
             var eventAggregator = container.GetInstance<IEventAggregator>();
             eventAggregator.Subscribe<SystemStartedEvent>(async message =>
             {
-                await Task.Delay(500).ConfigureAwait(false);
+                await Task.Delay(500);
                 tcs.SetResult(true);
             });
 
-            await tcs.Task.ConfigureAwait(false);
-            await base.Run().ConfigureAwait(false);
+            await tcs.Task;
+            await base.Run();
         }
 
         public override Task RunTask(int taskId)

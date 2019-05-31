@@ -86,7 +86,7 @@ namespace HomeCenter.Model.Core
         {
             query = FormatMessage(query);
 
-            var json = await _eventAggregator.QueryAsync<T, string>(query, filter).ConfigureAwait(false);
+            var json = await _eventAggregator.QueryAsync<T, string>(query, filter);
             var result = JsonConvert.DeserializeObject<R>(json);
             return result;
         }
@@ -95,7 +95,7 @@ namespace HomeCenter.Model.Core
                                                                                                                       where Q : class
 
         {
-            var result = await QueryService<T, Q>(query, filter).ConfigureAwait(false);
+            var result = await QueryService<T, Q>(query, filter);
             return query.Verify(result, expectedResult);
         }
 
@@ -176,7 +176,7 @@ namespace HomeCenter.Model.Core
         {
             var uid = message.GetMessageUid();
 
-            if (cancelExisting) await _scheduler.CancelJob(uid).ConfigureAwait(false);
+            if (cancelExisting) await _scheduler.CancelJob(uid);
 
             await _scheduler.DelayExecution<ActorMessageJob, ActorMessageContext>(delay, message, uid, token);
         }

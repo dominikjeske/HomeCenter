@@ -4,6 +4,18 @@ namespace HomeCenter.Utils.Extensions
 {
     public static class DateTimeExtensions
     {
+        public static TimeSpan? Between(this DateTimeOffset currentPointInTime, DateTimeOffset? previousPointInTime) => currentPointInTime - previousPointInTime;
+
+        public static bool IsLessThen(this TimeSpan? measuredTime, TimeSpan comparedTime)
+        {
+            if (measuredTime == null) return false;
+            if (measuredTime > comparedTime) return false;
+            return true;
+        }
+
+
+
+
         public static bool HappendInPrecedingTimeWindow(this DateTimeOffset time, DateTimeOffset? comparedTime, TimeSpan timeWindow) => comparedTime < time && time - comparedTime < timeWindow;
 
         public static bool HappendBeforePrecedingTimeWindow(this DateTimeOffset time, DateTimeOffset? comparedTime, TimeSpan timeWindow) => comparedTime < time && time - comparedTime > timeWindow;

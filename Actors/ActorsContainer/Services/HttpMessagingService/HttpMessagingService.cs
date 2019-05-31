@@ -20,9 +20,9 @@ namespace HomeCenter.Services.Networking
         {
             using (var httpClient = new HttpClient())
             {
-                var httpResponse = await httpClient.GetAsync(httpMessage.Address).ConfigureAwait(false);
+                var httpResponse = await httpClient.GetAsync(httpMessage.Address);
                 httpResponse.EnsureSuccessStatusCode();
-                var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var responseBody = await httpResponse.Content.ReadAsStringAsync();
                 return httpMessage.Parse(responseBody);
             }
         }
@@ -65,14 +65,14 @@ namespace HomeCenter.Services.Networking
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(httpMessage.ContentType);
                 }
-                var response = await httpClient.PostAsync(httpMessage.Address, content).ConfigureAwait(false);
+                var response = await httpClient.PostAsync(httpMessage.Address, content);
 
                 if (!httpMessage.IgnoreReturnStatus)
                 {
                     response.EnsureSuccessStatusCode();
                 }
 
-                var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8).ConfigureAwait(false);
+                var responseBody = await response.Content.ReadAsStringAsync(Encoding.UTF8);
                 return httpMessage.Parse(responseBody);
             }
         }

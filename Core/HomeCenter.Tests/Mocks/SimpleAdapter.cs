@@ -32,7 +32,7 @@ namespace HomeCenter.Tests.Mocks
 
         public async Task PropertyChanged<T>(string state, T oldValue, T newValue)
         {
-            await UpdateState(state, oldValue, newValue).ConfigureAwait(false);
+            await UpdateState(state, oldValue, newValue);
         }
     }
 }

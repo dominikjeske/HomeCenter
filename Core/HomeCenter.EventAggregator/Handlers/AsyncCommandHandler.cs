@@ -13,7 +13,7 @@ namespace HomeCenter.Broker.Handlers
         {
             var handler = Handler as Func<IMessageEnvelope<T>, Task>;
             if (handler == null) throw new InvalidCastException($"Invalid cast from {Handler.GetType()} to Func<IMessageEnvelope<{typeof(T).Name}>, Task<object>>");
-            await handler(message).ConfigureAwait(false);
+            await handler(message);
 
             return default;
         }

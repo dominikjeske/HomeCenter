@@ -22,7 +22,7 @@ namespace HomeCenter.Adapters.InfraredBridge
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _I2cAddress = AsInt(MessageProperties.Address);
 
@@ -33,7 +33,7 @@ namespace HomeCenter.Adapters.InfraredBridge
                 new Format(3, typeof(byte), "Bits")
                }
             );
-            await MessageBroker.SendToService(registration).ConfigureAwait(false);
+            await MessageBroker.SendToService(registration);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

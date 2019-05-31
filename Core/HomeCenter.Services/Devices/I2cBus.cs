@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace HomeCenter.Services.Devices
 {
+    // TODO try use build-in from .net core and https://github.com/dotnet/iot/pull/452
+
     public class I2cBus : II2cBus
     {
         private const int I2CSlave = 0x0703;

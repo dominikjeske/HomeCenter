@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.Samsung
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _hostname = AsString(MessageProperties.Hostname);
             _infraredAdaperName = AsString(MessageProperties.InfraredAdapter);
@@ -63,9 +63,9 @@ namespace HomeCenter.Adapters.Samsung
         protected async Task Handle(TurnOffCommand message)
         {
             var cmd = GetCommand("KEY_POWEROFF");
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _powerState = await UpdateState(PowerState.StateName, _powerState, false).ConfigureAwait(false);
+            _powerState = await UpdateState(PowerState.StateName, _powerState, false);
         }
 
         protected Task Handle(VolumeUpCommand command)
@@ -111,9 +111,9 @@ namespace HomeCenter.Adapters.Samsung
             if (source?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on Samsung available device input sources");
 
             var cmd = GetCommand(source);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
 
-            _input = await UpdateState(InputSourceState.StateName, _input, inputName).ConfigureAwait(false);
+            _input = await UpdateState(InputSourceState.StateName, _input, inputName);
         }
     }
 }

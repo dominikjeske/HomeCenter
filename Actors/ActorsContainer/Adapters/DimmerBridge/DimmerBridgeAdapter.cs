@@ -29,7 +29,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _i2cAddress = AsInt(MessageProperties.Address);
 
@@ -39,7 +39,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 new Format(2, typeof(float), MessageProperties.Value)
             });
 
-            await MessageBroker.SendToService(registration).ConfigureAwait(false);
+            await MessageBroker.SendToService(registration);
         }
 
         protected async Task Handle(SerialResultEvent serialResult)
@@ -51,7 +51,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 var oldValue = _state[pin];
 
-                _state[pin] = await UpdateState(CurrentState.StateName, oldValue, current, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() }).ConfigureAwait(false);
+                _state[pin] = await UpdateState(CurrentState.StateName, oldValue, current, new Dictionary<string, string>() { [MessageProperties.PinNumber] = pin.ToString() });
             }
         }
 

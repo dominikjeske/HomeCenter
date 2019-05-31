@@ -19,7 +19,7 @@ namespace HomeCenter.Utils.Extensions
         public static async Task<IEnumerable<(T Input, R Result)>> WhenAll<T, R>(this IEnumerable<T> data, Func<T, Task<R>> func)
         {
             var discoveryRequests = data.Select(d => new { ResultTask = func(d), Input = d }).ToArray();
-            await Task.WhenAll(discoveryRequests.Select(c => c.ResultTask)).ConfigureAwait(false);
+            await Task.WhenAll(discoveryRequests.Select(c => c.ResultTask));
             return discoveryRequests.Select(d => (d.Input, d.ResultTask.Result));
         }
 
@@ -27,7 +27,7 @@ namespace HomeCenter.Utils.Extensions
         {
             var timeoutTask = Task.Delay(timeout, cancellationToken);
             var workingTask = Task.WhenAll(tasks);
-            var result = await Task.WhenAny(timeoutTask, workingTask).ConfigureAwait(false);
+            var result = await Task.WhenAny(timeoutTask, workingTask);
 
             if (result == timeoutTask)
             {
@@ -50,7 +50,7 @@ namespace HomeCenter.Utils.Extensions
         {
             var cancellTask = cancellationToken.WhenCanceled();
             var workingTask = Task.WhenAll(tasks);
-            var result = await Task.WhenAny(cancellTask, workingTask).ConfigureAwait(false);
+            var result = await Task.WhenAny(cancellTask, workingTask);
 
             if (result == cancellTask)
             {
@@ -63,7 +63,7 @@ namespace HomeCenter.Utils.Extensions
         public static async Task<R> WhenAny<R>(this IEnumerable<Task> tasks, TimeSpan timeout, CancellationToken cancellationToken) where R : class
         {
             var timeoutTask = Task.Delay(timeout, cancellationToken);
-            var result = await Task.WhenAny(tasks.ToList().AddChained(timeoutTask)).ConfigureAwait(false);
+            var result = await Task.WhenAny(tasks.ToList().AddChained(timeoutTask));
 
             if (result == timeoutTask)
             {
@@ -85,7 +85,7 @@ namespace HomeCenter.Utils.Extensions
         public static async Task<R> WhenDone<R>(this Task<R> task, TimeSpan timeout, CancellationToken cancellationToken = default) //where R : class
         {
             var timeoutTask = Task.Delay(timeout, cancellationToken);
-            var result = await Task.WhenAny(new Task[] { task, timeoutTask }).ConfigureAwait(false);
+            var result = await Task.WhenAny(new Task[] { task, timeoutTask });
 
             if (result == timeoutTask)
             {

@@ -46,7 +46,7 @@ namespace HomeCenter.Runner
                 }
                 try
                 {
-                    await RunTask(taskId).ConfigureAwait(false);
+                    await RunTask(taskId);
                 }
                 catch (Exception ee)
                 {

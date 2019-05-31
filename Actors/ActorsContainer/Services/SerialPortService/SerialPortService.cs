@@ -29,7 +29,7 @@ namespace HomeCenter.Services.Networking
 
         protected override async Task OnStarted(Proto.IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _serialDevice.Init();
             _disposeContainer.Add(_serialDevice.Subscribe(Handle));

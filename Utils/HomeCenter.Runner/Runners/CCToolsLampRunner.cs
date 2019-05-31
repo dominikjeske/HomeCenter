@@ -59,7 +59,7 @@ namespace HomeCenter.Runner
                         [MessageProperties.PinNumber] = 0.ToString()
                     });
 
-                    await MessageBroker.Publish(properyChangeEvent, inputUid).ConfigureAwait(false);
+                    await MessageBroker.Publish(properyChangeEvent, inputUid);
                     return;
                 case 5:
                     var inputUid2 = "HSPE16InputOnly_2";
@@ -68,7 +68,7 @@ namespace HomeCenter.Runner
                         [MessageProperties.PinNumber] = 0.ToString()
                     });
 
-                    await MessageBroker.Publish(properyChangeEvent2, inputUid2).ConfigureAwait(false);
+                    await MessageBroker.Publish(properyChangeEvent2, inputUid2);
                     return;
             }
 

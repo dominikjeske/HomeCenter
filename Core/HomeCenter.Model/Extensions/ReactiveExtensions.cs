@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Extensions
@@ -56,18 +57,17 @@ namespace HomeCenter.Model.Extensions
             return TimeSpan.FromMilliseconds(ms).Ticks;
         }
 
-        public static IDisposable SubscribeAsync<T>(this IObservable<T> source, Func<T, Task> onNextAsync) =>
+        public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, Task> onNextAsync) =>
            source
                .Select(message => Observable.FromAsync(() => onNextAsync(message)))
                .Concat()
                .Subscribe();
 
-        public static IDisposable SubscribeAsyncConcurrent<T>(this IObservable<T> source, Func<Task> onNextAsync) =>
-            source
-                .Select(_ => Observable.FromAsync(onNextAsync))
-                .Merge()
-                .Subscribe();
-
-        
+        public static void Subscribe<T>(this IObservable<T> source, Func<T, Task> onNextAsync, Action<Exception> onError, CancellationToken cancellationToken, IScheduler observeOn) =>
+            source.Select(x => Observable.FromAsync(() => onNextAsync(x)))
+                  .Concat()
+                  .ObserveOn(observeOn)
+                  .Subscribe(_ => { }, onError, cancellationToken);
+ 
     }
 }

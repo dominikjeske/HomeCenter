@@ -28,7 +28,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
         protected override async Task OnStarted(IContext context)
         {
-            await base.OnStarted(context).ConfigureAwait(false);
+            await base.OnStarted(context);
 
             _I2cAddress = AsInt(MessageProperties.Address);
             _pinNumber = AsInt(MessageProperties.PinNumber);
@@ -39,7 +39,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                     new Format(2, typeof(byte), "Bits"),
                     new Format(3, typeof(byte), "Protocol")
              });
-            await MessageBroker.SendToService(registration).ConfigureAwait(false);
+            await MessageBroker.SendToService(registration);
         }
 
         protected async Task Handle(SerialResultEvent serialResultCommand)
@@ -53,7 +53,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
                 return;
             }
 
-            await MessageBroker.Publish(DipswitchEvent.Create(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString()), Uid).ConfigureAwait(false);
+            await MessageBroker.Publish(DipswitchEvent.Create(Uid, dipswitchCode.Unit.ToString(), dipswitchCode.System.ToString(), dipswitchCode.Command.ToString()), Uid);
         }
 
         protected async Task TurnOn(TurnOnCommand message)
@@ -63,16 +63,16 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             Logger.LogInformation($"Sending code {dipswitchCode.Code}");
 
             var cmd = I2cCommand.Create(_I2cAddress, package);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            await UpdateState(dipswitchCode).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
+            await UpdateState(dipswitchCode);
         }
 
         protected async Task TurnOff(TurnOffCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
             var cmd = I2cCommand.Create(_I2cAddress, package);
-            await MessageBroker.SendToService(cmd).ConfigureAwait(false);
-            await UpdateState(dipswitchCode).ConfigureAwait(false);
+            await MessageBroker.SendToService(cmd);
+            await UpdateState(dipswitchCode);
         }
 
         private byte[] PreparePackage(Command message, string commandName, out DipswitchCode dipswitchCode)
@@ -104,7 +104,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             }
             var newValue = code.Command == RemoteSocketCommand.TurnOn;
 
-            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, oldValue, newValue).ConfigureAwait(false);
+            _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, oldValue, newValue);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

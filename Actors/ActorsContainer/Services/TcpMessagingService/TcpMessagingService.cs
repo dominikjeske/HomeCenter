@@ -20,10 +20,10 @@ namespace HomeCenter.Services.Networking
             using (var socket = new TcpClient())
             {
                 var uri = new Uri($"tcp://{tcpCommand.Address}");
-                await socket.ConnectAsync(uri.Host, uri.Port).ConfigureAwait(false);
+                await socket.ConnectAsync(uri.Host, uri.Port);
                 using (var stream = socket.GetStream())
                 {
-                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length).ConfigureAwait(false);
+                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length);
                 }
             }
         }
@@ -34,11 +34,11 @@ namespace HomeCenter.Services.Networking
             using (var socket = new TcpClient())
             {
                 var uri = new Uri($"tcp://{tcpCommand.Address}");
-                await socket.ConnectAsync(uri.Host, uri.Port).ConfigureAwait(false);
+                await socket.ConnectAsync(uri.Host, uri.Port);
                 using (var stream = socket.GetStream())
                 {
-                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length).ConfigureAwait(false);
-                    return await ReadString(stream).ConfigureAwait(false);
+                    await stream.WriteAsync(tcpCommand.Body, 0, tcpCommand.Body.Length);
+                    return await ReadString(stream);
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace HomeCenter.Services.Networking
 
             do
             {
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
                 result.AddRange(buffer.Take(bytesRead));
             }
             while (bytesRead == buffer.Length);

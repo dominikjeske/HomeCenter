@@ -61,7 +61,7 @@ namespace HomeCenter.Services.Configuration
 
             await LoadActors(result);
 
-            await MessageBroker.Publish(SystemStartedEvent.Default).ConfigureAwait(false);
+            await MessageBroker.Publish(SystemStartedEvent.Default);
         }
 
         private async Task LoadTypes()

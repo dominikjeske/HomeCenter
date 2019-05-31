@@ -14,6 +14,5 @@ namespace HomeCenter.Model.Core
         public IScheduler Scheduler { get; }
         public IScheduler Task { get; }
         public IScheduler Thread { get; }
-        public IScheduler Dispatcher { get; }
     }
 }

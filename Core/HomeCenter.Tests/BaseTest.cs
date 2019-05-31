@@ -24,14 +24,14 @@ namespace HomeCenter.Tests.ComponentModel
                 adapterName = typeof(T).Name;
             }
 
-            var result = await Broker.Request<GetAdapterQuery, T>(new GetAdapterQuery(), adapterName).ConfigureAwait(false);
+            var result = await Broker.Request<GetAdapterQuery, T>(new GetAdapterQuery(), adapterName);
             return result;
         }
 
         [TestCleanup]
         public async Task CleanUp()
         {
-            await Broker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, nameof(Controller)).ConfigureAwait(false);
+            await Broker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, nameof(Controller));
             await Task.Delay(10);   //TODO timing required for safe close of previous test
         }
 

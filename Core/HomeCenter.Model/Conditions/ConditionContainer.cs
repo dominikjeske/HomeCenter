@@ -33,7 +33,7 @@ namespace HomeCenter.Model.Conditions
 
             foreach (var condition in Conditions)
             {
-                var result = await condition.Validate().ConfigureAwait(false);
+                var result = await condition.Validate();
                 expression.Replace($"{CONDITION_NAME}{counter++}", result.ToString());
             }
 

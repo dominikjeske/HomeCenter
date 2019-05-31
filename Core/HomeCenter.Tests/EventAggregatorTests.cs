@@ -184,11 +184,11 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return "Test";
             });
 
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage());
 
             Assert.AreEqual("Test", result);
         }
@@ -200,11 +200,11 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return "Test";
             }, "DNF");
 
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), "DNF").ConfigureAwait(false);
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), "DNF");
 
             Assert.AreEqual("Test", result);
         }
@@ -217,17 +217,17 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "Slower";
             });
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return "Faster";
             });
 
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage());
         }
 
         [TestMethod]
@@ -237,7 +237,7 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return "Test";
             });
 
@@ -252,11 +252,11 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100);
                 return "Test";
             });
 
-            await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), timeout: TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+            await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), timeout: TimeSpan.FromMilliseconds(50));
         }
 
         [TestMethod]
@@ -266,7 +266,7 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 throw new TestException();
             });
 
@@ -281,12 +281,12 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 if (i-- > 0) throw new Exception("Test");
                 return "OK";
             });
 
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), retryCount: 1).ConfigureAwait(false);
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage(), retryCount: 1);
             Assert.AreEqual("OK", result);
         }
 
@@ -298,12 +298,12 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
             var ts = new CancellationTokenSource();
-            var result = aggregator.QueryAsync<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token).ConfigureAwait(false);
+            var result = aggregator.QueryAsync<TestMessage, string>(new TestMessage(), cancellationToken: ts.Token);
             ts.Cancel();
             await result;
         }
@@ -316,12 +316,12 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<DerivedTestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
        
-            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage()).ConfigureAwait(false);
+            var result = await aggregator.QueryAsync<TestMessage, string>(new TestMessage());
          
         }
 
@@ -332,7 +332,7 @@ namespace HomeCenter.Tests.MessageBroker
 
             var subscription = aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
@@ -347,7 +347,7 @@ namespace HomeCenter.Tests.MessageBroker
 
             var subscription = aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
@@ -364,13 +364,13 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(50).ConfigureAwait(false);
+                await Task.Delay(50);
                 return "OK";
             });
 
@@ -388,13 +388,13 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return expected[0];
             });
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(30).ConfigureAwait(false);
+                await Task.Delay(30);
                 return expected[1];
             });
 
@@ -411,13 +411,13 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100);
                 return expected[1];
             });
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100);
                 return expected[0];
             });
 
@@ -435,7 +435,7 @@ namespace HomeCenter.Tests.MessageBroker
             aggregator.SubscribeForAsyncResult<TestMessage>(async message =>
             {
                 message.CancellationToken.ThrowIfCancellationRequested();
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100);
                 return expected[1];
             });
 
@@ -458,7 +458,7 @@ namespace HomeCenter.Tests.MessageBroker
                 isWorking = true;
             });
 
-            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage());
 
             Assert.AreEqual(true, isWorking);
         }
@@ -477,7 +477,7 @@ namespace HomeCenter.Tests.MessageBroker
             var ts = new CancellationTokenSource();
             ts.Cancel();
 
-            await aggregator.Publish(new TestMessage(), cancellationToken: ts.Token).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage(), cancellationToken: ts.Token);
         }
 
         [TestMethod]
@@ -488,7 +488,7 @@ namespace HomeCenter.Tests.MessageBroker
 
             aggregator.SubscribeForAsyncResult<TestMessage>(async handler =>
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 return new OtherMessage();
             });
 
@@ -497,7 +497,7 @@ namespace HomeCenter.Tests.MessageBroker
                 isWorking = true;
             });
 
-            await aggregator.QueryWithRepublishResult<TestMessage, OtherMessage>(new TestMessage()).ConfigureAwait(false);
+            await aggregator.QueryWithRepublishResult<TestMessage, OtherMessage>(new TestMessage());
 
             Assert.AreEqual(true, isWorking);
         }
@@ -515,11 +515,11 @@ namespace HomeCenter.Tests.MessageBroker
                 counter++;
             });
 
-            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage());
 
             subscription.Dispose();
 
-            await aggregator.Publish(new TestMessage()).ConfigureAwait(false);
+            await aggregator.Publish(new TestMessage());
 
             Assert.AreEqual(1, counter);
         }
