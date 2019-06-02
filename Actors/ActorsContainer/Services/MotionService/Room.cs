@@ -168,12 +168,12 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// If light is turned off too early area TurnOffTimeout is too low and we have to update it
         /// </summary>
-        /// <param name="time"></param>
-        private void TryTuneTurnOffTimeOut(DateTimeOffset time)
+        /// <param name="moveTime"></param>
+        private void TryTuneTurnOffTimeOut(DateTimeOffset moveTime)
         {
             if (_presenceProbability == Probability.Zero)
             {
-                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(time, _lastAutoTurnOff);
+                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(moveTime, _lastAutoTurnOff);
                 if (result) _logger.LogInformation($"[{Uid}] Turn-off time out updated {before} -> {after}");
             }
         }
@@ -247,9 +247,9 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        private void IncrementNumberOfPersons(DateTimeOffset time)
+        private void IncrementNumberOfPersons(DateTimeOffset moveTime)
         {
-            if (!_lastAutoIncrement.HasValue || time.HappendBeforePrecedingTimeWindow(_lastAutoIncrement, TimeSpan.FromMilliseconds(100)))
+            if (!_lastAutoIncrement.HasValue || moveTime.Between(_lastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
             {
                 NumberOfPersonsInArea++;
             }
@@ -275,13 +275,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private MotionPoint GetConfusion(DateTimeOffset motionTime)
         {
-            var lastMotion = LastMotion;
-
-            // If last motion time has same value we have to go back in time for previous value to check real previous
-            if (motionTime == lastMotion.Time)
-            {
-                lastMotion = lastMotion.Previous;
-            }
+            var lastMotion = GetLastMotion(motionTime);
 
             if (!lastMotion.CanConfuze) return MotionPoint.Empty;
 
@@ -297,6 +291,23 @@ namespace HomeCenter.Services.MotionService
             }
 
             return MotionPoint.Empty;
+        }
+
+        /// <summary>
+        /// If last motion time has same value we have to go back in time for previous value to check real previous
+        /// </summary>
+        /// <param name="motionTime"></param>
+        /// <returns></returns>
+        private MotionStamp GetLastMotion(DateTimeOffset motionTime)
+        {
+            var lastMotion = LastMotion;
+
+            if (motionTime == lastMotion.Time)
+            {
+                lastMotion = lastMotion.Previous;
+            }
+
+            return lastMotion;
         }
 
         private async Task TryTurnOnLamp()

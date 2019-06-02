@@ -208,7 +208,7 @@ namespace HomeCenter.Services.MotionService
             foreach (var confusedVector in _confusedVectors)
             {
                 // When timeout we have to delete confused vector
-                if (currentTime.HappendBeforePrecedingTimeWindow(confusedVector.End.TimeStamp, _motionConfiguration.ConfusionResolutionTimeOut))
+                if (currentTime.Between(confusedVector.End.TimeStamp).LastedLongerThen(_motionConfiguration.ConfusionResolutionTimeOut))
                 {
                     toRemove.Add(confusedVector);
                     continue;
@@ -218,7 +218,7 @@ namespace HomeCenter.Services.MotionService
                 var endRoom = GetTargetRoom(confusedVector);
                 var startNeighbors = startRoom.NeighborsCache.ToList().AddChained(startRoom).RemoveChained(endRoom);
 
-                if (currentTime.HappendBeforePrecedingTimeWindow(confusedVector.Start.TimeStamp, _motionConfiguration.ConfusionResolutionTime))
+                if (currentTime.Between(confusedVector.Start.TimeStamp).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime))
                 {
                     var noMoveInStartNeighbors = startNeighbors.All(n => n.LastMotion.Time.GetValueOrDefault() <= confusedVector.Start.TimeStamp);
                     if (noMoveInStartNeighbors)

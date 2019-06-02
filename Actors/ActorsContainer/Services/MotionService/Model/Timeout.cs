@@ -34,7 +34,7 @@ namespace HomeCenter.Services.MotionService.Model
             if (!lastTurnOffTime.HasValue || !moveTime.Between(lastTurnOffTime.Value).LastedLessThen(_motionConfiguration.MotionTimeWindow)) return (false, _baseTime, _baseTime);
 
             var before = _baseTime;
-            _baseTime = _baseTime.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutExtenderFactor);
+            _baseTime = _baseTime.Increase(_motionConfiguration.TurnOffTimeoutExtenderFactor);
             return (true, before, _baseTime);
         }
 

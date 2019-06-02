@@ -2,6 +2,9 @@
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    /// <summary>
+    /// Represent motion time in room
+    /// </summary>
     public class MotionStamp
     {
         public readonly static MotionStamp Empty = new MotionStamp();

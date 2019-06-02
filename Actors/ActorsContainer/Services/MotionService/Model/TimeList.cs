@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 namespace HomeCenter.Services.MotionService.Model
 {
     //TODO Add thread safe
+    [Obsolete]
     public class TimeList<T> : IEnumerable<TimePair<T>>
     {
         private List<TimePair<T>> _innerList { get; } = new List<TimePair<T>>();
@@ -35,6 +36,7 @@ namespace HomeCenter.Services.MotionService.Model
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+    [Obsolete]
     public class TimePair<T>
     {
         public static TimePair<T> Empty = new TimePair<T>(new DateTimeOffset(0, TimeSpan.FromTicks(0)), default);

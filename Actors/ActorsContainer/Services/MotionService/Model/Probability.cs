@@ -3,6 +3,9 @@ using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    /// <summary>
+    /// Represent a probability of person to be in room
+    /// </summary>
     #pragma warning disable CS0618 // Type or member is obsolete
     public class Probability : ValueObject<Probability>
     #pragma warning restore CS0618 // Type or member is obsolete

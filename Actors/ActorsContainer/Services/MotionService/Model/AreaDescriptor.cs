@@ -6,6 +6,9 @@ namespace HomeCenter.Services.MotionService.Model
     {
         public static AreaDescriptor Default => new AreaDescriptor();
 
+        /// <summary>
+        /// Automation working profile
+        /// </summary>
         public string WorkingTime { get; set; }
 
         /// <summary>
@@ -13,6 +16,9 @@ namespace HomeCenter.Services.MotionService.Model
         /// </summary>
         public int MaxPersonCapacity { get; set; }
 
+        /// <summary>
+        /// Type of area - standard room, passage..
+        /// </summary>
         public string AreaType { get; set; }
 
         /// <summary>
@@ -25,6 +31,9 @@ namespace HomeCenter.Services.MotionService.Model
         /// </summary>
         public double? LightIntensityAtNight { get; set; }
 
+        /// <summary>
+        /// Time after which we turn off light without move
+        /// </summary>
         public TimeSpan TurnOffTimeout { get; set; }
 
         /// <summary>

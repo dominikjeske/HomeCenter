@@ -4,37 +4,56 @@ namespace HomeCenter.Utils.Extensions
 {
     public static class DateTimeExtensions
     {
+        /// <summary>
+        /// Returns time difference between <paramref name="currentPointInTime"/> and <paramref name="previousPointInTime"/>
+        /// </summary>
+        /// <param name="currentPointInTime"></param>
+        /// <param name="previousPointInTime"></param>
         public static TimeSpan Between(this DateTimeOffset currentPointInTime, DateTimeOffset previousPointInTime) => currentPointInTime - previousPointInTime;
 
-        public static bool LastedLessThen(this TimeSpan measuredTime, TimeSpan comparedTime)
-        {
-            //if (measuredTime == null) return false;
-            if (measuredTime > comparedTime) return false;
-            return true;
-        }
+        /// <summary>
+        /// Check if <paramref name="measuredTime"/> is smaller or equal then <paramref name="comparedTime"/>
+        /// </summary>
+        /// <param name="measuredTime"></param>
+        /// <param name="comparedTime"></param>
+        public static bool LastedLessThen(this TimeSpan measuredTime, TimeSpan comparedTime) => measuredTime <= comparedTime;
+
+        /// <summary>
+        /// Check if <paramref name="measuredTime"/> is bigger then <paramref name="comparedTime"/>
+        /// </summary>
+        /// <param name="measuredTime"></param>
+        /// <param name="comparedTime"></param>
+        public static bool LastedLongerThen(this TimeSpan measuredTime, TimeSpan comparedTime) => measuredTime > comparedTime;
 
         /// <summary>
         /// Checks is move is physically possible by person to move from one room to other
         /// </summary>
         /// <param name="measuredTime"></param>
         /// <param name="timeWindow"></param>
-        /// <returns></returns>
         public static bool IsPossible(this TimeSpan measuredTime, TimeSpan timeWindow) => measuredTime >= timeWindow;
-        
+                
+        /// <summary>
+        /// Increase <paramref name="time"/> by <paramref name="percentage"/>
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="percentage"></param>
+        public static TimeSpan Increase(this TimeSpan time, double percentage) => TimeSpan.FromTicks(time.Ticks + (long)(time.Ticks * (percentage / 100.0)));
 
-        public static bool HappendBeforePrecedingTimeWindow(this DateTimeOffset time, DateTimeOffset? comparedTime, TimeSpan timeWindow) => comparedTime < time && time - comparedTime > timeWindow;
-
-        
-        public static TimeSpan IncreaseByPercentage(this TimeSpan time, double percentage) => TimeSpan.FromTicks(time.Ticks + (long)(time.Ticks * (percentage / 100.0)));
-
-        public static bool IsTimeInRange(this TimeSpan time, TimeSpan from, TimeSpan until)
+        /// <summary>
+        /// Checks if <paramref name="givenTame"/> is between <paramref name="from"/> and <paramref name="until"/>
+        /// </summary>
+        /// <param name="givenTame"></param>
+        /// <param name="from"></param>
+        /// <param name="until"></param>
+        /// <returns></returns>
+        public static bool IsTimeInRange(this TimeSpan givenTame, TimeSpan from, TimeSpan until)
         {
             if (from < until)
             {
-                return time >= from && time <= until;
+                return givenTame >= from && givenTame <= until;
             }
 
-            return time >= from || time <= until;
+            return givenTame >= from || givenTame <= until;
         }
     }
 }

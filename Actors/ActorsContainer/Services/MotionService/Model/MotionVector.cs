@@ -4,10 +4,14 @@ using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    /// <summary>
+    /// Represent move from one room to other
+    /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
         public MotionPoint Start { get; }
         public MotionPoint End { get; }
+
         private readonly List<MotionPoint> _confusionPoints = new List<MotionPoint>();
 
         public MotionVector()
@@ -50,6 +54,7 @@ namespace HomeCenter.Services.MotionService.Model
         public bool EqualsBothTimes(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp && End.TimeStamp == other.End.TimeStamp;
 
         public IReadOnlyCollection<MotionPoint> ConfusionPoint => _confusionPoints.AsReadOnly();
+
         public bool IsConfused { get; private set; }
 
         public override string ToString()

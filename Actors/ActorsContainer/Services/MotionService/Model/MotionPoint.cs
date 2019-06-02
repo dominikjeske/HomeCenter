@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+    /// <summary>
+    /// Represent place and time of movement
+    /// </summary>
     public class MotionPoint : ValueObject, IEquatable<MotionPoint>
     {
         public static readonly MotionPoint Empty = new MotionPoint(string.Empty, DateTimeOffset.MinValue);
