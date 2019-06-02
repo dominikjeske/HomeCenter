@@ -7,6 +7,8 @@ namespace HomeCenter.Services.MotionService.Model
 {
     public class MotionPoint : ValueObject, IEquatable<MotionPoint>
     {
+        public static readonly MotionPoint Empty = new MotionPoint(string.Empty, DateTimeOffset.MinValue);
+
         public string Uid { get; }
         public DateTimeOffset TimeStamp { get; }
 
@@ -22,7 +24,7 @@ namespace HomeCenter.Services.MotionService.Model
 
         public override string ToString() => $"{Uid}: {TimeStamp:ss:fff}";
 
-        public bool IsMovePhisicallyPosible(MotionPoint point, TimeSpan motionMinDiff) => TimeStamp.IsMovePhisicallyPosible(point.TimeStamp, motionMinDiff);
+        public bool IsMovePhisicallyPosible(MotionPoint previous, TimeSpan motionMinDiff) => TimeStamp.Between(previous.TimeStamp).IsPossible(motionMinDiff);
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

@@ -164,7 +164,7 @@ namespace HomeCenter.Model.Extensions
         /// <param name="searchPattern">search pattern for job</param>
         public static async Task CancelJob(this IScheduler scheduler, string searchPattern)
         {
-            var current = (await scheduler.GetJobKeys(searchPattern).ConfigureAwait(false)).FirstOrDefault();
+            var current = (await scheduler.GetJobKeys(searchPattern)).FirstOrDefault();
             if (current != null)
             {
                 await scheduler.DeleteJob(current);
@@ -179,9 +179,9 @@ namespace HomeCenter.Model.Extensions
         {
             var jobs = new List<IJobDetail>();
 
-            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).ConfigureAwait(false))
+            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()))
             {
-                jobs.Add(await scheduler.GetJobDetail(jobKey).ConfigureAwait(false));
+                jobs.Add(await scheduler.GetJobDetail(jobKey));
             }
 
             return jobs;
@@ -236,7 +236,7 @@ namespace HomeCenter.Model.Extensions
         {
             var jobs = new List<JobKey>();
 
-            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).ConfigureAwait(false))
+            foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()))
             {
                 if (jobKey.Name.IndexOf(searchPattern) > -1)
                 {

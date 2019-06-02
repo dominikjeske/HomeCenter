@@ -86,7 +86,7 @@ namespace HomeCenter.Services.MotionService
             await SetProbability(Probability.Full);
             CheckAutoIncrementForOnePerson(motionTime);
 
-            _turnOffTimeOut.IncrementCounter();
+            _turnOffTimeOut.Increment();
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace HomeCenter.Services.MotionService
                                                                                            .AddChained(this)
                                                                                            .Where(room => room.Uid != vector.Start.Uid)
                                                                                            .Select(room => room.GetConfusion(vector.End.TimeStamp))
-                                                                                           .Where(y => y != null)
+                                                                                           .Where(y => y != MotionPoint.Empty)
                                                                                            .ToList();
 
         public void Dispose() => _disposeContainer.Dispose();
@@ -173,7 +173,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (_presenceProbability == Probability.Zero)
             {
-                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseTime(time, _lastAutoTurnOff);
+                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(time, _lastAutoTurnOff);
                 if (result) _logger.LogInformation($"[{Uid}] Turn-off time out updated {before} -> {after}");
             }
         }
@@ -268,33 +268,40 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        private MotionPoint GetConfusion(DateTimeOffset timeOfMotion)
+        /// <summary>
+        /// Check if last move in this room can be source of potential move that will be source of confusion for other moves
+        /// </summary>
+        /// <param name="motionTime"></param>
+        /// <returns></returns>
+        private MotionPoint GetConfusion(DateTimeOffset motionTime)
         {
             var lastMotion = LastMotion;
 
             // If last motion time has same value we have to go back in time for previous value to check real previous
-            if (timeOfMotion == lastMotion.Time)
+            if (motionTime == lastMotion.Time)
             {
                 lastMotion = lastMotion.Previous;
             }
 
+            if (!lastMotion.CanConfuze) return MotionPoint.Empty;
+
+            var possibleMoveTime = motionTime.Between(lastMotion.Time.Value);
+
             if
             (
-                  lastMotion?.Time != null
-               && lastMotion.CanConfuze
-               && timeOfMotion.IsMovePhisicallyPosible(lastMotion.Time.Value, _motionConfiguration.MotionMinDiff)
-               && timeOfMotion.HappendInPrecedingTimeWindow(lastMotion.Time, AreaDescriptor.MotionDetectorAlarmTime)
+                  possibleMoveTime.IsPossible(_motionConfiguration.MotionMinDiff)
+               && possibleMoveTime.LastedLessThen(AreaDescriptor.MotionDetectorAlarmTime)   // TODO maybe increase it to 2x AreaDescriptor.MotionDetectorAlarmTime or provide distance between motion detectors
             )
             {
                 return new MotionPoint(Uid, lastMotion.Time.Value);
             }
 
-            return null;
+            return MotionPoint.Empty;
         }
 
         private async Task TryTurnOnLamp()
         {
-            if (await CanTurnOnLamp().ConfigureAwait(false))
+            if (await CanTurnOnLamp())
             {
                 _messageBroker.Send(new TurnOnCommand(), _lamp);
             }
@@ -302,7 +309,7 @@ namespace HomeCenter.Services.MotionService
 
         private async Task TryTurnOffLamp()
         {
-            if (await CanTurnOffLamp().ConfigureAwait(false))
+            if (await CanTurnOffLamp())
             {
                 _logger.LogInformation($"[{Uid}] Turn off");
 

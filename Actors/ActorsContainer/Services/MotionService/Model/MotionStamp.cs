@@ -4,9 +4,16 @@ namespace HomeCenter.Services.MotionService.Model
 {
     public class MotionStamp
     {
+        public readonly static MotionStamp Empty = new MotionStamp();
+
+        private MotionStamp _previous;
+        private bool _canCofuse;
+
         public DateTimeOffset? Time { get; private set; }
-        public bool CanConfuze { get; private set; }
-        public MotionStamp Previous { get; private set; }
+        public bool CanConfuze => HasValue && _canCofuse;
+        public MotionStamp Previous => _previous ?? Empty;
+
+        public bool HasValue => Time.HasValue;
 
         public override string ToString() => $"{(Time != null ? Time?.Second.ToString() : "?")}:{(Time != null ? Time?.Millisecond.ToString() : "?")}";
 
@@ -14,14 +21,14 @@ namespace HomeCenter.Services.MotionService.Model
         {
             if (Time.HasValue)
             {
-                Previous = Clone();
+                _previous = Clone();
             }
 
             Time = time;
-            CanConfuze = true;
+            _canCofuse = true;
         }
 
-        public void UnConfuze() => CanConfuze = false;
+        public void UnConfuze() => _canCofuse = false;
 
         public MotionStamp Clone() => (MotionStamp)MemberwiseClone();
     }

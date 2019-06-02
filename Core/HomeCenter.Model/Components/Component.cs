@@ -114,7 +114,7 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            var discoveryResponses = (await _adapterReferences.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)).ConfigureAwait(false));
+            var discoveryResponses = (await _adapterReferences.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)));
 
             foreach (var response in discoveryResponses)
             {
@@ -205,7 +205,7 @@ namespace HomeCenter.Model.Components
 
         private async Task HandleEventInTrigger(Trigger trigger)
         {
-            if (await trigger.ValidateCondition().ConfigureAwait(false))
+            if (await trigger.ValidateCondition())
             {
                 foreach (var command in trigger.Commands)
                 {

@@ -17,7 +17,7 @@ namespace HomeCenter.Model.Conditions
 
         public async Task<bool> Validate()
         {
-            var result = EvaluateExpression(await CheckConditions(BuildExpressionIfEmpty()).ConfigureAwait(false));
+            var result = EvaluateExpression(await CheckConditions(BuildExpressionIfEmpty()));
             return IsInverted ? !result : result;
         }
 

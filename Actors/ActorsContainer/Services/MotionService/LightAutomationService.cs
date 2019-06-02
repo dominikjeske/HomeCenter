@@ -257,7 +257,7 @@ namespace HomeCenter.Services.MotionService
         /// <param name="start"></param>
         /// <param name="potencialEnd"></param>
         /// <returns></returns>
-        private bool IsProperVector(MotionPoint start, MotionPoint potencialEnd) => AreNeighbors(start, potencialEnd) && start.IsMovePhisicallyPosible(potencialEnd, _motionConfiguration.MotionMinDiff);
+        private bool IsProperVector(MotionPoint start, MotionPoint potencialEnd) => AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
 
         /// <summary>
         /// CHeck if two points are neighbors

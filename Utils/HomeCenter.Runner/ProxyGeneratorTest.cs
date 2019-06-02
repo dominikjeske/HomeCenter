@@ -120,7 +120,7 @@ namespace HomeCenter.Runner
         private async Task<(CompilationUnitSyntax syntaxTree, SemanticModel semanticModel, CSharpCompilation compilation)> GetModels(string code)
         {
             var tree = CSharpSyntaxTree.ParseText(code);
-            var syntaxTree = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
+            var syntaxTree = await tree.GetRootAsync() as CompilationUnitSyntax;
 
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             var model = MetadataReference.CreateFromFile(typeof(Model.Components.Component).Assembly.Location);

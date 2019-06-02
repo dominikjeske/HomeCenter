@@ -29,9 +29,9 @@ namespace HomeCenter.Services.MotionService.Model
             _motionConfiguration = motionConfiguration;
         }
 
-        public (bool result, TimeSpan before, TimeSpan after) TryIncreaseTime(DateTimeOffset moveTime, DateTimeOffset? lastTurnOffTime)
+        public (bool result, TimeSpan before, TimeSpan after) TryIncreaseBaseTime(DateTimeOffset moveTime, DateTimeOffset? lastTurnOffTime)
         {
-            if (!moveTime.Between(lastTurnOffTime).IsLessThen(_motionConfiguration.MotionTimeWindow)) return (false, _baseTime, _baseTime);
+            if (!lastTurnOffTime.HasValue || !moveTime.Between(lastTurnOffTime.Value).LastedLessThen(_motionConfiguration.MotionTimeWindow)) return (false, _baseTime, _baseTime);
 
             var before = _baseTime;
             _baseTime = _baseTime.IncreaseByPercentage(_motionConfiguration.TurnOffTimeoutExtenderFactor);
@@ -41,7 +41,7 @@ namespace HomeCenter.Services.MotionService.Model
         /// <summary>
         /// Increment timeout on each move in the room
         /// </summary>
-        public void IncrementCounter()
+        public void Increment()
         {
             _counter++;
             var factor = _counter * _motionConfiguration.TurnOffTimeoutIncrementFactor;

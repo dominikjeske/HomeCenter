@@ -58,7 +58,7 @@ namespace HomeCenter.Model.Core
 
             if (!_subscriptionCahce.Add(sub)) return SubscriptionToken.Empty;
 
-            return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message).ConfigureAwait(false), filter);
+            return _eventAggregator.SubscribeForAsyncResult<T>(async message => await _actorFactory.Context.RequestAsync<R>(subscriber, message.Message), filter);
         }
 
         private SubscriptionCache GetSubscription<T>(PID subscriber)

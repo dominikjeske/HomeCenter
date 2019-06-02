@@ -96,7 +96,7 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "ON").ConfigureAwait(false))
+            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "ON"))
             {
                 _powerState = await UpdateState(PowerState.StateName, _powerState, true);
             }
@@ -113,7 +113,7 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "OFF").ConfigureAwait(false))
+            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "OFF"))
             {
                 _powerState = await UpdateState(PowerState.StateName, _powerState, false);
             }
@@ -203,7 +203,7 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "on").ConfigureAwait(false))
+            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "on"))
             {
                 _mute = await UpdateState(MuteState.StateName, _mute, true);
             }
@@ -220,7 +220,7 @@ namespace HomeCenter.Adapters.Denon
                 Zone = _zone.ToString()
             };
 
-            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "off").ConfigureAwait(false))
+            if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "off"))
             {
                 _mute = await UpdateState(MuteState.StateName, _mute, false);
             }
