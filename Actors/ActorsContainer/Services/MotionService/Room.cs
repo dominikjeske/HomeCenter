@@ -8,7 +8,6 @@ using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -25,17 +24,7 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
-
-        // Configuration parameters
-        internal string Uid { get; }
-
-        internal IEnumerable<string> _neighbors { get; }
-        internal IReadOnlyCollection<Room> NeighborsCache { get; private set; }
-
-        internal bool AutomationDisabled { get; private set; }
-        internal int NumberOfPersonsInArea { get; private set; }
-        internal MotionStamp LastMotion { get; } = new MotionStamp();
-        internal AreaDescriptor AreaDescriptor { get; }
+        private readonly IEnumerable<string> _neighbors;
 
         private Probability _presenceProbability = Probability.Zero;
         private DateTimeOffset _AutomationEnableOn;
@@ -44,7 +33,18 @@ namespace HomeCenter.Services.MotionService
         private readonly Timeout _turnOffTimeOut;
         private MotionVector _lastVectorEnter;
 
+        public string Uid { get; }
+
+        public bool AutomationDisabled { get; private set; }
+        public int NumberOfPersonsInArea { get; private set; }
+        public MotionStamp LastMotion { get; } = new MotionStamp();
+        public AreaDescriptor AreaDescriptor { get; }
+
         public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}]";
+
+        public bool IsNeighbor(string uid) => _neighbors.Contains(uid);
+
+        public IEnumerable<string> Neighbors() => _neighbors.ToList();
 
         public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, IMessageBroker messageBroker,
                     AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
@@ -106,7 +106,7 @@ namespace HomeCenter.Services.MotionService
         public void MarkEnter(MotionVector vector)
         {
             _lastVectorEnter = vector;
-            IncrementNumberOfPersons(vector.End.TimeStamp);
+            IncrementNumberOfPersons(vector.EndTime);
         }
 
         public async Task MarkLeave(MotionVector vector)
@@ -123,8 +123,6 @@ namespace HomeCenter.Services.MotionService
                 await SetProbability(Probability.FromValue(0.1));
             }
         }
-
-        public void BuildNeighborsCache(IEnumerable<Room> neighbors) => NeighborsCache = new ReadOnlyCollection<Room>(neighbors.ToList());
 
         public void DisableAutomation()
         {
@@ -145,18 +143,6 @@ namespace HomeCenter.Services.MotionService
         }
 
         public bool HasSameLastTimeVector(MotionVector motionVector) => _lastVectorEnter?.EqualsWithStartTime(motionVector) ?? false;
-
-        /// <summary>
-        /// Get confusion point from all neighbors
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        public IList<MotionPoint> GetConfusingPoints(MotionVector vector) => NeighborsCache.ToList()
-                                                                                           .AddChained(this)
-                                                                                           .Where(room => room.Uid != vector.Start.Uid)
-                                                                                           .Select(room => room.GetConfusion(vector.End.TimeStamp))
-                                                                                           .Where(y => y != MotionPoint.Empty)
-                                                                                           .ToList();
 
         public void Dispose() => _disposeContainer.Dispose();
 
@@ -273,7 +259,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="motionTime"></param>
         /// <returns></returns>
-        private MotionPoint GetConfusion(DateTimeOffset motionTime)
+        public MotionPoint GetConfusion(DateTimeOffset motionTime)
         {
             var lastMotion = GetLastMotion(motionTime);
 

@@ -27,9 +27,19 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public double TurnOffTimeoutIncrementFactor { get; set; }
 
-        public TimeSpan ConfusionResolutionTime { get; set; }
-        public TimeSpan ConfusionResolutionTimeOut { get; set; }
+        /// <summary>
+        /// Time interval for periodic move calculations
+        /// </summary>
         public TimeSpan PeriodicCheckTime { get; set; }
-        public TimeSpan ManualCodeWindow { get; set; }
+
+        /// <summary>
+        /// Time after which we can remove confused vector
+        /// </summary>
+        public TimeSpan ConfusionResolutionTimeOut { get; set; }
+
+        /// <summary>
+        /// Time after which we can try to unconfuse vector that was uncertain before
+        /// </summary>
+        public TimeSpan ConfusionResolutionTime { get; set; }
     }
 }

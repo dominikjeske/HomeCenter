@@ -22,7 +22,7 @@ namespace HomeCenter.Services.MotionService.Model
         public string AreaType { get; set; }
 
         /// <summary>
-        /// How long it takes alarm to be able to detect move
+        /// How long it takes alarm to be able to detect move after previous alarm state
         /// </summary>
         public TimeSpan MotionDetectorAlarmTime { get; set; }
 

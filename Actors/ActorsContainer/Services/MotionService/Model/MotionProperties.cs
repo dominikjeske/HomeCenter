@@ -7,7 +7,6 @@
         public const string ConfusionResolutionTimeOut = nameof(ConfusionResolutionTimeOut);
         public const string MotionMinDiff = nameof(MotionMinDiff);
         public const string PeriodicCheckTime = nameof(PeriodicCheckTime);
-        public const string ManualCodeWindow = nameof(ManualCodeWindow);
         public const string TurnOffTimeoutIncrementPercentage = nameof(TurnOffTimeoutIncrementPercentage);
         public const string TurnOffPresenceFactor = nameof(TurnOffPresenceFactor);
 

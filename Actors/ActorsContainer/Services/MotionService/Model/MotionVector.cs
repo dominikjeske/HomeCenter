@@ -9,8 +9,14 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
-        public MotionPoint Start { get; }
-        public MotionPoint End { get; }
+        private readonly MotionPoint _start;
+        private readonly MotionPoint _end;
+
+        public DateTimeOffset StartTime => _start.TimeStamp;
+        public DateTimeOffset EndTime => _end.TimeStamp;
+
+        public string StartPoint => _start.Uid;
+        public string EndPoint => _end.Uid;
 
         private readonly List<MotionPoint> _confusionPoints = new List<MotionPoint>();
 
@@ -20,11 +26,11 @@ namespace HomeCenter.Services.MotionService.Model
 
         public MotionVector(MotionPoint startPoint, MotionPoint endPoint)
         {
-            Start = startPoint;
-            End = endPoint;
+            _start = startPoint;
+            _end = endPoint;
         }
 
-        public MotionVector Confuze(IEnumerable<MotionPoint> confusionPoints)
+        public MotionVector WithConfuze(IEnumerable<MotionPoint> confusionPoints)
         {
             _confusionPoints.AddRange(confusionPoints);
             IsConfused = true;
@@ -37,21 +43,21 @@ namespace HomeCenter.Services.MotionService.Model
             return this;
         }
 
-        public bool Contains(MotionPoint p) => Start.Equals(p) || End.Equals(p);
+        public bool Contains(MotionPoint p) => _start.Equals(p) || _end.Equals(p);
 
         public bool Equals(MotionVector other) => base.Equals(other);
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return Start;
-            yield return End;
+            yield return _start;
+            yield return _end;
         }
 
-        public bool EqualsWithEndTime(MotionVector other) => Equals(other) && End.TimeStamp == other.End.TimeStamp;
+        public bool EqualsWithEndTime(MotionVector other) => Equals(other) && _end.TimeStamp == other._end.TimeStamp;
 
-        public bool EqualsWithStartTime(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp;
+        public bool EqualsWithStartTime(MotionVector other) => Equals(other) && _start.TimeStamp == other._start.TimeStamp;
 
-        public bool EqualsBothTimes(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp && End.TimeStamp == other.End.TimeStamp;
+        public bool EqualsBothTimes(MotionVector other) => Equals(other) && _start.TimeStamp == other._start.TimeStamp && _end.TimeStamp == other._end.TimeStamp;
 
         public IReadOnlyCollection<MotionPoint> ConfusionPoint => _confusionPoints.AsReadOnly();
 
@@ -59,8 +65,8 @@ namespace HomeCenter.Services.MotionService.Model
 
         public override string ToString()
         {
-            var time = End.TimeStamp - Start.TimeStamp;
-            var baseFormat = $"{Start} -> {End} [{time.TotalMilliseconds}ms]";
+            var time = _end.TimeStamp - _start.TimeStamp;
+            var baseFormat = $"{_start} -> {_end} [{time.TotalMilliseconds}ms]";
 
             if (_confusionPoints.Count > 0)
             {
