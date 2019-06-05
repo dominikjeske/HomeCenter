@@ -93,7 +93,7 @@ namespace HomeCenter.Services.MotionService
                                     _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
 
-            _roomService = new RoomService(rooms);
+            _roomService = new RoomService(rooms, _motionConfiguration);
         }
 
         private void StartWatchForEvents()
@@ -112,12 +112,12 @@ namespace HomeCenter.Services.MotionService
             var events = MessageBroker.Observe<MotionEvent>();
 
             var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler)
-                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp));
+                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomService));
 
             motionWindows.Subscribe(HandleMove, HandleError, Token, _concurrencyProvider.Task);
 
             motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
-                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start, IsProperVector))
+                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start))
                          .SelectMany(motion => motion.ToVectors()))
                          .Subscribe(HandleVector, HandleError, Token, _concurrencyProvider.Task);
         }
@@ -193,6 +193,16 @@ namespace HomeCenter.Services.MotionService
             await RemoveUnconfused(currentTime);
         }
 
+        private void RemoveTimeOutedVectors(DateTimeOffset currentTime)
+        {
+            _confusedVectors.RemoveAll(confusedVector => currentTime.Between(confusedVector.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTimeOut));
+        }
+
+        /// <summary>
+        /// Try to resolve confusion in previously marked vectors
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         private async Task RemoveUnconfused(DateTimeOffset currentTime)
         {
             var unconfused = _confusedVectors.Where(confusedVector => currentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
@@ -207,10 +217,7 @@ namespace HomeCenter.Services.MotionService
             await Task.WhenAll(unconfused);
         }
 
-        private void RemoveTimeOutedVectors(DateTimeOffset currentTime)
-        {
-            _confusedVectors.RemoveAll(confusedVector => currentTime.Between(confusedVector.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTimeOut));
-        }
+       
 
         /// <summary>
         /// Marks enter to target room and leave from source room
@@ -230,14 +237,6 @@ namespace HomeCenter.Services.MotionService
             await sourceRoom.MarkLeave(motionVector);
             targetRoom.MarkEnter(motionVector);
         }
-
-        /// <summary>
-        /// Check if two point in time can physically be a proper vector
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="potencialEnd"></param>
-        /// <returns></returns>
-        private bool IsProperVector(MotionPoint start, MotionPoint potencialEnd) => _roomService.AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
 
         protected bool Handle(IsAliveQuery isAliveQuery)
         {

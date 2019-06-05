@@ -6,27 +6,24 @@ using System.Linq;
 namespace HomeCenter.Services.MotionService.Model
 {
     // TODO thread safe
-    public class MotionWindow
+    internal class MotionWindow
     {
         private static readonly ReadOnlyCollection<MotionVector> _noVectors = new List<MotionVector>().AsReadOnly();
         private readonly List<MotionVector> _vectors = new List<MotionVector>();
         private readonly List<MotionVector> _vectorsHistory = new List<MotionVector>();
+        private readonly RoomService _roomService;
 
-        public MotionWindow(MotionPoint start)
-        {
-            Start = start;
-        }
-
-        public MotionWindow(string place, DateTimeOffset time)
+        public MotionWindow(string place, DateTimeOffset time, RoomService roomService)
         {
             Start = new MotionPoint(place, time);
+            _roomService = roomService;
         }
 
         public MotionPoint Start { get; }
 
-        public MotionWindow AccumulateVector(MotionPoint mp, Func<MotionPoint, MotionPoint, bool> isProperVectorCheck)
+        public MotionWindow AccumulateVector(MotionPoint mp)
         {
-            if (isProperVectorCheck(Start, mp))
+            if (_roomService.IsProperVector(Start, mp))
             {
                 var vector = new MotionVector(Start, mp);
                 if (!_vectorsHistory.Contains(vector))

@@ -12,8 +12,9 @@ namespace HomeCenter.Services.MotionService
     {
         private ImmutableDictionary<string, Room> _rooms;
         private Dictionary<Room, IEnumerable<Room>> _neighbors = new Dictionary<Room, IEnumerable<Room>>();
+        private readonly MotionConfiguration _motionConfiguration;
 
-        public RoomService(IEnumerable<Room> rooms)
+        public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration)
         {
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
 
@@ -21,6 +22,8 @@ namespace HomeCenter.Services.MotionService
             {
                 _neighbors.Add(room, room.Neighbors().Select(n => _rooms[n]));
             }
+
+            _motionConfiguration = motionConfiguration;
         }
 
         public void RegisterForLampChangeState()
@@ -87,6 +90,18 @@ namespace HomeCenter.Services.MotionService
 
             return startNeighbors.All(n => n.LastMotion.Time.GetValueOrDefault() <= confusedVector.StartTime);
         }
+
+        /// <summary>
+        /// Check if two point in time can physically be a proper vector
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="potencialEnd"></param>
+        /// <returns></returns>
+        public bool IsProperVector(MotionPoint start, MotionPoint potencialEnd)
+        {
+            return AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
+        }
+        
 
         /// <summary>
         /// Get confusion point from all neighbors
