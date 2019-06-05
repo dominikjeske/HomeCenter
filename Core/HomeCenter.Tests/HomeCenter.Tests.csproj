@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.88" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.5.13" />
   </ItemGroup>
 
   <ItemGroup>
