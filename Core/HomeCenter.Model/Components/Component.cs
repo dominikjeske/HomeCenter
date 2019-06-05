@@ -127,7 +127,7 @@ namespace HomeCenter.Model.Components
         }
 
         /// <summary>
-        /// Subscribe for commands addressed to this component via event aggregator
+        /// Subscribe for commands addressed to this component via event aggregate
         /// </summary>
         private void SubscribeForRemoteCommands() => Subscribe<Command>(false, new RoutingFilter(Uid));
 

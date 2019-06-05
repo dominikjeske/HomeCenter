@@ -10,19 +10,21 @@ namespace HomeCenter.Services.MotionService
 {
     internal class RoomService
     {
-        private ImmutableDictionary<string, Room> _rooms;
-        private Dictionary<Room, IEnumerable<Room>> _neighbors = new Dictionary<Room, IEnumerable<Room>>();
+        private readonly ImmutableDictionary<string, Room> _rooms;
+        private readonly ImmutableDictionary<Room, IEnumerable<Room>> _neighbors;
         private readonly MotionConfiguration _motionConfiguration;
 
         public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration)
         {
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
 
+            var dic = new Dictionary<Room, IEnumerable<Room>>();
             foreach (var room in rooms)
             {
-                _neighbors.Add(room, room.Neighbors().Select(n => _rooms[n]));
+                dic.Add(room, room.Neighbors().Select(n => _rooms[n]));
             }
 
+            _neighbors = dic.ToImmutableDictionary();
             _motionConfiguration = motionConfiguration;
         }
 
@@ -34,13 +36,8 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Evaluates each room state
         /// </summary>
-        public async Task UpdateRooms()
-        {
-            foreach (var room in _rooms.Values)
-            {
-                await room.PeriodicUpdate();
-            }
-        }
+        public Task UpdateRooms() => _rooms.Values.Select(async r => await r.PeriodicUpdate()).WhenAll();
+        
 
         /// <summary>
         /// Check if two points are neighbors
@@ -101,7 +98,7 @@ namespace HomeCenter.Services.MotionService
         {
             return AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
         }
-        
+
 
         /// <summary>
         /// Get confusion point from all neighbors

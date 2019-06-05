@@ -205,16 +205,15 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private async Task RemoveUnconfused(DateTimeOffset currentTime)
         {
-            var unconfused = _confusedVectors.Where(confusedVector => currentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
+            await _confusedVectors.Where(confusedVector => currentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
                                                                    && _roomService.NoMoveInStartNeighbors(confusedVector))
                                              .ToList()
                                              .Select(async c =>
                                              {
                                                  await MarkVector(c.UnConfuze());
                                                  _confusedVectors.Remove(c);
-                                             });
-
-            await Task.WhenAll(unconfused);
+                                             })
+                                             .WhenAll();
         }
 
        

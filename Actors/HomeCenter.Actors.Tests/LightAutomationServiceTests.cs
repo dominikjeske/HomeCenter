@@ -135,10 +135,10 @@ namespace HomeCenter.Services.MotionService.Tests
 
             SendCommand(DisableAutomationCommand.Create(Detectors.toiletDetector));
             AdvanceToEnd();
-            
+
             IsTurnedOn(Detectors.toiletDetector).Should().BeFalse();
             var automationState = await Query<bool>(AutomationStateQuery.Create(Detectors.toiletDetector));
-            automationState.Should().BeFalse(); 
+            automationState.Should().BeFalse();
         }
 
         [TestMethod]
@@ -225,9 +225,8 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayDetectorToilet },
                 { 2000, Detectors.hallwayDetectorLivingRoom },
                 { 3000, Detectors.kitchenDetector },
-
             }).Start();
-                        
+
             AdvanceTo(confusionResolutionTime + TimeSpan.FromMilliseconds(1500));
 
             IsTurnedOn(Detectors.toiletDetector).Should().BeFalse();
@@ -321,7 +320,6 @@ namespace HomeCenter.Services.MotionService.Tests
             living.Should().Be(1);
             //Assert.AreEqual(2, status.NumberOfPersonsInHouse); //TODO
         }
-
 
         [TestMethod]
         public async Task TurnOn_AfterTurnOff_ShouldIncreaseTimeout()
@@ -424,8 +422,6 @@ namespace HomeCenter.Services.MotionService.Tests
         //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
         //}
 
-
-
         [TestMethod]
         public async Task TurnOn_TEST()
         {
@@ -436,9 +432,7 @@ namespace HomeCenter.Services.MotionService.Tests
             }).Start();
 
             AdvanceJustAfterEnd();
-            
         }
-
 
         private LightAutomationServiceBuilder DefaultServiceConfig()
         {
