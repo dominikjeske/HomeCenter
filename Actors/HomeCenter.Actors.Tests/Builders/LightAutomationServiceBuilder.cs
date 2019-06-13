@@ -4,13 +4,18 @@ using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
+
     internal class LightAutomationServiceBuilder
     {
         private TimeSpan? _confusionResolutionTime;
         private string _workingTime;
 
-        private readonly Dictionary<string, AreaDescription> _areas = new Dictionary<string, AreaDescription>();
-        private readonly Dictionary<string, DetectorDescription> _detectors = new Dictionary<string, DetectorDescription>();
+        private readonly Dictionary<string, RoomBuilder> _rooms = new Dictionary<string, RoomBuilder>();
+
+        public RoomBuilder this[string room]
+        {
+            get { return _rooms[room]; }
+        }
 
         public LightAutomationServiceBuilder WithConfusionResolutionTime(TimeSpan confusionResolutionTime)
         {
@@ -24,48 +29,12 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public LightAutomationServiceBuilder WithArea(string areaName)
+        public LightAutomationServiceBuilder WithRoom(RoomBuilder room)
         {
-            _areas.Add(areaName, new AreaDescription
-            {
-                AreaName = areaName,
-            });
+            _rooms.Add(room.Name, room);
             return this;
         }
 
-        public LightAutomationServiceBuilder WithAreaProperty(string areaName, string propertyKey, string propertyValue)
-        {
-            _areas[areaName].Properties.Add(propertyKey, propertyValue);
-
-            return this;
-        }
-
-        public LightAutomationServiceBuilder WithDetector(string detectorName, string areaName, List<string> neighbors)
-        {
-            _detectors.Add(detectorName, new DetectorDescription
-            {
-                DetectorName = detectorName,
-                AreaName = areaName,
-                Neighbors = neighbors
-            });
-            return this;
-        }
-
-        private class AreaDescription
-        {
-            public string AreaName { get; set; }
-
-            public Dictionary<string, string> Properties = new Dictionary<string, string>();
-        }
-
-        private class DetectorDescription
-        {
-            public string DetectorName { get; set; }
-            public string AreaName { get; set; }
-            public List<string> Neighbors { get; set; } = new List<string>();
-
-            public Dictionary<string, string> Properties = new Dictionary<string, string>();
-        }
 
         public ServiceDTO Build()
         {
@@ -75,14 +44,9 @@ namespace HomeCenter.Services.MotionService.Tests
                 Properties = new Dictionary<string, string>()
             };
 
-            foreach (var area in _areas.Values)
+            foreach (var room in _rooms.Values)
             {
-                AddArea(serviceDto, area.AreaName, area.Properties);
-            }
-
-            foreach (var detector in _detectors.Values)
-            {
-                AddMotionSensor(detector.DetectorName, detector.AreaName, detector.Neighbors, serviceDto);
+                AddRoom(serviceDto, room);
             }
 
             if (_confusionResolutionTime.HasValue)
@@ -93,11 +57,11 @@ namespace HomeCenter.Services.MotionService.Tests
             return serviceDto;
         }
 
-        private void AddArea(ServiceDTO serviceDto, string areaName, IDictionary<string, string> properties = null)
+        private void AddRoom(ServiceDTO serviceDto, RoomBuilder roomBuilder)
         {
             var area = new AttachedPropertyDTO
             {
-                AttachedActor = areaName,
+                AttachedActor = roomBuilder.Name,
                 Properties = new Dictionary<string, string>()
             };
 
@@ -106,13 +70,16 @@ namespace HomeCenter.Services.MotionService.Tests
                 area.Properties[MotionProperties.WorkingTime] = _workingTime;
             }
 
-            if (properties != null)
+            foreach (var property in roomBuilder.Properties)
             {
-                foreach (var property in properties)
-                {
-                    area.Properties[property.Key] = property.Value;
-                }
+                area.Properties[property.Key] = property.Value;
             }
+
+            foreach (var detector in roomBuilder.Detectors.Values)
+            {
+                AddMotionSensor(detector.DetectorName, roomBuilder.Name, detector.Neighbors, serviceDto);
+            }
+
 
             serviceDto.AreasAttachedProperties.Add(area);
         }

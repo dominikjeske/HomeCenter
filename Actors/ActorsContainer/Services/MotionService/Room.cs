@@ -8,6 +8,7 @@ using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -87,6 +88,8 @@ namespace HomeCenter.Services.MotionService
             CheckAutoIncrementForOnePerson(motionTime);
 
             _turnOffTimeOut.Increment();
+
+            Debug.WriteLine($"New timeline: {_turnOffTimeOut.Value.Seconds}s");
         }
 
         /// <summary>

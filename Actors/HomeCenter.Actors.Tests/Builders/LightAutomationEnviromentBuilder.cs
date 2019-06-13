@@ -45,6 +45,30 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
+        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
+        {
+            long ticks = 0;
+
+            for (int i = 0; i < numberOfMotions; i++)
+            {
+                ticks += Time.Tics((int)waitTime.TotalMilliseconds);
+
+                _motionEvents.Add(new Recorded<Notification<MotionEnvelope>>(ticks, Notification.CreateOnNext(new MotionEnvelope(roomUid))));
+            }
+
+            return this;
+        }
+
+        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan waitTime)
+        {
+            int num = (int) (motionTime.TotalMilliseconds / waitTime.TotalMilliseconds);
+
+
+            WithRepeatedMotions(roomUid, num, waitTime);
+
+            return this;
+        }
+
         public LightAutomationEnviromentBuilder WithLampEvents(params Recorded<Notification<PowerStateChangeEvent>>[] messages)
         {
             _lampEvents.AddRange(messages);

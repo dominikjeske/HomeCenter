@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.Services.MotionService.Tests
 {
-    public static class Areas
+    public static class Rooms
     {
         public static readonly string Hallway = "Hallway";
         public static readonly string Toilet = "Toilet";
