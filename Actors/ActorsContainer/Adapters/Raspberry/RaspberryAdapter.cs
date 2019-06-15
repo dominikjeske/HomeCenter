@@ -9,7 +9,7 @@ using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Service;
 using Proto;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
@@ -28,12 +28,13 @@ namespace HomeCenter.Adapters.PC
         {
             ProtectResource(_gpioDevice.PinChanged.Subscribe(OnPinChanged));
 
-            foreach (var pin in AsList(MessageProperties.PinChangeWithPullUp, Enumerable.Empty<string>()))
+            foreach (var pin in AsList(MessageProperties.PinChangeWithPullUp, new List<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullUp);
             }
 
-            foreach (var pin in AsList(MessageProperties.PinChangeWithPullDown, Enumerable.Empty<string>()))
+            //TODO Enumerable.Empty<string>() not working in .NET 3.0
+            foreach (var pin in AsList(MessageProperties.PinChangeWithPullDown, new List<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullDown);
             }

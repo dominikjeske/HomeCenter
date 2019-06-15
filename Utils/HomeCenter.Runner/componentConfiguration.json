@@ -98,14 +98,14 @@
                 },
                 {
                   "Uid": "DenonComponent",
-                  "IsEnabled": false,
+                  "IsEnabled": true,
                   "Properties": {
                     "FriendlyName": "Denon"
                   },
                   "Adapter": {
                     "Uid": "Denon",
                     "Type": "DenonAdapter",
-                    "IsEnabled": false,
+                    "IsEnabled": true,
                     "Properties": {
                       "Hostname": "192.168.0.100",
                       "PoolInterval": 500,

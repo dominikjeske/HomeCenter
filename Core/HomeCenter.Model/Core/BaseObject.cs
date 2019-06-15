@@ -251,7 +251,7 @@ namespace HomeCenter.Model.Core
             return _properties[propertyName];
         }
 
-        public IList<string> AsList(string propertyName, IEnumerable<string> defaultValue = null)
+        public IList<string> AsList(string propertyName, IList<string> defaultValue = null)
         {
             if (!_properties.ContainsKey(propertyName)) return (IList<string>)defaultValue ?? throw new ArgumentException(propertyName);
 
