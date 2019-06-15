@@ -190,19 +190,6 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public void Move_LongTime_ShouldTurnOnLight()
-        {
-
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithRepeatedMotions(Detectors.kitchenDetector, TimeSpan.FromMinutes(30), TimeSpan.FromSeconds(5)).Start();
-
-            AdvanceToEnd();
-
-            LampState(Detectors.kitchenDetector).Should().BeTrue();
-        }
-
-
-
-        [TestMethod]
         public async Task Move_Timeout_ShouldTurnOffAfterTimeout()
         {
             new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithMotions(new Dictionary<int, string>
@@ -232,6 +219,60 @@ namespace HomeCenter.Services.MotionService.Tests
             AdvanceJustAfterEnd();
             var status = await Query<bool>(AutomationStateQuery.Create(Detectors.kitchenDetector));
             status.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Timeout_WhenPassthrough_ShouldBeQuick()
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            var moveTime = TimeSpan.FromSeconds(9);
+            var serviceConfig = Default();
+            serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
+
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Start();
+
+            AdvanceToEnd();
+            LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
+            AdvanceJustBefore(moveTime + timeout);
+            LampState(Detectors.kitchenDetector).Should().BeTrue();
+            AdvanceJustAfter(moveTime + timeout);
+            LampState(Detectors.kitchenDetector).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Timeout_AsfterShortVisit_ShouldBeLonger()
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            var moveTime = TimeSpan.FromSeconds(15);
+            var serviceConfig = Default();
+            serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
+
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Start();
+
+            AdvanceToEnd();
+            LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
+            AdvanceJustBefore(moveTime + 2 * timeout);
+            LampState(Detectors.kitchenDetector).Should().BeTrue();
+            AdvanceJustAfter(moveTime + 2 * timeout);
+            LampState(Detectors.kitchenDetector).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Timeout_AsfterLongVisit_ShouldBeLonger()
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            var moveTime = TimeSpan.FromSeconds(75);
+            var serviceConfig = Default();
+            serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
+
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Start();
+
+            AdvanceToEnd();
+            LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
+            AdvanceJustBefore(moveTime + 3 * timeout);
+            LampState(Detectors.kitchenDetector).Should().BeTrue();
+            AdvanceJustAfter(moveTime + 3 * timeout);
+            LampState(Detectors.kitchenDetector).Should().BeFalse();
         }
 
         /// <summary>
@@ -417,8 +458,6 @@ namespace HomeCenter.Services.MotionService.Tests
         //    AdvanceJustAfter(TimeSpan.FromSeconds(5));
         //    IsTurnedOn(Detectors.hallwayDetectorToilet).Should().BeFalse();
         //}
-
-       
 
         /// <summary>
         /// Get predefinied rooms configuration

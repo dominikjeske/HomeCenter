@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Evaluates each room state
         /// </summary>
-        public Task UpdateRooms() => _rooms.Values.Select(async r => await r.PeriodicUpdate()).WhenAll();
+        public Task UpdateRooms(DateTimeOffset motionTime) => _rooms.Values.Select(async r => await r.PeriodicUpdate(motionTime)).WhenAll();
         
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace HomeCenter.Services.MotionService
             get { return _rooms[window.Start.Uid]; }
         }
 
-        public int NumberOfPersons() => _rooms.Sum(md => md.Value.NumberOfPersonsInArea);
+        public int NumberOfPersons() => _rooms.Sum(md => md.Value.NumberOfPersons);
 
         public bool NoMoveInStartNeighbors(MotionVector confusedVector)
         {

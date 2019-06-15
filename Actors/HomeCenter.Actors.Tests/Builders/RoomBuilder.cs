@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -21,6 +22,12 @@ namespace HomeCenter.Services.MotionService.Tests
                 DetectorName = detectorName,
                 Neighbors = neighbors
             });
+            return this;
+        }
+
+        public RoomBuilder WithTimeout(TimeSpan timeSpan)
+        {
+            WithProperty(MotionProperties.TurnOffTimeout, timeSpan.ToString());
             return this;
         }
 

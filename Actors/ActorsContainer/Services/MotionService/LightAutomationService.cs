@@ -53,7 +53,6 @@ namespace HomeCenter.Services.MotionService
             _motionConfiguration.MotionMinDiff = AsTime(MotionProperties.MotionMinDiff, TimeSpan.FromMilliseconds(500));
             _motionConfiguration.PeriodicCheckTime = AsTime(MotionProperties.PeriodicCheckTime, TimeSpan.FromMilliseconds(1000));
             _motionConfiguration.TurnOffTimeoutExtenderFactor = AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, 50);
-            _motionConfiguration.TurnOffTimeoutIncrementFactor = AsDouble(MotionProperties.TurnOffPresenceFactor, 0.05f);
         }
 
         private Dictionary<string, AreaDescriptor> ReadAreasFromAttachedProperties()
@@ -140,7 +139,7 @@ namespace HomeCenter.Services.MotionService
             {
                 await MarkVector(motionVector);
             }
-            else if (_roomService.GetSourceRoom(motionVector).NumberOfPersonsInArea > 0)
+            else if (_roomService.GetSourceRoom(motionVector).NumberOfPersons > 0)
             {
                 Logger.LogInformation($"{motionVector} [Confused: {string.Join(" | ", confusionPoints)}]");
                 _confusedVectors.Add(motionVector.WithConfuze(confusionPoints));
@@ -177,7 +176,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private async Task PeriodicCheck(DateTimeOffset currentTime)
         {
-            await _roomService.UpdateRooms();
+            await _roomService.UpdateRooms(currentTime);
             await ResolveConfusions(currentTime);
         }
 
@@ -270,7 +269,7 @@ namespace HomeCenter.Services.MotionService
         protected int Handle(NumberOfPeopleQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomService[roomId].NumberOfPersonsInArea;
+            return _roomService[roomId].NumberOfPersons;
         }
 
         protected AreaDescriptor Handle(AreaDescriptorQuery query)

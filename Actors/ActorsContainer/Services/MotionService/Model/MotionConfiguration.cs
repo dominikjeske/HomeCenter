@@ -22,10 +22,6 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public double TurnOffTimeoutExtenderFactor { get; set; }
 
-        /// <summary>
-        /// Factor by which we will increase turn off timeout after each move in room
-        /// </summary>
-        public double TurnOffTimeoutIncrementFactor { get; set; }
 
         /// <summary>
         /// Time interval for periodic move calculations

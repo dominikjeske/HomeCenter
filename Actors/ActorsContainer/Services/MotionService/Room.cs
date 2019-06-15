@@ -37,11 +37,11 @@ namespace HomeCenter.Services.MotionService
         public string Uid { get; }
 
         public bool AutomationDisabled { get; private set; }
-        public int NumberOfPersonsInArea { get; private set; }
+        public int NumberOfPersons { get; private set; }
         public MotionStamp LastMotion { get; } = new MotionStamp();
         public AreaDescriptor AreaDescriptor { get; }
 
-        public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersonsInArea}]";
+        public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersons}]";
 
         public bool IsNeighbor(string uid) => _neighbors.Contains(uid);
 
@@ -87,7 +87,7 @@ namespace HomeCenter.Services.MotionService
             await SetProbability(Probability.Full);
             CheckAutoIncrementForOnePerson(motionTime);
 
-            _turnOffTimeOut.Increment();
+            _turnOffTimeOut.Increment(motionTime);
 
             Debug.WriteLine($"New timeline: {_turnOffTimeOut.Value.Seconds}s");
         }
@@ -96,10 +96,10 @@ namespace HomeCenter.Services.MotionService
         /// Update room state on time intervals
         /// </summary>
         /// <returns></returns>
-        public async Task PeriodicUpdate()
+        public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
             CheckForTurnOnAutomationAgain();
-            await RecalculateProbability();
+            await RecalculateProbability(motionTime);
         }
 
         /// <summary>
@@ -171,8 +171,11 @@ namespace HomeCenter.Services.MotionService
         /// Decrease probability of person in room after each time interval
         /// </summary>
         /// <returns></returns>
-        private async Task RecalculateProbability()
+        private async Task RecalculateProbability(DateTimeOffset motionTime)
         {
+            // When we just have a move in room there is no need for recalculation
+            if (motionTime == LastMotion.Time) return;
+
             var probabilityDelta = 1.0 / (_turnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
 
             await SetProbability(_presenceProbability.Decrease(probabilityDelta));
@@ -220,10 +223,10 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void CheckAutoIncrementForOnePerson(DateTimeOffset time)
         {
-            if (NumberOfPersonsInArea == 0)
+            if (NumberOfPersons == 0)
             {
                 _lastAutoIncrement = time;
-                NumberOfPersonsInArea++;
+                NumberOfPersons++;
             }
         }
 
@@ -240,17 +243,18 @@ namespace HomeCenter.Services.MotionService
         {
             if (!_lastAutoIncrement.HasValue || moveTime.Between(_lastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
             {
-                NumberOfPersonsInArea++;
+                NumberOfPersons++;
             }
         }
 
         private void DecrementNumberOfPersons()
         {
-            if (NumberOfPersonsInArea > 0)
+            if (NumberOfPersons > 0)
             {
-                NumberOfPersonsInArea--;
+                NumberOfPersons--;
 
-                if (NumberOfPersonsInArea == 0)
+                //TODO is this needed?
+                if (NumberOfPersons == 0)
                 {
                     LastMotion.UnConfuze();
                 }
@@ -321,7 +325,7 @@ namespace HomeCenter.Services.MotionService
 
         private void ResetStatistics()
         {
-            NumberOfPersonsInArea = 0;
+            NumberOfPersons = 0;
             _turnOffTimeOut.Reset();
         }
 

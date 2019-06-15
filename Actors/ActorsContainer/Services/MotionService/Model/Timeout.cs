@@ -8,15 +8,16 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class Timeout
     {
-        private TimeSpan _baseTime;
-        private TimeSpan _currentExtension = TimeSpan.FromTicks(0);
-        private int _counter;
         private readonly MotionConfiguration _motionConfiguration;
+
+        private TimeSpan _baseTime;
+        private DateTimeOffset? _motionStart;
+        private TimeSpan _timeout;
 
         /// <summary>
         /// Value of timeout
         /// </summary>
-        public TimeSpan Value => _baseTime + _currentExtension;
+        public TimeSpan Value => _timeout;
 
         /// <summary>
         /// Timeout constructor
@@ -41,18 +42,38 @@ namespace HomeCenter.Services.MotionService.Model
         /// <summary>
         /// Increment timeout on each move in the room
         /// </summary>
-        public void Increment()
+        public void Increment(DateTimeOffset motionTime)
         {
-            _counter++;
-            var factor = _counter * _motionConfiguration.TurnOffTimeoutIncrementFactor;
-            var value = TimeSpan.FromTicks((long)(Value.Ticks * factor));
-            _currentExtension = _currentExtension.Add(value);
+            // Start of the motion
+            if(!_motionStart.HasValue)
+            {
+                _motionStart = motionTime;
+                _timeout = _baseTime;
+
+                return;
+            }
+
+            // This can be accidencial or passthru so we keep base timeout
+            if(motionTime - _motionStart < TimeSpan.FromSeconds(10))
+            {
+                _timeout = _baseTime;
+                return;
+            }
+
+            // Short visit
+            if(motionTime - _motionStart < TimeSpan.FromSeconds(60))
+            {
+                _timeout = TimeSpan.FromTicks( _baseTime.Ticks * 2);
+                return;
+            }
+
+            // longer visit
+            _timeout = TimeSpan.FromTicks(_baseTime.Ticks * 3);
         }
 
         public void Reset()
         {
-            _currentExtension = TimeSpan.FromTicks(0);
-            _counter = 0;
+            _motionStart = null;
         }
     }
 }

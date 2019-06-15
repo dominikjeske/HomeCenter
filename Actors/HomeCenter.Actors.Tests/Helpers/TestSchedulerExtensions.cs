@@ -7,6 +7,8 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     public static class TestExtensions
     {
+        private static int _deltaMiliseconds = 500;
+
         public static void AdvanceToEnd<T>(this TestScheduler scheduler, ITestableObservable<T> events)
         {
             scheduler.AdvanceTo(events.Messages.Max(x => x.Time));
@@ -25,6 +27,11 @@ namespace HomeCenter.Services.MotionService.Tests
         public static void AdvanceJustAfter(this TestScheduler scheduler, TimeSpan time)
         {
             scheduler.AdvanceTo(time.JustAfter().Ticks);
+        }
+
+        public static void AdvanceJustBefore(this TestScheduler scheduler, TimeSpan time)
+        {
+            scheduler.AdvanceTo(time - TimeSpan.FromMilliseconds(_deltaMiliseconds));
         }
 
         public static void AdvanceTo(this TestScheduler scheduler, TimeSpan time)

@@ -59,12 +59,21 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan waitTime)
+        /// <summary>
+        /// Add repeat motion to <paramref name="roomUid"/> that takes <paramref name="motionTime"/> and waits between moves <paramref name="waitTime"/>
+        /// </summary>
+        /// <param name="roomUid"></param>
+        /// <param name="motionTime"></param>
+        /// <param name="waitTime">Deafault value is 3 seconds</param>
+        /// <returns></returns>
+        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
         {
-            int num = (int) (motionTime.TotalMilliseconds / waitTime.TotalMilliseconds);
+            var time = waitTime ?? TimeSpan.FromSeconds(3);
+
+            int num = (int) (motionTime.TotalMilliseconds / time.TotalMilliseconds);
 
 
-            WithRepeatedMotions(roomUid, num, waitTime);
+            WithRepeatedMotions(roomUid, num, time);
 
             return this;
         }
