@@ -20,10 +20,10 @@
     </PackageReference>
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="1.18.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
+    <PackageReference Include="System.Reactive" Version="4.1.5" />
   </ItemGroup>
 
   <ItemGroup>
