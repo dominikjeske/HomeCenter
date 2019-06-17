@@ -11,12 +11,12 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.5.13">
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.6.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FastDeepCloner" Version="1.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
     <PackageReference Include="Proto.Router" Version="0.2.0" />
@@ -24,7 +24,7 @@
     <PackageReference Include="SimpleInjector" Version="4.6.0" />
     <PackageReference Include="System.Device.Gpio" Version="0.1.0-prerelease.19310.5" />
     <PackageReference Include="System.IO.Ports" Version="4.6.0-preview6.19303.8" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
 
  
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.5.13" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
   </ItemGroup>
 
 </Project>

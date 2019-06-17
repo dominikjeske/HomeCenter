@@ -12,13 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.5.13">
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.6.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
   </ItemGroup>
 
