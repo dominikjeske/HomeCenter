@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Tests.ComponentModel
 {
-    [TestClass]
+    //[TestClass]
     public class ComponentTests : BaseTest
     {
         [TestMethod]
