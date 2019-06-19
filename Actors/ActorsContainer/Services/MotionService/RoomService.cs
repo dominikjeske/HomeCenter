@@ -102,7 +102,7 @@ namespace HomeCenter.Services.MotionService
 
 
         /// <summary>
-        /// Get confusion point from all neighbors
+        /// Get confusion points from all neighbors
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
