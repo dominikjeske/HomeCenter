@@ -408,6 +408,22 @@ namespace HomeCenter.Services.MotionService.Tests
             num.Should().Be(2);
         }
 
+        [TestMethod]
+        public async Task Test()
+        {
+            var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                //{ 500, Detectors.toiletDetector },
+                { 501, Detectors.kitchenDetector },
+                { 1000, Detectors.hallwayDetectorToilet },
+             
+            }).Start();
+
+            AdvanceJustAfterEnd();
+
+        }
+
         //[TestMethod]
         //public async Task AnalyzeMoveShouldCountPeopleNumberInHouse()
         //{

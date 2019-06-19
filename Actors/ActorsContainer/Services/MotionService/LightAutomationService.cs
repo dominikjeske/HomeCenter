@@ -116,9 +116,20 @@ namespace HomeCenter.Services.MotionService
             motionWindows.Subscribe(HandleMove, HandleError, Token, _concurrencyProvider.Task);
 
             motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
+                        .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start))
+                        .Select(motion => motion.ToVectors()))
+                        .Where(x => x.Count > 0)
+                        .Subscribe(HandleVectors, HandleError, Token, _concurrencyProvider.Task);
+
+            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
                          .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start))
                          .SelectMany(motion => motion.ToVectors()))
                          .Subscribe(HandleVector, HandleError, Token, _concurrencyProvider.Task);
+        }
+
+        private async Task HandleVectors(IReadOnlyCollection<MotionVector> vectors)
+        {
+            var x = vectors.ToArray();
         }
 
         /// <summary>
