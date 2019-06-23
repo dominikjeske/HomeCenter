@@ -58,10 +58,9 @@ namespace HomeCenter.Model.Extensions
         }
 
         public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, Task> onNextAsync) =>
-           source
-               .Select(message => Observable.FromAsync(() => onNextAsync(message)))
-               .Concat()
-               .Subscribe();
+           source.Select(message => Observable.FromAsync(() => onNextAsync(message)))
+                 .Concat()
+                 .Subscribe();
 
         public static void Subscribe<T>(this IObservable<T> source, Func<T, Task> onNextAsync, Action<Exception> onError, CancellationToken cancellationToken, IScheduler observeOn) =>
             source.Select(x => Observable.FromAsync(() => onNextAsync(x)))

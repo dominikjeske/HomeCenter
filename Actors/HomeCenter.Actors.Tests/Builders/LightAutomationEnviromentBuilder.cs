@@ -45,6 +45,13 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
+        public LightAutomationEnviromentBuilder WithMotions(List<Tuple<int, string>> motions)
+        {
+            _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Item1), Notification.CreateOnNext(new MotionEnvelope(x.Item2)))));
+
+            return this;
+        }
+ 
         public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
         {
             long ticks = 0;
@@ -71,7 +78,6 @@ namespace HomeCenter.Services.MotionService.Tests
             var time = waitTime ?? TimeSpan.FromSeconds(3);
 
             int num = (int) (motionTime.TotalMilliseconds / time.TotalMilliseconds);
-
 
             WithRepeatedMotions(roomUid, num, time);
 
@@ -132,9 +138,6 @@ namespace HomeCenter.Services.MotionService.Tests
 
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
             var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
-
-            var checkTime = _periodicCheckTime ?? TimeSpan.FromMilliseconds(1000);
-            var timeDuration = _timeDuration ?? 20;
 
             var mapper = Bootstrap(messageBroker);
             var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);

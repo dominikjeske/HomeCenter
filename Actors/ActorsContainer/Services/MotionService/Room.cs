@@ -7,6 +7,7 @@ using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,20 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
+    internal class CnfusedVectorList
+    {
+        private ConcurrentDictionary<DateTimeOffset, IList<MotionVector>> _dictionary = new ConcurrentDictionary<DateTimeOffset, IList<MotionVector>>();
+
+        public void Add(IList<MotionVector> vectors)
+        {
+            if (vectors == null) throw new ArgumentNullException(nameof(vectors));
+            if (vectors.Count == 0) throw new ArgumentException(nameof(vectors));
+            if (!vectors.All(v => v.EndTime == vectors.First().EndTime)) throw new ArgumentException("All vectors should have same rnd time to be in confuion group");
+
+            _dictionary.TryAdd(vectors.First().EndTime, vectors);
+        }
+    }
+
     internal class Room : IDisposable
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
@@ -26,14 +41,16 @@ namespace HomeCenter.Services.MotionService
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
         private readonly IEnumerable<string> _neighbors;
+        private readonly ConcurrentBag<MotionVector> _enterVectors = new ConcurrentBag<MotionVector>();
+        private readonly ConcurrentBag<MotionVector> _leaveVectors = new ConcurrentBag<MotionVector>();
+        private readonly CnfusedVectorList _confusedVectors = new CnfusedVectorList();
+        private readonly Timeout _turnOffTimeOut;
 
         private Probability _presenceProbability = Probability.Zero;
         private DateTimeOffset _AutomationEnableOn;
         private DateTimeOffset? _lastAutoIncrement;
         private DateTimeOffset? _lastAutoTurnOff;
-        private readonly Timeout _turnOffTimeOut;
-        private MotionVector _lastVectorEnter;
-
+        
         public string Uid { get; }
 
         public bool AutomationDisabled { get; private set; }
@@ -98,8 +115,18 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
+            _leaveVectors.Select(vector => vector.Probability < 1 && motionTime.Between(vector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime))
+
+            //acurrentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
+            //                                                       && _roomService.NoMoveInStartNeighbors(confusedVector))
+
             CheckForTurnOnAutomationAgain();
             await RecalculateProbability(motionTime);
+        }
+
+        public void RegisterConfusions(IList<MotionVector> vectors)
+        {
+            _confusedVectors.Add(vectors);
         }
 
         /// <summary>
@@ -108,13 +135,22 @@ namespace HomeCenter.Services.MotionService
         /// <param name="vector"></param>
         public void MarkEnter(MotionVector vector)
         {
-            _lastVectorEnter = vector;
-            IncrementNumberOfPersons(vector.EndTime);
+            _enterVectors.Add(vector);
+
+            if (vector.Probability == 1)
+            {
+                IncrementNumberOfPersons(vector.EndTime);
+            }
         }
 
         public async Task MarkLeave(MotionVector vector)
         {
-            DecrementNumberOfPersons();
+            _leaveVectors.Add(vector);
+
+            if (vector.Probability == 1)
+            {
+                DecrementNumberOfPersons();
+            }
 
             if (AreaDescriptor.MaxPersonCapacity == 1)
             {
@@ -144,8 +180,6 @@ namespace HomeCenter.Services.MotionService
             DisableAutomation();
             _AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
         }
-
-        public bool HasSameLastTimeVector(MotionVector motionVector) => _lastVectorEnter?.EqualsWithStartTime(motionVector) ?? false;
 
         public void Dispose() => _disposeContainer.Dispose();
 
@@ -259,48 +293,6 @@ namespace HomeCenter.Services.MotionService
                     LastMotion.UnConfuze();
                 }
             }
-        }
-
-        /// <summary>
-        /// Check if last move in this room can be source of potential move that will be source of confusion for other moves
-        /// </summary>
-        /// <param name="motionTime"></param>
-        /// <returns></returns>
-        public MotionPoint GetConfusion(DateTimeOffset motionTime)
-        {
-            var lastMotion = GetLastMotion(motionTime);
-
-            if (!lastMotion.CanConfuze) return MotionPoint.Empty;
-
-            var possibleMoveTime = motionTime.Between(lastMotion.Time.Value);
-
-            if
-            (
-                  possibleMoveTime.IsPossible(_motionConfiguration.MotionMinDiff)
-               && possibleMoveTime.LastedLessThen(AreaDescriptor.MotionDetectorAlarmTime)   // TODO maybe increase it to 2x AreaDescriptor.MotionDetectorAlarmTime or provide distance between motion detectors
-            )
-            {
-                return new MotionPoint(Uid, lastMotion.Time.Value);
-            }
-
-            return MotionPoint.Empty;
-        }
-
-        /// <summary>
-        /// If last motion time has same value we have to go back in time for previous value to check real previous
-        /// </summary>
-        /// <param name="motionTime"></param>
-        /// <returns></returns>
-        private MotionStamp GetLastMotion(DateTimeOffset motionTime)
-        {
-            var lastMotion = LastMotion;
-
-            if (motionTime == lastMotion.Time)
-            {
-                lastMotion = lastMotion.Previous;
-            }
-
-            return lastMotion;
         }
 
         private async Task TryTurnOnLamp()

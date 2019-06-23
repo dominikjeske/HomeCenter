@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -14,8 +15,9 @@ namespace HomeCenter.Services.MotionService
         private readonly ImmutableDictionary<string, Room> _rooms;
         private readonly ImmutableDictionary<Room, IEnumerable<Room>> _neighbors;
         private readonly MotionConfiguration _motionConfiguration;
+        private readonly ILogger _logger;
 
-        public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration)
+        public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration, ILogger logger)
         {
             _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
 
@@ -27,6 +29,7 @@ namespace HomeCenter.Services.MotionService
 
             _neighbors = dic.ToImmutableDictionary();
             _motionConfiguration = motionConfiguration;
+            _logger = logger;
         }
 
         public void RegisterForLampChangeState()
@@ -34,11 +37,65 @@ namespace HomeCenter.Services.MotionService
             _rooms.Values.ForEach(room => room.RegisterForLampChangeState());
         }
 
+        public async Task HandleVectors(IList<MotionVector> motions)
+        {
+            if (motions.Count == 0) return;
+
+            var probability = 1.0 / motions.Count;
+            foreach (var motion in motions)
+            {
+                await MarkVector(new MotionVector(motion, probability));
+            }
+
+            if (probability < 1.0)
+            {
+                _rooms[motions.First().EndPoint].RegisterConfusions(motions);
+            }
+        }
+
+        public Task MarkMotion(MotionWindow point)
+        {
+            return this[point].MarkMotion(point.Start.TimeStamp);
+        }
+
+        /// <summary>
+        /// Marks enter to target room and leave from source room
+        /// </summary>
+        /// <param name="motionVector"></param>
+        /// <returns></returns>
+        private async Task MarkVector(MotionVector motionVector)
+        {
+            var targetRoom = GetTargetRoom(motionVector);
+            var sourceRoom = GetSourceRoom(motionVector);
+
+            _logger.LogInformation(motionVector.ToString());
+
+            await sourceRoom.MarkLeave(motionVector);
+            targetRoom.MarkEnter(motionVector);
+        }
+
         /// <summary>
         /// Evaluates each room state
         /// </summary>
-        public Task UpdateRooms(DateTimeOffset motionTime) => _rooms.Values.Select(async r => await r.PeriodicUpdate(motionTime)).WhenAll();
-        
+        public async Task UpdateRooms(DateTimeOffset motionTime)
+        {
+            await EvaluateConfusions(motionTime);
+
+            await _rooms.Values.Select(async r => await r.PeriodicUpdate(motionTime)).WhenAll();
+        }
+
+        /// <summary>
+        /// Try to resolve confusion in previously marked vectors
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
+        private async Task EvaluateConfusions(DateTimeOffset currentTime)
+        {
+
+
+            //acurrentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
+            //                                                       && _roomService.NoMoveInStartNeighbors(confusedVector))
+        }
 
         /// <summary>
         /// Check if two points are neighbors
@@ -98,23 +155,6 @@ namespace HomeCenter.Services.MotionService
         public bool IsProperVector(MotionPoint start, MotionPoint potencialEnd)
         {
             return AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
-        }
-
-
-        /// <summary>
-        /// Get confusion points from all neighbors
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        public IList<MotionPoint> GetConfusingPoints(MotionVector vector)
-        {
-            var targetRoom = GetTargetRoom(vector);
-            return _neighbors[targetRoom].ToList()
-                                         .AddChained(targetRoom)
-                                         .Where(room => room.Uid != vector.StartPoint)
-                                         .Select(room => room.GetConfusion(vector.EndTime))
-                                         .Where(y => y != MotionPoint.Empty)
-                                         .ToList();
         }
     }
 }

@@ -5,6 +5,7 @@ using HomeCenter.Services.MotionService.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
@@ -409,18 +410,19 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public async Task Test()
+        public void Test()
         {
             var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new List<Tuple<int, string>>()
             {
-                //{ 500, Detectors.toiletDetector },
-                { 501, Detectors.kitchenDetector },
-                { 1000, Detectors.hallwayDetectorToilet },
-             
+                new Tuple<int, string>(490, Detectors.toiletDetector),
+                new Tuple<int, string>(491, Detectors.kitchenDetector),
+                new Tuple<int, string>(493, Detectors.balconyDetector),
+                new Tuple<int, string>(1000, Detectors.hallwayDetectorToilet),
+                new Tuple<int, string>(1000, Detectors.livingRoomDetector)
             }).Start();
 
-            AdvanceJustAfterEnd();
+            AdvanceTo(TimeSpan.FromMilliseconds(51000));
 
         }
 
@@ -486,10 +488,10 @@ namespace HomeCenter.Services.MotionService.Tests
             builder.WithRoom(new RoomBuilder(Rooms.Hallway).WithDetector(Detectors.hallwayDetectorToilet, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector })
                                                            .WithDetector(Detectors.hallwayDetectorLivingRoom, new List<string> { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }));
             builder.WithRoom(new RoomBuilder(Rooms.Badroom).WithDetector(Detectors.badroomDetector, new List<string> { Detectors.hallwayDetectorLivingRoom }));
-            builder.WithRoom(new RoomBuilder(Rooms.Balcony).WithDetector(Detectors.balconyDetector, new List<string> { Detectors.hallwayDetectorLivingRoom }));
+            builder.WithRoom(new RoomBuilder(Rooms.Balcony).WithDetector(Detectors.balconyDetector, new List<string> { Detectors.livingRoomDetector }));
             builder.WithRoom(new RoomBuilder(Rooms.Bathroom).WithDetector(Detectors.bathroomDetector, new List<string> { Detectors.hallwayDetectorLivingRoom }));
             builder.WithRoom(new RoomBuilder(Rooms.Kitchen).WithDetector(Detectors.kitchenDetector, new List<string> { Detectors.hallwayDetectorToilet }));
-            builder.WithRoom(new RoomBuilder(Rooms.Livingroom).WithDetector(Detectors.livingRoomDetector, new List<string> { Detectors.livingRoomDetector }));
+            builder.WithRoom(new RoomBuilder(Rooms.Livingroom).WithDetector(Detectors.livingRoomDetector, new List<string> { Detectors.balconyDetector, Detectors.hallwayDetectorLivingRoom }));
             builder.WithRoom(new RoomBuilder(Rooms.Staircase).WithDetector(Detectors.staircaseDetector, new List<string> { Detectors.hallwayDetectorToilet }));
             builder.WithRoom(new RoomBuilder(Rooms.Toilet).WithDetector(Detectors.toiletDetector, new List<string> { Detectors.hallwayDetectorToilet }).WithProperty(MotionProperties.MaxPersonCapacity, "1"));
 
