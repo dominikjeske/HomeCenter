@@ -115,7 +115,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
-            _leaveVectors.Select(vector => vector.Probability < 1 && motionTime.Between(vector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime))
+            //_leaveVectors.Select(vector => vector.Probability < 1 && motionTime.Between(vector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime))
 
             //acurrentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
             //                                                       && _roomService.NoMoveInStartNeighbors(confusedVector))
