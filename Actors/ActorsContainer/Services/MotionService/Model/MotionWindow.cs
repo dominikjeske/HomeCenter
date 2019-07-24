@@ -1,16 +1,16 @@
-﻿using System;
+﻿using ConcurrentCollections;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    // TODO thread safe
     internal class MotionWindow
     {
-        private static readonly ReadOnlyCollection<MotionVector> _noVectors = new List<MotionVector>().AsReadOnly();
-        private readonly List<MotionVector> _vectors = new List<MotionVector>();
-        private readonly List<MotionVector> _vectorsHistory = new List<MotionVector>();
+        public static readonly ReadOnlyCollection<MotionVector> Default = new List<MotionVector>().AsReadOnly();
+        private readonly ConcurrentHashSet<MotionVector> _vectors = new ConcurrentHashSet<MotionVector>();
+        private readonly ConcurrentHashSet<MotionVector> _vectorsHistory = new ConcurrentHashSet<MotionVector>();
         private readonly RoomService _roomService;
 
         public MotionWindow(string place, DateTimeOffset time, RoomService roomService)
@@ -38,7 +38,7 @@ namespace HomeCenter.Services.MotionService.Model
 
         public IReadOnlyCollection<MotionVector> ToVectors()
         {
-            if (_vectors.Count == 0) return _noVectors;
+            if (_vectors.Count == 0) return Default;
             var list = _vectors.ToList();
             _vectors.Clear();
             return list.AsReadOnly();

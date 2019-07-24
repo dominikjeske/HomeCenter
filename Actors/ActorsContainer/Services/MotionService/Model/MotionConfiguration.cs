@@ -22,14 +22,13 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public double TurnOffTimeoutExtenderFactor { get; set; }
 
-
         /// <summary>
         /// Time interval for periodic move calculations
         /// </summary>
         public TimeSpan PeriodicCheckTime { get; set; }
 
         /// <summary>
-        /// Time after which we can remove confused vector
+        /// Time after confused vector cannot be unconfused
         /// </summary>
         public TimeSpan ConfusionResolutionTimeOut { get; set; }
 

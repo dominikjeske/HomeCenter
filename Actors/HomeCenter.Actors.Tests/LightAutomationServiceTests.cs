@@ -133,7 +133,8 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayDetectorToilet }
             }).Start();
 
-            AdvanceJustAfterEnd();
+            //AdvanceJustAfterEnd();
+            AdvanceTo(TimeSpan.FromSeconds(4));
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
         }
@@ -156,22 +157,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
         }
-
-        [TestMethod]
-        public void Leave_FromRoomWithConfusion_ShouldTurnOffLightAfterConfusionResolved()
-        {
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.kitchenDetector },
-                { 1500, Detectors.hallwayDetectorToilet }
-            }).Start();
-
-            AdvanceJustAfterEnd();
-
-            LampState(Detectors.kitchenDetector).Should().BeTrue();
-            AdvanceTo(Time.Tics(2500));
-            LampState(Detectors.kitchenDetector).Should().BeFalse();
-        }
+              
 
         [TestMethod]
         public void Move_OnSeparateRooms_ShouldTurnOnLight()
@@ -241,7 +227,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public void Timeout_AsfterShortVisit_ShouldBeLonger()
+        public void Timeout_AfterShortVisit_ShouldBeLonger()
         {
             var timeout = TimeSpan.FromSeconds(5);
             var moveTime = TimeSpan.FromSeconds(15);
@@ -333,31 +319,7 @@ namespace HomeCenter.Services.MotionService.Tests
             //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
         }
 
-        //[TestMethod]
-        //public async Task MoveCloseToRoomWithOtherPersonShouldConfuzeVectorsNearThatRoom()
-        //{
-        //    var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithMotion
-        //    (
-        //        //L->HL->HT->K vs move in B
-        //        OnNext(Time.Tics(1000), new MotionEnvelope(Detectors.livingRoomDetector)),
-        //        OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.bathroomDetector)),
-        //        OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.hallwayDetectorLivingRoom)),
-        //        OnNext(Time.Tics(2900), new MotionEnvelope(Detectors.bathroomDetector)),
-        //        OnNext(Time.Tics(3000), new MotionEnvelope(Detectors.hallwayDetectorToilet)),
-        //        OnNext(Time.Tics(4000), new MotionEnvelope(Detectors.kitchenDetector)),
-        //        OnNext(Time.Tics(4100), new MotionEnvelope(Detectors.bathroomDetector))
-        //    ).Build();
-
-        //    scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(9));
-
-        //    var status = await _context.Query<MotionStatus>(MotionServiceStatusQuery.Create());
-        //    Assert.AreEqual(2, status.NumberOfConfusions);
-        //    Assert.AreEqual(true, lampDictionary[Detectors.bathroomDetector].IsTurnedOn);
-        //    Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-        //    Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-        //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
-        //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
-        //}
+       
 
         [TestMethod]
         public async Task Count_WhenCrossPassing_ShouldCountNumberOfPeople()
@@ -388,43 +350,53 @@ namespace HomeCenter.Services.MotionService.Tests
             //Assert.AreEqual(2, status.NumberOfPersonsInHouse); //TODO
         }
 
-        [TestMethod]
-        public async Task Count_TwoVectorsToSameRoom()
-        {
-            var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.toiletDetector },
-                { 1500, Detectors.hallwayDetectorToilet },
-                { 2000, Detectors.kitchenDetector },
-                { 2500, Detectors.livingRoomDetector },
-                { 3000, Detectors.hallwayDetectorLivingRoom },
-                { 3500, Detectors.hallwayDetectorToilet },
-                { 4000, Detectors.kitchenDetector },
-            }).Start();
+        //[TestMethod]
+        //public async Task Count_TwoVectorsToSameRoom()
+        //{
+        //    var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
+        //    new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+        //    {
+        //        { 500, Detectors.toiletDetector },
+        //        { 1500, Detectors.hallwayDetectorToilet },
+        //        { 2000, Detectors.kitchenDetector },
+        //        { 2500, Detectors.livingRoomDetector },
+        //        { 3000, Detectors.hallwayDetectorLivingRoom },
+        //        { 3500, Detectors.hallwayDetectorToilet },
+        //        { 4000, Detectors.kitchenDetector },
+        //    }).Start();
 
-            AdvanceTo(TimeSpan.FromMilliseconds(11000));
+        //    AdvanceTo(TimeSpan.FromMilliseconds(11000));
 
-            var num = await Query<int>(NumberOfPeopleQuery.Create(Detectors.kitchenDetector));
-            num.Should().Be(2);
-        }
+        //    var num = await Query<int>(NumberOfPeopleQuery.Create(Detectors.kitchenDetector));
+        //    num.Should().Be(2);
+        //}
 
-        [TestMethod]
-        public void Test()
-        {
-            var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new List<Tuple<int, string>>()
-            {
-                new Tuple<int, string>(490, Detectors.toiletDetector),
-                new Tuple<int, string>(491, Detectors.kitchenDetector),
-                new Tuple<int, string>(493, Detectors.balconyDetector),
-                new Tuple<int, string>(1000, Detectors.hallwayDetectorToilet),
-                new Tuple<int, string>(1000, Detectors.livingRoomDetector)
-            }).Start();
+        //[TestMethod]
+        //public async Task MoveCloseToRoomWithOtherPersonShouldConfuzeVectorsNearThatRoom()
+        //{
+        //    var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithMotion
+        //    (
+        //        //L->HL->HT->K vs move in B
+        //        OnNext(Time.Tics(1000), new MotionEnvelope(Detectors.livingRoomDetector)),
+        //        OnNext(Time.Tics(1500), new MotionEnvelope(Detectors.bathroomDetector)),
+        //        OnNext(Time.Tics(2000), new MotionEnvelope(Detectors.hallwayDetectorLivingRoom)),
+        //        OnNext(Time.Tics(2900), new MotionEnvelope(Detectors.bathroomDetector)),
+        //        OnNext(Time.Tics(3000), new MotionEnvelope(Detectors.hallwayDetectorToilet)),
+        //        OnNext(Time.Tics(4000), new MotionEnvelope(Detectors.kitchenDetector)),
+        //        OnNext(Time.Tics(4100), new MotionEnvelope(Detectors.bathroomDetector))
+        //    ).Build();
 
-            AdvanceTo(TimeSpan.FromMilliseconds(51000));
+        //    scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(9));
 
-        }
+        //    var status = await _context.Query<MotionStatus>(MotionServiceStatusQuery.Create());
+        //    Assert.AreEqual(2, status.NumberOfConfusions);
+        //    Assert.AreEqual(true, lampDictionary[Detectors.bathroomDetector].IsTurnedOn);
+        //    Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+        //    Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
+        //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
+        //}
+
 
         //[TestMethod]
         //public async Task AnalyzeMoveShouldCountPeopleNumberInHouse()

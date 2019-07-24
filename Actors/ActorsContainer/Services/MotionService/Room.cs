@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Conditions;
+﻿using ConcurrentCollections;
+using HomeCenter.Model.Conditions;
 using HomeCenter.Model.Conditions.Specific;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Device;
@@ -7,8 +8,8 @@ using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
@@ -16,20 +17,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
-    internal class CnfusedVectorList
-    {
-        private ConcurrentDictionary<DateTimeOffset, IList<MotionVector>> _dictionary = new ConcurrentDictionary<DateTimeOffset, IList<MotionVector>>();
-
-        public void Add(IList<MotionVector> vectors)
-        {
-            if (vectors == null) throw new ArgumentNullException(nameof(vectors));
-            if (vectors.Count == 0) throw new ArgumentException(nameof(vectors));
-            if (!vectors.All(v => v.EndTime == vectors.First().EndTime)) throw new ArgumentException("All vectors should have same rnd time to be in confuion group");
-
-            _dictionary.TryAdd(vectors.First().EndTime, vectors);
-        }
-    }
-
     internal class Room : IDisposable
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
@@ -41,18 +28,15 @@ namespace HomeCenter.Services.MotionService
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
         private readonly IEnumerable<string> _neighbors;
-        private readonly ConcurrentBag<MotionVector> _enterVectors = new ConcurrentBag<MotionVector>();
-        private readonly ConcurrentBag<MotionVector> _leaveVectors = new ConcurrentBag<MotionVector>();
-        private readonly CnfusedVectorList _confusedVectors = new CnfusedVectorList();
         private readonly Timeout _turnOffTimeOut;
+        private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
 
         private Probability _presenceProbability = Probability.Zero;
         private DateTimeOffset _AutomationEnableOn;
         private DateTimeOffset? _lastAutoIncrement;
         private DateTimeOffset? _lastAutoTurnOff;
-        
+        private DateTimeOffset? _firstEnterTime;
         public string Uid { get; }
-
         public bool AutomationDisabled { get; private set; }
         public int NumberOfPersons { get; private set; }
         public MotionStamp LastMotion { get; } = new MotionStamp();
@@ -101,6 +85,12 @@ namespace HomeCenter.Services.MotionService
         {
             TryTuneTurnOffTimeOut(motionTime);
             LastMotion.SetTime(motionTime);
+
+            if (_presenceProbability == Probability.Zero)
+            {
+                _firstEnterTime = motionTime;
+            }
+
             await SetProbability(Probability.Full);
             CheckAutoIncrementForOnePerson(motionTime);
 
@@ -110,23 +100,27 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
+        /// Check if <paramref name="motionVector"/> is vector that turned on the light
+        /// </summary>
+        /// <param name="motionVector"></param>
+        /// <returns></returns>
+        public bool IsTurnOnVector(MotionVector motionVector)
+        {
+            if (!_firstEnterTime.HasValue || _firstEnterTime == motionVector.EndTime)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Update room state on time intervals
         /// </summary>
         /// <returns></returns>
         public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
-            //_leaveVectors.Select(vector => vector.Probability < 1 && motionTime.Between(vector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime))
-
-            //acurrentTime.Between(confusedVector.StartTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime)
-            //                                                       && _roomService.NoMoveInStartNeighbors(confusedVector))
-
             CheckForTurnOnAutomationAgain();
             await RecalculateProbability(motionTime);
-        }
-
-        public void RegisterConfusions(IList<MotionVector> vectors)
-        {
-            _confusedVectors.Add(vectors);
         }
 
         /// <summary>
@@ -135,22 +129,53 @@ namespace HomeCenter.Services.MotionService
         /// <param name="vector"></param>
         public void MarkEnter(MotionVector vector)
         {
-            _enterVectors.Add(vector);
-
-            if (vector.Probability == 1)
-            {
-                IncrementNumberOfPersons(vector.EndTime);
-            }
+            IncrementNumberOfPersons(vector.EndTime);
         }
+
+        /// <summary>
+        /// Mark some motion that can be enter vector but we are not sure
+        /// </summary>
+        /// <param name="vector"></param>
+        public void MarkConfusion(MotionVector vector)
+        {
+            _confusingVectors.Add(vector);
+        }
+
+        /// <summary>
+        /// Executed when aftre some time we can unconfuse our vecotr
+        /// </summary>
+        /// <param name="vector"></param>
+        public void ResolveConfusion(MotionVector vector)
+        {
+            _confusingVectors.TryRemove(vector);
+            MarkEnter(vector);   
+        }
+
+        /// <summary>
+        /// Get list of all cofused vectors that shouled be resolved
+        /// </summary>
+        /// <param name="dateTimeOffset"></param>
+        public IReadOnlyCollection<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
+        {
+            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
+
+            // When all vectors are older then timeout we cannot resolve confusions
+            if(!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Array.Empty<MotionVector>();
+
+            return confusedReadyToResolve.ToList().AsReadOnly();
+        }
+           
+
+        /// <summary>
+        /// Check if we have any move in room after <paramref name="dateTimeOffset"/>
+        /// </summary>
+        /// <param name="dateTimeOffset"></param>
+        /// <returns></returns>
+        public bool HasMove(DateTimeOffset dateTimeOffset) => LastMotion.Time >= dateTimeOffset;
 
         public async Task MarkLeave(MotionVector vector)
         {
-            _leaveVectors.Add(vector);
-
-            if (vector.Probability == 1)
-            {
-                DecrementNumberOfPersons();
-            }
+            DecrementNumberOfPersons();
 
             if (AreaDescriptor.MaxPersonCapacity == 1)
             {

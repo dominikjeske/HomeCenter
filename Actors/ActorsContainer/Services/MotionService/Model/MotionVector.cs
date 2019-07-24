@@ -18,20 +18,11 @@ namespace HomeCenter.Services.MotionService.Model
         public string StartPoint => _start.Uid;
         public string EndPoint => _end.Uid;
 
-        public double Probability { get; private set; } = 1.0;
-
         public MotionVector(MotionPoint startPoint, MotionPoint endPoint)
         {
             _start = startPoint;
             _end = endPoint;
         }
-
-        public MotionVector(MotionVector motionVector, double probability) : this(motionVector._start, motionVector._end)
-        {
-            Probability = probability;
-        }
-
-        public MotionVector WithProbability(double probability) => new MotionVector(this, probability);
 
         public bool Contains(MotionPoint p) => _start.Equals(p) || _end.Equals(p);
 

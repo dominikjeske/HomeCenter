@@ -112,17 +112,14 @@ namespace HomeCenter.Services.MotionService
 
             motionWindows.Subscribe(HandleMove, HandleError, Token, _concurrencyProvider.Task);
 
-            //TODO Dispose
             motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration.MotionTimeWindow, _concurrencyProvider.Scheduler))
                          .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start))
                          .SelectMany(motion => motion.ToVectors()))
                          .GroupBy(room => room.EndPoint)
-                         .SelectMany(r => r.Buffer(TimeSpan.FromMilliseconds(100))
+                         .SelectMany(r => r.Buffer(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler)
                                           .Where(b => b.Count > 0)
                                     )
-                         .Subscribe(HandleVectors);
-
-            //, HandleError, Token, _concurrencyProvider.Task
+                         .Subscribe(HandleVectors, HandleError, Token, _concurrencyProvider.Task);
         }
 
         /// <summary>
