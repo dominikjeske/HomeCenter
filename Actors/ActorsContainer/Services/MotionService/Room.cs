@@ -9,8 +9,7 @@ using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -28,6 +27,7 @@ namespace HomeCenter.Services.MotionService
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
         private readonly IEnumerable<string> _neighbors;
+        private ImmutableDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
         private readonly Timeout _turnOffTimeOut;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
 
@@ -48,8 +48,8 @@ namespace HomeCenter.Services.MotionService
 
         public IEnumerable<string> Neighbors() => _neighbors.ToList();
 
-        public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, IMessageBroker messageBroker,
-                    AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
+        public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
+                    IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
             _neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
@@ -76,6 +76,19 @@ namespace HomeCenter.Services.MotionService
             _turnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration);
         }
 
+        public void BuildNeighborsCache(IEnumerable<Room> rooms)
+        {
+            var list = new List<Room>();
+            foreach (var room in rooms)
+            {
+                if (_neighbors.Contains(room.Uid))
+                {
+                    list.Add(room);
+                }
+            }
+            _neighborsCache = list.ToImmutableDictionary(k => k.Uid, v => v);
+        }
+
         /// <summary>
         /// Take action when there is a move in the room
         /// </summary>
@@ -95,8 +108,6 @@ namespace HomeCenter.Services.MotionService
             CheckAutoIncrementForOnePerson(motionTime);
 
             _turnOffTimeOut.Increment(motionTime);
-
-            Debug.WriteLine($"New timeline: {_turnOffTimeOut.Value.Seconds}s");
         }
 
         /// <summary>
@@ -148,23 +159,75 @@ namespace HomeCenter.Services.MotionService
         public void ResolveConfusion(MotionVector vector)
         {
             _confusingVectors.TryRemove(vector);
-            MarkEnter(vector);   
+            MarkEnter(vector);
+        }
+
+        /// <summary>
+        /// Try to resolve confusion in previously marked vectors
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
+        public async Task EvaluateConfusions(DateTimeOffset currentTime)
+        {
+            var confusedVectors = GetConfusionsToResolve(currentTime);
+
+            var uncofused = new List<MotionVector>();
+            foreach (var vector in confusedVectors)
+            {
+                if (NoMoveInStartNeighbors(vector))
+                {
+                    ResolveConfusion(vector);
+
+                    await GetSourceRoom(vector).MarkLeave(vector);
+                    // confused vectors from same time spot should change person probability (but not for 100%)
+                }
+            }
         }
 
         /// <summary>
         /// Get list of all cofused vectors that shouled be resolved
         /// </summary>
         /// <param name="dateTimeOffset"></param>
-        public IReadOnlyCollection<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
+        private IEnumerable<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
         {
             var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
 
             // When all vectors are older then timeout we cannot resolve confusions
-            if(!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Array.Empty<MotionVector>();
+            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Enumerable.Empty<MotionVector>();
 
-            return confusedReadyToResolve.ToList().AsReadOnly();
+            return confusedReadyToResolve;
         }
-           
+
+        /// <summary>
+        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        private bool NoMoveInStartNeighbors(MotionVector vector)
+        {
+            var sourceRoom = GetSourceRoom(vector);
+            var moveInStartNeighbors = sourceRoom.MoveInNeighborhood(this, vector.StartTime);
+            return !moveInStartNeighbors;
+        }
+
+        private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
+        {
+            return _neighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n.LastMotion.Time > referenceTime);
+        }
+
+        /// <summary>
+        /// Get room pointed by end of the <paramref name="motionVector"/>
+        /// </summary>
+        /// <param name="motionVector"></param>
+        private Room GetTargetRoom(MotionVector motionVector) => _neighborsCache[motionVector.EndPoint];
+
+        /// <summary>
+        /// Get room pointed by beginning of the <paramref name="motionVector"/>
+        /// </summary>
+        /// <param name="motionVector"></param>
+        private Room GetSourceRoom(MotionVector motionVector) => _neighborsCache[motionVector.StartPoint];
+
+       
 
         /// <summary>
         /// Check if we have any move in room after <paramref name="dateTimeOffset"/>

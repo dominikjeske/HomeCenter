@@ -75,13 +75,7 @@ namespace HomeCenter.Services.MotionService
         {
             var rooms = new List<Room>();
 
-            var missingRooms = ComponentsAttachedProperties
-                                    .SelectMany(n => n.AsList(MotionProperties.Neighbors))
-                                    .Distinct()
-                                    .Except(ComponentsAttachedProperties.Select(r => r.AttachedActor))
-                                    .ToList();
-
-            if (missingRooms.Count > 0) throw new ConfigurationException($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
+            CheckForMissingRooms();
 
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
@@ -89,7 +83,20 @@ namespace HomeCenter.Services.MotionService
                                     _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
 
+            rooms.ForEach(r => r.BuildNeighborsCache(rooms));
+
             _roomService = new RoomService(rooms, _motionConfiguration, Logger);
+        }
+
+        private void CheckForMissingRooms()
+        {
+            var missingRooms = ComponentsAttachedProperties
+                                    .SelectMany(n => n.AsList(MotionProperties.Neighbors))
+                                    .Distinct()
+                                    .Except(ComponentsAttachedProperties.Select(r => r.AttachedActor))
+                                    .ToList();
+
+            if (missingRooms.Count > 0) throw new ConfigurationException($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
         }
 
         private void StartWatchForEvents()

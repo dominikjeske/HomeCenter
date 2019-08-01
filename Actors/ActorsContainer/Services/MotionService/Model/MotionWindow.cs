@@ -9,6 +9,7 @@ namespace HomeCenter.Services.MotionService.Model
     internal class MotionWindow
     {
         public static readonly ReadOnlyCollection<MotionVector> Default = new List<MotionVector>().AsReadOnly();
+
         private readonly ConcurrentHashSet<MotionVector> _vectors = new ConcurrentHashSet<MotionVector>();
         private readonly ConcurrentHashSet<MotionVector> _vectorsHistory = new ConcurrentHashSet<MotionVector>();
         private readonly RoomService _roomService;
