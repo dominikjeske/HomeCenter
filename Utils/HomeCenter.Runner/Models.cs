@@ -8,21 +8,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner.Codegen
 {
-    //[TestBuilder(typeof(TestBuilderSample), "Prefix_", "")]
-    //public partial class MyBuilder
-    //{
-
-    //}
-
-    //public class TestBuilderSample
-    //{
-    //    public string Name { get; set; }
-
-    //    public int Date { get; set; }
-
-    //    public TimeSpan Prefix_Time { get; set; }
-    //}
-
+    
 
 
 

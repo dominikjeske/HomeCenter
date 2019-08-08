@@ -25,11 +25,11 @@ namespace HomeCenter.Services.MotionService
         private readonly IConcurrencyProvider _concurrencyProvider;
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
+        private readonly Lazy<IEnumerable<Room>> _neighboursFactory;
         private readonly string _lamp;
-        private readonly IEnumerable<string> _neighbors;
-        private ImmutableDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
         private readonly Timeout _turnOffTimeOut;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
+        private ImmutableDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
 
         private Probability _presenceProbability = Probability.Zero;
         private DateTimeOffset _AutomationEnableOn;
@@ -41,18 +41,30 @@ namespace HomeCenter.Services.MotionService
         public int NumberOfPersons { get; private set; }
         public MotionStamp LastMotion { get; } = new MotionStamp();
         public AreaDescriptor AreaDescriptor { get; }
+        internal ImmutableDictionary<string, Room> NeighborsCache
+        {
+            get
+            {
+                if(_neighborsCache.IsEmpty)
+                {
+                    _neighborsCache = _neighboursFactory.Value.ToImmutableDictionary(x => x.Uid, y => y);
+                }
+
+                return _neighborsCache;
+            }
+        }
 
         public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersons}]";
 
-        public bool IsNeighbor(string uid) => _neighbors.Contains(uid);
+        public bool IsNeighbor(string uid) => _neighborsCache.ContainsKey(uid);
 
-        public IEnumerable<string> Neighbors() => _neighbors.ToList();
+        public IEnumerable<string> Neighbors() => _neighborsCache.Keys.ToList();
 
-        public Room(string uid, IEnumerable<string> neighbors, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
+        public Room(string uid, Lazy<IEnumerable<Room>> neighbours, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
-            _neighbors = neighbors ?? throw new ArgumentNullException(nameof(neighbors));
+            _neighboursFactory = neighbours ?? throw new ArgumentNullException(nameof(lamp));
             _lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
             _logger = logger;
             _motionConfiguration = motionConfiguration;
@@ -74,19 +86,6 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
             _turnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration);
-        }
-
-        public void BuildNeighborsCache(IEnumerable<Room> rooms)
-        {
-            var list = new List<Room>();
-            foreach (var room in rooms)
-            {
-                if (_neighbors.Contains(room.Uid))
-                {
-                    list.Add(room);
-                }
-            }
-            _neighborsCache = list.ToImmutableDictionary(k => k.Uid, v => v);
         }
 
         /// <summary>
@@ -212,20 +211,20 @@ namespace HomeCenter.Services.MotionService
 
         private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
         {
-            return _neighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n.LastMotion.Time > referenceTime);
+            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n.LastMotion.Time > referenceTime);
         }
 
         /// <summary>
         /// Get room pointed by end of the <paramref name="motionVector"/>
         /// </summary>
         /// <param name="motionVector"></param>
-        private Room GetTargetRoom(MotionVector motionVector) => _neighborsCache[motionVector.EndPoint];
+        private Room GetTargetRoom(MotionVector motionVector) => NeighborsCache[motionVector.EndPoint];
 
         /// <summary>
         /// Get room pointed by beginning of the <paramref name="motionVector"/>
         /// </summary>
         /// <param name="motionVector"></param>
-        private Room GetSourceRoom(MotionVector motionVector) => _neighborsCache[motionVector.StartPoint];
+        private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
 
        
 
