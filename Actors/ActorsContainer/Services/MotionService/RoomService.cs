@@ -3,7 +3,6 @@ using HomeCenter.Utils.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -12,7 +11,7 @@ namespace HomeCenter.Services.MotionService
 {
     internal class RoomService
     {
-        private readonly ImmutableDictionary<string, Room> _rooms;
+        private readonly IReadOnlyDictionary<string, Room> _rooms;
         private readonly MotionConfiguration _motionConfiguration;
         private readonly ILogger _logger;
 
@@ -28,7 +27,7 @@ namespace HomeCenter.Services.MotionService
 
         public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration, ILogger logger)
         {
-            _rooms = rooms.ToImmutableDictionary(k => k.Uid, v => v);
+            _rooms = rooms.ToDictionary(k => k.Uid, v => v).AsReadOnly();
             _motionConfiguration = motionConfiguration;
             _logger = logger;
         }
@@ -107,7 +106,6 @@ namespace HomeCenter.Services.MotionService
             targetRoom.MarkEnter(motionVector);
         }
 
-     
         /// <summary>
         /// Check if two points are neighbors
         /// </summary>
@@ -115,9 +113,5 @@ namespace HomeCenter.Services.MotionService
         /// <param name="p2"></param>
         /// <returns></returns>
         private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _rooms[p1.Uid].IsNeighbor(p2.Uid);
-               
-       
-
-      
     }
 }

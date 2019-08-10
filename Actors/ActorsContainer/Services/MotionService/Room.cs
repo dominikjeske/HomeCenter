@@ -29,7 +29,7 @@ namespace HomeCenter.Services.MotionService
         private readonly string _lamp;
         private readonly Timeout _turnOffTimeOut;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
-        private ImmutableDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
+        private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
 
         private Probability _presenceProbability = Probability.Zero;
         private DateTimeOffset _AutomationEnableOn;
@@ -41,13 +41,14 @@ namespace HomeCenter.Services.MotionService
         public int NumberOfPersons { get; private set; }
         public MotionStamp LastMotion { get; } = new MotionStamp();
         public AreaDescriptor AreaDescriptor { get; }
-        internal ImmutableDictionary<string, Room> NeighborsCache
+
+        internal IReadOnlyDictionary<string, Room> NeighborsCache
         {
             get
             {
-                if(_neighborsCache.IsEmpty)
+                if (_neighborsCache == ImmutableDictionary<string, Room>.Empty)
                 {
-                    _neighborsCache = _neighboursFactory.Value.ToImmutableDictionary(x => x.Uid, y => y);
+                    _neighborsCache = _neighboursFactory.Value.ToDictionary(x => x.Uid, y => y).AsReadOnly();
                 }
 
                 return _neighborsCache;
@@ -225,8 +226,6 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="motionVector"></param>
         private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
-
-       
 
         /// <summary>
         /// Check if we have any move in room after <paramref name="dateTimeOffset"/>
