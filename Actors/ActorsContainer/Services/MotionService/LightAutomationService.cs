@@ -24,7 +24,8 @@ namespace HomeCenter.Services.MotionService
     {
         private readonly IConcurrencyProvider _concurrencyProvider;
         private readonly MotionConfiguration _motionConfiguration = new MotionConfiguration();
-        private RoomService _roomService;
+
+        private RoomService _roomService = null!; // Initialized in OnStart
 
         protected LightAutomationService(IConcurrencyProvider concurrencyProvider)
         {

@@ -9,7 +9,7 @@ namespace HomeCenter.Services.MotionService.Model
     {
         public readonly static MotionStamp Empty = new MotionStamp();
 
-        private MotionStamp _previous;
+        private MotionStamp _previous = Empty;
         private bool _canCofuse;
 
         public DateTimeOffset? Time { get; private set; }

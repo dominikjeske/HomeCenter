@@ -25,6 +25,11 @@ namespace HomeCenter.Services.MotionService
             get { return _rooms[window.Start.Uid]; }
         }
 
+        private Room this[MotionVector vector]
+        {
+            get { return _rooms[vector.EndPoint]; }
+        }
+
         public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration, ILogger logger)
         {
             _rooms = rooms.ToDictionary(k => k.Uid, v => v).AsReadOnly();
@@ -57,8 +62,7 @@ namespace HomeCenter.Services.MotionService
             else if (motionVectors.Count == 1)
             {
                 var vector = motionVectors.Single();
-                var targetRoom = _rooms[vector.EndPoint];
-                // When whis vector was responsible for turning on the light we are sure we can mark enter
+                var targetRoom = this[vector];
                 if (targetRoom.IsTurnOnVector(vector))
                 {
                     await MarkVector(vector);
@@ -71,7 +75,7 @@ namespace HomeCenter.Services.MotionService
             // When we have at least two vectors we know that this vector is confused
             else
             {
-                motionVectors.ForEach(vector => _rooms[vector.EndPoint].MarkConfusion(vector));
+                motionVectors.ForEach(vector => this[vector].MarkConfusion(vector));
             }
         }
 

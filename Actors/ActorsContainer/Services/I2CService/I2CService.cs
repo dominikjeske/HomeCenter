@@ -43,7 +43,7 @@ namespace HomeCenter.Services.Networking
         {
             var address = query.Address;
             var bufferSize = query.BufferSize;
-            byte[] initializeWrite = null;
+            byte[] initializeWrite = Array.Empty<byte>();
 
             if (query.ContainsProperty(MessageProperties.Initialize))
             {
@@ -53,7 +53,9 @@ namespace HomeCenter.Services.Networking
             try
             {
                 var result = new byte[bufferSize];
-                if(initializeWrite != null)
+
+
+                if(initializeWrite != Array.Empty<byte>())
                 {
                     _nativeI2CBus.WriteRead(address, initializeWrite, result);
                 }

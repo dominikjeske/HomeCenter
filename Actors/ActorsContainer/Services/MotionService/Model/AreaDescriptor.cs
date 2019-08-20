@@ -9,7 +9,7 @@ namespace HomeCenter.Services.MotionService.Model
         /// <summary>
         /// Automation working profile
         /// </summary>
-        public string WorkingTime { get; set; }
+        public string WorkingTime { get; set; } = Model.WorkingTime.AllDay;
 
         /// <summary>
         /// How many persons can be at once in single room
@@ -19,7 +19,7 @@ namespace HomeCenter.Services.MotionService.Model
         /// <summary>
         /// Type of area - standard room, passage..
         /// </summary>
-        public string AreaType { get; set; }
+        public string AreaType { get; set; } = Model.AreaType.Room;
 
         /// <summary>
         /// How long it takes alarm to be able to detect move after previous alarm state
