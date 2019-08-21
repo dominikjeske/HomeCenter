@@ -57,9 +57,9 @@ namespace HomeCenter.Services.MotionService
 
         public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersons}]";
 
-        public bool IsNeighbor(string uid) => _neighborsCache.ContainsKey(uid);
+        public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
 
-        public IEnumerable<string> Neighbors() => _neighborsCache.Keys.ToList();
+        public IEnumerable<string> Neighbors() => NeighborsCache.Keys.ToList();
 
         public Room(string uid, Lazy<IEnumerable<Room>> neighbours, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)

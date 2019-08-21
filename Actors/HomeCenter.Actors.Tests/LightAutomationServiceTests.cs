@@ -133,8 +133,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayDetectorToilet }
             }).Start();
 
-            //AdvanceJustAfterEnd();
-            AdvanceTo(TimeSpan.FromSeconds(4));
+            AdvanceJustAfterEnd();
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
         }
@@ -153,7 +152,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 3000, Detectors.kitchenDetector },
             }).Start();
 
-            AdvanceTo(confusionResolutionTime + TimeSpan.FromMilliseconds(1500));
+            AdvanceJustAfterRoundUp(confusionResolutionTime + GetMotionTime(2));
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
         }

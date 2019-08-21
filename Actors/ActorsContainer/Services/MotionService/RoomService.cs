@@ -58,6 +58,7 @@ namespace HomeCenter.Services.MotionService
         public async Task HandleVectors(IList<MotionVector> motionVectors)
         {
             if (motionVectors.Count == 0) return;
+
             // When we have one vector we know that there is no concurrent vectors to same room
             else if (motionVectors.Count == 1)
             {

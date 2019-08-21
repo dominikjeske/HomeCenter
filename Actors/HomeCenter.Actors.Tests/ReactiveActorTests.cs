@@ -27,6 +27,12 @@ namespace HomeCenter.Services.MotionService.Tests
 
         protected void AdvanceTo(TimeSpan time) => _context.Scheduler.AdvanceTo(time);
 
+        /// <summary>
+        /// We calculate next full second after given time and return just after this time (default 100ms)
+        /// </summary>
+        /// <param name="time"></param>
+        protected void AdvanceJustAfterRoundUp(TimeSpan time) => _context.Scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(Math.Ceiling(time.TotalSeconds)));
+
         protected void AdvanceTo(long ticks) => _context.Scheduler.AdvanceTo(ticks);
 
         protected void AdvanceJustAfterEnd() => _context.Scheduler.AdvanceJustAfterEnd(_context.MotionEvents);
@@ -42,5 +48,7 @@ namespace HomeCenter.Services.MotionService.Tests
         protected Task<T> Query<T>(Query query) => _context.Query<T>(query);
 
         protected void RunAfterFirstMove(Action<MotionEnvelope> action) => _context.MotionEvents.Subscribe(action);
+
+        protected TimeSpan GetMotionTime(int vectorIndex) => TimeSpan.FromTicks(_context.MotionEvents.Messages[vectorIndex].Time);
     }
 }
