@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0-preview7.19362.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />
   </ItemGroup>
 
   <ItemGroup>

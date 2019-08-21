@@ -153,7 +153,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Executed when aftre some time we can unconfuse our vecotr
+        /// Executed when after some time we can resolve confused vectors
         /// </summary>
         /// <param name="vector"></param>
         public void ResolveConfusion(MotionVector vector)
@@ -185,7 +185,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Get list of all cofused vectors that shouled be resolved
+        /// Get list of all confused vectors that should be resolved
         /// </summary>
         /// <param name="dateTimeOffset"></param>
         private IEnumerable<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
