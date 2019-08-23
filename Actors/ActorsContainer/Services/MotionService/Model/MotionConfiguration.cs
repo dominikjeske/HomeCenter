@@ -36,5 +36,10 @@ namespace HomeCenter.Services.MotionService
         /// Time after which we can try to unconfuse vector that was uncertain before
         /// </summary>
         public TimeSpan ConfusionResolutionTime { get; set; }
+
+        /// <summary>
+        /// Number by which we calculate decreasing probability when somebody leaves room
+        /// </summary>
+        public double DecreaseLeavingFactor { get; set; } = 0.9;
     }
 }

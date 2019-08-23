@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
+
     internal class Room : IDisposable
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
@@ -28,13 +29,11 @@ namespace HomeCenter.Services.MotionService
         private readonly Lazy<IEnumerable<Room>> _neighboursFactory;
         private readonly string _lamp;
         private readonly Timeout _turnOffTimeOut;
+        private readonly MotionStamp _lastMotion = new MotionStamp();
+        private readonly RoomStatistic _roomStatistic = new RoomStatistic();
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
         private Probability _presenceProbability = Probability.Zero;
-        private MotionStamp _lastMotion { get; } = new MotionStamp();
-        private DateTimeOffset _AutomationEnableOn;
-        private DateTimeOffset? _lastAutoIncrement;
-        private DateTimeOffset? _lastAutoTurnOff;
-        private DateTimeOffset? _firstEnterTime;
+
         private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
 
         private IReadOnlyDictionary<string, Room> NeighborsCache
@@ -171,7 +170,7 @@ namespace HomeCenter.Services.MotionService
         public void DisableAutomation(TimeSpan time)
         {
             DisableAutomation();
-            _AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
+            _roomStatistic.AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
         }
 
         public void Dispose() => _disposeContainer.Dispose();
@@ -183,7 +182,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private bool IsTurnOnVector(MotionVector motionVector)
         {
-            if (!_firstEnterTime.HasValue || _firstEnterTime == motionVector.EndTime)
+            if (!_roomStatistic.FirstEnterTime.HasValue || _roomStatistic.FirstEnterTime == motionVector.EndTime)
             {
                 return true;
             }
@@ -267,9 +266,7 @@ namespace HomeCenter.Services.MotionService
 
             RemoveConfusedVector(vector);
 
-            MarkEnter(vector);
-
-            await GetSourceRoom(vector).MarkLeave(vector);
+            await MarkVector(vector);
 
             // confused vectors from same time spot should change person probability (but not for 100%)
         }
@@ -312,15 +309,20 @@ namespace HomeCenter.Services.MotionService
         {
             DecrementNumberOfPersons();
 
-            if (NumberOfPersons == 0)
+            _roomStatistic.LastLeaveVector = vector;
+
+            // Only when we have one person room we can be sure that we can turn of light immediately
+            if (AreaDescriptor.MaxPersonCapacity == 1)
             {
                 await SetProbability(Probability.Zero, vector.EndTime);
-                await NeighborsCache.Select(n => n.Value.EvaluateConfusions(vector.Start)).WhenAll();
             }
             else
             {
-                //TODO change this value
-                await SetProbability(Probability.FromValue(0.1), vector.EndTime);
+                var numberOfPeopleFactor = NumberOfPersons == 0 ? _motionConfiguration.DecreaseLeavingFactor : _motionConfiguration.DecreaseLeavingFactor / NumberOfPersons;
+                var visitTypeFactor = _turnOffTimeOut.VisitType.Value;
+                var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
+
+                await SetProbability(_presenceProbability.DecreaseByPercent(decreasePercent), vector.EndTime);
             }
         }
 
@@ -332,7 +334,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (_presenceProbability == Probability.Zero)
             {
-                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(moveTime, _lastAutoTurnOff);
+                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(moveTime, _roomStatistic.LastAutoTurnOff);
                 if (result) _logger.LogInformation($"[{Uid}] Turn-off time out updated {before} -> {after}");
             }
         }
@@ -363,7 +365,7 @@ namespace HomeCenter.Services.MotionService
             // When we change from zero to full
             if (_presenceProbability == Probability.Zero && probability == Probability.Full)
             {
-                _firstEnterTime = time;
+                _roomStatistic.FirstEnterTime = time;
             }
 
             _presenceProbability = probability;
@@ -375,6 +377,8 @@ namespace HomeCenter.Services.MotionService
             else if (_presenceProbability.IsNoProbability)
             {
                 await TryTurnOffLamp();
+
+               // await NeighborsCache.Select(n => n.Value.EvaluateConfusions()).WhenAll();
             }
         }
 
@@ -401,7 +405,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (NumberOfPersons == 0)
             {
-                _lastAutoIncrement = time;
+                _roomStatistic.LastAutoIncrement = time;
                 NumberOfPersons++;
             }
         }
@@ -409,7 +413,7 @@ namespace HomeCenter.Services.MotionService
         //TODO maybe do it differently
         private void CheckForTurnOnAutomationAgain()
         {
-            if (AutomationDisabled && _concurrencyProvider.Scheduler.Now > _AutomationEnableOn)
+            if (AutomationDisabled && _concurrencyProvider.Scheduler.Now > _roomStatistic.AutomationEnableOn)
             {
                 EnableAutomation();
             }
@@ -417,7 +421,7 @@ namespace HomeCenter.Services.MotionService
 
         private void IncrementNumberOfPersons(DateTimeOffset moveTime)
         {
-            if (!_lastAutoIncrement.HasValue || moveTime.Between(_lastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
+            if (!_roomStatistic.LastAutoIncrement.HasValue || moveTime.Between(_roomStatistic.LastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
             {
                 NumberOfPersons++;
             }
@@ -447,7 +451,7 @@ namespace HomeCenter.Services.MotionService
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 
-                _lastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
+                _roomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
         }
 

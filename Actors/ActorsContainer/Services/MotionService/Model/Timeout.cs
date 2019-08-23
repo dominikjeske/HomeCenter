@@ -3,6 +3,7 @@ using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
+
     /// <summary>
     /// Timeout after person inactivity in room
     /// </summary>
@@ -12,12 +13,16 @@ namespace HomeCenter.Services.MotionService.Model
 
         private TimeSpan _baseTime;
         private DateTimeOffset? _motionStart;
-        private TimeSpan _timeout;
-
+        
         /// <summary>
         /// Value of timeout
         /// </summary>
-        public TimeSpan Value => _timeout;
+        public TimeSpan Value { get; private set; }
+
+        /// <summary>
+        /// Type of the visit determinate by time of movement in room
+        /// </summary>
+        public VisitType VisitType { get; private set; } = VisitType.None;
 
         /// <summary>
         /// Timeout constructor
@@ -28,6 +33,8 @@ namespace HomeCenter.Services.MotionService.Model
         {
             _baseTime = baseTime;
             _motionConfiguration = motionConfiguration;
+
+            Reset();
         }
 
         public (bool result, TimeSpan before, TimeSpan after) TryIncreaseBaseTime(DateTimeOffset moveTime, DateTimeOffset? lastTurnOffTime)
@@ -44,36 +51,32 @@ namespace HomeCenter.Services.MotionService.Model
         /// </summary>
         public void Increment(DateTimeOffset motionTime)
         {
-            // Start of the motion
-            if(!_motionStart.HasValue)
+            if (!_motionStart.HasValue)
             {
                 _motionStart = motionTime;
-                _timeout = _baseTime;
-
-                return;
             }
 
-            // This can be accidencial or passthru so we keep base timeout
-            if(motionTime - _motionStart < TimeSpan.FromSeconds(10))
+            if (motionTime - _motionStart < TimeSpan.FromSeconds(10))
             {
-                _timeout = _baseTime;
-                return;
+                VisitType = VisitType.PassThru;
             }
-
-            // Short visit
-            if(motionTime - _motionStart < TimeSpan.FromSeconds(60))
+            else if (motionTime - _motionStart < TimeSpan.FromSeconds(60))
             {
-                _timeout = TimeSpan.FromTicks( _baseTime.Ticks * 2);
-                return;
+                VisitType = VisitType.ShortVisit;
+            }
+            else
+            {
+                VisitType = VisitType.LongerVisit;
             }
 
-            // longer visit
-            _timeout = TimeSpan.FromTicks(_baseTime.Ticks * 3);
+            Value = TimeSpan.FromTicks((int)(_baseTime.Ticks * VisitType.Value));
         }
 
         public void Reset()
         {
             _motionStart = null;
+            Value = _baseTime;
+            VisitType = VisitType.None;
         }
     }
 }

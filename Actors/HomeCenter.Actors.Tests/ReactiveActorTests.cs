@@ -35,7 +35,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
         protected void AdvanceTo(long ticks) => _context.Scheduler.AdvanceTo(ticks);
 
-        protected void AdvanceJustAfterEnd() => _context.Scheduler.AdvanceJustAfterEnd(_context.MotionEvents);
+        protected void AdvanceJustAfterEnd(int timeAfter = 500) => _context.Scheduler.AdvanceJustAfterEnd(_context.MotionEvents, timeAfter);
 
         protected void AdvanceJustAfter(TimeSpan time) => _context.Scheduler.AdvanceJustAfter(time);
 

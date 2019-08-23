@@ -178,9 +178,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
 
-        /// <summary>
-        /// We have possible moves from A and B into C but other move from A to D when nobody stays in A should resolve confusions
-        /// </summary>
+
         [TestMethod]
         public void Leave_UnconfusedFromRoom_ShouldResolveOtherConfusions()
         {
@@ -189,21 +187,21 @@ namespace HomeCenter.Services.MotionService.Tests
             new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayDetectorLivingRoom },
-                { 1000, Detectors.kitchenDetector },
+                { 1000, Detectors.toiletDetector },
                 { 1500, Detectors.hallwayDetectorToilet },
-                { 1600, Detectors.bathroomDetector }     // Enter to bathroom is not confused and we have 0 people left so we know that move from hallwayDetectorLivingRoom->hallwayDetectorToilet can be deleted
+                { 1600, Detectors.bathroomDetector }     
             }).Start();
 
-            AdvanceJustAfterEnd();
+            AdvanceJustAfterEnd(2000);
 
-            LampState(Detectors.kitchenDetector).Should().BeFalse("Kitchen should be turned off because confused vector from hallway is canceled");
+            LampState(Detectors.toiletDetector).Should().BeFalse();
             LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
             LampState(Detectors.bathroomDetector).Should().BeTrue();
             LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
         [TestMethod]
-        public void Leave_ConfusedFromRoom_ShouldNotResolveOtherCOnfusions()
+        public void Leave_ConfusedFromRoom_ShouldNotResolveOtherConfusions()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();

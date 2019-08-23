@@ -31,6 +31,8 @@ namespace HomeCenter.Services.MotionService.Model
 
         public Probability Decrease(double delta) => new Probability(Value - delta);
 
+        public Probability DecreaseByPercent(double percent) => new Probability(Value - (Value * percent));
+
         public static Probability FromValue(double probability) => new Probability(probability);
 
         protected override int GetHashCodeCore()
