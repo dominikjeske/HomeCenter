@@ -10,10 +10,8 @@ namespace HomeCenter.Services.MotionService.Model
         public readonly static MotionStamp Empty = new MotionStamp();
 
         private MotionStamp _previous = Empty;
-        private bool _canCofuse;
 
         public DateTimeOffset? Time { get; private set; }
-        public bool CanConfuze => HasValue && _canCofuse;
         public MotionStamp Previous => _previous ?? Empty;
 
         public bool HasValue => Time.HasValue;
@@ -28,10 +26,7 @@ namespace HomeCenter.Services.MotionService.Model
             }
 
             Time = time;
-            _canCofuse = true;
         }
-
-        public void UnConfuze() => _canCofuse = false;
 
         public MotionStamp Clone() => (MotionStamp)MemberwiseClone();
     }

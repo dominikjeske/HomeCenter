@@ -9,41 +9,45 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
-        private readonly MotionPoint _start;
-        private readonly MotionPoint _end;
+        public DateTimeOffset StartTime => Start.TimeStamp;
+        public DateTimeOffset EndTime => End.TimeStamp;
 
-        public DateTimeOffset StartTime => _start.TimeStamp;
-        public DateTimeOffset EndTime => _end.TimeStamp;
+        public MotionPoint Start { get; }
+        public MotionPoint End { get; }
 
-        public string StartPoint => _start.Uid;
-        public string EndPoint => _end.Uid;
+        public string StartPoint => Start.Uid;
+        public string EndPoint => End.Uid;
 
         public MotionVector(MotionPoint startPoint, MotionPoint endPoint)
         {
-            _start = startPoint;
-            _end = endPoint;
+            Start = startPoint;
+            End = endPoint;
         }
 
-        public bool Contains(MotionPoint p) => _start.Equals(p) || _end.Equals(p);
+        public bool Contains(MotionPoint p) => Start.Equals(p) || End.Equals(p);
+
+        public bool ContainsOnBegin(MotionPoint p) => Start.Equals(p);
+
+        public bool ContainsOnEnd(MotionPoint p) => End.Equals(p);
 
         public bool Equals(MotionVector other) => base.Equals(other);
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return _start;
-            yield return _end;
+            yield return Start;
+            yield return End;
         }
 
-        public bool EqualsWithEndTime(MotionVector other) => Equals(other) && _end.TimeStamp == other._end.TimeStamp;
+        public bool EqualsWithEndTime(MotionVector other) => Equals(other) && End.TimeStamp == other.End.TimeStamp;
 
-        public bool EqualsWithStartTime(MotionVector other) => Equals(other) && _start.TimeStamp == other._start.TimeStamp;
+        public bool EqualsWithStartTime(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp;
 
-        public bool EqualsBothTimes(MotionVector other) => Equals(other) && _start.TimeStamp == other._start.TimeStamp && _end.TimeStamp == other._end.TimeStamp;
+        public bool EqualsBothTimes(MotionVector other) => Equals(other) && Start.TimeStamp == other.Start.TimeStamp && End.TimeStamp == other.End.TimeStamp;
 
         public override string ToString()
         {
-            var time = _end.TimeStamp - _start.TimeStamp;
-            return $"{_start} -> {_end} [{time.TotalMilliseconds}ms]";
+            var time = End.TimeStamp - Start.TimeStamp;
+            return $"[V] {Start} -> {End} [{time.TotalMilliseconds}ms]";
         }
     }
 }

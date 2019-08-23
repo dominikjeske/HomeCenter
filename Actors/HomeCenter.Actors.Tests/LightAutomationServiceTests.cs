@@ -155,8 +155,82 @@ namespace HomeCenter.Services.MotionService.Tests
             AdvanceJustAfterRoundUp(confusionResolutionTime + GetMotionTime(2));
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
+            LampState(Detectors.kitchenDetector).Should().BeTrue();
         }
-              
+
+        [TestMethod]
+        public void Leave_FromSeparateRoomsIntoOne_ShouldTurnOffLightInBoth()
+        {
+            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+            var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.badroomDetector },
+                { 1000, Detectors.hallwayDetectorLivingRoom },
+                { 1500, Detectors.hallwayDetectorToilet }
+            }).Start();
+
+            AdvanceJustAfterRoundUp(confusionResolutionTime + GetMotionTime(2));
+
+            LampState(Detectors.badroomDetector).Should().BeFalse();
+            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
+            LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+        }
+
+
+        /// <summary>
+        /// We have possible moves from A and B into C but other move from A to D when nobody stays in A should resolve confusions
+        /// </summary>
+        [TestMethod]
+        public void Leave_UnconfusedFromRoom_ShouldResolveOtherConfusions()
+        {
+            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+            var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.hallwayDetectorLivingRoom },
+                { 1000, Detectors.kitchenDetector },
+                { 1500, Detectors.hallwayDetectorToilet },
+                { 1600, Detectors.bathroomDetector }     // Enter to bathroom is not confused and we have 0 people left so we know that move from hallwayDetectorLivingRoom->hallwayDetectorToilet can be deleted
+            }).Start();
+
+            AdvanceJustAfterEnd();
+
+            LampState(Detectors.kitchenDetector).Should().BeFalse("Kitchen should be turned off because confused vector from hallway is canceled");
+            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
+            LampState(Detectors.bathroomDetector).Should().BeTrue();
+            LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Leave_ConfusedFromRoom_ShouldNotResolveOtherCOnfusions()
+        {
+            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+            var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                { 300, Detectors.bathroomDetector },             // We have move in bathroom at start so future enter to bathroom is not sure and cannot cancel other confusions
+                { 500, Detectors.hallwayDetectorLivingRoom },
+                { 1000, Detectors.kitchenDetector },
+                { 1500, Detectors.hallwayDetectorToilet },
+                { 1600, Detectors.bathroomDetector }
+            }).Start();
+
+            AdvanceJustAfterEnd();
+
+            LampState(Detectors.kitchenDetector).Should().BeTrue();
+            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeTrue();
+            LampState(Detectors.bathroomDetector).Should().BeTrue();
+            LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+
+            AdvanceJustAfterRoundUp(confusionResolutionTime + GetMotionTime(4));
+
+            LampState(Detectors.kitchenDetector).Should().BeFalse("Kitchen should be OFF after confusion resolution time");
+            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeTrue();
+            LampState(Detectors.bathroomDetector).Should().BeTrue();
+            LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+        }
+
 
         [TestMethod]
         public void Move_OnSeparateRooms_ShouldTurnOnLight()
@@ -287,36 +361,36 @@ namespace HomeCenter.Services.MotionService.Tests
             LampState(Detectors.kitchenDetector).Should().BeTrue();
         }
 
-        [TestMethod]
-        public void Confusion_MoveWithNoConfusion_ShouldTurnOfLightImmediately()
-        {
-            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithMotions(new Dictionary<int, string>
-            {
-                { 1000, Detectors.livingRoomDetector },
-                { 2000, Detectors.hallwayDetectorLivingRoom },
-                { 3000, Detectors.hallwayDetectorToilet },
-                { 4000, Detectors.kitchenDetector },
-            }).Start();
+        //[TestMethod]
+        //public void Confusion_MoveWithNoConfusion_ShouldTurnOfLightImmediately()
+        //{
+        //    new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithMotions(new Dictionary<int, string>
+        //    {
+        //        { 1000, Detectors.livingRoomDetector },
+        //        { 2000, Detectors.hallwayDetectorLivingRoom },
+        //        { 3000, Detectors.hallwayDetectorToilet },
+        //        { 4000, Detectors.kitchenDetector },
+        //    }).Start();
 
-            AdvanceJustAfter(TimeSpan.FromSeconds(2));
+        //    AdvanceJustAfter(TimeSpan.FromSeconds(2));
 
-            LampState(Detectors.livingRoomDetector).Should().BeTrue();
-            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeTrue();
-            //  scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(3));
-            //   Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-            //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
-            //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
-            //scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(4));
-            //Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-            //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
-            //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
-            //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-            //scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(5));
-            //Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
-            //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
-            //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
-            //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
-        }
+        //    LampState(Detectors.livingRoomDetector).Should().BeTrue();
+        //    LampState(Detectors.hallwayDetectorLivingRoom).Should().BeTrue();
+        //    //  scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(3));
+        //    //   Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        //    //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
+        //    //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
+        //    //scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(4));
+        //    //Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        //    //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
+        //    //Assert.AreEqual(true, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
+        //    //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+        //    //scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(5));
+        //    //Assert.AreEqual(false, lampDictionary[Detectors.livingRoomDetector].IsTurnedOn);
+        //    //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
+        //    //Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
+        //    //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
+        //}
 
        
 
@@ -456,9 +530,9 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var builder = new LightAutomationServiceBuilder();
 
-            builder.WithRoom(new RoomBuilder(Rooms.Hallway).WithDetector(Detectors.hallwayDetectorToilet, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector })
+            builder.WithRoom(new RoomBuilder(Rooms.Hallway).WithDetector(Detectors.hallwayDetectorToilet, new List<string> { Detectors.hallwayDetectorLivingRoom, Detectors.kitchenDetector, Detectors.staircaseDetector, Detectors.toiletDetector, Detectors.badroomDetector })
                                                            .WithDetector(Detectors.hallwayDetectorLivingRoom, new List<string> { Detectors.livingRoomDetector, Detectors.bathroomDetector, Detectors.hallwayDetectorToilet }));
-            builder.WithRoom(new RoomBuilder(Rooms.Badroom).WithDetector(Detectors.badroomDetector, new List<string> { Detectors.hallwayDetectorLivingRoom }));
+            builder.WithRoom(new RoomBuilder(Rooms.Badroom).WithDetector(Detectors.badroomDetector, new List<string> { Detectors.hallwayDetectorToilet }));
             builder.WithRoom(new RoomBuilder(Rooms.Balcony).WithDetector(Detectors.balconyDetector, new List<string> { Detectors.livingRoomDetector }));
             builder.WithRoom(new RoomBuilder(Rooms.Bathroom).WithDetector(Detectors.bathroomDetector, new List<string> { Detectors.hallwayDetectorLivingRoom }));
             builder.WithRoom(new RoomBuilder(Rooms.Kitchen).WithDetector(Detectors.kitchenDetector, new List<string> { Detectors.hallwayDetectorToilet }));

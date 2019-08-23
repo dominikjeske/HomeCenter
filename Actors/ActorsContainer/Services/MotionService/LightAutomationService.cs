@@ -88,7 +88,7 @@ namespace HomeCenter.Services.MotionService
                                     _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
 
-            _roomService = new RoomService(rooms, _motionConfiguration, Logger);
+            _roomService = new RoomService(rooms, _motionConfiguration);
         }
 
         private void CheckForMissingRooms()
@@ -104,8 +104,6 @@ namespace HomeCenter.Services.MotionService
 
         private void StartWatchForEvents()
         {
-            _roomService.RegisterForLampChangeState();
-
             PeriodicCheck();
             AnalyzeMove();
         }

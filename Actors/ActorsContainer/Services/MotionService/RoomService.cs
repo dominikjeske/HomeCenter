@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Services.MotionService.Model;
 using HomeCenter.Utils.Extensions;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,6 @@ namespace HomeCenter.Services.MotionService
     {
         private readonly IReadOnlyDictionary<string, Room> _rooms;
         private readonly MotionConfiguration _motionConfiguration;
-        private readonly ILogger _logger;
 
         public Room this[string uid]
         {
@@ -30,16 +28,10 @@ namespace HomeCenter.Services.MotionService
             get { return _rooms[vector.EndPoint]; }
         }
 
-        public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration, ILogger logger)
+        public RoomService(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration)
         {
             _rooms = rooms.ToDictionary(k => k.Uid, v => v).AsReadOnly();
             _motionConfiguration = motionConfiguration;
-            _logger = logger;
-        }
-
-        public void RegisterForLampChangeState()
-        {
-            _rooms.Values.ForEach(room => room.RegisterForLampChangeState());
         }
 
         public int NumberOfPersons() => _rooms.Sum(md => md.Value.NumberOfPersons);
@@ -59,25 +51,8 @@ namespace HomeCenter.Services.MotionService
         {
             if (motionVectors.Count == 0) return;
 
-            // When we have one vector we know that there is no concurrent vectors to same room
-            else if (motionVectors.Count == 1)
-            {
-                var vector = motionVectors.Single();
-                var targetRoom = this[vector];
-                if (targetRoom.IsTurnOnVector(vector))
-                {
-                    await MarkVector(vector);
-                }
-                else
-                {
-                    targetRoom.MarkConfusion(vector);
-                }
-            }
-            // When we have at least two vectors we know that this vector is confused
-            else
-            {
-                motionVectors.ForEach(vector => this[vector].MarkConfusion(vector));
-            }
+            var targetRoom = this[motionVectors.First()];
+            await targetRoom.HandleVectors(motionVectors);
         }
 
         public Task MarkMotion(MotionWindow point)
@@ -90,25 +65,9 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public async Task UpdateRooms(DateTimeOffset motionTime)
         {
-            await _rooms.Values.Select(async r => await r.EvaluateConfusions(motionTime)).WhenAll();
+            await _rooms.Values.Select(r => r.EvaluateConfusions(motionTime)).WhenAll();
 
-            await _rooms.Values.Select(async r => await r.PeriodicUpdate(motionTime)).WhenAll();
-        }
-
-        /// <summary>
-        /// Marks enter to target room and leave from source room
-        /// </summary>
-        /// <param name="motionVector"></param>
-        /// <returns></returns>
-        private async Task MarkVector(MotionVector motionVector)
-        {
-            var targetRoom = _rooms[motionVector.EndPoint];
-            var sourceRoom = _rooms[motionVector.StartPoint];
-
-            _logger.LogInformation(motionVector.ToString());
-
-            await sourceRoom.MarkLeave(motionVector);
-            targetRoom.MarkEnter(motionVector);
+            await _rooms.Values.Select(r => r.PeriodicUpdate(motionTime)).WhenAll();
         }
 
         /// <summary>

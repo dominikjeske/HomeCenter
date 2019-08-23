@@ -29,20 +29,15 @@ namespace HomeCenter.Services.MotionService
         private readonly string _lamp;
         private readonly Timeout _turnOffTimeOut;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
-        private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
-
         private Probability _presenceProbability = Probability.Zero;
+        private MotionStamp _lastMotion { get; } = new MotionStamp();
         private DateTimeOffset _AutomationEnableOn;
         private DateTimeOffset? _lastAutoIncrement;
         private DateTimeOffset? _lastAutoTurnOff;
         private DateTimeOffset? _firstEnterTime;
-        public string Uid { get; }
-        public bool AutomationDisabled { get; private set; }
-        public int NumberOfPersons { get; private set; }
-        public MotionStamp LastMotion { get; } = new MotionStamp();
-        public AreaDescriptor AreaDescriptor { get; }
+        private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
 
-        internal IReadOnlyDictionary<string, Room> NeighborsCache
+        private IReadOnlyDictionary<string, Room> NeighborsCache
         {
             get
             {
@@ -55,11 +50,12 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        public override string ToString() => $"{Uid} [Last move: {LastMotion}] [Persons: {NumberOfPersons}]";
+        public string Uid { get; }
+        public bool AutomationDisabled { get; private set; }
+        public int NumberOfPersons { get; private set; }
+        public AreaDescriptor AreaDescriptor { get; }
 
-        public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
-
-        public IEnumerable<string> Neighbors() => NeighborsCache.Keys.ToList();
+        public override string ToString() => $"{Uid} [Last move: {_lastMotion}] [Persons: {NumberOfPersons}]";
 
         public Room(string uid, Lazy<IEnumerable<Room>> neighbours, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
@@ -87,7 +83,11 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
             _turnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration);
+
+            RegisterChangeStateSource();
         }
+
+        public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
 
         /// <summary>
         /// Take action when there is a move in the room
@@ -96,32 +96,17 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         public async Task MarkMotion(DateTimeOffset motionTime)
         {
+            _logger.LogInformation($"[M] [{Uid}] {motionTime.TimeOfDay.TotalMilliseconds}");
+
             TryTuneTurnOffTimeOut(motionTime);
-            LastMotion.SetTime(motionTime);
 
-            if (_presenceProbability == Probability.Zero)
-            {
-                _firstEnterTime = motionTime;
-            }
+            _lastMotion.SetTime(motionTime);
 
-            await SetProbability(Probability.Full);
+            await SetProbability(Probability.Full, motionTime);
+
             CheckAutoIncrementForOnePerson(motionTime);
 
             _turnOffTimeOut.Increment(motionTime);
-        }
-
-        /// <summary>
-        /// Check if <paramref name="motionVector"/> is vector that turned on the light
-        /// </summary>
-        /// <param name="motionVector"></param>
-        /// <returns></returns>
-        public bool IsTurnOnVector(MotionVector motionVector)
-        {
-            if (!_firstEnterTime.HasValue || _firstEnterTime == motionVector.EndTime)
-            {
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -135,117 +120,39 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Marks entrance of last motion vector
-        /// </summary>
-        /// <param name="vector"></param>
-        public void MarkEnter(MotionVector vector)
-        {
-            IncrementNumberOfPersons(vector.EndTime);
-        }
-
-        /// <summary>
-        /// Mark some motion that can be enter vector but we are not sure
-        /// </summary>
-        /// <param name="vector"></param>
-        public void MarkConfusion(MotionVector vector)
-        {
-            _confusingVectors.Add(vector);
-        }
-
-        /// <summary>
-        /// Executed when after some time we can resolve confused vectors
-        /// </summary>
-        /// <param name="vector"></param>
-        public void ResolveConfusion(MotionVector vector)
-        {
-            _confusingVectors.TryRemove(vector);
-            MarkEnter(vector);
-        }
-
-        /// <summary>
         /// Try to resolve confusion in previously marked vectors
         /// </summary>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        public async Task EvaluateConfusions(DateTimeOffset currentTime)
+        public Task EvaluateConfusions(DateTimeOffset currentTime)
         {
-            var confusedVectors = GetConfusionsToResolve(currentTime);
+            return GetConfusionsToResolve(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
+                                                      .Select(v => ResolveConfusion(v))
+                                                      .WhenAll();
+        }
 
-            var uncofused = new List<MotionVector>();
-            foreach (var vector in confusedVectors)
+        public async Task HandleVectors(IList<MotionVector> motionVectors)
+        {
+            if (motionVectors.Count == 0) return;
+
+            // When we have one vector we know that there is no concurrent vectors to same room
+            else if (motionVectors.Count == 1)
             {
-                if (NoMoveInStartNeighbors(vector))
-                {
-                    ResolveConfusion(vector);
+                var vector = motionVectors.Single();
 
-                    await GetSourceRoom(vector).MarkLeave(vector);
-                    // confused vectors from same time spot should change person probability (but not for 100%)
+                if (IsTurnOnVector(vector))
+                {
+                    await MarkVector(vector);
+                }
+                else
+                {
+                    MarkConfusion(vector);
                 }
             }
-        }
-
-        /// <summary>
-        /// Get list of all confused vectors that should be resolved
-        /// </summary>
-        /// <param name="dateTimeOffset"></param>
-        private IEnumerable<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
-        {
-            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
-
-            // When all vectors are older then timeout we cannot resolve confusions
-            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Enumerable.Empty<MotionVector>();
-
-            return confusedReadyToResolve;
-        }
-
-        /// <summary>
-        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        private bool NoMoveInStartNeighbors(MotionVector vector)
-        {
-            var sourceRoom = GetSourceRoom(vector);
-            var moveInStartNeighbors = sourceRoom.MoveInNeighborhood(this, vector.StartTime);
-            return !moveInStartNeighbors;
-        }
-
-        private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
-        {
-            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n.LastMotion.Time > referenceTime);
-        }
-
-        /// <summary>
-        /// Get room pointed by end of the <paramref name="motionVector"/>
-        /// </summary>
-        /// <param name="motionVector"></param>
-        private Room GetTargetRoom(MotionVector motionVector) => NeighborsCache[motionVector.EndPoint];
-
-        /// <summary>
-        /// Get room pointed by beginning of the <paramref name="motionVector"/>
-        /// </summary>
-        /// <param name="motionVector"></param>
-        private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
-
-        /// <summary>
-        /// Check if we have any move in room after <paramref name="dateTimeOffset"/>
-        /// </summary>
-        /// <param name="dateTimeOffset"></param>
-        /// <returns></returns>
-        public bool HasMove(DateTimeOffset dateTimeOffset) => LastMotion.Time >= dateTimeOffset;
-
-        public async Task MarkLeave(MotionVector vector)
-        {
-            DecrementNumberOfPersons();
-
-            if (AreaDescriptor.MaxPersonCapacity == 1)
-            {
-                await SetProbability(Probability.Zero);
-            }
+            // When we have at least two vectors we know that this vector is confused
             else
             {
-                //TODO change this value
-                await SetProbability(Probability.FromValue(0.1));
+                motionVectors.ForEach(vector => MarkConfusion(vector));
             }
         }
 
@@ -269,9 +176,152 @@ namespace HomeCenter.Services.MotionService
 
         public void Dispose() => _disposeContainer.Dispose();
 
-        public void RegisterForLampChangeState()
+        /// <summary>
+        /// Check if <paramref name="motionVector"/> is vector that turned on the light
+        /// </summary>
+        /// <param name="motionVector"></param>
+        /// <returns></returns>
+        private bool IsTurnOnVector(MotionVector motionVector)
         {
-            RegisterChangeStateSource();
+            if (!_firstEnterTime.HasValue || _firstEnterTime == motionVector.EndTime)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Marks enter to target room and leave from source room
+        /// </summary>
+        /// <param name="motionVector"></param>
+        /// <returns></returns>
+        private async Task MarkVector(MotionVector motionVector)
+        {
+            _logger.LogInformation(motionVector.ToString());
+
+            await GetSourceRoom(motionVector).MarkLeave(motionVector);
+            MarkEnter(motionVector);
+        }
+
+        /// <summary>
+        /// Marks entrance of last motion vector
+        /// </summary>
+        /// <param name="vector"></param>
+        private void MarkEnter(MotionVector vector)
+        {
+            IncrementNumberOfPersons(vector.EndTime);
+        }
+
+        /// <summary>
+        /// Mark some motion that can be enter vector but we are not sure
+        /// </summary>
+        /// <param name="vector"></param>
+        private void MarkConfusion(MotionVector vector)
+        {
+            _confusingVectors.Add(vector);
+        }
+
+        /// <summary>
+        /// Get list of all confused vectors that should be resolved
+        /// </summary>
+        /// <param name="dateTimeOffset">We get all vectors before this time</param>
+        private IEnumerable<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
+        {
+            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
+
+            // When all vectors are older then timeout we cannot resolve confusions
+            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Enumerable.Empty<MotionVector>();
+
+            return confusedReadyToResolve;
+        }
+
+        /// <summary>
+        /// Evaluate confusion after removing vectors with beginning on <paramref name="confusedPoint"/>
+        /// </summary>
+        /// <param name="confusedPoint">Point when we are sure we can remove confused vectors</param>
+        /// <returns></returns>
+        private async Task EvaluateConfusions(MotionPoint confusedPoint)
+        {
+            var confusedVectors = _confusingVectors.Where(v => v.ContainsOnBegin(confusedPoint));
+
+            foreach (var vector in confusedVectors)
+            {
+                RemoveConfusedVector(vector);
+
+                var resolvedVectors = _confusingVectors.Where(v => v.ContainsOnEnd(vector.End));
+
+                foreach (var resolved in resolvedVectors)
+                {
+                    await ResolveConfusion(resolved);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Executed when after some time we can resolve confused vectors
+        /// </summary>
+        /// <param name="vector"></param>
+        private async Task ResolveConfusion(MotionVector vector)
+        {
+            _logger.LogInformation($"{vector} [Resolved]");
+
+            RemoveConfusedVector(vector);
+
+            MarkEnter(vector);
+
+            await GetSourceRoom(vector).MarkLeave(vector);
+
+            // confused vectors from same time spot should change person probability (but not for 100%)
+        }
+
+        private void RemoveConfusedVector(MotionVector vector)
+        {
+            _confusingVectors.TryRemove(vector);
+        }
+
+        /// <summary>
+        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        private bool NoMoveInStartNeighbors(MotionVector vector)
+        {
+            var sourceRoom = GetSourceRoom(vector);
+            var moveInStartNeighbors = sourceRoom.MoveInNeighborhood(this, vector.StartTime);
+            return !moveInStartNeighbors;
+        }
+
+        /// <summary>
+        /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
+        /// </summary>
+        /// <param name="roomToExclude"></param>
+        /// <param name="referenceTime"></param>
+        /// <returns></returns>
+        private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
+        {
+            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._lastMotion.Time > referenceTime) || _lastMotion.Time > referenceTime;
+        }
+
+        /// <summary>
+        /// Get room pointed by beginning of the <paramref name="motionVector"/>
+        /// </summary>
+        /// <param name="motionVector"></param>
+        private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
+
+        private async Task MarkLeave(MotionVector vector)
+        {
+            DecrementNumberOfPersons();
+
+            if (NumberOfPersons == 0)
+            {
+                await SetProbability(Probability.Zero, vector.EndTime);
+                await NeighborsCache.Select(n => n.Value.EvaluateConfusions(vector.Start)).WhenAll();
+            }
+            else
+            {
+                //TODO change this value
+                await SetProbability(Probability.FromValue(0.1), vector.EndTime);
+            }
         }
 
         /// <summary>
@@ -294,11 +344,11 @@ namespace HomeCenter.Services.MotionService
         private async Task RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == LastMotion.Time) return;
+            if (motionTime == _lastMotion.Time) return;
 
             var probabilityDelta = 1.0 / (_turnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
 
-            await SetProbability(_presenceProbability.Decrease(probabilityDelta));
+            await SetProbability(_presenceProbability.Decrease(probabilityDelta), motionTime);
         }
 
         /// <summary>
@@ -306,9 +356,15 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="probability"></param>
         /// <returns></returns>
-        private async Task SetProbability(Probability probability)
+        private async Task SetProbability(Probability probability, DateTimeOffset time)
         {
             if (probability == _presenceProbability) return;
+
+            // When we change from zero to full
+            if (_presenceProbability == Probability.Zero && probability == Probability.Full)
+            {
+                _firstEnterTime = time;
+            }
 
             _presenceProbability = probability;
 
@@ -372,12 +428,6 @@ namespace HomeCenter.Services.MotionService
             if (NumberOfPersons > 0)
             {
                 NumberOfPersons--;
-
-                //TODO is this needed?
-                if (NumberOfPersons == 0)
-                {
-                    LastMotion.UnConfuze();
-                }
             }
         }
 
@@ -393,7 +443,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (await CanTurnOffLamp())
             {
-                _logger.LogInformation($"[{Uid}] Turn off");
+                _logger.LogInformation($"[OFF] [{Uid}]");
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 
