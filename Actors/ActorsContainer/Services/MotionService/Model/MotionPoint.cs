@@ -32,6 +32,7 @@ namespace HomeCenter.Services.MotionService.Model
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return Uid;
+            yield return TimeStamp;
         }
     }
 }

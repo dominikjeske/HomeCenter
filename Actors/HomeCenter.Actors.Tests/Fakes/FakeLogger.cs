@@ -27,6 +27,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 throw exception;
             }
 
+
             Console.WriteLine($"[{_scheduler.Now:ss:fff}] { formatter(state, exception)}");
         }
     }

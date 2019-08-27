@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Linq;
+using HomeCenter.Utils.LogProviders;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -118,6 +119,20 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterInstance(messageBroker);
 
             return config.CreateMapper();
+        }
+
+        protected virtual ILoggerProvider[] GetLogProviders()
+        {
+            return new ILoggerProvider[] { new ConsoleLogProvider() };
+        }
+
+        protected void RegisterLogging()
+        {
+            var loggerOptions = new LoggerFilterOptions { MinLevel = LogLevel.Debug };
+            var loggerFactory = new LoggerFactory(GetLogProviders(), loggerOptions);
+
+            _container.RegisterInstance<ILoggerFactory>(loggerFactory);
+            _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
         }
 
         private MapperConfiguration ConfigureMapper()

@@ -170,7 +170,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayDetectorToilet }
             }).Start();
 
-            AdvanceJustAfterRoundUp(confusionResolutionTime + GetMotionTime(2));
+            AdvanceJustAfterRoundUp(GetMotionTime(2) + confusionResolutionTime);
 
             LampState(Detectors.badroomDetector).Should().BeFalse();
             LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
@@ -180,7 +180,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
 
         [TestMethod]
-        public void Leave_UnconfusedFromRoom_ShouldResolveOtherConfusions()
+        public void Leave_ToOtherRoom_ShouldSpeedUpResolutionInNeighbor()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
@@ -189,15 +189,59 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 500, Detectors.hallwayDetectorLivingRoom },
                 { 1000, Detectors.toiletDetector },
                 { 1500, Detectors.hallwayDetectorToilet },
-                { 1600, Detectors.bathroomDetector }     
+                { 1600, Detectors.bathroomDetector }     // This move give us proper move to bathroom so other confusions can resolve faster because this decrease their probability
             }).Start();
 
-            AdvanceJustAfterEnd(2000);
+            AdvanceJustAfterRoundUp(GetLastMotionTime() + confusionResolutionTime / 2); // We should resolve confusion 2x faster
 
             LampState(Detectors.toiletDetector).Should().BeFalse();
             LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
             LampState(Detectors.bathroomDetector).Should().BeTrue();
             LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Leave_ToOtherRoomAfterLongerBeeing_Should()
+        {
+            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+            var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.hallwayDetectorLivingRoom },
+                { 2500, Detectors.hallwayDetectorLivingRoom },
+                { 4500, Detectors.hallwayDetectorLivingRoom },
+                { 7500, Detectors.hallwayDetectorLivingRoom },
+                { 10500, Detectors.hallwayDetectorLivingRoom },  // We were in this room longer so when leave there will be longer time out
+                { 11000, Detectors.toiletDetector },
+                { 11500, Detectors.hallwayDetectorToilet },
+                { 11600, Detectors.bathroomDetector }     
+            }).Start();
+
+            AdvanceJustAfterRoundUp(GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5) );
+
+          //  LampState(Detectors.toiletDetector).Should().BeFalse();
+            LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
+            //LampState(Detectors.bathroomDetector).Should().BeTrue();
+            //LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Leave_AfterMoveAroundRoom()
+        {
+            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+            var servieConfig = Default().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            new LightAutomationEnviromentBuilder(_context).WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.hallwayDetectorLivingRoom },
+                { 2500, Detectors.hallwayDetectorLivingRoom },
+                { 4500, Detectors.hallwayDetectorLivingRoom },
+                { 7500, Detectors.hallwayDetectorLivingRoom },
+                { 10500, Detectors.hallwayDetectorLivingRoom },  
+                { 11500, Detectors.hallwayDetectorToilet },
+            }).Start();
+
+            AdvanceJustAfterRoundUp(GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(15));
+
         }
 
         [TestMethod]

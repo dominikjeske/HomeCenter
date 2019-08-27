@@ -7,7 +7,6 @@ using HomeCenter.Services.Actors;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
-using HomeCenter.Services.Logging;
 using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
 using HomeCenter.Utils;
@@ -23,6 +22,8 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Bootstrapper
 {
+    // TODO Add https://wakeupandcode.com/generic-host-builder-in-asp-net-core/ 
+
     public class Bootstrapper
     {
         public Bootstrapper(Container container)
@@ -117,7 +118,7 @@ namespace HomeCenter.Services.Bootstrapper
             Log.SetLoggerFactory(loggerFactory);
 
             _container.RegisterInstance<ILoggerFactory>(loggerFactory);
-            _container.Register(typeof(ILogger<>), typeof(GenericLogger<>), Lifestyle.Singleton);
+            _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
         }
 
         protected virtual void RegisterNativeServices()

@@ -100,7 +100,7 @@ namespace HomeCenter.Utils.Extensions
         public static string ToFormatedString<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         {
             if (dic.Count == 0) return string.Empty;
-            return dic?.Select(x => x.Key + "=" + x.Value)?.Aggregate((s1, s2) => s1 + ";" + s2);
+            return dic.Select(x => x.Key + "=" + x.Value).Aggregate((s1, s2) => s1 + ";" + s2);
         }
 
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key, TValue def)

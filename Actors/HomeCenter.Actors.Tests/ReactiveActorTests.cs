@@ -50,5 +50,7 @@ namespace HomeCenter.Services.MotionService.Tests
         protected void RunAfterFirstMove(Action<MotionEnvelope> action) => _context.MotionEvents.Subscribe(action);
 
         protected TimeSpan GetMotionTime(int vectorIndex) => TimeSpan.FromTicks(_context.MotionEvents.Messages[vectorIndex].Time);
+
+        protected TimeSpan GetLastMotionTime() => TimeSpan.FromTicks(_context.MotionEvents.Messages[_context.MotionEvents.Messages.Count - 1].Time);
     }
 }

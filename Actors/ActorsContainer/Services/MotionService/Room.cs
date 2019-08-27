@@ -123,11 +123,43 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        public Task EvaluateConfusions(DateTimeOffset currentTime)
+        public async Task EvaluateConfusions(DateTimeOffset currentTime)
         {
-            return GetConfusionsToResolve(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
-                                                      .Select(v => ResolveConfusion(v))
-                                                      .WhenAll();
+            await GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
+                                                             .Select(v => ResolveConfusion(v))
+                                                             .WhenAll();
+
+            await GetConfusedVecotrsCanceledByOthers(currentTime).Select(v => TryResolveAfterCancel(v))
+                                                                 .WhenAll();
+        }
+
+        /// <summary>
+        /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
+        /// </summary>
+        /// <param name="motionVector"></param>
+        /// <returns></returns>
+        private Task TryResolveAfterCancel(MotionVector motionVector)
+        {
+            _logger.LogInformation($"{motionVector} [Cancel]");
+
+            RemoveConfusedVector(motionVector);
+
+            var confused = _confusingVectors.Where(x => x.End == motionVector.End);
+            if (confused.Count() == 1)
+            {
+                return ResolveConfusion(confused.Single());
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
+        /// </summary>
+        /// <param name="currentTime"></param>
+        private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers(DateTimeOffset currentTime)
+        {
+            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start && currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2));
         }
 
         public async Task HandleVectors(IList<MotionVector> motionVectors)
@@ -141,7 +173,7 @@ namespace HomeCenter.Services.MotionService
 
                 if (IsTurnOnVector(vector))
                 {
-                    await MarkVector(vector);
+                    await MarkVector(vector, false);
                 }
                 else
                 {
@@ -194,10 +226,10 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="motionVector"></param>
         /// <returns></returns>
-        private async Task MarkVector(MotionVector motionVector)
+        private async Task MarkVector(MotionVector motionVector, bool resolved)
         {
-            _logger.LogInformation(motionVector.ToString());
-
+            _logger.LogInformation($"{motionVector} {(resolved ? " [Resolved]" : " [OK]")}");
+            
             await GetSourceRoom(motionVector).MarkLeave(motionVector);
             MarkEnter(motionVector);
         }
@@ -217,6 +249,8 @@ namespace HomeCenter.Services.MotionService
         /// <param name="vector"></param>
         private void MarkConfusion(MotionVector vector)
         {
+            _logger.LogInformation($"{vector} [Confused]");
+
             _confusingVectors.Add(vector);
         }
 
@@ -224,7 +258,7 @@ namespace HomeCenter.Services.MotionService
         /// Get list of all confused vectors that should be resolved
         /// </summary>
         /// <param name="dateTimeOffset">We get all vectors before this time</param>
-        private IEnumerable<MotionVector> GetConfusionsToResolve(DateTimeOffset currentTime)
+        private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
         {
             var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
 
@@ -235,40 +269,14 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Evaluate confusion after removing vectors with beginning on <paramref name="confusedPoint"/>
-        /// </summary>
-        /// <param name="confusedPoint">Point when we are sure we can remove confused vectors</param>
-        /// <returns></returns>
-        private async Task EvaluateConfusions(MotionPoint confusedPoint)
-        {
-            var confusedVectors = _confusingVectors.Where(v => v.ContainsOnBegin(confusedPoint));
-
-            foreach (var vector in confusedVectors)
-            {
-                RemoveConfusedVector(vector);
-
-                var resolvedVectors = _confusingVectors.Where(v => v.ContainsOnEnd(vector.End));
-
-                foreach (var resolved in resolvedVectors)
-                {
-                    await ResolveConfusion(resolved);
-                }
-            }
-        }
-
-        /// <summary>
         /// Executed when after some time we can resolve confused vectors
         /// </summary>
         /// <param name="vector"></param>
         private async Task ResolveConfusion(MotionVector vector)
         {
-            _logger.LogInformation($"{vector} [Resolved]");
-
             RemoveConfusedVector(vector);
 
-            await MarkVector(vector);
-
-            // confused vectors from same time spot should change person probability (but not for 100%)
+            await MarkVector(vector, true);
         }
 
         private void RemoveConfusedVector(MotionVector vector)
@@ -322,6 +330,8 @@ namespace HomeCenter.Services.MotionService
                 var visitTypeFactor = _turnOffTimeOut.VisitType.Value;
                 var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
+                _logger.LogInformation($"[PD] {Uid} => {(decreasePercent * 100)}%");
+
                 await SetProbability(_presenceProbability.DecreaseByPercent(decreasePercent), vector.EndTime);
             }
         }
@@ -367,6 +377,8 @@ namespace HomeCenter.Services.MotionService
             {
                 _roomStatistic.FirstEnterTime = time;
             }
+
+            _logger.LogInformation($"[P] {Uid} {(probability.Value*100):00.00}% [{_turnOffTimeOut.Value}]");
 
             _presenceProbability = probability;
 

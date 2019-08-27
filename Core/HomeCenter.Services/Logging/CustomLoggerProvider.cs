@@ -1,4 +1,5 @@
-﻿using HomeCenter.Utils.ConsoleExtentions;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Utils.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -21,7 +22,7 @@ namespace HomeCenter.Utils.LogProviders
         {
             lock (_locki)
             {
-                var time = DateTime.Now.ToString("HH:mm:ss.fff");
+                var time = SystemTime.Now.ToString("HH:mm:ss.fff");
 
                 if (logLevel == LogLevel.Error)
                 {
