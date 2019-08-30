@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -119,7 +120,7 @@ namespace HomeCenter.Services.Roslyn
                 MetadataReference.CreateFromFile(typeof(FileAttributes).GetTypeInfo().Assembly.Location),              //System.Runtime.dll
                 MetadataReference.CreateFromFile(typeof(NetworkCredential).GetTypeInfo().Assembly.Location),           //System.Net.Primitives.dll
                 MetadataReference.CreateFromFile(typeof(SecureStringMarshal).GetTypeInfo().Assembly.Location),         //System.Runtime.InteropServices.dll
-                MetadataReference.CreateFromFile(typeof(System.Collections.BitArray).GetTypeInfo().Assembly.Location), //System.Collections.dll
+                MetadataReference.CreateFromFile(typeof(BitArray).GetTypeInfo().Assembly.Location),                    //System.Collections.dll
                 MetadataReference.CreateFromFile(typeof(StringReader).GetTypeInfo().Assembly.Location),                //System.Runtime.Extensions.dll
                 MetadataReference.CreateFromFile(typeof(XDocument).GetTypeInfo().Assembly.Location),                   //System.Private.Xml.Linq.dll
                 MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),                  //System.Linq.dll

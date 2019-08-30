@@ -18,8 +18,6 @@ namespace HomeCenter.Tests.ComponentModel
             _configuration = configuration;
         }
 
-        public Container Container => _container;
-
         protected override void RegisterNativeServices()
         {
             var i2cBus = Mock.Of<II2cBus>();

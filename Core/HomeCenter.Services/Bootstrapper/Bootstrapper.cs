@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Services.Bootstrapper
 {
     // TODO Add https://wakeupandcode.com/generic-host-builder-in-asp-net-core/ 
+    //          https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert/41244169#41244169
 
     public class Bootstrapper
     {
