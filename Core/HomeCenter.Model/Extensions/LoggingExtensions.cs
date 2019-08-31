@@ -20,5 +20,10 @@ namespace HomeCenter.Model.Extensions
         {
             logger.Log(_logLevels[loglevel], message);
         }
+
+        public static void Log(this ILogger logger, string loglevel, string message, params object[] args)
+        {
+            logger.Log(_logLevels[loglevel], message, args);
+        }
     }
 }

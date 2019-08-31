@@ -71,7 +71,7 @@ namespace HomeCenter.Utils.LogProviders
                     return;
                 }
 
-                _consoleLogProvider.Log(logLevel, $"{formatter(state, exception)}");
+               // _consoleLogProvider.Log(logLevel, $"{formatter(state, exception)}");
             }
 
             public bool IsEnabled(LogLevel logLevel)

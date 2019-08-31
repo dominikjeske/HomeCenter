@@ -76,7 +76,7 @@ namespace HomeCenter.Model.Actors
         {
             if (rawMessage is ActorMessage message)
             {
-                Logger.Log(message.LogLevel, $"<{Uid}>: {message}");
+                Logger.Log(message.LogLevel, "<{Uid}>: {message}", Uid, message);
             }
 
             return rawMessage;
@@ -151,7 +151,7 @@ namespace HomeCenter.Model.Actors
 
         protected virtual Task OnStarted(IContext context)
         {
-            Logger.LogInformation($"<{Uid}> Started with id '{context.Self.Id}'");
+            Logger.LogInformation("<{Uid}> Started with id '{deviceId}'", Uid, context.Self.Id);
             Self = context.Self;
 
             Subscribe<SystemStartedEvent>();

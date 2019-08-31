@@ -43,7 +43,7 @@ namespace HomeCenter.Runner
             }
             else
             {
-                _bootstrapper = new HomeCenterBootstrapper(container);
+                _bootstrapper = new FakeBootstrapper(container);
             }
 
             var controller = await _bootstrapper.BuildController();

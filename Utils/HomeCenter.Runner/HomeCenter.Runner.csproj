@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\HomeCenter.Services\HomeCenter.Services.csproj" />
+    <ProjectReference Include="..\..\Core\HomeCenter.Storage.RavenDB\HomeCenter.Storage.RavenDB.csproj" />
   </ItemGroup>
 
 
