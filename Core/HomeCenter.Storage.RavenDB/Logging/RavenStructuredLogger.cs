@@ -499,6 +499,8 @@ namespace Raven.StructuredLog
                     {
                         existingStructuredLog = new StructuredLog();
                         dbSession.Store(existingStructuredLog, logWithId.id);
+
+                        
                     }
 
                     existingStructuredLog.AddLog(logWithId.log);

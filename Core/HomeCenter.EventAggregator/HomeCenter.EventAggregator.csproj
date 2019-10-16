@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />
+    <PackageReference Include="System.Reactive" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>

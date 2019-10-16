@@ -6,6 +6,7 @@ using Raven.Client.Documents;
 using Raven.StructuredLog;
 using SimpleInjector;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -55,6 +56,27 @@ namespace HomeCenter.Runner
             };
             docStore.Initialize();
             EnsureExists(docStore);
+
+
+            //TESTS
+            using (var dbSession = docStore.OpenSession())
+            {
+                //var test = new Dictionary<string, string>() { ["imie"] = "Dominik", ["nazwisko"] = "Jeske" };
+                //dbSession.Store(test, "Move/");
+
+                //var meta = dbSession.Advanced.GetMetadataFor(test);
+                //meta["@collection"] = "Move";
+
+
+                var a = new LogMessage<TestA>();
+                a.Value = new TestA { FirstName = "Dominik", LastName = "Jeske" };
+                dbSession.Store(a, "Move/");
+
+                dbSession.SaveChanges();
+                
+            }
+
+
             return docStore;
         }
 
@@ -69,6 +91,21 @@ namespace HomeCenter.Runner
         {
             _container.RegisterInstance(new StartupConfiguration { ConfigurationLocation = @"..\..\..\componentConfiguration.json" });
         }
+    }
+
+
+    public class LogMessage<T>
+    {
+        public string Message;
+        public string Exception;
+
+        public T Value;
+    }
+
+    public class TestA
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 
     public class FakeII2cBus : II2cBus
