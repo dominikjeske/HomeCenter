@@ -12,7 +12,7 @@ namespace HomeCenter.Runner
         {
             var configuration = GetConfiguration();
 
-            int programNumber = 1;
+            int programNumber = 3;
             string input = "";
 
 

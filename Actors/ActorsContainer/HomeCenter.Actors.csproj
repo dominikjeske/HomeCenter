@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Services\MotionService\Model\Probability.cs~RFa5e8f6.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.6.1">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Reactive" Version="4.2.0" />
@@ -27,6 +23,7 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
+    
   </ItemGroup>
 
   <PropertyGroup>

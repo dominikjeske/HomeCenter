@@ -1,71 +1,76 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Actors;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Commands.Device;
-using Quartz;
-using System;
-using System.Threading.Tasks;
+using HomeCenter.Model.Mapper;
 
 namespace HomeCenter.Runner.Codegen
 {
+    //[Adapter]
+    public partial class MyAdapter : BaseAdapter<Src, Dst>, IMapper<Src, Dst>
+    {
+        public Dst Map(Src source)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void Configure(IConfigureMapping<Src, Dst> config)
+        {
+            config.ForMember(x => x.IgnoredDestination).Ignore();
+            config.IgnoreSourceMember(x => x._ignoredSource);
+            config.ForMember(x => x.DefaultValuedProperty).WithDefault(7);
+            config.ForMember(x => x.CustomValue).WithValue(s => s._age + 1);
+
+            config.WithSourceResolver<UnderscoreResolver>();
+            config.WithPropertiesComparer<IgnoreCaseComparer>();
+        }
+    }
+
     
 
 
 
-    [ProxyCodeGenerator]
-    public class Device : DeviceActor
-    {
-        public Device(IScheduler scheduler)
-        {
-        }
+    //[ProxyCodeGenerator]
+    //public class Device : DeviceActor
+    //{
+    //    public Device(IScheduler scheduler)
+    //    {
+    //    }
 
-        //protected Task Invoke(Event command)
-        //{
-        //    return Task.CompletedTask;
-        //}
+    //protected Task Invoke(Event command)
+    //{
+    //    return Task.CompletedTask;
+    //}
 
-        //protected Task Invoke(SonyRegisterQuery command)
-        //{
-        //    return Task.CompletedTask;
-        //}
+    //protected Task Invoke(SonyRegisterQuery command)
+    //{
+    //    return Task.CompletedTask;
+    //}
 
-        [Subscribe(true)]
-        protected void Handle(TurnOnCommand command)
-        {
+    //[Subscribe(true)]
+    //protected void Handle(TurnOnCommand command)
+    //{
+    //}
 
+    //[Subscribe]
+    //protected int Handle2(HttpPostQuery query)
+    //{
+    //    return 0;
 
-        }
-
-        //[Subscribe]
-        //protected int Handle2(HttpPostQuery query)
-        //{
-
-        //    return 0;
-
-        //}
-    }
+    //}
+    // }
 
     //public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
     //{
-
     //}
 
-   
     //public class TestEvent : Event
     //{
-
     //}
 
     //public class TestCommand : Command
     //{
-
     //}
-
-   
 
     //public abstract class Event
     //{
-
     //}
 
     //public abstract class Command
@@ -74,15 +79,12 @@ namespace HomeCenter.Runner.Codegen
 
     //public interface IFormatableMessage<T>
     //{
-
     //}
 
     //[CommandBuilder]
     //public class CommandBuilder : Command
     //{
     //}
-
-
 
     //[ProxyCodeGenerator]
     //public class HttpService : Actor

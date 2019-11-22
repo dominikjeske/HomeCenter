@@ -1,9 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.CodeGeneration;
+using System.Collections.Generic;
 
 namespace HomeCenter.Adapters.Denon
 {
+    //[Adapter]
+    //public partial class xxx : IMapper<Source, Destination>
+    //{
+
+    //}
+
+
+
     public class DenonDeviceInfo
     {
+        
         public string Surround { get; set; }
         public string Model { get; set; }
         public string FriendlyName { get; set; }

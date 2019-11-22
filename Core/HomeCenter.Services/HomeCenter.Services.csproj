@@ -14,9 +14,9 @@
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.6.1">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FastDeepCloner" Version="1.2.7" />
+    <PackageReference Include="FastDeepCloner" Version="1.2.9" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />

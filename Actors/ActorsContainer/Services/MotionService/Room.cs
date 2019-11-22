@@ -159,7 +159,9 @@ namespace HomeCenter.Services.MotionService
         /// <param name="currentTime"></param>
         private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers(DateTimeOffset currentTime)
         {
-            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start && currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2));
+            //!!!!!!TODO
+            //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
+            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start );
         }
 
         public async Task HandleVectors(IList<MotionVector> motionVectors)

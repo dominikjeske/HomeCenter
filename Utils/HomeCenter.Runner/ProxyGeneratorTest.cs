@@ -23,7 +23,7 @@ namespace HomeCenter.Runner
     {
         public async Task<string> Generate(string code)
         {
-            var generator = new ProxyGenerator();
+            var generator = new RoslymapperBuilder();
             var models = await GetModels(code);
 
             var syntaxTree = models.syntaxTree;
@@ -41,12 +41,12 @@ namespace HomeCenter.Runner
                 var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
 
 
-                if (HasBaseType(classSemantic, "DeviceActor"))
-                {
+               // if (HasBaseType(classSemantic, "DeviceActor"))
+               // {
                    // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
 
                    var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
-                    var result = generator.Generate(proxy);
+                    var result = generator.Build(proxy);
 
                     foreach (var res in result.Members)
                     {
@@ -55,7 +55,7 @@ namespace HomeCenter.Runner
 
                         classList.Add(res);
                     }
-                }
+               // }
             }
 
 
@@ -92,7 +92,7 @@ namespace HomeCenter.Runner
             var eventAggregator = MetadataReference.CreateFromFile(typeof(IEventAggregator).Assembly.Location);
             var logger = MetadataReference.CreateFromFile(typeof(ILogger).Assembly.Location);
 
-            var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\netstandard.dll");
+            var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\netstandard.dll");
 
             var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Proto.Mailbox.UnboundedMailbox).Assembly, typeof(Router).Assembly };
             var external = externalRefs.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();
@@ -124,6 +124,7 @@ namespace HomeCenter.Runner
 
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             var model = MetadataReference.CreateFromFile(typeof(Model.Components.Component).Assembly.Location);
+
             var comp = CSharpCompilation.Create("Demo").AddSyntaxTrees(tree).AddReferences(mscorlib, model);
 
             var semanticModel = comp.GetSemanticModel(tree);
