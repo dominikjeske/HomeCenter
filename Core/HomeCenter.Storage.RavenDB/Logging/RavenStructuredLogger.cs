@@ -26,23 +26,13 @@ namespace Raven.StructuredLog
 
         private const string originalFormat = "{OriginalFormat}";
 
-        /// <summary>
-        /// Creates a new structured logger.
-        /// </summary>
-        /// <param name="categoryName">The name of the logger.</param>
-        /// <param name="db">The Raven <see cref="IDocumentStore"/>.</param>
         public RavenStructuredLogger(string categoryName, IDocumentStore db)
         {
             this.categoryName = categoryName;
             this.db = db;
         }
 
-        /// <summary>
-        /// Begins a logical scope to the logger.
-        /// </summary>
-        /// <typeparam name="TState"></typeparam>
-        /// <param name="state"></param>
-        /// <returns></returns>
+       
         public IDisposable BeginScope<TState>(TState state)
         {
             // If we're not configured to use scopes, punt.
@@ -63,25 +53,11 @@ namespace Raven.StructuredLog
             return scope;
         }
 
-        /// <summary>
-        /// Gets whether the logger is enabled.
-        /// </summary>
-        /// <param name="logLevel"></param>
-        /// <returns></returns>
         public bool IsEnabled(LogLevel logLevel)
         {
             return true;
         }
 
-        /// <summary>
-        /// Writes the log asynchronously to Raven.
-        /// </summary>
-        /// <typeparam name="TState"></typeparam>
-        /// <param name="logLevel"></param>
-        /// <param name="eventId"></param>
-        /// <param name="state"></param>
-        /// <param name="exception"></param>
-        /// <param name="formatter"></param>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (this.IsEnabled(logLevel))
