@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Services.Bootstrapper;
+using Microsoft.Extensions.Logging;
 using SimpleInjector;
 using System.Collections.Generic;
 using System.Linq;
