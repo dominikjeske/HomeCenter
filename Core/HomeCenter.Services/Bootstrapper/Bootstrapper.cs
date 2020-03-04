@@ -111,15 +111,22 @@ namespace HomeCenter.Services.Bootstrapper
             return new ILoggerProvider[] { new ConsoleLogProvider() };
         }
 
+        protected virtual void ConfigureLoggerFactory(ILoggerFactory loggerFacory)
+        {
+            
+        }
+
         protected void RegisterLogging()
         {
             var loggerOptions = new LoggerFilterOptions { MinLevel = LogLevel.Debug };
             var loggerFactory = new LoggerFactory(GetLogProviders(), loggerOptions);
+            ConfigureLoggerFactory(loggerFactory);
 
             Log.SetLoggerFactory(loggerFactory);
 
             _container.RegisterInstance<ILoggerFactory>(loggerFactory);
             _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
+
         }
 
         protected virtual void RegisterNativeServices()

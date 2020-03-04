@@ -3,7 +3,11 @@ using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Storage.RavenDB;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Raven.Client.Documents;
+using Raven.Client.Exceptions.Database;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
@@ -33,20 +37,40 @@ namespace HomeCenter.Runner
         {
             try
             {
-                using (var dbSession = store.OpenSession())
-                {
-                    dbSession.Query<LogEntry>().Take(0).ToList();
-                }
+                using var dbSession = store.OpenSession();
+                dbSession.Query<LogEntry>().Take(0).ToList();
             }
-            catch (Raven.Client.Exceptions.Database.DatabaseDoesNotExistException)
+            catch (DatabaseDoesNotExistException)
             {
-                store.Maintenance.Server.Send(new Raven.Client.ServerWide.Operations.CreateDatabaseOperation(new Raven.Client.ServerWide.DatabaseRecord
+                store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord
                 {
                     DatabaseName = store.Database
                 }));
             }
 
             return store;
+        }
+
+        //TODO https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert
+
+        protected override void ConfigureLoggerFactory(ILoggerFactory loggerFacory)
+        {
+            base.ConfigureLoggerFactory(loggerFacory);
+
+            var docStore = CreateRavenDocStore();
+
+            //var config = new ConfigurationBuilder()
+            //.AddJsonFile("logging.json")
+            //.Build();
+
+            var logger = new LoggerConfiguration().Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers()
+                                                  .WithFilter(new IgnorePropertyByNameExceptionFilter(nameof(Exception.HResult))))
+                                                //.ReadFrom.Configuration(config)
+                                                  .WriteTo.Console()
+                                                  .WriteTo.RavenDB(docStore)
+                                                  .CreateLogger();
+
+            loggerFacory.AddSerilog(logger);
         }
 
         private IDocumentStore CreateRavenDocStore()
@@ -61,15 +85,9 @@ namespace HomeCenter.Runner
                 Conventions = { }
             };
 
-            docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+            docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
             docStore.Initialize();
-
-            Log.Logger = new LoggerConfiguration()
-                            .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers()
-                                                                                          .WithFilter(new IgnorePropertyByNameExceptionFilter(nameof(Exception.HResult))))
-                            .WriteTo.Console()
-                            .WriteTo.RavenDB(docStore)
-                            .CreateLogger();
+            EnsureExists(docStore);
 
             //TESTS
             using (var dbSession = docStore.OpenSession())
