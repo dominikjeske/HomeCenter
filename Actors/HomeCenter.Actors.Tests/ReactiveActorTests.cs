@@ -20,6 +20,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestCleanup]
         public Task CleanContext()
         {
+            _context.Logger.Dispose();
             return _context.PID.StopAsync();
         }
 

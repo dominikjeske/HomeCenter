@@ -109,16 +109,17 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public IMapper Bootstrap(IMessageBroker messageBroker)
+        public (IMapper, FakeLogger<LightAutomationServiceProxy>) Bootstrap(IMessageBroker messageBroker)
         {
             MapperConfiguration config = ConfigureMapper();
+            var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler);
 
             var concurrencyProvider = new TestConcurrencyProvider(_scheduler);
             _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
-            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(new FakeLogger<LightAutomationServiceProxy>(_scheduler));
+            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
             _container.RegisterInstance(messageBroker);
 
-            return config.CreateMapper();
+            return (config.CreateMapper(), logger);
         }
 
         protected virtual ILoggerProvider[] GetLogProviders()
@@ -154,12 +155,15 @@ namespace HomeCenter.Services.MotionService.Tests
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
             var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
 
-            var mapper = Bootstrap(messageBroker);
+            var (mapper, logger) = Bootstrap(messageBroker);
             var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
 
             _actorContext.Lamps = lampDictionary;
             _actorContext.Scheduler = _scheduler;
             _actorContext.MotionEvents = motionEvents;
+            _actorContext.Logger = logger;
+
+            logger.InitLogger();
 
             StartAndWait(actor);
         }

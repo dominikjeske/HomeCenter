@@ -16,7 +16,8 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
-    <PackageReference Include="SimpleInjector" Version="4.9.0" />
+    <PackageReference Include="SimpleInjector" Version="4.9.1" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.101" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,8 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public TestScheduler Scheduler { get; set; }
 
+        public FakeLogger<LightAutomationServiceProxy> Logger { get; set; }
+
         public ITestableObservable<MotionEnvelope> MotionEvents { get; set; }
 
         public Dictionary<string, FakeMotionLamp> Lamps { get; set; }
