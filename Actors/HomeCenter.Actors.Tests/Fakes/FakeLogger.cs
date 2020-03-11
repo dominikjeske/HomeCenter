@@ -54,39 +54,50 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (logLevel == LogLevel.Error)
+            try
             {
-                throw exception;
-            }
-            var message = formatter(state, exception);
-
-            Console.WriteLine($"[{_scheduler.Now:ss:fff}] {message}");
-
-            var moveInfo = new MoveInfo
-            {
-                Time = _scheduler.Now,
-                LogLevel = logLevel,
-                EventId = eventId,
-                Exception = exception,
-                Message = message
-            };
-
-            if (state is IEnumerable<KeyValuePair<string, object>> list)
-            {
-                foreach (var pair in list)
+                if (logLevel == LogLevel.Error)
                 {
-                    if (pair.Key == MESSAGE_TEMPLATE)
+                    throw exception;
+                }
+                var message = formatter(state, exception);
+                var time = $"{_scheduler.Now:ss:fff}";
+
+                Console.WriteLine($"[{time}] {message}");
+
+                var moveInfo = new MoveInfo
+                {
+                    Time = time,
+                    LogLevel = logLevel,
+                    EventId = eventId,
+                    Exception = exception,
+                    Message = message
+                };
+
+                if (state is IEnumerable<KeyValuePair<string, object>> list)
+                {
+                    foreach (var pair in list)
                     {
-                        moveInfo.Template = pair.Value?.ToString();
-                    }
-                    else
-                    {
-                        moveInfo.Properties.Add(pair.Key, pair.Value);
+                        if (pair.Key == MESSAGE_TEMPLATE)
+                        {
+                            moveInfo.Template = pair.Value?.ToString();
+                        }
+                        else
+                        {
+                            moveInfo.Properties.Add(pair.Key, pair.Value);
+                        }
                     }
                 }
+
+                _dbSession.Store(moveInfo);
+            }
+            catch (Exception eee)
+            {
+
+                throw;
             }
 
-            _dbSession.Store(moveInfo);
+            
         }
 
         private static DocumentStore GetDbStore()

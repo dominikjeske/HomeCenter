@@ -73,7 +73,7 @@ namespace HomeCenter.Services.Networking
                 if (!_messageHandlers.TryGetValue(messageType, out RegisterSerialCommand registration))
                 {
                     //throw new ArgumentException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
-                    Logger.LogError($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
+                    Logger.LogError("Message type {messageType} is not supported by {service}", messageType, nameof(SerialPortService));
                     return;
                 }
 

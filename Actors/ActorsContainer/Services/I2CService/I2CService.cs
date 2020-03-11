@@ -34,7 +34,7 @@ namespace HomeCenter.Services.Networking
             }
             catch (Exception exception)
             {
-                Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}. {exception.Message}");
+                Logger.LogWarning(exception, "Error while accessing I2C device with address {address}. {exception}", address, exception.Message);
             }
         }
 
@@ -68,7 +68,7 @@ namespace HomeCenter.Services.Networking
             }
             catch (Exception exception)
             {
-                Logger.LogWarning(exception, $"Error while accessing I2C device with address {address}. {exception.Message}");
+                Logger.LogWarning(exception, "Error while accessing I2C device with address {address}. {exception}", address, exception.Message);
                 return Array.Empty<byte>();
             }
         }

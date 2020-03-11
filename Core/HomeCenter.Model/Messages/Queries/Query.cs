@@ -1,9 +1,11 @@
-﻿using System.Threading;
+﻿using Newtonsoft.Json;
+using System.Threading;
 
 namespace HomeCenter.Model.Messages.Queries
 {
     public class Query : ActorMessage
     {
+        [JsonIgnore]
         public CancellationToken CancellationToken { get; }
 
         public Query()

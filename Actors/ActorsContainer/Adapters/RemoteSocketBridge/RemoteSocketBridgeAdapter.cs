@@ -49,7 +49,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
             if (dipswitchCode == null)
             {
-                Logger.LogWarning($"Unrecognized command parsed from code {code}");
+                Logger.LogWarning("Unrecognized command parsed from code {code}", code);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOn), out var dipswitchCode);
 
-            Logger.LogInformation($"Sending code {dipswitchCode.Code}");
+            Logger.LogInformation("Sending code {code}", dipswitchCode.Code);
 
             var cmd = I2cCommand.Create(_I2cAddress, package);
             await MessageBroker.SendToService(cmd);

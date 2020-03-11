@@ -97,7 +97,7 @@ namespace HomeCenter.Model.Actors
 
         private SupervisorDirective Decide(PID pid, Exception reason)
         {
-            _logger.LogError(reason, $"Exception in device {pid}: {reason}");
+            _logger.LogError(reason, "Exception in device {pid}: {reason}", pid, reason);
 
             return SupervisorDirective.Resume;
         }

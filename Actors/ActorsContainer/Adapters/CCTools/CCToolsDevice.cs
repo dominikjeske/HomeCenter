@@ -153,7 +153,7 @@ namespace HomeCenter.Adapters.Common
                 throw;
             }
 
-            Logger.LogTrace("Board '" + Uid + "' committed state '" + _driver.GetState().ToBinaryString() + "'.");
+            Logger.LogInformation("Board [{Uid}] committed state '{state}'", Uid, _driver.GetState().ToBinaryString());
         }
 
         private async Task FetchState()
@@ -169,7 +169,7 @@ namespace HomeCenter.Adapters.Common
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
-            Logger.LogTrace($"[{Uid}] fetched different state ({oldState.ToBinaryString()}->{newState.ToBinaryString()})");
+            Logger.LogTrace("[{Uid}] fetched different state [{oldState}->{newState}]", Uid, oldState.ToBinaryString(), newState.ToBinaryString());
 
             for (int pinNumber = 0; pinNumber < oldStateBits.Length; pinNumber++)
             {
@@ -187,12 +187,12 @@ namespace HomeCenter.Adapters.Common
 
                 await MessageBroker.Publish(properyChangeEvent, Uid);
 
-                Logger.LogTrace($"[{Uid}] Pin [{pinNumber}] state changed {oldPinState}->{newPinState}");
+                Logger.LogTrace("[{Uid}] Pin [{pinNumber}] state changed {oldPinState}->{newPinState}", Uid, pinNumber, oldPinState, newPinState);
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
             {
-                Logger.LogWarning($"Polling device '{Uid}' took {stopwatch.ElapsedMilliseconds}ms.");
+                Logger.LogWarning("Polling device '{Uid}' took {elapsed}ms.", Uid, stopwatch.ElapsedMilliseconds);
             }
         }
 

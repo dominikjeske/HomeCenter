@@ -35,11 +35,11 @@ namespace HomeCenter.Services.Devices
 
             if (_handle != 0)
             {
-                _logger.Log(LogLevel.Trace, $"Opened '{_filename}' (Handle = {_handle}).");
+                _logger.Log(LogLevel.Trace, "Opened '{filename}' (Handle = {handle}).", _filename, _handle);
             }
             else
             {
-                _logger.Log(LogLevel.Error, $"Error while opening '{_filename}'.");
+                _logger.Log(LogLevel.Error, "Error while opening '{filename}'.", _filename);
             }
         }
 

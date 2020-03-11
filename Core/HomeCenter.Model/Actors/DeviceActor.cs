@@ -14,6 +14,18 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Actors
 {
+    public static class ActorEventType
+    {
+        public const int MessageBase = 0;
+
+        public static EventId Behavior = new EventId(MessageBase, nameof(Behavior));
+        public static EventId Messagee = new EventId(MessageBase + 1, nameof(Messagee));
+        public static EventId ActorState = new EventId(MessageBase + 2, nameof(ActorState));
+        public static EventId ActorStart = new EventId(MessageBase + 3, nameof(ActorStart));
+        public static EventId EventPublished = new EventId(MessageBase + 4, nameof(EventPublished));
+
+    }
+
     public abstract class DeviceActor : BaseObject, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
@@ -49,11 +61,25 @@ namespace HomeCenter.Model.Actors
             
         }
 
+        protected void Log(EventId eventId, string template = "", params object[] arguments)
+        {
+            if (string.IsNullOrEmpty(template))
+            {
+                template = eventId.Name;
+            }
+
+            template = "[{Uid}] " + template;
+            var args = new List<object>(arguments);
+            args.Insert(0, Uid);
+
+            Logger.LogInformation(eventId, template, args.ToArray());
+        }
+
         protected Task StandardMode(IContext context) => ReceiveAsyncInternal(context);
 
         protected void Become(Receive receive)
         {
-            Logger.LogInformation($"<{Uid}> changed behavior to '{receive.Method.Name}'");
+            Log(ActorEventType.Behavior, "changed behavior to '{behavior}'", receive.Method.Name);
 
             Behavior.Become(receive);
         }
@@ -76,7 +102,7 @@ namespace HomeCenter.Model.Actors
         {
             if (rawMessage is ActorMessage message)
             {
-                Logger.Log(message.LogLevel, "<{Uid}>: {message}", Uid, message);
+                Log(ActorEventType.Messagee, "Incoming message '{message}'", message);
             }
 
             return rawMessage;
@@ -90,7 +116,7 @@ namespace HomeCenter.Model.Actors
             {
                 if (!IsEnabled)
                 {
-                    Logger.LogInformation($"<{Uid}> is disabled and all messages will be ignored");
+                    Log(ActorEventType.Messagee, "Device disabled and all messages will be ignored");
                     return true;
                 }
 
@@ -151,7 +177,8 @@ namespace HomeCenter.Model.Actors
 
         protected virtual Task OnStarted(IContext context)
         {
-            Logger.LogInformation("<{Uid}> Started with id '{deviceId}'", Uid, context.Self.Id);
+            Log(ActorEventType.ActorStart, "Started with id '{deviceId}'", context.Self.Id);
+
             Self = context.Self;
 
             Subscribe<SystemStartedEvent>();

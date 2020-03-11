@@ -17,6 +17,22 @@ using System.Threading.Tasks;
 namespace HomeCenter.Services.MotionService
 {
 
+    // TODO add unit test for unique number
+    public static class MoveType
+    {
+        public const int MessageBase = 100;
+
+        public static EventId Motion = new EventId(MessageBase, nameof(Motion));
+        public static EventId VectorCancel = new EventId(MessageBase + 1, nameof(VectorCancel));
+        public static EventId AutomationDisabled = new EventId(MessageBase + 2, nameof(AutomationDisabled));
+        public static EventId AutomationEnabled = new EventId(MessageBase + 3, nameof(AutomationEnabled));
+        public static EventId MarkVector = new EventId(MessageBase + 4, nameof(MarkVector));
+        public static EventId ConfusedVector = new EventId(MessageBase + 5, nameof(ConfusedVector));
+        public static EventId Probability = new EventId(MessageBase + 6, nameof(Probability));
+        public static EventId Tuning = new EventId(MessageBase + 7, nameof(Tuning));
+        public static EventId PowerState = new EventId(MessageBase + 8, nameof(PowerState));
+    }
+
     internal class Room : IDisposable
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
@@ -86,6 +102,21 @@ namespace HomeCenter.Services.MotionService
             RegisterChangeStateSource();
         }
 
+
+        private void Log(EventId eventId, string template = "", params object[] arguments)
+        {
+            if(string.IsNullOrEmpty(template))
+            {
+                template = eventId.Name;
+            }
+
+            template = "[{Uid}] " + template;
+            var args = new List<object>(arguments);
+            args.Insert(0, Uid);
+
+            _logger.LogInformation(eventId, template, args.ToArray());
+        }
+
         public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
 
         /// <summary>
@@ -95,7 +126,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         public async Task MarkMotion(DateTimeOffset motionTime)
         {
-            _logger.LogInformation($"[M] [{Uid}] {motionTime.TimeOfDay.TotalMilliseconds}");
+            Log(MoveType.Motion, "Motion at {motionTime}", motionTime);
 
             TryTuneTurnOffTimeOut(motionTime);
 
@@ -140,7 +171,7 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private Task TryResolveAfterCancel(MotionVector motionVector)
         {
-            _logger.LogInformation($"{motionVector} [Cancel]");
+            Log(MoveType.VectorCancel, "{motionVector} [Cancel]", motionVector);
 
             RemoveConfusedVector(motionVector);
 
@@ -192,13 +223,15 @@ namespace HomeCenter.Services.MotionService
         public void DisableAutomation()
         {
             AutomationDisabled = true;
-            _logger.LogInformation($"Room {Uid} automation disabled");
+
+            Log(MoveType.AutomationDisabled);
         }
 
         public void EnableAutomation()
         {
             AutomationDisabled = false;
-            _logger.LogInformation($"Room {Uid} automation enabled");
+
+            Log(MoveType.AutomationEnabled);
         }
 
         public void DisableAutomation(TimeSpan time)
@@ -230,8 +263,9 @@ namespace HomeCenter.Services.MotionService
         /// <returns></returns>
         private async Task MarkVector(MotionVector motionVector, bool resolved)
         {
-            _logger.LogInformation($"{motionVector} {(resolved ? " [Resolved]" : " [OK]")}");
-            
+            Log(MoveType.MarkVector, "Vector {motionVector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
+
+
             await GetSourceRoom(motionVector).MarkLeave(motionVector);
             MarkEnter(motionVector);
         }
@@ -251,7 +285,7 @@ namespace HomeCenter.Services.MotionService
         /// <param name="vector"></param>
         private void MarkConfusion(MotionVector vector)
         {
-            _logger.LogInformation($"{vector} [Confused]");
+            Log(MoveType.ConfusedVector, "Confused vector {vector}", vector);
 
             _confusingVectors.Add(vector);
         }
@@ -332,7 +366,7 @@ namespace HomeCenter.Services.MotionService
                 var visitTypeFactor = _turnOffTimeOut.VisitType.Value;
                 var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
-                _logger.LogInformation($"[PD] {Uid} => {(decreasePercent * 100)}%");
+                Log(MoveType.Probability, "Probability => {probability}%", decreasePercent * 100);
 
                 await SetProbability(_presenceProbability.DecreaseByPercent(decreasePercent), vector.EndTime);
             }
@@ -347,7 +381,10 @@ namespace HomeCenter.Services.MotionService
             if (_presenceProbability == Probability.Zero)
             {
                 (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(moveTime, _roomStatistic.LastAutoTurnOff);
-                if (result) _logger.LogInformation($"[{Uid}] Turn-off time out updated {before} -> {after}");
+                if (result)
+                {
+                    Log(MoveType.Tuning, "Turn-off time out updated {before} -> {after}", before, after);
+                }
             }
         }
 
@@ -380,7 +417,7 @@ namespace HomeCenter.Services.MotionService
                 _roomStatistic.FirstEnterTime = time;
             }
 
-            _logger.LogInformation($"[P] {Uid} {(probability.Value*100):00.00}% [{_turnOffTimeOut.Value}]");
+            Log(MoveType.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, _turnOffTimeOut.Value);
 
             _presenceProbability = probability;
 
@@ -409,7 +446,7 @@ namespace HomeCenter.Services.MotionService
                 ResetStatistics();
             }
 
-            _logger.LogInformation($"[{Uid} Light] = {powerChangeEvent.Value} | Source: {powerChangeEvent.EventTriggerSource}");
+            Log(MoveType.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
         }
 
         /// <summary>
@@ -461,7 +498,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (await CanTurnOffLamp())
             {
-                _logger.LogInformation($"[OFF] [{Uid}]");
+                Log(MoveType.PowerState, "Turning OFF");
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 

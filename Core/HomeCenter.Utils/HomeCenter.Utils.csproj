@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Analyzers" Version="0.2.0-rtm-35636" />
   </ItemGroup>
 
 </Project>

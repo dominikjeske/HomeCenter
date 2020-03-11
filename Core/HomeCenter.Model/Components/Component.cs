@@ -192,13 +192,15 @@ namespace HomeCenter.Model.Components
                 if (translator != null)
                 {
                     var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid);
-                    Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
+                    
+                    Log(ActorEventType.EventPublished, "Event published '{eventPublished}'", eventPublished);
                 }
                 else if (RelayNotTranslatedEvents)
                 {
                     var eventPublished = PropertyChangedEvent.Create(Uid, propertyChanged.PropertyChangedName, oldValue, propertyChanged.NewValue);
                     await MessageBroker.Publish(eventPublished, Uid);
-                    Logger.Log(LogLevel.Information, $"<@{Uid}> {eventPublished}");
+
+                    Log(ActorEventType.EventPublished, "Event published '{eventPublished}'", eventPublished);
                 }
             }
         }
