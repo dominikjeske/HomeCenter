@@ -11,16 +11,29 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     internal class ActorEnvironment : IDisposable
     {
-        public RootContext Context { get; } = new RootContext();
-        public PID PID { get; set; }
+        private RootContext Context { get; } = new RootContext();
+        private PID PID { get; set; }
 
-        public TestScheduler Scheduler { get; set; }
+        private TestScheduler Scheduler { get; set; }
 
-        public FakeLogger<LightAutomationServiceProxy> Logger { get; set; }
+        private FakeLogger<LightAutomationServiceProxy> Logger { get; set; }
 
-        public ITestableObservable<MotionEnvelope> MotionEvents { get; set; }
+        private ITestableObservable<MotionEnvelope> MotionEvents { get; set; }
 
-        public Dictionary<string, FakeMotionLamp> Lamps { get; set; }
+        private Dictionary<string, FakeMotionLamp> Lamps { get; set; }
+
+        public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps, FakeLogger<LightAutomationServiceProxy> Logger)
+        {
+            this.Scheduler = Scheduler;
+            this.MotionEvents = MotionEvents;
+            this.Logger = Logger;
+            this.Lamps = Lamps;
+        }
+
+        public void CreateService(LightAutomationServiceProxy actor)
+        {
+            PID = Context.SpawnNamed(Props.FromProducer(() => actor), "motionService");
+        }
 
         public void Send(Command actorMessage)
         {

@@ -3,16 +3,14 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
-using Moq;
-using Proto;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
-using System.Reactive;
 using System.Linq;
-using HomeCenter.Utils.LogProviders;
+using System.Reactive;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -24,14 +22,8 @@ namespace HomeCenter.Services.MotionService.Tests
         private TestScheduler _scheduler = new TestScheduler();
         private Container _container = new Container();
 
-        private readonly ActorEnvironment _actorContext;
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
-
-        public LightAutomationEnviromentBuilder()
-        {
-            _actorContext = new ActorEnvironment();
-        }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
         {
@@ -42,7 +34,7 @@ namespace HomeCenter.Services.MotionService.Tests
         public LightAutomationEnviromentBuilder WithMotions(Dictionary<int, string> motions)
         {
             _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Key), Notification.CreateOnNext(new MotionEnvelope(x.Value)))));
-            
+
             return this;
         }
 
@@ -52,7 +44,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
             return this;
         }
- 
+
         public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
         {
             long ticks = 0;
@@ -78,7 +70,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var time = waitTime ?? TimeSpan.FromSeconds(3);
 
-            int num = (int) (motionTime.TotalMilliseconds / time.TotalMilliseconds);
+            int num = (int)(motionTime.TotalMilliseconds / time.TotalMilliseconds);
 
             WithRepeatedMotions(roomUid, num, time);
 
@@ -109,7 +101,26 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public (IMapper, FakeLogger<LightAutomationServiceProxy>) Bootstrap(IMessageBroker messageBroker)
+        public ActorEnvironment Build()
+        {
+            var lampDictionary = CreateFakeLamps();
+
+            var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
+            var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
+
+            var (mapper, logger) = Bootstrap(messageBroker);
+            var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
+            logger.InitLogger();
+
+            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger);
+
+            actorContext.CreateService(actor);
+            actorContext.IsAlive();
+
+            return actorContext;
+        }
+
+        private (IMapper, FakeLogger<LightAutomationServiceProxy>) Bootstrap(IMessageBroker messageBroker)
         {
             MapperConfiguration config = ConfigureMapper();
             var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler);
@@ -122,12 +133,12 @@ namespace HomeCenter.Services.MotionService.Tests
             return (config.CreateMapper(), logger);
         }
 
-        protected virtual ILoggerProvider[] GetLogProviders()
+        private ILoggerProvider[] GetLogProviders()
         {
             return new ILoggerProvider[] { new ConsoleLogProvider() };
         }
 
-        protected void RegisterLogging()
+        private void RegisterLogging()
         {
             var loggerOptions = new LoggerFilterOptions { MinLevel = LogLevel.Debug };
             var loggerFactory = new LoggerFactory(GetLogProviders(), loggerOptions);
@@ -146,34 +157,6 @@ namespace HomeCenter.Services.MotionService.Tests
                 p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
                 p.ConstructServicesUsing(_container.GetInstance);
             });
-        }
-
-        public ActorEnvironment Build()
-        {
-            var lampDictionary = CreateFakeLamps();
-
-            var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
-            var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
-
-            var (mapper, logger) = Bootstrap(messageBroker);
-            var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
-
-            _actorContext.Lamps = lampDictionary;
-            _actorContext.Scheduler = _scheduler;
-            _actorContext.MotionEvents = motionEvents;
-            _actorContext.Logger = logger;
-
-            logger.InitLogger();
-
-            StartAndWait(actor);
-
-            return _actorContext;
-        }
-
-        private void StartAndWait(IActor actor)
-        {
-            _actorContext.PID = _actorContext.Context.SpawnNamed(Props.FromProducer(() => actor), "motionService");
-            _actorContext.IsAlive();
         }
 
         private Dictionary<string, FakeMotionLamp> CreateFakeLamps()

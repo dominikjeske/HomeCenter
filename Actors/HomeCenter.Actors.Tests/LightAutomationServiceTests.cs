@@ -6,7 +6,6 @@ using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
@@ -178,8 +177,6 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
-
-
         [TestMethod]
         public void Leave_ToOtherRoom_ShouldSpeedUpResolutionInNeighbor()
         {
@@ -215,12 +212,12 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 10500, Detectors.hallwayDetectorLivingRoom },  // We were in this room longer so when leave there will be longer time out
                 { 11000, Detectors.toiletDetector },
                 { 11500, Detectors.hallwayDetectorToilet },
-                { 11600, Detectors.bathroomDetector }     
+                { 11600, Detectors.bathroomDetector }
             }).Build();
 
-            env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5) );
+            env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5));
 
-          //  env.LampState(Detectors.toiletDetector).Should().BeFalse();
+            //  env.LampState(Detectors.toiletDetector).Should().BeFalse();
             env.LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
             //env.LampState(Detectors.bathroomDetector).Should().BeTrue();
             //env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
@@ -237,12 +234,11 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 2500, Detectors.hallwayDetectorLivingRoom },
                 { 4500, Detectors.hallwayDetectorLivingRoom },
                 { 7500, Detectors.hallwayDetectorLivingRoom },
-                { 10500, Detectors.hallwayDetectorLivingRoom },  
+                { 10500, Detectors.hallwayDetectorLivingRoom },
                 { 11500, Detectors.hallwayDetectorToilet },
             }).Build();
 
             env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(15));
-
         }
 
         [TestMethod]
@@ -273,7 +269,6 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.bathroomDetector).Should().BeTrue();
             env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
-
 
         [TestMethod]
         public void Move_OnSeparateRooms_ShouldTurnOnLight()
@@ -435,8 +430,6 @@ namespace HomeCenter.Services.MotionService.Tests
         //    //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
         //}
 
-       
-
         [TestMethod]
         public async Task Count_WhenCrossPassing_ShouldCountNumberOfPeople()
         {
@@ -512,7 +505,6 @@ namespace HomeCenter.Services.MotionService.Tests
         //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorLivingRoom].IsTurnedOn);
         //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
         //}
-
 
         //[TestMethod]
         //public async Task AnalyzeMoveShouldCountPeopleNumberInHouse()
