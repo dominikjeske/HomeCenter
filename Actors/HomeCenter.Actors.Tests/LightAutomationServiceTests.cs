@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using HomeCenter.Model.Core;
+using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Reactive.Testing;
@@ -36,7 +37,7 @@ namespace HomeCenter.Services.MotionService.Tests
         public void WorkingTime_DuringDaylight_ShuldPowerOnDayLights()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1500, Detectors.kitchenDetector },
@@ -56,7 +57,7 @@ namespace HomeCenter.Services.MotionService.Tests
         public void WorkingTime_AfterDusk_ShouldNotPowerOnDayLight()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1500, Detectors.kitchenDetector },
@@ -76,7 +77,7 @@ namespace HomeCenter.Services.MotionService.Tests
         public void WorkingTime_DuringDaylight_ShuldNotPowerOnNightLight()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.AfterDusk).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1500, Detectors.kitchenDetector },
@@ -95,7 +96,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Automation_WhenAutomationDisabled_ShouldNoturnOnLights()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector }
             }).Build();
@@ -111,7 +112,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public void Automation_WhenReEnableAutomation_ShouldTurnOnLights()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 2500, Detectors.toiletDetector }
@@ -127,7 +128,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public void Leave_FromOnePeopleRoomWithNoConfusion_ShouldTurnOffLightImmediately()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1500, Detectors.hallwayDetectorToilet }
@@ -143,7 +144,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1000, Detectors.kitchenDetector },
@@ -163,7 +164,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.badroomDetector },
                 { 1000, Detectors.hallwayDetectorLivingRoom },
@@ -182,7 +183,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayDetectorLivingRoom },
                 { 1000, Detectors.toiletDetector },
@@ -203,7 +204,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayDetectorLivingRoom },
                 { 2500, Detectors.hallwayDetectorLivingRoom },
@@ -228,7 +229,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayDetectorLivingRoom },
                 { 2500, Detectors.hallwayDetectorLivingRoom },
@@ -246,7 +247,7 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
             var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 300, Detectors.bathroomDetector },             // We have move in bathroom at start so future enter to bathroom is not sure and cannot cancel other confusions
                 { 500, Detectors.hallwayDetectorLivingRoom },
@@ -273,7 +274,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public void Move_OnSeparateRooms_ShouldTurnOnLight()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toiletDetector },
                 { 1500, Detectors.kitchenDetector },
@@ -290,7 +291,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Move_Timeout_ShouldTurnOffAfterTimeout()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.kitchenDetector }
             }).Build();
@@ -308,7 +309,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Move_TurnOnAfterTurnOff_ShouldIncreaseTimeout()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.kitchenDetector },
                 { 12000, Detectors.kitchenDetector },
@@ -327,7 +328,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var serviceConfig = GetLightAutomationServiceBuilder();
             serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
 
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
+            using var env = GetLightAutomationEnviromentBuilder(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
@@ -345,7 +346,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var serviceConfig = GetLightAutomationServiceBuilder();
             serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
 
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
+            using var env = GetLightAutomationEnviromentBuilder(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
@@ -363,7 +364,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var serviceConfig = GetLightAutomationServiceBuilder();
             serviceConfig[Detectors.kitchenDetector].WithTimeout(timeout);
 
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
+            using var env = GetLightAutomationEnviromentBuilder(serviceConfig.Build()).WithRepeatedMotions(Detectors.kitchenDetector, moveTime).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchenDetector).Should().BeTrue("After move we start counting and light should be on");
@@ -381,7 +382,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Confusion_NotConfusedVectors_ShouldNotBeConfused()
         {
-            using var env = GetLightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                  // First path
                 { 500, Detectors.toiletDetector },
@@ -433,7 +434,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Count_WhenCrossPassing_ShouldCountNumberOfPeople()
         {
-            using var env = new LightAutomationEnviromentBuilder().WithServiceConfig(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = new LightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.kitchenDetector },
                 { 501, Detectors.livingRoomDetector },
@@ -557,7 +558,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    IsTurnedOn(Detectors.hallwayDetectorToilet).Should().BeFalse();
         //}
 
-        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder() => new LightAutomationEnviromentBuilder();
+        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig);
 
         /// <summary>
         /// Get predefinied rooms configuration

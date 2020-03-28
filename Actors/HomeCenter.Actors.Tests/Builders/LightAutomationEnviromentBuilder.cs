@@ -16,14 +16,19 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     internal class LightAutomationEnviromentBuilder
     {
-        private int? _timeDuration;
-        private TimeSpan? _periodicCheckTime;
-        private ServiceDTO _serviceConfig;
-        private TestScheduler _scheduler = new TestScheduler();
-        private Container _container = new Container();
-
+        private readonly ServiceDTO _serviceConfig;
+        private readonly TestScheduler _scheduler = new TestScheduler();
+        private readonly Container _container = new Container();
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
+
+        private int? _timeDuration;
+        private TimeSpan? _periodicCheckTime;
+
+        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig)
+        {
+            _serviceConfig = serviceConfig;
+        }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
         {
@@ -95,16 +100,9 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithServiceConfig(ServiceDTO service)
-        {
-            _serviceConfig = service;
-            return this;
-        }
-
         public ActorEnvironment Build()
         {
             var lampDictionary = CreateFakeLamps();
-
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
             var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
 
@@ -112,9 +110,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
             logger.InitLogger();
 
-            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger);
-
-            actorContext.CreateService(actor);
+            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
 
             return actorContext;
@@ -172,7 +168,5 @@ namespace HomeCenter.Services.MotionService.Tests
 
             return lampDictionary;
         }
-
-
     }
 }
