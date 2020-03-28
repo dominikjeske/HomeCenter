@@ -24,13 +24,13 @@ namespace HomeCenter.Services.MotionService.Tests
         private TestScheduler _scheduler = new TestScheduler();
         private Container _container = new Container();
 
-        private readonly ActorContext _actorContext;
+        private readonly ActorEnvironment _actorContext;
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
 
-        public LightAutomationEnviromentBuilder(ActorContext actorContext)
+        public LightAutomationEnviromentBuilder()
         {
-            _actorContext = actorContext;
+            _actorContext = new ActorEnvironment();
         }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
@@ -148,7 +148,7 @@ namespace HomeCenter.Services.MotionService.Tests
             });
         }
 
-        public void Start()
+        public ActorEnvironment Build()
         {
             var lampDictionary = CreateFakeLamps();
 
@@ -166,6 +166,8 @@ namespace HomeCenter.Services.MotionService.Tests
             logger.InitLogger();
 
             StartAndWait(actor);
+
+            return _actorContext;
         }
 
         private void StartAndWait(IActor actor)
