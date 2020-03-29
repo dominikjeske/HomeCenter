@@ -3,7 +3,6 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using SimpleInjector;
@@ -24,10 +23,12 @@ namespace HomeCenter.Services.MotionService.Tests
 
         private int? _timeDuration;
         private TimeSpan? _periodicCheckTime;
+        private readonly bool _useRavenDbLogs;
 
-        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig)
+        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig, bool useRavenDbLogs)
         {
             _serviceConfig = serviceConfig;
+            _useRavenDbLogs = useRavenDbLogs;
         }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
@@ -104,11 +105,14 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var lampDictionary = CreateFakeLamps();
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
-            var messageBroker = new FakeMessageBroker(motionEvents, lampDictionary);
 
-            var (mapper, logger) = Bootstrap(messageBroker);
-            var actor = mapper.Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
-            logger.InitLogger();
+            var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs);
+
+            _container.RegisterInstance<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
+            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
+            _container.RegisterInstance<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
+
+            var actor = ConfigureMapper().CreateMapper().Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
 
             var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
@@ -116,32 +120,6 @@ namespace HomeCenter.Services.MotionService.Tests
             return actorContext;
         }
 
-        private (IMapper, FakeLogger<LightAutomationServiceProxy>) Bootstrap(IMessageBroker messageBroker)
-        {
-            MapperConfiguration config = ConfigureMapper();
-            var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler);
-
-            var concurrencyProvider = new TestConcurrencyProvider(_scheduler);
-            _container.RegisterInstance<IConcurrencyProvider>(concurrencyProvider);
-            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
-            _container.RegisterInstance(messageBroker);
-
-            return (config.CreateMapper(), logger);
-        }
-
-        private ILoggerProvider[] GetLogProviders()
-        {
-            return new ILoggerProvider[] { new ConsoleLogProvider() };
-        }
-
-        private void RegisterLogging()
-        {
-            var loggerOptions = new LoggerFilterOptions { MinLevel = LogLevel.Debug };
-            var loggerFactory = new LoggerFactory(GetLogProviders(), loggerOptions);
-
-            _container.RegisterInstance<ILoggerFactory>(loggerFactory);
-            _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
-        }
 
         private MapperConfiguration ConfigureMapper()
         {

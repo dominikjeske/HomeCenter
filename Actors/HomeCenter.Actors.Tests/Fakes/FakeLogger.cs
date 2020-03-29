@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -16,13 +17,21 @@ namespace HomeCenter.Services.MotionService.Tests
 
         private DocumentStore _dbStore;
         private IDocumentSession _dbSession;
+        private readonly bool _useRavenDB;
+        private object locki = new object();
 
-        public FakeLogger(IScheduler scheduler)
+        public FakeLogger(IScheduler scheduler, bool useRavenDB)
         {
             _scheduler = scheduler;
+            _useRavenDB = useRavenDB;
+
+            if (_useRavenDB)
+            {
+                InitRavenDB();
+            }
         }
 
-        public void InitLogger()
+        private void InitRavenDB()
         {
             _dbStore = GetDbStore();
 
@@ -54,53 +63,52 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            try
+            if (logLevel == LogLevel.Error)
             {
-                if (logLevel == LogLevel.Error)
-                {
-                    throw exception;
-                }
-                var message = formatter(state, exception);
-                var time = $"{_scheduler.Now:ss:fff}";
+                throw exception;
+            }
+            var message = formatter(state, exception);
+            var time = $"{_scheduler.Now:ss:fff}";
 
-                Console.WriteLine($"[{time}] {message}");
+            Console.WriteLine($"[{time}] {message}");
 
-                var moveInfo = new MoveInfo
+            if (_useRavenDB)
+            {
+                Task.Run(() =>
                 {
-                    Time = time,
-                    LogLevel = logLevel,
-                    EventId = eventId,
-                    Exception = exception,
-                    Message = message
-                };
-
-                if (state is IEnumerable<KeyValuePair<string, object>> list)
-                {
-                    foreach (var pair in list)
+                    var moveInfo = new MoveInfo
                     {
-                        if (pair.Key == MESSAGE_TEMPLATE)
+                        Time = time,
+                        LogLevel = logLevel,
+                        EventId = eventId,
+                        Exception = exception,
+                        Message = message
+                    };
+
+                    if (state is IEnumerable<KeyValuePair<string, object>> list)
+                    {
+                        foreach (var pair in list)
                         {
-                            moveInfo.Template = pair.Value?.ToString();
-                        }
-                        else
-                        {
-                            moveInfo.Properties.Add(pair.Key, pair.Value);
+                            if (pair.Key == MESSAGE_TEMPLATE)
+                            {
+                                moveInfo.Template = pair.Value?.ToString();
+                            }
+                            else
+                            {
+                                moveInfo.Properties.Add(pair.Key, pair.Value);
+                            }
                         }
                     }
-                }
 
-                _dbSession.Store(moveInfo);
+                    lock (locki)
+                    {
+                        _dbSession.Store(moveInfo);
+                    }
+                });
             }
-            catch (Exception eee)
-            {
-
-                throw;
-            }
-
-            
         }
 
-        private static DocumentStore GetDbStore()
+        private DocumentStore GetDbStore()
         {
             var docStore = new DocumentStore
             {
@@ -120,8 +128,14 @@ namespace HomeCenter.Services.MotionService.Tests
 
         public void Dispose()
         {
-            _dbSession.SaveChanges();
-            _dbSession.Dispose();
+            Task.Run(() =>
+            {
+                lock (locki)
+                {
+                    _dbSession?.SaveChanges();
+                    _dbSession?.Dispose();
+                }
+            });
         }
     }
 }

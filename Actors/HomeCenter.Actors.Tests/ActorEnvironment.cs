@@ -17,6 +17,7 @@ namespace HomeCenter.Services.MotionService.Tests
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
         private readonly RootContext _context = new RootContext();
         private readonly PID _pid;
+        private readonly string _serviceProcessName;
 
         public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps,
             FakeLogger<LightAutomationServiceProxy> Logger, LightAutomationServiceProxy actor)
@@ -25,7 +26,8 @@ namespace HomeCenter.Services.MotionService.Tests
             _motionEvents = MotionEvents;
             _logger = Logger;
             _lamps = Lamps;
-            _pid = _context.SpawnNamed(Props.FromProducer(() => actor), "motionService");
+            _serviceProcessName = $"motionService_{Guid.NewGuid()}";
+            _pid = _context.SpawnNamed(Props.FromProducer(() => actor), _serviceProcessName);
         }
 
         public void Send(Command actorMessage)
@@ -44,7 +46,7 @@ namespace HomeCenter.Services.MotionService.Tests
         /// </summary>
         public bool IsAlive()
         {
-            return _context.RequestAsync<bool>(new PID("nonhost", "motionService"), IsAliveQuery.Default).GetAwaiter().GetResult();
+            return _context.RequestAsync<bool>(new PID("nonhost", _serviceProcessName), IsAliveQuery.Default).GetAwaiter().GetResult();
         }
 
         public void Dispose()

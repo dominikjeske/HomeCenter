@@ -434,7 +434,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [TestMethod]
         public async Task Count_WhenCrossPassing_ShouldCountNumberOfPeople()
         {
-            using var env = new LightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.kitchenDetector },
                 { 501, Detectors.livingRoomDetector },
@@ -558,7 +558,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    IsTurnedOn(Detectors.hallwayDetectorToilet).Should().BeFalse();
         //}
 
-        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig);
+        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, true);
 
         /// <summary>
         /// Get predefinied rooms configuration
