@@ -16,23 +16,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
-
-    // TODO add unit test for unique number
-    public static class MoveType
-    {
-        public const int MessageBase = 100;
-
-        public static EventId Motion = new EventId(MessageBase, nameof(Motion));
-        public static EventId VectorCancel = new EventId(MessageBase + 1, nameof(VectorCancel));
-        public static EventId AutomationDisabled = new EventId(MessageBase + 2, nameof(AutomationDisabled));
-        public static EventId AutomationEnabled = new EventId(MessageBase + 3, nameof(AutomationEnabled));
-        public static EventId MarkVector = new EventId(MessageBase + 4, nameof(MarkVector));
-        public static EventId ConfusedVector = new EventId(MessageBase + 5, nameof(ConfusedVector));
-        public static EventId Probability = new EventId(MessageBase + 6, nameof(Probability));
-        public static EventId Tuning = new EventId(MessageBase + 7, nameof(Tuning));
-        public static EventId PowerState = new EventId(MessageBase + 8, nameof(PowerState));
-    }
-
     internal class Room : IDisposable
     {
         private readonly ConditionContainer _turnOnConditionsValidator = new ConditionContainer();
@@ -102,10 +85,9 @@ namespace HomeCenter.Services.MotionService
             RegisterChangeStateSource();
         }
 
-
         private void Log(EventId eventId, string template = "", params object[] arguments)
         {
-            if(string.IsNullOrEmpty(template))
+            if (string.IsNullOrEmpty(template))
             {
                 template = eventId.Name;
             }
@@ -192,7 +174,7 @@ namespace HomeCenter.Services.MotionService
         {
             //!!!!!!TODO
             //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start );
+            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start);
         }
 
         public async Task HandleVectors(IList<MotionVector> motionVectors)
@@ -264,7 +246,6 @@ namespace HomeCenter.Services.MotionService
         private async Task MarkVector(MotionVector motionVector, bool resolved)
         {
             Log(MoveType.MarkVector, "Vector {motionVector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
-
 
             await GetSourceRoom(motionVector).MarkLeave(motionVector);
             MarkEnter(motionVector);
@@ -429,7 +410,7 @@ namespace HomeCenter.Services.MotionService
             {
                 await TryTurnOffLamp();
 
-               // await NeighborsCache.Select(n => n.Value.EvaluateConfusions()).WhenAll();
+                // await NeighborsCache.Select(n => n.Value.EvaluateConfusions()).WhenAll();
             }
         }
 

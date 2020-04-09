@@ -11,24 +11,25 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    //                                             STAIRCASE [S]
+    //                                             STAIRCASE [S]<1+>
     //  ________________________________________<_    __________________________
     // |        |                |                       |                      |
-    // |        |                  [HL]      HALLWAY     |                      |
-    // |   B    |                |<            [H]       |<                     |
+    // |        |                  [HL]<1+>  HALLWAY     |                      |
+    // |   B    |                |<            [H]<1+>   |<                     |
     // |   A                     |___   ______           |       BADROOM        |
-    // |   L    |                |            |                    [D]          |
+    // |   L    |                |            |                    [D]<1+>      |
     // |   C    |                |            |          |                      |
     // |   O    |                |            |          |______________________|
     // |   N    |   LIVINGROOM  >|            |          |<                     |
-    // |   Y    |      [L]       |  BATHROOM  |   [HT]                          |
-    // |        |                |     [B]   >|___v  ____|                      |
-    // |  [Y]   |                |            |          |       KITCHEN        |
-    // |        |                |            |  TOILET  |         [K]          |
-    // |        |                |            |    [T]   |                      |
+    // |   Y    |      [L]<1+>   |  BATHROOM  | [HT]<1+> |                      |
+    // |        |                |   [B]<1+> >|___v  ____|                      |
+    // | [Y]<1+>|                |            |          |       KITCHEN        |
+    // |        |                |            |  TOILET  |         [K]<1+>      |
+    // |        |                |            |  [T]<1>  |                      |
     // |_______v|________________|____________|_____v____|______________________|
     //
     // LEGEND: v/< - Motion Detector
+    //         <x> - Max number of persons
 
     [TestClass]
     public class LightAutomationServiceTests : ReactiveTest
@@ -94,7 +95,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public async Task Automation_WhenAutomationDisabled_ShouldNoturnOnLights()
+        public async Task Automation_WhenDisabled_ShouldNoturnOnLights()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
@@ -110,7 +111,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         [TestMethod]
-        public void Automation_WhenReEnableAutomation_ShouldTurnOnLights()
+        public void Automation_WhenReEnabled_ShouldTurnOnLights()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
             {
@@ -120,8 +121,9 @@ namespace HomeCenter.Services.MotionService.Tests
 
             env.SendCommand(DisableAutomationCommand.Create(Detectors.toiletDetector));
             env.RunAfterFirstMove(_ => env.SendCommand(EnableAutomationCommand.Create(Detectors.toiletDetector)));
-            env.AdvanceToEnd();
 
+            env.LampState(Detectors.toiletDetector).Should().BeFalse();
+            env.AdvanceToEnd();
             env.LampState(Detectors.toiletDetector).Should().BeTrue();
         }
 

@@ -22,10 +22,10 @@
     <PackageReference Include="Proto.Actor" Version="0.2.0" />
     <PackageReference Include="Proto.Router" Version="0.2.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="SimpleInjector" Version="4.9.1" />
+    <PackageReference Include="SimpleInjector" Version="4.9.2" />
     <PackageReference Include="System.Device.Gpio" Version="1.0.0" />
     <PackageReference Include="System.IO.Ports" Version="4.7.0" />
-    <PackageReference Include="System.Reactive" Version="4.3.2" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Analyzers" Version="0.2.0-rtm-35636" />
   </ItemGroup>
 
