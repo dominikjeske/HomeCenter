@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Bootstrapper
 {
-    // TODO Add https://wakeupandcode.com/generic-host-builder-in-asp-net-core/ 
+    // TODO Add https://wakeupandcode.com/generic-host-builder-in-asp-net-core/
     //          https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert/41244169#41244169
 
     public class Bootstrapper
@@ -113,7 +113,6 @@ namespace HomeCenter.Services.Bootstrapper
 
         protected virtual void ConfigureLoggerFactory(ILoggerFactory loggerFacory)
         {
-            
         }
 
         protected void RegisterLogging()
@@ -126,7 +125,6 @@ namespace HomeCenter.Services.Bootstrapper
 
             _container.RegisterInstance<ILoggerFactory>(loggerFactory);
             _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
-
         }
 
         protected virtual void RegisterNativeServices()

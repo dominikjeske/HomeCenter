@@ -7,24 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.6.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Analyzers" Version="0.2.0-rtm-35636" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
+    <ProjectReference Include="..\..\Core\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" 
+                      OutputItemType="CodeGenerationRoslynPlugin"
+                      PrivateAssets="all"/>
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
-    
   </ItemGroup>
 
   <PropertyGroup>
