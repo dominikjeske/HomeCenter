@@ -94,7 +94,8 @@ namespace HomeCenter.Runner
 
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\netstandard.dll");
 
-            var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Proto.Mailbox.UnboundedMailbox).Assembly, typeof(Router).Assembly };
+            // TODO typeof(Proto.Mailbox.UnboundedMailbox ??
+            var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Router).Assembly };
             var external = externalRefs.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();
 
             var comp = CSharpCompilation.Create("Final").WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))

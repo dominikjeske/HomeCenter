@@ -48,10 +48,12 @@ namespace HomeCenter.Services.Controllers
         protected async Task<bool> Handle(StopSystemQuery stopSystemCommand)
         {
             await MessageBroker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, _configService);
-            await _configService.StopAsync();
+
+            await _actorFactory.Context.StopAsync(_configService);
+
             await _scheduler.Shutdown();
 
-            _actorFactory.GetExistingActor(nameof(Controller)).Stop();
+            await _actorFactory.Context.StopAsync(_actorFactory.GetExistingActor(nameof(Controller)));
 
             return true;
         }

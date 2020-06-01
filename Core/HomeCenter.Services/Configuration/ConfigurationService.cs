@@ -125,15 +125,15 @@ namespace HomeCenter.Services.Configuration
         {
             foreach (var service in _services.Values)
             {
-                await service.StopAsync();
+                await _actorFactory.Context.StopAsync(service);
             }
 
             foreach (var adapter in _adapters.Values)
             {
-                await adapter.StopAsync();
+                await _actorFactory.Context.StopAsync(adapter);
             }
 
-            await _mainArea.StopAsync();
+            await _actorFactory.Context.StopAsync(_mainArea);
 
             return true;
         }

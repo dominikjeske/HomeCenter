@@ -1,5 +1,4 @@
-﻿
-using HomeCenter.Broker;
+﻿using HomeCenter.Broker;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
@@ -22,11 +21,15 @@ namespace HomeCenter.Model.Actors
         private readonly ITypeLoader _typeLoader;
         private readonly Dictionary<string, PID> _actorsCache = new Dictionary<string, PID>();
 
-        public RootContext Context { get; } = new RootContext();
+        public RootContext Context { get; }
+        public ActorSystem System { get; }
 
         public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger,
                             ITypeLoader typeLoader, ActorPropsRegistry actorPropsRegistry)
         {
+            System = new ActorSystem();
+            Context  = new RootContext(System);
+
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;
             _logger = logger;
@@ -38,7 +41,8 @@ namespace HomeCenter.Model.Actors
             if (_actorsCache.ContainsKey(id)) return _actorsCache[id];
 
             var pid = CreatePidAddress(id, address, parent);
-            var reff = ProcessRegistry.Instance.Get(pid);
+
+            var reff = System.ProcessRegistry.Get(pid);
             if (reff is DeadLetterProcess)
             {
                 throw new InvalidOperationException($"Actor {pid} is death");
@@ -62,7 +66,7 @@ namespace HomeCenter.Model.Actors
         {
             var routing = GetRouting(actorConfig);
             var id = actorConfig.Uid;
-            Func<IActor> actorProducer = () => _typeLoader.GetProxyType(actorConfig);
+            IActor? actorProducer() => _typeLoader.GetProxyType(actorConfig);
 
             if (routing == 0)
             {
@@ -105,7 +109,7 @@ namespace HomeCenter.Model.Actors
         private PID GetOrCreateActor(string uid, string address, IContext parent, Func<PID> create)
         {
             var pid = CreatePidAddress(uid, address, parent);
-            var reff = ProcessRegistry.Instance.Get(pid);
+            var reff = System.ProcessRegistry.Get(pid);
             if (reff is DeadLetterProcess)
             {
                 pid = create();

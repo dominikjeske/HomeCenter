@@ -15,7 +15,8 @@ namespace HomeCenter.Services.MotionService.Tests
         private readonly FakeLogger<LightAutomationServiceProxy> _logger;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
-        private readonly RootContext _context = new RootContext();
+        private readonly ActorSystem _system = new ActorSystem();
+        private readonly RootContext _context;
         private readonly PID _pid;
         private readonly string _serviceProcessName;
 
@@ -27,6 +28,7 @@ namespace HomeCenter.Services.MotionService.Tests
             _logger = Logger;
             _lamps = Lamps;
             _serviceProcessName = $"motionService_{Guid.NewGuid()}";
+            _context = new RootContext(_system);
             _pid = _context.SpawnNamed(Props.FromProducer(() => actor), _serviceProcessName);
         }
 
@@ -52,7 +54,8 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Dispose()
         {
             _logger.Dispose();
-            _pid.StopAsync();
+
+            _context.StopAsync(_pid);
         }
 
         public void AdvanceToEnd() => _scheduler.AdvanceToEnd(_motionEvents);

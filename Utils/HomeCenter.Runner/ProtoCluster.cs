@@ -11,7 +11,8 @@ namespace HomeCenter.Runner
         {
             Console.WriteLine("Start listening...");
 
-            var context = new RootContext();
+            ActorSystem actorSystem = new ActorSystem();
+            var context = new RootContext(actorSystem);
             
             var props = Props.FromProducer(() => new A());
             context.SpawnNamed(props, "chatserver");
