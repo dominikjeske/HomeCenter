@@ -11,15 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
     <PackageReference Include="FastDeepCloner" Version="1.3.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Proto.Actor" Version="0.3.0" />
     <PackageReference Include="Proto.Router" Version="0.2.0" />
-    <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="SimpleInjector" Version="5.0.1" />
+    <PackageReference Include="Quartz" Version="3.1.0" />
+    <PackageReference Include="SimpleInjector" Version="5.0.3" />
     <PackageReference Include="System.Device.Gpio" Version="1.0.0" />
     <PackageReference Include="System.IO.Ports" Version="4.7.0" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
