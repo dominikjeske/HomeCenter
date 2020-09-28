@@ -2,14 +2,12 @@
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Runner.Codegen;
 using HomeCenter.Utils.ConsoleExtentions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Proto;
-using Proto.Router;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,24 +38,22 @@ namespace HomeCenter.Runner
             {
                 var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
 
+                // if (HasBaseType(classSemantic, "DeviceActor"))
+                // {
+                // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
 
-               // if (HasBaseType(classSemantic, "DeviceActor"))
-               // {
-                   // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
+                var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
+                var result = generator.Build(proxy);
 
-                   var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
-                    var result = generator.Build(proxy);
+                foreach (var res in result.Members)
+                {
+                    ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
+                    ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
 
-                    foreach (var res in result.Members)
-                    {
-                        ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
-                        ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
-
-                        classList.Add(res);
-                    }
-               // }
+                    classList.Add(res);
+                }
+                // }
             }
-
 
             foreach (var proxyClass in classList)
             {
@@ -79,8 +75,6 @@ namespace HomeCenter.Runner
             return HasBaseType(type.BaseType, baseType);
         }
 
-        
-
         private static void Veryfy(CompilationUnitSyntax syntaxTree)
         {
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
@@ -95,7 +89,7 @@ namespace HomeCenter.Runner
             var netStandard = MetadataReference.CreateFromFile(@"C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\netstandard.dll");
 
             // TODO typeof(Proto.Mailbox.UnboundedMailbox ??
-            var externalRefs = new Assembly[] { typeof(IContext).Assembly, typeof(Router).Assembly };
+            var externalRefs = new Assembly[] { typeof(IContext).Assembly };
             var external = externalRefs.Select(a => MetadataReference.CreateFromFile(a.Location)).ToArray();
 
             var comp = CSharpCompilation.Create("Final").WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))

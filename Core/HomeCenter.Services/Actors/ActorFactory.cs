@@ -72,7 +72,9 @@ namespace HomeCenter.Model.Actors
             {
                 return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => WithGuardiad(Props.FromProducer(actorProducer), parent)));
             }
-            return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => Router.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
+
+            //TODO what when parent is null
+            return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => parent.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
         }
 
         public PID CreateActor<T>(string id = default, IContext parent = default) where T : class, IActor

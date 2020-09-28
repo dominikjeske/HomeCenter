@@ -85,7 +85,8 @@ namespace HomeCenter.Runner
                 Conventions = { }
             };
 
-            docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
+            //TODO fix
+            //docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
             docStore.Initialize();
             EnsureExists(docStore);
 

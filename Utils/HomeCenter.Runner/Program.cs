@@ -16,7 +16,8 @@ namespace HomeCenter.Runner
             string input = "";
 
 
-            string remote = configuration.GetValue<string>("Address");
+            //TODO fix
+            //string remote = configuration.GetValue<string>("Address");
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

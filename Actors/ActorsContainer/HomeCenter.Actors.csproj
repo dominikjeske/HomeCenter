@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -10,13 +10,11 @@
     <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Analyzers" Version="0.2.0-rtm-35636" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0-preview.16" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" 
-                      OutputItemType="CodeGenerationRoslynPlugin"
-                      PrivateAssets="all"/>
+    <ProjectReference Include="..\..\Core\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" OutputItemType="CodeGenerationRoslynPlugin" PrivateAssets="all" />
     <ProjectReference Include="..\..\Core\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 

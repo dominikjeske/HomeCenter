@@ -20,11 +20,12 @@ namespace HomeCenter.Services.Profiles
 
                 var cons = conditionType.GetConstructors().FirstOrDefault();
                 var args = new List<object>();
-
-                foreach (var parameter in cons.GetParameters())
-                {
-                    args.Add(context.ConfigurationProvider.ServiceCtor(parameter.ParameterType));
-                }
+                
+                //TODO DNF - fix 
+                //foreach (var parameter in cons.GetParameters())
+                //{
+                //    args.Add(context.ConfigurationProvider.ServiceCtor(parameter.ParameterType));
+                //}
 
                 if (conditionType != null)
                 {

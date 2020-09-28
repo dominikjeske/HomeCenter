@@ -120,7 +120,8 @@ namespace HomeCenter.Services.MotionService.Tests
                 Conventions = { }
             };
 
-            docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
+            //TODO - fix
+            //docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
 
             docStore.Initialize();
             return docStore;

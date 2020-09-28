@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -10,14 +10,14 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0-preview-20200921-01" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0-preview.16" />
     <PackageReference Include="Moq" Version="4.14.5" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
-    <PackageReference Include="Proto.Actor" Version="0.3.0" />
+    <PackageReference Include="Proto.Actor" Version="0.3.1-alpha.0.80" />
     <PackageReference Include="SimpleInjector" Version="5.0.3" />
-    <PackageReference Include="RavenDB.Client" Version="5.0.2" />
+    <PackageReference Include="RavenDB.Client" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
