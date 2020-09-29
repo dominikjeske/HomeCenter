@@ -15,7 +15,7 @@
     <PackageReference Include="Moq" Version="4.14.5" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
-    <PackageReference Include="Proto.Actor" Version="0.3.1-alpha.0.80" />
+    <PackageReference Include="Proto.Actor" Version="0.3.1-alpha.0.81" />
     <PackageReference Include="SimpleInjector" Version="5.0.3" />
     <PackageReference Include="RavenDB.Client" Version="5.0.3" />
   </ItemGroup>

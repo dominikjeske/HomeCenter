@@ -29,6 +29,8 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             _serviceConfig = serviceConfig;
             _useRavenDbLogs = useRavenDbLogs;
+
+            _container.Options.ResolveUnregisteredConcreteTypes = true;
         }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
