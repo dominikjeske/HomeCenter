@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 
@@ -42,16 +40,17 @@ namespace HomeCenter.Services.MotionService.Tests
 
         private void ClearCurrentMessages()
         {
-            var objects = _dbSession.Query<MoveInfo>();
-            while (objects.Any())
-            {
-                foreach (var obj in objects)
-                {
-                    _dbSession.Delete(obj);
-                }
+            //TODO DNF
+            //var objects = _dbSession.Query<MoveInfo>();
+            //while (objects.Any())
+            //{
+            //    foreach (var obj in objects)
+            //    {
+            //        _dbSession.Delete(obj);
+            //    }
 
-                _dbSession.SaveChanges();
-            }
+            //    _dbSession.SaveChanges();
+            //}
         }
 
         public IDisposable BeginScope<TState>(TState state)

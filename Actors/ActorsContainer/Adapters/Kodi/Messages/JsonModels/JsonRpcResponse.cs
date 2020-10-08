@@ -1,19 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class JsonRpcResponse
     {
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "jsonrpc")]
+        [JsonPropertyName("jsonrpc")]
         public string JsonRpc { get; set; }
 
-        [JsonProperty(PropertyName = "result")]
+        [JsonPropertyName("result")]
         public object Result { get; set; }
 
-        [JsonProperty(PropertyName = "error")]
+        [JsonPropertyName("error")]
         public JsonRpcError Error { get; set; }
     }
 }

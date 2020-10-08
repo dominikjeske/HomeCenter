@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration;
-using HomeCenter.Model.Actors;
+﻿using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Calendars;
@@ -20,10 +18,32 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Actors
 {
+    internal interface ITypeFactory<TConfig, TResult> where TConfig : IBaseObject
+    {
+        TResult Create(TConfig config);
+    }
+
+    internal class ComponentFactory : ITypeFactory<ComponentDTO, Component>
+    {
+        public Component Create(ComponentDTO config)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class AdapterFactory : ITypeFactory<AdapterDTO, Adapter>
+    {
+        public Adapter Create(AdapterDTO config)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     public class TypeLoader : ITypeLoader
     {
-        private MapperConfigurationExpression _mapperConfigurationExpression;
-        private IMapper _mapper;
+        //private MapperConfigurationExpression _mapperConfigurationExpression;
+        //private IMapper _mapper;
         private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Type> _dynamicTypes = new Dictionary<string, Type>();
         private readonly IScheduler _scheduler;
@@ -31,7 +51,8 @@ namespace HomeCenter.Services.Actors
         public async Task LoadTypes()
         {
             LoadDynamicTypes();
-            _mapper = RegisterTypesInAutomapper();
+
+            //_mapper = RegisterTypesInAutomapper();
             await LoadCalendars();
         }
 
@@ -68,37 +89,37 @@ namespace HomeCenter.Services.Actors
             var proxyName = $"{actorConfig.Type}Proxy";
             if (!_dynamicTypes.ContainsKey(proxyName)) throw new ConfigurationException($"Could not find type for actor {proxyName}");
             var actorType = _dynamicTypes[proxyName];
-            var actor = _mapper.Map(actorConfig, typeof(T), actorType) as IActor;
-            return actor;
+            //var actor = _mapper.Map(actorConfig, typeof(T), actorType) as IActor;
+            return null;
         }
 
-        private IMapper RegisterTypesInAutomapper()
-        {
-            _mapperConfigurationExpression = new MapperConfigurationExpression();
-            _mapperConfigurationExpression.ConstructServicesUsing(_serviceProvider.GetService);
+        //private IMapper RegisterTypesInAutomapper()
+        //{
+        //    _mapperConfigurationExpression = new MapperConfigurationExpression();
+        //    _mapperConfigurationExpression.ConstructServicesUsing(_serviceProvider.GetService);
 
-            foreach (var profile in AssemblyHelper.GetAllTypes<Profile>())
-            {
-                _mapperConfigurationExpression.AddProfile(profile);
-            }
+        //    foreach (var profile in AssemblyHelper.GetAllTypes<Profile>())
+        //    {
+        //        _mapperConfigurationExpression.AddProfile(profile);
+        //    }
 
-            _mapperConfigurationExpression.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
+        //    _mapperConfigurationExpression.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
 
-            foreach (var actorType in _dynamicTypes.Values)
-            {
-                if (typeof(Adapter).IsAssignableFrom(actorType))
-                {
-                    _mapperConfigurationExpression.CreateMap(typeof(AdapterDTO), actorType).ConstructUsingServiceLocator();
-                }
-                else if (typeof(Service).IsAssignableFrom(actorType))
-                {
-                    _mapperConfigurationExpression.CreateMap(typeof(ServiceDTO), actorType).ConstructUsingServiceLocator();
-                }
-            }
+        //    foreach (var actorType in _dynamicTypes.Values)
+        //    {
+        //        if (typeof(Adapter).IsAssignableFrom(actorType))
+        //        {
+        //            _mapperConfigurationExpression.CreateMap(typeof(AdapterDTO), actorType).ConstructUsingServiceLocator();
+        //        }
+        //        else if (typeof(Service).IsAssignableFrom(actorType))
+        //        {
+        //            _mapperConfigurationExpression.CreateMap(typeof(ServiceDTO), actorType).ConstructUsingServiceLocator();
+        //        }
+        //    }
 
-            var mapper = new Mapper(new MapperConfiguration(_mapperConfigurationExpression), t => _serviceProvider.GetService(t));
+        //    var mapper = new Mapper(new MapperConfiguration(_mapperConfigurationExpression), t => _serviceProvider.GetService(t));
 
-            return mapper;
-        }
+        //    return mapper;
+        //}
     }
 }

@@ -1,11 +1,11 @@
 ﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
@@ -38,7 +38,7 @@ namespace HomeCenter.Adapters.Sony.Messages
             Cookies.Add(_cookieAddress, new Cookie("auth", "", "/sony", Address));
 
             Address = $"http://{Address}/sony/accessControl";
-            Body = JsonConvert.SerializeObject(new
+            Body = JsonSerializer.Serialize(new
             {
                 @method = "actRegister",
                 @params = new object[] { new ActRegisterRequest(ClientID, ApplicationID, "private"), new[] { new ActRegister1Request("WOL", "yes") } },

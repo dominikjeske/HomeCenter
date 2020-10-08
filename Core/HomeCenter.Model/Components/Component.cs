@@ -12,7 +12,6 @@ using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Model.Triggers;
 using HomeCenter.Utils.Extensions;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -192,7 +191,7 @@ namespace HomeCenter.Model.Components
                 if (translator != null)
                 {
                     var eventPublished = await MessageBroker.PublishWithTranslate(propertyChanged, translator.To, Uid);
-                    
+
                     Log(ActorEventType.EventPublished, "Event published '{eventPublished}'", eventPublished);
                 }
                 else if (RelayNotTranslatedEvents)

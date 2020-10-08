@@ -6,7 +6,6 @@ using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ using System.Net;
 using System.Reflection;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -39,7 +39,7 @@ namespace HomeCenter.Services.Roslyn
                 var adapterInfoPath = Path.Combine(adapterDictionary, AdapterInfoFileName);
                 if (!File.Exists(adapterInfoPath)) continue;
 
-                var adapterDescription = JsonConvert.DeserializeObject<AdapterInfoDTO>(File.ReadAllText(adapterInfoPath));
+                var adapterDescription = JsonSerializer.Deserialize<AdapterInfoDTO>(File.ReadAllText(adapterInfoPath));
                 var adapterAssembly = Path.Combine(adapterDictionary, $"{adapterDescription.Name}.dll");
                 AssemblyName currentAssembly = null;
                 if (File.Exists(adapterAssembly))

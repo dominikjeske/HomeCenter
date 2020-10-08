@@ -1,8 +1,8 @@
 ﻿using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
-using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Text.Json;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
@@ -28,7 +28,7 @@ namespace HomeCenter.Adapters.Sony.Messages
             Cookies = new CookieContainer();
             Cookies.Add(new Uri($"http://{Address}/sony/"), new Cookie("auth", AuthorisationKey, "/sony", Address));
             Address = $"http://{Address}/sony/{Path}";
-            Body = JsonConvert.SerializeObject(new
+            Body = JsonSerializer.Serialize(new
             {
                 @method = Method,
                 @params = Params == null ? new object[] { } : new object[] { Params },

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace HomeCenter.Model.Messages.Queries

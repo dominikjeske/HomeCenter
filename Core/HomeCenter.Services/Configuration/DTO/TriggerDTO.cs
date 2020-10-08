@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class TriggerDTO
     {
-        [JsonProperty("Event")]
+        [JsonPropertyName("Event")]
         public EventDTO Event { get; set; }
 
-        [JsonProperty("Commands")]
+        [JsonPropertyName("Commands")]
         public IList<CommandDTO> Commands { get; set; }
 
-        [JsonProperty("Schedule")]
+        [JsonPropertyName("Schedule")]
         public ScheduleDTO Schedule { get; set; }
 
-        [JsonProperty("Condition")]
+        [JsonPropertyName("Condition")]
         public ConditionContainerDTO Condition { get; set; }
     }
 }

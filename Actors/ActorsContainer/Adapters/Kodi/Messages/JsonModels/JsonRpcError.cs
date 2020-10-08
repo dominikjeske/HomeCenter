@@ -1,21 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class JsonRpcError
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public RpcErrorCode Code { get; set; }
 
-        [JsonProperty(PropertyName = "message")]
+        [JsonPropertyName("message")]
         public string Message { get; set; }
 
-        [JsonProperty(PropertyName = "data")]
+        [JsonPropertyName("data")]
         public Data Data { get; set; }
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this, Formatting.None);
+            return JsonSerializer.Serialize(this);
         }
     }
 }

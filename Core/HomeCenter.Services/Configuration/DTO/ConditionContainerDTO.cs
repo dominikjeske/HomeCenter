@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class ConditionContainerDTO
     {
-        [JsonProperty("Expression")]
+        [JsonPropertyName("Expression")]
         public string Expression { get; set; }
 
-        [JsonProperty("Conditions")]
+        [JsonPropertyName("Conditions")]
         public IList<ConditionDTO> Conditions { get; set; }
 
-        [JsonProperty("IsInverted")]
+        [JsonPropertyName("IsInverted")]
         public bool IsInverted { get; set; }
 
-        [JsonProperty("DefaultOperator")]
+        [JsonPropertyName("DefaultOperator")]
         public string DefaultOperator { get; set; }
     }
 }

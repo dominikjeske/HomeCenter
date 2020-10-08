@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyAudioMuteRequest
     {
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public bool Status { get; set; }
 
         public SonyAudioMuteRequest()

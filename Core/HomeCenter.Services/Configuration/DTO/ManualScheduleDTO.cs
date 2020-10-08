@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class ManualScheduleDTO
     {
-        [JsonProperty("Start")]
+        [JsonPropertyName("Start")]
         public TimeSpan Start { get; set; }
 
-        [JsonProperty("Finish")]
+        [JsonPropertyName("Finish")]
         public TimeSpan Finish { get; set; }
 
-        [JsonProperty("WorkingTime")]
+        [JsonPropertyName("WorkingTime")]
         public TimeSpan WorkingTime { get; set; }
     }
 }

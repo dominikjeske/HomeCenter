@@ -1,8 +1,8 @@
 ﻿using HomeCenter.Adapters.Kodi.Messages.JsonModels;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {
@@ -35,14 +35,14 @@ namespace HomeCenter.Adapters.Kodi.Messages
                 Parameters = Parameters
             };
 
-            Body = JsonConvert.SerializeObject(jsonRpcRequest);
+            Body = JsonSerializer.Serialize(jsonRpcRequest);
 
             return this;
         }
 
         public override object Parse(string rawHttpResult)
         {
-            var result = JsonConvert.DeserializeObject<JsonRpcResponse>(rawHttpResult);
+            var result = JsonSerializer.Deserialize<JsonRpcResponse>(rawHttpResult);
 
             return result;
         }

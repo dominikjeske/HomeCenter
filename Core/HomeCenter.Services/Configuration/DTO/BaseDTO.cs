@@ -1,9 +1,9 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
@@ -12,23 +12,23 @@ namespace HomeCenter.Services.Configuration.DTO
     {
         public string this[string propertyName]
         {
-            get => Properties[propertyName];
+            get => Properties[propertyName].ToString();
             set => Properties[propertyName] = value;
         }
 
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
 
-        [JsonProperty("Uid")]
+        [JsonPropertyName("Uid")]
         public string Uid { get; set; }
 
-        [JsonProperty("Type")]
+        [JsonPropertyName("Type")]
         public string Type { get; set; }
 
         [DefaultValue(true)]
-        [JsonProperty("IsEnabled", DefaultValueHandling = DefaultValueHandling.Populate)]
+        [JsonPropertyName("IsEnabled")]//TODO , DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsEnabled { get; set; }
 
-        [JsonProperty("Properties")]
-        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+        [JsonPropertyName("Properties")]
+        public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
     }
 }

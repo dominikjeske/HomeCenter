@@ -41,7 +41,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var serviceDto = new ServiceDTO
             {
                 IsEnabled = true,
-                Properties = new Dictionary<string, string>()
+                Properties = new Dictionary<string, object>()
             };
 
             foreach (var room in _rooms.Values)
@@ -62,7 +62,7 @@ namespace HomeCenter.Services.MotionService.Tests
             var area = new AttachedPropertyDTO
             {
                 AttachedActor = roomBuilder.Name,
-                Properties = new Dictionary<string, string>()
+                Properties = new Dictionary<string, object>()
             };
 
             if (!string.IsNullOrWhiteSpace(_workingTime))
@@ -90,7 +90,7 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 AttachedActor = motionSensor,
                 AttachedArea = area,
-                Properties = new Dictionary<string, string>
+                Properties = new Dictionary<string, object>
                 {
                     [MotionProperties.Neighbors] = string.Join(", ", neighbors),
                     [MotionProperties.Lamp] = motionSensor

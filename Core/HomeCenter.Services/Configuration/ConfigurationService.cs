@@ -12,7 +12,6 @@ using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Utils.Extensions;
-using Newtonsoft.Json;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -49,7 +48,7 @@ namespace HomeCenter.Services.Configuration
 
             var rawConfig = File.ReadAllText(configPath);
 
-            var result = JsonConvert.DeserializeObject<HomeCenterConfigDTO>(rawConfig);
+            var result = System.Text.Json.JsonSerializer.Deserialize<HomeCenterConfigDTO>(rawConfig);
 
             await LoadTypes();
 
@@ -167,7 +166,7 @@ namespace HomeCenter.Services.Configuration
 
                     foreach (var property in adapter.Properties.Keys.ToList())
                     {
-                        var propvalue = adapter.Properties[property];
+                        var propvalue = adapter.Properties[property].ToString();
                         if (propvalue.IndexOf("#") > -1)
                         {
                             if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");
@@ -180,7 +179,7 @@ namespace HomeCenter.Services.Configuration
                 {
                     foreach (var property in attachedProperty.Properties.Keys.ToList())
                     {
-                        var propvalue = attachedProperty.Properties[property];
+                        var propvalue = attachedProperty.Properties[property].ToString();
                         if (propvalue.IndexOf("#") > -1)
                         {
                             if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");

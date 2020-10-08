@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class HomeCenterDTO
     {
-        [JsonProperty("SharedAdapters")]
+        [JsonPropertyName("SharedAdapters")]
         public IList<AdapterDTO> SharedAdapters { get; set; } = new List<AdapterDTO>();
 
-        [JsonProperty("MainArea")]
+        [JsonPropertyName("MainArea")]
         public AreaDTO MainArea { get; set; }
 
-        [JsonProperty("Services")]
+        [JsonPropertyName("Services")]
         public IList<ServiceDTO> Services { get; set; } = new List<ServiceDTO>();
 
-        [JsonProperty("Templates")]
+        [JsonPropertyName("Templates")]
         public IList<ComponentDTO> Templates { get; set; } = new List<ComponentDTO>();
     }
 }

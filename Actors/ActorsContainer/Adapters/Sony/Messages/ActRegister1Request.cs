@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
     public class ActRegister1Request
     {
-        [JsonProperty("function")]
+        [JsonPropertyName("function")]
         public System.String Function { get; set; }
 
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public System.String Value { get; set; }
 
         public ActRegister1Request()

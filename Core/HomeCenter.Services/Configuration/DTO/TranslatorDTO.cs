@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class TranslatorDTO : BaseDTO
     {
-        [JsonProperty("From")]
+        [JsonPropertyName("From")]
         public ActorMessageDTO From { get; set; }
-        [JsonProperty("To")]
+        [JsonPropertyName("To")]
         public ActorMessageDTO To { get; set; }
     }
 }

@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyAudioVolumeRequest
     {
-        [JsonProperty("target")]
+        [JsonPropertyName("target")]
         public string Target { get; set; }
 
-        [JsonProperty("volume")]
+        [JsonPropertyName("volume")]
         public string Volume { get; set; }
 
         public SonyAudioVolumeRequest()

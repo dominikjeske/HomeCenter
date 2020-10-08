@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class Data
     {
-        [JsonProperty(PropertyName = "method")]
+        [JsonPropertyName("method")]
         public string Method { get; set; }
 
-        [JsonProperty(PropertyName = "stack")]
+        [JsonPropertyName("stack")]
         public Stack Stack { get; set; }
     }
 }

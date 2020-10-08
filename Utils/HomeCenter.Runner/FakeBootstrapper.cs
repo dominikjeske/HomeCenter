@@ -3,7 +3,6 @@ using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Storage.RavenDB;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Raven.Client.Documents;
 using Raven.Client.Exceptions.Database;
 using Raven.Client.ServerWide;
@@ -15,7 +14,6 @@ using Serilog.Exceptions.Filters;
 using SimpleInjector;
 using System;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace HomeCenter.Runner
@@ -65,7 +63,7 @@ namespace HomeCenter.Runner
 
             var logger = new LoggerConfiguration().Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers()
                                                   .WithFilter(new IgnorePropertyByNameExceptionFilter(nameof(Exception.HResult))))
-                                                //.ReadFrom.Configuration(config)
+                                                  //.ReadFrom.Configuration(config)
                                                   .WriteTo.Console()
                                                   .WriteTo.RavenDB(docStore)
                                                   .CreateLogger();

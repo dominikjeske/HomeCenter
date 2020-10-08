@@ -321,19 +321,6 @@
           "Address": 50
         }
       }
-      //{
-      //  "Uid": "Dimmer",
-      //  "Type": "DimmerSCO812Adapter",
-      //  "Properties": {
-      //    "PowerAdapter": "HSRel8_1",
-      //    "PowerAdapterPin": 0,
-      //    "PowerLevelAdapterUid": "DimmerBridge",
-      //    "PowerLevelAdapterPin": 0,
-      //    "TimeToFullLight": 2500
-      //    //"Minimum": 0.12,
-      //    //"Maximum": 0.32
-      //  }
-      //}
     ],
     "Services": [
       {

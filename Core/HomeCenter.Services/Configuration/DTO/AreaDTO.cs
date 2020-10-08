@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class AreaDTO : BaseDTO
     {
-        [JsonProperty("Areas")]
+        [JsonPropertyName("Areas")]
         public IList<AreaDTO> Areas { get; set; } = new List<AreaDTO>();
 
-        [JsonProperty("Components")]
+        [JsonPropertyName("Components")]
         public IList<ComponentDTO> Components { get; set; } = new List<ComponentDTO>();
 
-        [JsonProperty("AttachedProperties")]
+        [JsonPropertyName("AttachedProperties")]
         public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
 
         public AreaDTO()

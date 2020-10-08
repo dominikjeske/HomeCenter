@@ -1,16 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
     public class ActRegisterRequest
     {
-        [JsonProperty("clientid")]
+        [JsonPropertyName("clientid")]
         public System.String Clientid { get; set; }
 
-        [JsonProperty("nickname")]
+        [JsonPropertyName("nickname")]
         public System.String Nickname { get; set; }
 
-        [JsonProperty("level")]
+        [JsonPropertyName("level")]
         public System.String Level { get; set; }
 
         public ActRegisterRequest()

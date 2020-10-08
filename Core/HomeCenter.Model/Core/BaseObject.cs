@@ -1,10 +1,10 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Messages;
 using HomeCenter.Utils.Extensions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace HomeCenter.Model.Core
 {
@@ -93,7 +93,7 @@ namespace HomeCenter.Model.Core
 
         public BaseObject SetProperty(string propertyName, IDictionary<string, string> value)
         {
-            _properties[propertyName] = JsonConvert.SerializeObject(value);
+            _properties[propertyName] = JsonSerializer.Serialize(value);
             return this;
         }
 
@@ -269,7 +269,7 @@ namespace HomeCenter.Model.Core
         {
             if (!_properties.ContainsKey(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            return JsonConvert.DeserializeObject<IDictionary<string, string>>(_properties[propertyName]);
+            return JsonSerializer.Deserialize<IDictionary<string, string>>(_properties[propertyName]);
         }
     }
 }

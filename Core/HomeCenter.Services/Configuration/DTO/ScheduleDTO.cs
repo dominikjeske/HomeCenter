@@ -1,21 +1,21 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class ScheduleDTO : BaseDTO
     {
-        [JsonProperty("CronExpression")]
+        [JsonPropertyName("CronExpression")]
         public string CronExpression { get; set; }
 
-        [JsonProperty("Calendar")]
+        [JsonPropertyName("Calendar")]
         public string Calendar { get; set; }
 
-        [JsonProperty("ManualSchedules")]
+        [JsonPropertyName("ManualSchedules")]
         public IList<ManualScheduleDTO> ManualSchedules { get; set; }
 
-        [JsonProperty("WorkingTime")]
+        [JsonPropertyName("WorkingTime")]
         public TimeSpan? WorkingTime { get; set; }
     }
 }

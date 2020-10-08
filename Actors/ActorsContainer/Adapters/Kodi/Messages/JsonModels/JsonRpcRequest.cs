@@ -1,24 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class JsonRpcRequest
     {
-        [JsonProperty("jsonrpc", Required = Required.Always)]
+        [JsonPropertyName("jsonrpc")]
         public string JsonRPC => "2.0";
 
-        [JsonProperty("id", Required = Required.Always)]
+        [JsonPropertyName("id")]
         public string Id { get; set; } = "KodiJSON-RPC";
 
-        [JsonProperty("method", Required = Required.Always)]
+        [JsonPropertyName("method")]
         public string Method { get; set; }
 
-        [JsonProperty("params")]
+        [JsonPropertyName("params")]
         public object Parameters { get; set; }
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this, Formatting.None);
+            return JsonSerializer.Serialize(this);
         }
     }
 }

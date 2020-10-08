@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HomeCenter.Model.Actors;
+﻿using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.Configuration.DTO;
@@ -114,7 +113,9 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
             _container.RegisterInstance<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
 
-            var actor = ConfigureMapper().CreateMapper().Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
+            //var actor = ConfigureMapper().CreateMapper().Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
+
+            LightAutomationServiceProxy actor = null;
 
             var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
@@ -123,17 +124,17 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
 
-        private MapperConfiguration ConfigureMapper()
-        {
-            return new MapperConfiguration(p =>
-            {
-                p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
-                p.CreateMap<AttachedPropertyDTO, AttachedProperty>();
+        //private MapperConfiguration ConfigureMapper()
+        //{
+        //    return new MapperConfiguration(p =>
+        //    {
+        //        p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
+        //        p.CreateMap<AttachedPropertyDTO, AttachedProperty>();
 
-                p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
-                p.ConstructServicesUsing(_container.GetInstance);
-            });
-        }
+        //        p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
+        //        p.ConstructServicesUsing(_container.GetInstance);
+        //    });
+        //}
 
         private Dictionary<string, FakeMotionLamp> CreateFakeLamps()
         {
@@ -143,7 +144,7 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 var detectorName = detector.Properties[MotionProperties.Lamp];
 
-                lampDictionary.Add(detectorName, new FakeMotionLamp(detectorName));
+                lampDictionary.Add(detectorName.ToString(), new FakeMotionLamp(detectorName.ToString()));
             }
 
             return lampDictionary;

@@ -1,7 +1,6 @@
 ﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Queries.Services;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace HomeCenter.Adapters.PC.Messages
 {
@@ -19,7 +18,7 @@ namespace HomeCenter.Adapters.PC.Messages
         public ComputerQuery FormatMessage()
         {
             Address = $"http://{Address}:{Port}/api/{Service}";
-            Body = JsonConvert.SerializeObject(Message);
+            Body = JsonSerializer.Serialize(Message);
 
             return this;
         }

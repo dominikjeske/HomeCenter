@@ -1,6 +1,5 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
@@ -14,18 +13,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Actors
 {
-    public static class ActorEventType
-    {
-        public const int MessageBase = 0;
-
-        public static EventId Behavior = new EventId(MessageBase, nameof(Behavior));
-        public static EventId Messagee = new EventId(MessageBase + 1, nameof(Messagee));
-        public static EventId ActorState = new EventId(MessageBase + 2, nameof(ActorState));
-        public static EventId ActorStart = new EventId(MessageBase + 3, nameof(ActorStart));
-        public static EventId EventPublished = new EventId(MessageBase + 4, nameof(EventPublished));
-
-    }
-
     public abstract class DeviceActor : BaseObject, IActor
     {
         [Map] protected bool IsEnabled { get; private set; } = true;
@@ -58,7 +45,7 @@ namespace HomeCenter.Model.Actors
             {
                 throw;
             }
-            
+
         }
 
         protected void Log(EventId eventId, string template = "", params object[] arguments)

@@ -8,10 +8,10 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Model.Messages.Scheduler;
-using Newtonsoft.Json;
 using Proto;
 using Quartz;
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -87,7 +87,7 @@ namespace HomeCenter.Model.Core
             query = FormatMessage(query);
 
             var json = await _eventAggregator.QueryAsync<T, string>(query, filter);
-            var result = JsonConvert.DeserializeObject<R>(json);
+            var result = JsonSerializer.Deserialize<R>(json);
             return result;
         }
 

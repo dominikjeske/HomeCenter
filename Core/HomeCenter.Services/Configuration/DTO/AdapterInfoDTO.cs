@@ -1,27 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
     public class AdapterInfoDTO
     {
-        [JsonProperty("Name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
 
-        [JsonProperty("Version")]
+        [JsonPropertyName("Version")]
         public Version Version { get; set; }
 
-        [JsonProperty("Author")]
+        [JsonPropertyName("Author")]
         public string Author { get; set; }
 
-        [JsonProperty("CreationDate")]
+        [JsonPropertyName("CreationDate")]
         public DateTime CreationDate { get; set; }
 
-        [JsonProperty("UpdateDate")]
+        [JsonPropertyName("UpdateDate")]
         public DateTime UpdateDate { get; set; }
 
-        [JsonProperty("CommonReferences")]
+        [JsonPropertyName("CommonReferences")]
         public IList<string> CommonReferences { get; set; }
     }
 }
