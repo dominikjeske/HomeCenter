@@ -12,8 +12,8 @@ namespace HomeCenter.Model.Messages
 
         public string LogLevel
         {
-            get => AsString(MessageProperties.LogLevel, nameof(Microsoft.Extensions.Logging.LogLevel.Information));
-            set => SetProperty(MessageProperties.LogLevel, value);
+            get => this.AsString(MessageProperties.LogLevel, nameof(Microsoft.Extensions.Logging.LogLevel.Information));
+            set => this.SetProperty(MessageProperties.LogLevel, value);
         }
 
         public bool Equals(ActorMessage other)

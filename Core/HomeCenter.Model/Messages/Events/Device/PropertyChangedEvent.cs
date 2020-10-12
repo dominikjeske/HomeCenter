@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.Model.Core;
+using System.Collections.Generic;
 
 namespace HomeCenter.Model.Messages.Events.Device
 {
@@ -41,20 +42,20 @@ namespace HomeCenter.Model.Messages.Events.Device
 
         public string PropertyChangedName
         {
-            get => AsString(MessageProperties.StateName);
-            set => SetProperty(MessageProperties.StateName, value);
+            get => this.AsString(MessageProperties.StateName);
+            set => this.SetProperty(MessageProperties.StateName, value);
         }
 
         public string NewValue
         {
-            get => AsString(MessageProperties.NewValue);
-            set => SetProperty(MessageProperties.NewValue, value);
+            get => this.AsString(MessageProperties.NewValue);
+            set => this.SetProperty(MessageProperties.NewValue, value);
         }
 
         public string OldValue
         {
-            get => AsString(MessageProperties.OldValue);
-            set => SetProperty(MessageProperties.OldValue, value);
+            get => this.AsString(MessageProperties.OldValue);
+            set => this.SetProperty(MessageProperties.OldValue, value);
         }
     }
 }

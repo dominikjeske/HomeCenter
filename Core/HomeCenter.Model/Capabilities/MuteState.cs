@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(MuteState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(MuteCommand), nameof(UnmuteCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(MuteCommand), nameof(UnmuteCommand));
         }
     }
 }

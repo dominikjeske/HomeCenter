@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using HomeCenter.Model.Core;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace HomeCenter.Model.Messages.Commands.Service
@@ -9,8 +10,8 @@ namespace HomeCenter.Model.Messages.Commands.Service
 
         public int Port
         {
-            get => AsInt(MessageProperties.Port);
-            set => SetProperty(MessageProperties.Port, value);
+            get => this.AsInt(MessageProperties.Port);
+            set => this.SetProperty(MessageProperties.Port, value);
         }
 
         public WakeOnLanCommand FormatMessage()

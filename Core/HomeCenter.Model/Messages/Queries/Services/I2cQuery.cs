@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Queries.Services
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Queries.Services
 {
     public class I2cQuery : Query
     {
@@ -12,20 +14,20 @@
 
         public int Address
         {
-            get => AsInt(MessageProperties.Address);
-            set => SetProperty(MessageProperties.Address, value);
+            get => this.AsInt(MessageProperties.Address);
+            set => this.SetProperty(MessageProperties.Address, value);
         }
 
         public byte[] Initialize
         {
-            get => AsByteArray(MessageProperties.Initialize);
-            set => SetProperty(MessageProperties.Initialize, value);
+            get => this.AsByteArray(MessageProperties.Initialize);
+            set => this.SetProperty(MessageProperties.Initialize, value);
         }
 
         public int BufferSize
         {
-            get => AsInt(MessageProperties.Size);
-            set => SetProperty(MessageProperties.Size, value);
+            get => this.AsInt(MessageProperties.Size);
+            set => this.SetProperty(MessageProperties.Size, value);
         }
     }
 }

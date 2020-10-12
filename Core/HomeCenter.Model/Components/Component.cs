@@ -30,7 +30,7 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
         /// </summary>
-        protected bool RelayNotTranslatedEvents => AsBool(MessageProperties.RelayNotTranslatedEvents, false);
+        protected bool RelayNotTranslatedEvents => this.AsBool(MessageProperties.RelayNotTranslatedEvents, false);
 
         protected async override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
         {

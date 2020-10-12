@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class VolumeSetCommand : Command
     {
@@ -13,8 +15,8 @@
 
         public double Value
         {
-            get => AsDouble(MessageProperties.Value);
-            set => SetProperty(MessageProperties.Value, value);
+            get => this.AsDouble(MessageProperties.Value);
+            set => this.SetProperty(MessageProperties.Value, value);
         }
     }
 }

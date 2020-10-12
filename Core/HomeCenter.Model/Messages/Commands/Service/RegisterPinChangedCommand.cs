@@ -1,4 +1,5 @@
-﻿using HomeCenter.Model.Messages.Commands;
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Model.Messages.Commands;
 
 namespace HomeCenter.Model.Messages.Queries.Service
 {
@@ -6,14 +7,14 @@ namespace HomeCenter.Model.Messages.Queries.Service
     {
         public string PinNumber
         {
-            get => AsString(MessageProperties.PinNumber);
-            set => SetProperty(MessageProperties.PinNumber, value);
+            get => this.AsString(MessageProperties.PinNumber);
+            set => this.SetProperty(MessageProperties.PinNumber, value);
         }
 
         public string PinMode
         {
-            get => AsString(MessageProperties.PinMode);
-            set => SetProperty(MessageProperties.PinMode, value);
+            get => this.AsString(MessageProperties.PinMode);
+            set => this.SetProperty(MessageProperties.PinMode, value);
         }
     }
 }

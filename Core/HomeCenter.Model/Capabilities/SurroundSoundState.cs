@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(SurroundSoundState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(ModeSetCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(ModeSetCommand));
         }
     }
 }

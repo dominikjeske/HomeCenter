@@ -24,7 +24,7 @@ namespace HomeCenter.Adapters.InfraredBridge
         {
             await base.OnStarted(context);
 
-            _I2cAddress = AsInt(MessageProperties.Address);
+            _I2cAddress = this.AsInt(MessageProperties.Address);
 
             var registration = new RegisterSerialCommand(Self, 3, new Format[]
                {

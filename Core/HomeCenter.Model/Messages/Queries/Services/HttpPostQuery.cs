@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HomeCenter.Model.Core;
+using System.Collections.Generic;
 using System.Net;
 
 namespace HomeCenter.Model.Messages.Queries.Services
@@ -16,50 +17,50 @@ namespace HomeCenter.Model.Messages.Queries.Services
 
         public string Address
         {
-            get => AsString(MessageProperties.Address);
-            set => SetProperty(MessageProperties.Address, value);
+            get => this.AsString(MessageProperties.Address);
+            set => this.SetProperty(MessageProperties.Address, value);
         }
 
         public string Body
         {
-            get => AsString(MessageProperties.Body);
-            set => SetProperty(MessageProperties.Body, value);
+            get => this.AsString(MessageProperties.Body);
+            set => this.SetProperty(MessageProperties.Body, value);
         }
 
         public string RequestType
         {
-            get => AsString(MessageProperties.RequestType);
-            set => SetProperty(MessageProperties.RequestType, value);
+            get => this.AsString(MessageProperties.RequestType);
+            set => this.SetProperty(MessageProperties.RequestType, value);
         }
 
         public string ContentType
         {
-            get => AsString(MessageProperties.ContentType);
-            set => SetProperty(MessageProperties.ContentType, value);
+            get => this.AsString(MessageProperties.ContentType);
+            set => this.SetProperty(MessageProperties.ContentType, value);
         }
 
         public bool IgnoreReturnStatus
         {
-            get => AsBool(MessageProperties.IgnoreReturnStatus);
-            set => SetProperty(MessageProperties.IgnoreReturnStatus, value);
+            get => this.AsBool(MessageProperties.IgnoreReturnStatus);
+            set => this.SetProperty(MessageProperties.IgnoreReturnStatus, value);
         }
 
         public IDictionary<string, string> AuthorisationHeader
         {
-            get => AsDictionary(MessageProperties.AuthorisationHeader);
-            set => SetProperty(MessageProperties.AuthorisationHeader, value);
+            get => this.AsDictionary(MessageProperties.AuthorisationHeader);
+            set => this.SetProperty(MessageProperties.AuthorisationHeader, value);
         }
 
         public IDictionary<string, string> Headers
         {
-            get => AsDictionary(MessageProperties.Headers);
-            set => SetProperty(MessageProperties.Headers, value);
+            get => this.AsDictionary(MessageProperties.Headers);
+            set => this.SetProperty(MessageProperties.Headers, value);
         }
 
         public IDictionary<string, string> Creditionals
         {
-            get => AsDictionary(MessageProperties.Creditionals);
-            set => SetProperty(MessageProperties.Creditionals, value);
+            get => this.AsDictionary(MessageProperties.Creditionals);
+            set => this.SetProperty(MessageProperties.Creditionals, value);
         }
     }
 }

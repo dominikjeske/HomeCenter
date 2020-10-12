@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Device
 {
 
     public class SetPowerLevelCommand : Command
@@ -15,8 +17,8 @@
 
         public double PowerLevel
         {
-            get => AsDouble(MessageProperties.PowerLevel);
-            set => SetProperty(MessageProperties.PowerLevel, value);
+            get => this.AsDouble(MessageProperties.PowerLevel);
+            set => this.SetProperty(MessageProperties.PowerLevel, value);
         }
     }
 }

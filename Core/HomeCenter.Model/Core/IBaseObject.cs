@@ -2,7 +2,7 @@
 {
     public interface IBaseObject
     {
-        string Type { get; set; }
-        string Uid { get; set; }
+        string Type { get; }
+        string Uid { get; }
     }
 }

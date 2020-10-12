@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class ModeSetCommand : Command
     {
@@ -13,8 +15,8 @@
 
         public string SurroundMode
         {
-            get => AsString(MessageProperties.SurroundMode);
-            set => SetProperty(MessageProperties.SurroundMode, value);
+            get => this.AsString(MessageProperties.SurroundMode);
+            set => this.SetProperty(MessageProperties.SurroundMode, value);
         }
     }
 }

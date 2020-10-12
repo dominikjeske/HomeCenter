@@ -18,14 +18,14 @@ namespace HomeCenter.Model.Actors
         private readonly IServiceProvider _serviceProvider;
         private readonly ActorPropsRegistry _actorPropsRegistry;
         private readonly ILogger<ActorFactory> _logger;
-        private readonly ITypeLoader _typeLoader;
+        private readonly IActorLoader _typeLoader;
         private readonly Dictionary<string, PID> _actorsCache = new Dictionary<string, PID>();
 
         public RootContext Context { get; }
         public ActorSystem System { get; }
 
         public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger,
-                            ITypeLoader typeLoader, ActorPropsRegistry actorPropsRegistry)
+                            IActorLoader typeLoader, ActorPropsRegistry actorPropsRegistry)
         {
             System = new ActorSystem();
             Context  = new RootContext(System);

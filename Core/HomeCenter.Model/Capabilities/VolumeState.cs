@@ -13,7 +13,7 @@ namespace HomeCenter.Model.Capabilities
             this[StateProperties.MinValue] = "0.0";
             this[StateProperties.StateName] = nameof(VolumeState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.SpeakerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(VolumeUpCommand), nameof(VolumeDownCommand), nameof(VolumeSetCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(VolumeUpCommand), nameof(VolumeDownCommand), nameof(VolumeSetCommand));
         }
     }
 }

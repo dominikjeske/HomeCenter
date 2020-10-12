@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class InputSetCommand : Command
     {
@@ -13,8 +15,8 @@
 
         public string InputSource
         {
-            get => AsString(MessageProperties.InputSource);
-            set => SetProperty(MessageProperties.InputSource, value);
+            get => this.AsString(MessageProperties.InputSource);
+            set => this.SetProperty(MessageProperties.InputSource, value);
         }
     }
 }

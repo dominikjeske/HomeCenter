@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Device
 {
     public class AdjustPowerLevelCommand : Command
     {
@@ -13,8 +15,8 @@
 
         public double Delta
         {
-            get => AsDouble(MessageProperties.Delta);
-            set => SetProperty(MessageProperties.Delta, value);
+            get => this.AsDouble(MessageProperties.Delta);
+            set => this.SetProperty(MessageProperties.Delta, value);
         }
     }
 }

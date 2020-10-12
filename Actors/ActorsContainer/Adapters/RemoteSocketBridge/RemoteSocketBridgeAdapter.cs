@@ -30,8 +30,8 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             await base.OnStarted(context);
 
-            _I2cAddress = AsInt(MessageProperties.Address);
-            _pinNumber = AsInt(MessageProperties.PinNumber);
+            _I2cAddress = this.AsInt(MessageProperties.Address);
+            _pinNumber = this.AsInt(MessageProperties.PinNumber);
 
             var registration = new RegisterSerialCommand(Self, 2, new Format[]
              {

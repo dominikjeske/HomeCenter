@@ -24,14 +24,14 @@ namespace HomeCenter.Adapters.Samsung.Messages
 
         public string MAC
         {
-            get => AsString(MessageProperties.MAC);
-            set => SetProperty(MessageProperties.MAC, value);
+            get => this.AsString(MessageProperties.MAC);
+            set => this.SetProperty(MessageProperties.MAC, value);
         }
 
         public string AppKey
         {
-            get => AsString(MessageProperties.AppKey);
-            set => SetProperty(MessageProperties.AppKey, value);
+            get => this.AsString(MessageProperties.AppKey);
+            set => this.SetProperty(MessageProperties.AppKey, value);
         }
 
         private byte[] CreateIdentifier()

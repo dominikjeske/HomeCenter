@@ -13,7 +13,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(InfraredSenderState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.InfraredController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(SendCodeCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(SendCodeCommand));
         }
     }
 }

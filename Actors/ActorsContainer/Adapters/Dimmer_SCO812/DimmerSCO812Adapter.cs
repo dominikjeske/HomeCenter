@@ -38,12 +38,12 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             await base.OnStarted(context);
 
-            _PowerAdapterUid = AsString("PowerAdapter");
-            _PowerAdapterPin = AsInt("PowerAdapterPin");
-            _PowerLevelAdapterUid = AsString("PowerLevelAdapterUid");
-            _PowerLevelAdapterPin = AsInt("PowerLevelAdapterPin");
-            _Minimum = AsNullableDouble("Minimum");
-            _Maximum = AsNullableDouble("Maximum");
+            _PowerAdapterUid = this.AsString("PowerAdapter");
+            _PowerAdapterPin = this.AsInt("PowerAdapterPin");
+            _PowerLevelAdapterUid = this.AsString("PowerLevelAdapterUid");
+            _PowerLevelAdapterPin = this.AsInt("PowerLevelAdapterPin");
+            _Minimum = this.AsNullableDouble("Minimum");
+            _Maximum = this.AsNullableDouble("Maximum");
 
             await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid);
 

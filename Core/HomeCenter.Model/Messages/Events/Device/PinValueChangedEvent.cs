@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Events.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class PinValueChangedEvent : Event
     {
@@ -15,14 +17,14 @@
 
         public int PinNumber
         {
-            get => AsInt(MessageProperties.PinNumber);
-            set => SetProperty(MessageProperties.PinNumber, value);
+            get => this.AsInt(MessageProperties.PinNumber);
+            set => this.SetProperty(MessageProperties.PinNumber, value);
         }
 
         public bool IsRising
         {
-            get => AsBool(MessageProperties.IsRising);
-            set => SetProperty(MessageProperties.IsRising, value);
+            get => this.AsBool(MessageProperties.IsRising);
+            set => this.SetProperty(MessageProperties.IsRising, value);
         }
     }
 }

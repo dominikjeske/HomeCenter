@@ -11,6 +11,17 @@ namespace HomeCenter.Model.Extensions
 {
     public static class TypeExtensions
     {
+        public static void MustDeriveFrom(this Type type, Type baseType)
+        {
+            if (type.IsAssignableFrom(baseType))
+            {
+                throw new ArgumentException($"Type '{type.Name}' is not '{baseType.Name}'");
+            }
+        }
+
+        public static void MustDeriveFrom<T>(this Type type) => type.MustDeriveFrom(typeof(T));
+ 
+
         public static IEnumerable<MethodInfo> GetMethodsBySignature(this Type type, params Type[] parameterTypes)
         {
             return type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).Where((m) =>

@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(PowerLevelState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PowerLevelController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(SetPowerLevelCommand), nameof(AdjustPowerLevelCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(SetPowerLevelCommand), nameof(AdjustPowerLevelCommand));
         }
     }
 }

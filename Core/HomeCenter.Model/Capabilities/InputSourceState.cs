@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(InputSourceState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.InputController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(InputSetCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(InputSetCommand));
         }
     }
 }

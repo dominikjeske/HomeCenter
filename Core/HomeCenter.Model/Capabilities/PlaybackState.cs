@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(PlaybackState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PlaybackController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(PlayCommand), nameof(StopCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(PlayCommand), nameof(StopCommand));
         }
     }
 }

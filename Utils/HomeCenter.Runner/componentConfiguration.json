@@ -28,7 +28,11 @@
                 {
                   "Uid": "SonyComponent",
                   "Properties": {
-                    "FriendlyName": "Sony"
+                    "FriendlyName": "Sony",
+                    "Date": "2012-04-23T18:25:43.511Z",
+                    "TimeSpan": "10:22:33",
+                    "Number": 333,
+                      "Double": 44.55
                   },
                   "Adapter": {
                     "Uid": "Sony",

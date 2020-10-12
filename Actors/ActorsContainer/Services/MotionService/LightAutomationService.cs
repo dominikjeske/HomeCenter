@@ -45,12 +45,12 @@ namespace HomeCenter.Services.MotionService
 
         private void ReadConfigurationFromProperties()
         {
-            _motionConfiguration.MotionTimeWindow = AsTime(MotionProperties.MotionTimeWindow, TimeSpan.FromMilliseconds(3000));
-            _motionConfiguration.ConfusionResolutionTime = AsTime(MotionProperties.ConfusionResolutionTime, TimeSpan.FromMilliseconds(5000));
-            _motionConfiguration.ConfusionResolutionTimeOut = AsTime(MotionProperties.ConfusionResolutionTimeOut, TimeSpan.FromMilliseconds(10000));
-            _motionConfiguration.MotionMinDiff = AsTime(MotionProperties.MotionMinDiff, TimeSpan.FromMilliseconds(500));
-            _motionConfiguration.PeriodicCheckTime = AsTime(MotionProperties.PeriodicCheckTime, TimeSpan.FromMilliseconds(1000));
-            _motionConfiguration.TurnOffTimeoutExtenderFactor = AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, 50);
+            _motionConfiguration.MotionTimeWindow = this.AsTime(MotionProperties.MotionTimeWindow, TimeSpan.FromMilliseconds(3000));
+            _motionConfiguration.ConfusionResolutionTime = this.AsTime(MotionProperties.ConfusionResolutionTime, TimeSpan.FromMilliseconds(5000));
+            _motionConfiguration.ConfusionResolutionTimeOut = this.AsTime(MotionProperties.ConfusionResolutionTimeOut, TimeSpan.FromMilliseconds(10000));
+            _motionConfiguration.MotionMinDiff = this.AsTime(MotionProperties.MotionMinDiff, TimeSpan.FromMilliseconds(500));
+            _motionConfiguration.PeriodicCheckTime = this.AsTime(MotionProperties.PeriodicCheckTime, TimeSpan.FromMilliseconds(1000));
+            _motionConfiguration.TurnOffTimeoutExtenderFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, 50);
         }
 
         private Dictionary<string, AreaDescriptor> ReadAreasFromAttachedProperties()

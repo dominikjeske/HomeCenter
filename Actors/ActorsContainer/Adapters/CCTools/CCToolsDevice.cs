@@ -40,17 +40,17 @@ namespace HomeCenter.Adapters.Common
         {
             await base.OnStarted(context);
 
-            _poolDurationWarning = AsInt(MessageProperties.PollDurationWarningThreshold, 2000);
-            _i2cAddress = AsInt(MessageProperties.Address);
-            _firstPortWriteMode = AsBool(MessageProperties.FirstPortWriteMode);
-            _secondPortWriteMode = AsBool(MessageProperties.SecondPortWriteMode);
+            _poolDurationWarning = this.AsInt(MessageProperties.PollDurationWarningThreshold, 2000);
+            _i2cAddress = this.AsInt(MessageProperties.Address);
+            _firstPortWriteMode = this.AsBool(MessageProperties.FirstPortWriteMode);
+            _secondPortWriteMode = this.AsBool(MessageProperties.SecondPortWriteMode);
 
             if (ContainsProperty(MessageProperties.InterruptPin) && ContainsProperty(MessageProperties.InterruptSource))
             {
                 Subscribe<PinValueChangedEvent>(false, new Broker.RoutingFilter(new Dictionary<string, string>()
                 {
-                    [MessageProperties.MessageSource] = AsString(MessageProperties.InterruptSource),
-                    [MessageProperties.PinNumber] = AsString(MessageProperties.InterruptPin)
+                    [MessageProperties.MessageSource] = this.AsString(MessageProperties.InterruptSource),
+                    [MessageProperties.PinNumber] = this.AsString(MessageProperties.InterruptPin)
                 }));
             }
 
@@ -120,7 +120,7 @@ namespace HomeCenter.Adapters.Common
 
         protected bool QueryState(StateQuery message)
         {
-            var pinNumber = AsInt(MessageProperties.PinNumber);
+            var pinNumber = this.AsInt(MessageProperties.PinNumber);
             return _driver.GetState(pinNumber);
         }
 

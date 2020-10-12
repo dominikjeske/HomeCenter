@@ -28,10 +28,10 @@ namespace HomeCenter.Adapters.Samsung
         {
             await base.OnStarted(context);
 
-            _hostname = AsString(MessageProperties.Hostname);
-            _infraredAdaperName = AsString(MessageProperties.InfraredAdapter);
-            _mac = AsString(MessageProperties.MAC);
-            _appKey = AsString(MessageProperties.AppKey, "HomeCenter");
+            _hostname = this.AsString(MessageProperties.Hostname);
+            _infraredAdaperName = this.AsString(MessageProperties.InfraredAdapter);
+            _mac = this.AsString(MessageProperties.MAC);
+            _appKey = this.AsString(MessageProperties.AppKey, "HomeCenter");
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)

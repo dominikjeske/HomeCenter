@@ -29,7 +29,7 @@ namespace HomeCenter.Adapters.HumidityBridge
         {
             await base.OnStarted(context);
 
-            _i2cAddress = AsInt(MessageProperties.Address);
+            _i2cAddress = this.AsInt(MessageProperties.Address);
 
             var registration = new RegisterSerialCommand(Self, I2C_ACTION_HUMANITY, new Format[]
             {

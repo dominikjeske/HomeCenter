@@ -11,7 +11,7 @@ namespace HomeCenter.Model.Capabilities
         {
             this[StateProperties.StateName] = nameof(PowerState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.PowerController;
-            SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand), nameof(SwitchPowerStateCommand));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(TurnOnCommand), nameof(TurnOffCommand), nameof(SwitchPowerStateCommand));
         }
     }
 }

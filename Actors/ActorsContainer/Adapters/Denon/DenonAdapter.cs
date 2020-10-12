@@ -37,9 +37,9 @@ namespace HomeCenter.Adapters.Denon
         {
             await base.OnStarted(context);
 
-            _hostName = AsString(MessageProperties.Hostname);
-            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
-            _zone = AsInt(MessageProperties.Zone);
+            _hostName = this.AsString(MessageProperties.Hostname);
+            _poolInterval = this.AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _zone = this.AsInt(MessageProperties.Zone);
 
             await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, RefreshCommand.Default), TimeSpan.FromSeconds(1));
             await ScheduleDeviceLightRefresh(_poolInterval);

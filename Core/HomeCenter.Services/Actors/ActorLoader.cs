@@ -8,45 +8,26 @@ using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Triggers.Calendars;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.Networking;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Proto;
 using Quartz;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Actors
 {
-    internal interface ITypeFactory<TConfig, TResult> where TConfig : IBaseObject
-    {
-        TResult Create(TConfig config);
-    }
-
-    internal class ComponentFactory : ITypeFactory<ComponentDTO, Component>
-    {
-        public Component Create(ComponentDTO config)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    internal class AdapterFactory : ITypeFactory<AdapterDTO, Adapter>
-    {
-        public Adapter Create(AdapterDTO config)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
-    public class TypeLoader : ITypeLoader
+    internal class ActorLoader : IActorLoader
     {
         //private MapperConfigurationExpression _mapperConfigurationExpression;
         //private IMapper _mapper;
         private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Type> _dynamicTypes = new Dictionary<string, Type>();
         private readonly IScheduler _scheduler;
+        private readonly IEnumerable<ITypeMapper> _typeMappers;
 
         public async Task LoadTypes()
         {
@@ -56,10 +37,11 @@ namespace HomeCenter.Services.Actors
             await LoadCalendars();
         }
 
-        public TypeLoader(IServiceProvider serviceProvider, IScheduler scheduler)
+        public ActorLoader(IServiceProvider serviceProvider, IScheduler scheduler, IEnumerable<ITypeMapper> typeFactories)
         {
             _serviceProvider = serviceProvider;
             _scheduler = scheduler;
+            _typeMappers = typeFactories;
         }
 
         private void LoadDynamicTypes()
@@ -89,8 +71,24 @@ namespace HomeCenter.Services.Actors
             var proxyName = $"{actorConfig.Type}Proxy";
             if (!_dynamicTypes.ContainsKey(proxyName)) throw new ConfigurationException($"Could not find type for actor {proxyName}");
             var actorType = _dynamicTypes[proxyName];
-            //var actor = _mapper.Map(actorConfig, typeof(T), actorType) as IActor;
-            return null;
+
+            if (_typeMappers.FirstOrDefault(type => type is ITypeMapper<T>) is not ITypeMapper<T> mapper)
+            {
+                throw new ConfigurationException($"Could not find mapper for {typeof(T).Name}");
+            }
+
+            try
+            {
+                var actor = mapper.Create(actorConfig, actorType);
+
+                return actor;
+            }
+            catch (Exception ee)
+            {
+
+                throw;
+            }
+            
         }
 
         //private IMapper RegisterTypesInAutomapper()

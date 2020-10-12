@@ -24,37 +24,37 @@ namespace HomeCenter.Model.Conditions.Specific
 
         public TimeRangeCondition WithStart(TimeSpan start)
         {
-            SetProperty(ConditionProperies.StartTime, start);
+            this.SetProperty(ConditionProperies.StartTime, start);
             return this;
         }
 
         public TimeRangeCondition WithEnd(TimeSpan end)
         {
-            SetProperty(ConditionProperies.EndTime, end);
+            this.SetProperty(ConditionProperies.EndTime, end);
             return this;
         }
 
         public TimeRangeCondition WithStartAdjustment(TimeSpan value)
         {
-            SetProperty(ConditionProperies.StartAdjustment, value);
+            this.SetProperty(ConditionProperies.StartAdjustment, value);
             return this;
         }
 
         public TimeRangeCondition WithEndAdjustment(TimeSpan value)
         {
-            SetProperty(ConditionProperies.EndAdjustment, value);
+            this.SetProperty(ConditionProperies.EndAdjustment, value);
             return this;
         }
 
         public override async Task<bool> Validate()
         {
-            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? AsTime(ConditionProperies.StartTime) : await _startValueProvider();
-            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? AsTime(ConditionProperies.EndTime) : await _endValueProvider();
+            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? this.AsTime(ConditionProperies.StartTime) : await _startValueProvider();
+            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? this.AsTime(ConditionProperies.EndTime) : await _endValueProvider();
 
             if (!startValue.HasValue || !endValue.HasValue) return false;
 
-            startValue += AsTime(ConditionProperies.StartAdjustment, TimeSpan.Zero);
-            endValue += AsTime(ConditionProperies.EndAdjustment, TimeSpan.Zero);
+            startValue += this.AsTime(ConditionProperies.StartAdjustment, TimeSpan.Zero);
+            endValue += this.AsTime(ConditionProperies.EndAdjustment, TimeSpan.Zero);
 
             return SystemTime.Now.TimeOfDay.IsTimeInRange(startValue.Value, endValue.Value);
         }

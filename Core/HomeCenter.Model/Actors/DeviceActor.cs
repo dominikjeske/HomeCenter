@@ -8,6 +8,7 @@ using Proto;
 using Proto.Mailbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,15 +16,28 @@ namespace HomeCenter.Model.Actors
 {
     public abstract class DeviceActor : BaseObject, IActor
     {
-        [Map] protected bool IsEnabled { get; private set; } = true;
         [DI] protected IMessageBroker MessageBroker { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
-        private readonly Behavior Behavior = new Behavior();
+        [Map]
+        public bool IsEnabled
+        {
+            get => this.AsBool(MessageProperties.Tags, true);
+            init => this.SetProperty(MessageProperties.IsEnabled, value);
+        }
+        [Map]
+        protected IList<string> Tags
+        {
+            get => this.AsList(MessageProperties.Tags);
+            init => this.SetPropertyList(MessageProperties.Tags, value.ToArray());
+        }
+
+
+        protected readonly Behavior Behavior = new Behavior();
+
         protected private DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
-        protected List<string> Tags { get; private set; } = new List<string>();
-
+        
         //Add resource to container that will be released when actor is about to be released
         protected void ProtectResource(IDisposable resource) => _disposables.Add(resource);
         protected CancellationToken Token => _disposables.Token;

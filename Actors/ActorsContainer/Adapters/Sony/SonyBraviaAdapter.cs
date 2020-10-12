@@ -44,11 +44,11 @@ namespace HomeCenter.Adapters.Sony
         {
             await base.OnStarted(context);
 
-            _hostname = AsString(MessageProperties.Hostname);
-            _authorisationKey = AsString(MessageProperties.AuthKey);
-            _clientId = AsString(MessageProperties.ClientID);
-            _mac = AsString(MessageProperties.MAC);
-            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _hostname = this.AsString(MessageProperties.Hostname);
+            _authorisationKey = this.AsString(MessageProperties.AuthKey);
+            _clientId = this.AsString(MessageProperties.ClientID);
+            _mac = this.AsString(MessageProperties.MAC);
+            _poolInterval = this.AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
            // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }

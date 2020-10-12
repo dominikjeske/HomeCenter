@@ -28,13 +28,13 @@ namespace HomeCenter.Adapters.PC
         {
             ProtectResource(_gpioDevice.PinChanged.Subscribe(OnPinChanged));
 
-            foreach (var pin in AsList(MessageProperties.PinChangeWithPullUp, new List<string>()))
+            foreach (var pin in this.AsList(MessageProperties.PinChangeWithPullUp, new List<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullUp);
             }
 
             //TODO Enumerable.Empty<string>() not working in .NET 3.0
-            foreach (var pin in AsList(MessageProperties.PinChangeWithPullDown, new List<string>()))
+            foreach (var pin in this.AsList(MessageProperties.PinChangeWithPullDown, new List<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullDown);
             }

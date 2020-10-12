@@ -1,7 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
@@ -19,14 +18,10 @@ namespace HomeCenter.Services.Configuration.DTO
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
 
         [JsonPropertyName("Uid")]
-        public string Uid { get; set; }
+        public string Uid { get; set; } = "";
 
         [JsonPropertyName("Type")]
-        public string Type { get; set; }
-
-        [DefaultValue(true)]
-        [JsonPropertyName("IsEnabled")]//TODO , DefaultValueHandling = DefaultValueHandling.Populate)]
-        public bool IsEnabled { get; set; }
+        public string Type { get; set; } = "";
 
         [JsonPropertyName("Properties")]
         public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();

@@ -1,0 +1,74 @@
+﻿using HomeCenter.Model.Core;
+using HomeCenter.Utils.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+
+namespace HomeCenter
+{
+    public static class BaseObjectSetExtensions
+    {
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, string value)
+        {
+            baseObject[propertyName] = value;
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, DateTimeOffset value)
+        {
+            baseObject[propertyName] = value.ToString();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, TimeSpan value)
+        {
+            baseObject[propertyName] = value.ToString();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, int value)
+        {
+            baseObject[propertyName] = value.ToString();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, double value)
+        {
+            baseObject[propertyName] = value.ToString();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, bool value)
+        {
+            baseObject[propertyName] = value.ToString();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, byte[] value)
+        {
+            baseObject[propertyName] = value.ToHex();
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, IDictionary<string, string> value)
+        {
+            baseObject[propertyName] = JsonSerializer.Serialize(value);
+            return baseObject;
+        }
+
+        public static BaseObject SetPropertyList(this BaseObject baseObject, string propertyName, params string[] values)
+        {
+            baseObject[propertyName] = string.Join(", ", values);
+            return baseObject;
+        }
+
+        public static BaseObject SetProperties(this BaseObject baseObject, BaseObject source)
+        {
+            foreach (var property in source.GetProperties())
+            {
+                baseObject.SetProperty(property.Key, property.Value);
+            }
+            return baseObject;
+        }
+    }
+}

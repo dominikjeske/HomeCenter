@@ -10,12 +10,12 @@ namespace HomeCenter.Model.Capabilities
         {
             if (readWriteMode == null) readWriteMode = ReadWriteMode.ReadWrite;
 
-            SetProperty(StateProperties.ReadWriteMode, readWriteMode);
+            this.SetProperty(StateProperties.ReadWriteMode, readWriteMode);
         }
 
         public string ReadWrite => this[StateProperties.ReadWriteMode];
         public string Name => this[StateProperties.StateName];
         public string CapabilityName => this[StateProperties.CapabilityName];
-        public IList<string> SupportedCommands => AsList(StateProperties.SupportedCommands);
+        public IList<string> SupportedCommands => this.AsList(StateProperties.SupportedCommands);
     }
 }

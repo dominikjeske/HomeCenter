@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Actors
 {
-    public interface ITypeLoader
+    public interface IActorLoader
     {
         IActor GetProxyType<T>(T actorConfig) where T : IBaseObject;
 

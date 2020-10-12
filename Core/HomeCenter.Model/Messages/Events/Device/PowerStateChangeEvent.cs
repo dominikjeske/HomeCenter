@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Events.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class PowerStateChangeEvent : Event
     {
@@ -12,8 +14,8 @@
                                                                      .SetProperty(MessageProperties.MessageSource, messageSource);
         }
 
-        public string EventTriggerSource => AsString(MessageProperties.EventTriggerSource);
+        public string EventTriggerSource => this.AsString(MessageProperties.EventTriggerSource);
 
-        public bool Value => AsBool(MessageProperties.Value);
+        public bool Value => this.AsBool(MessageProperties.Value);
     }
 }

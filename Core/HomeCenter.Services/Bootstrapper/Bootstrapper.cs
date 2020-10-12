@@ -62,6 +62,9 @@ namespace HomeCenter.Services.Bootstrapper
 
         private void RegisterActorProxies()
         {
+            _container.Collection.Register(typeof(ITypeMapper), new Type[] { typeof(ServiceMapper) });
+            _container.RegisterSingleton<ClassActivator>();
+
             foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())
             {
                 var registration = Lifestyle.Transient.CreateRegistration(actorProxy, _container);
@@ -88,7 +91,7 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterInstance(actorRegistry);
             _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
             _container.RegisterSingleton<IActorFactory, ActorFactory>();
-            _container.RegisterSingleton<ITypeLoader, TypeLoader>();
+            _container.RegisterSingleton<IActorLoader, ActorLoader>();
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();

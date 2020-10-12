@@ -38,11 +38,11 @@ namespace HomeCenter.Adapters.Kodi
         {
             await base.OnStarted(context);
 
-            _hostname = AsString(MessageProperties.Hostname);
-            _port = AsInt(MessageProperties.Port);
-            _userName = AsString(MessageProperties.UserName);
-            _Password = AsString(MessageProperties.Password);
-            _poolInterval = AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
+            _hostname = this.AsString(MessageProperties.Hostname);
+            _port = this.AsInt(MessageProperties.Port);
+            _userName = this.AsString(MessageProperties.UserName);
+            _Password = this.AsString(MessageProperties.Password);
+            _poolInterval = this.AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
             await ScheduleDeviceRefresh(_poolInterval);
         }

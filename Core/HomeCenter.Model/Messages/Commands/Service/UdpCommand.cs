@@ -1,17 +1,19 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Service
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Service
 {
     public class UdpCommand : Command
     {
         public string Address
         {
-            get => AsString(MessageProperties.Address);
-            set => SetProperty(MessageProperties.Address, value);
+            get => this.AsString(MessageProperties.Address);
+            set => this.SetProperty(MessageProperties.Address, value);
         }
 
         public byte[] Body
         {
-            get => AsByteArray(MessageProperties.Body);
-            set => SetProperty(MessageProperties.Body, value);
+            get => this.AsByteArray(MessageProperties.Body);
+            set => this.SetProperty(MessageProperties.Body, value);
         }
     }
 }

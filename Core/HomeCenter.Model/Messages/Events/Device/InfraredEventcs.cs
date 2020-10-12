@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Events.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class InfraredEvent : Event
     {
@@ -14,14 +16,14 @@
 
         public int System
         {
-            get => AsInt(MessageProperties.System);
-            set => SetProperty(MessageProperties.System, value);
+            get => this.AsInt(MessageProperties.System);
+            set => this.SetProperty(MessageProperties.System, value);
         }
 
         public uint CommandCode
         {
-            get => AsUint(MessageProperties.CommandCode);
-            set => SetProperty(MessageProperties.CommandCode, value);
+            get => this.AsUint(MessageProperties.CommandCode);
+            set => this.SetProperty(MessageProperties.CommandCode, value);
         }
     }
 }

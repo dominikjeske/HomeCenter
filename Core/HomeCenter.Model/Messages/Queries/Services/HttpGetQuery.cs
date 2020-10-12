@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Queries.Services
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Queries.Services
 {
     public abstract class HttpGetQuery : Query
     {
@@ -11,14 +13,14 @@
 
         public string Address
         {
-            get => AsString(MessageProperties.Address);
-            set => SetProperty(MessageProperties.Address, value);
+            get => this.AsString(MessageProperties.Address);
+            set => this.SetProperty(MessageProperties.Address, value);
         }
 
         public string RequestType
         {
-            get => AsString(MessageProperties.RequestType);
-            set => SetProperty(MessageProperties.RequestType, value);
+            get => this.AsString(MessageProperties.RequestType);
+            set => this.SetProperty(MessageProperties.RequestType, value);
         }
     }
 }

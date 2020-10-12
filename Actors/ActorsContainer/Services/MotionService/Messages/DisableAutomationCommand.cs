@@ -8,8 +8,8 @@ namespace HomeCenter.Services.MotionService.Commands
 
         public string RoomId
         {
-            get => AsString(MotionProperties.RoomId);
-            set => SetProperty(MotionProperties.RoomId, value);
+            get => this.AsString(MotionProperties.RoomId);
+            set => this.SetProperty(MotionProperties.RoomId, value);
         }
     }
 }

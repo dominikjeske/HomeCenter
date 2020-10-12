@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Events.Device
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Events.Device
 {
     public class DipswitchEvent : Event
     {
@@ -15,20 +17,20 @@
 
         public string Unit
         {
-            get => AsString(MessageProperties.Unit);
-            set => SetProperty(MessageProperties.Unit, value);
+            get => this.AsString(MessageProperties.Unit);
+            set => this.SetProperty(MessageProperties.Unit, value);
         }
 
         public string System
         {
-            get => AsString(MessageProperties.System);
-            set => SetProperty(MessageProperties.System, value);
+            get => this.AsString(MessageProperties.System);
+            set => this.SetProperty(MessageProperties.System, value);
         }
 
         public string CommandCode
         {
-            get => AsString(MessageProperties.CommandCode);
-            set => SetProperty(MessageProperties.CommandCode, value);
+            get => this.AsString(MessageProperties.CommandCode);
+            set => this.SetProperty(MessageProperties.CommandCode, value);
         }
     }
 }

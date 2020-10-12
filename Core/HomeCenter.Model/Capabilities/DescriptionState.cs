@@ -12,7 +12,7 @@ namespace HomeCenter.Model.Capabilities
             this[StateProperties.StateName] = nameof(DescriptionState);
             this[StateProperties.CapabilityName] = Constants.Capabilities.InfoController;
 
-            SetPropertyList(StateProperties.SupportedCommands, nameof(DescriptionQuery));
+            this.SetPropertyList(StateProperties.SupportedCommands, nameof(DescriptionQuery));
 
         }
     }

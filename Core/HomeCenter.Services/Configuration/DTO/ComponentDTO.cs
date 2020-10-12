@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
-    public class ComponentDTO : ActorBaseDTO
+    public class ComponentDTO : DeviceActorDTO
     {
         [JsonPropertyName("AdapterRefs")]
         public IList<AdapterReferenceDTO> AdapterReferences { get; set; } = new List<AdapterReferenceDTO>(); 

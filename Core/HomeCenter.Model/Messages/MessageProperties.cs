@@ -9,6 +9,8 @@
         public const string LogLevel = nameof(LogLevel);
         public const string Type = nameof(Type);
         public const string Uid = nameof(Uid);
+        public const string IsEnabled = nameof(IsEnabled);
+        public const string Tags = nameof(Tags);
         public const string TimeOut = nameof(TimeOut);
         public const string Context = nameof(Context);
 

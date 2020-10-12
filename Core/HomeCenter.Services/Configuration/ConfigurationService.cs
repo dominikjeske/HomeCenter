@@ -25,7 +25,7 @@ namespace HomeCenter.Services.Configuration
     public abstract class ConfigurationService : Service
     {
         private readonly IActorFactory _actorFactory;
-        private readonly ITypeLoader _typeLoader;
+        private readonly IActorLoader _typeLoader;
         private readonly IMessageBroker _messageBroker;
 
         private IDictionary<string, PID> _services = new Dictionary<string, PID>();
@@ -33,7 +33,7 @@ namespace HomeCenter.Services.Configuration
         private IDictionary<string, PID> _components = new Dictionary<string, PID>();
         private PID _mainArea;
 
-        protected ConfigurationService(IActorFactory actorFactory, ITypeLoader typeLoader, IMessageBroker messageBroker)
+        protected ConfigurationService(IActorFactory actorFactory, IActorLoader typeLoader, IMessageBroker messageBroker)
         {
             _actorFactory = actorFactory;
             _typeLoader = typeLoader;

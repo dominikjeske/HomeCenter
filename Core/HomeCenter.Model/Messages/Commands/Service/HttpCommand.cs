@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Model.Messages.Commands.Service
+﻿using HomeCenter.Model.Core;
+
+namespace HomeCenter.Model.Messages.Commands.Service
 {
     public class HttpCommand : Command
     {
@@ -9,26 +11,26 @@
 
         public string Address
         {
-            get => AsString(MessageProperties.Address);
-            set => SetProperty(MessageProperties.Address, value);
+            get => this.AsString(MessageProperties.Address);
+            set => this.SetProperty(MessageProperties.Address, value);
         }
 
         public string Body
         {
-            get => AsString(MessageProperties.Body);
-            set => SetProperty(MessageProperties.Body, value);
+            get => this.AsString(MessageProperties.Body);
+            set => this.SetProperty(MessageProperties.Body, value);
         }
 
         public string RequestType
         {
-            get => AsString(MessageProperties.RequestType);
-            set => SetProperty(MessageProperties.RequestType, value);
+            get => this.AsString(MessageProperties.RequestType);
+            set => this.SetProperty(MessageProperties.RequestType, value);
         }
 
         public string ContentType
         {
-            get => AsString(MessageProperties.ContentType);
-            set => SetProperty(MessageProperties.ContentType, value);
+            get => this.AsString(MessageProperties.ContentType);
+            set => this.SetProperty(MessageProperties.ContentType, value);
         }
     }
 }
