@@ -82,6 +82,10 @@
         public const string Headers = nameof(Headers);
         public const string Creditionals = nameof(Creditionals);
         public const string Initialize = nameof(Initialize);
+        public const string ComponentsAttachedProperties = nameof(ComponentsAttachedProperties);
+        public const string AreasAttachedProperties = nameof(AreasAttachedProperties);
+
+        
 
         //Components
         public const string RelayNotTranslatedEvents = nameof(RelayNotTranslatedEvents);

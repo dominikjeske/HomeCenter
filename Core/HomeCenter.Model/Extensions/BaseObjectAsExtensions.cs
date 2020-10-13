@@ -200,6 +200,19 @@ namespace HomeCenter
             return rawValue.ToString().ToBytes();
         }
 
+        public static T As<T>(this BaseObject baseObject, string propertyName, T defaultValue = default)
+        {
+            if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
+
+            var rawValue = baseObject[propertyName];
+            if (rawValue is T value)
+            {
+                return value;
+            }
+
+            throw new FormatException($"Property {propertyName} is not of type {typeof(T).Name}");
+        }
+
         public static IDictionary<string, string> AsDictionary(this BaseObject baseObject, string propertyName, IDictionary<string, string> defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);

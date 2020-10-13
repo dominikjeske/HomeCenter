@@ -63,6 +63,9 @@ namespace HomeCenter.Services.Bootstrapper
         private void RegisterActorProxies()
         {
             _container.Collection.Register(typeof(ITypeMapper), new Type[] { typeof(ServiceMapper) });
+            _container.RegisterSingleton<ITypeMapper<DeviceActorDTO>, DeviceActorMapper>();
+            
+
             _container.RegisterSingleton<ClassActivator>();
 
             foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())

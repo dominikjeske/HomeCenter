@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Model.Core;
 using HomeCenter.Utils.Extensions;
+using Light.GuardClauses;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -70,6 +71,14 @@ namespace HomeCenter
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, object value)
         {
+            baseObject[propertyName] = value;
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty<T>(this BaseObject baseObject, string propertyName, T value) where T : class
+        {
+            value = value.MustNotBeNull(nameof(value));
+
             baseObject[propertyName] = value;
             return baseObject;
         }
