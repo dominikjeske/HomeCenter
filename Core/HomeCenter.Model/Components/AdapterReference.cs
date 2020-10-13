@@ -21,7 +21,7 @@ namespace HomeCenter.Model.Components
 
         public RoutingFilter GetRoutingFilter()
         {
-            var routerAttributes = new Dictionary<string, string>();
+            var routerAttributes = new Dictionary<string, object>();
             foreach (var adapterProperty in RequierdProperties)
             {
                 if (!ContainsProperty(adapterProperty)) throw new ConfigurationException($"Adapter {Uid} in component {Uid} missing configuration property {adapterProperty}");

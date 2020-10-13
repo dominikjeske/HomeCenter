@@ -7,9 +7,8 @@ namespace HomeCenter.Model.Triggers
     {
         private TimeSpan? _finish;
 
-        [Map] public TimeSpan Start { get; private set; }
+        public TimeSpan Start { get; private set; }
 
-        [Map]
         public TimeSpan Finish
         {
             get
@@ -23,6 +22,6 @@ namespace HomeCenter.Model.Triggers
             private set { _finish = value; }
         }
 
-        [Map] public TimeSpan? WorkingTime { get; private set; }
+        public TimeSpan? WorkingTime { get; private set; }
     }
 }

@@ -7,16 +7,14 @@ namespace HomeCenter.Model.Core
 {
     public abstract class BaseObject : IPropertySource, IBaseObject
     {
-        [Map] private Dictionary<string, string> _properties { get; set; } = new Dictionary<string, string>();
+        private Dictionary<string, object> _properties { get; set; } = new Dictionary<string, object>();
 
-        [Map]
         public string Uid
         {
             get => this.AsString(MessageProperties.Uid, GetType().Name);
             init => this.SetProperty(MessageProperties.Uid, value);
         }
 
-        [Map]
         public string Type
         {
             get => this.AsString(MessageProperties.Type);
@@ -28,7 +26,7 @@ namespace HomeCenter.Model.Core
             Type = GetType().Name;
         }
 
-        public string this[string propertyName]
+        public object this[string propertyName]
         {
             get
             {
@@ -45,6 +43,6 @@ namespace HomeCenter.Model.Core
 
         public bool ContainsProperty(string propertyName) => _properties.ContainsKey(propertyName);
 
-        public IReadOnlyDictionary<string, string> GetProperties() => _properties.AsReadOnly();
+        public IReadOnlyDictionary<string, object> GetProperties() => _properties.AsReadOnly();
     }
 }

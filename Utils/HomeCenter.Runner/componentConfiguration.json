@@ -28,11 +28,7 @@
                 {
                   "Uid": "SonyComponent",
                   "Properties": {
-                    "FriendlyName": "Sony",
-                    "Date": "2012-04-23T18:25:43.511Z",
-                    "TimeSpan": "10:22:33",
-                    "Number": 333,
-                      "Double": 44.55
+                    "FriendlyName": "Sony"
                   },
                   "Adapter": {
                     "Uid": "Sony",
@@ -331,7 +327,11 @@
         "Uid": "HttpService",
         "Type": "HttpMessagingService",
         "Properties": {
-          "Routing": 5
+          "Routing": 5,
+          "Date": "2012-04-23T18:25:43.511Z",
+          "TimeSpan": "10:22:33",
+          "Number": 333,
+          "Double": 44.55
         }
       },
       {

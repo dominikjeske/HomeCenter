@@ -10,7 +10,8 @@ namespace HomeCenter.Model.Messages.Queries.Device
         public static DiscoverQuery CreateQuery(BaseObject parent)
         {
             var query = new DiscoverQuery();
-            foreach (var property in parent.GetProperties().Where(p => !string.IsNullOrWhiteSpace(p.Value)))
+            //TODO check this
+            foreach (var property in parent.GetProperties().Where(p => p.Value != null))
             {
                 query[property.Key] = property.Value;
             }

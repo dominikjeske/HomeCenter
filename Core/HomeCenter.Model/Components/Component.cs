@@ -23,9 +23,9 @@ namespace HomeCenter.Model.Components
     {
         private ComponentState _componentState;
 
-        [Map] private IList<AdapterReference> _adapterReferences { get; set; } = new List<AdapterReference>();
-        [Map] private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
-        [Map] private IList<Translator> _translators { get; set; } = new List<Translator>();
+        private IList<AdapterReference> _adapterReferences { get; set; } = new List<AdapterReference>();
+        private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
+        private IList<Translator> _translators { get; set; } = new List<Translator>();
 
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
@@ -73,7 +73,7 @@ namespace HomeCenter.Model.Components
         /// </summary>
         /// <param name="ev"></param>
         /// <param name="attributes"></param>
-        private void AddRequiersProperties(Event ev, Dictionary<string, string> attributes)
+        private void AddRequiersProperties(Event ev, Dictionary<string, object> attributes)
         {
             if (ev.ContainsProperty(MessageProperties.MessageSource))
             {
@@ -232,7 +232,8 @@ namespace HomeCenter.Model.Components
         {
             if (command.ContainsProperty(MessageProperties.StateName))
             {
-                return _componentState.GetStateValues(command[MessageProperties.StateName]);
+                //TODO DNF chceck this
+                return _componentState.GetStateValues(command[MessageProperties.StateName].ToString());
             }
 
             return _componentState.GetStateValues();

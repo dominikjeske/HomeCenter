@@ -74,14 +74,19 @@ namespace HomeCenter.Services.Actors
 
             if (_typeMappers.FirstOrDefault(type => type is ITypeMapper<T>) is not ITypeMapper<T> mapper)
             {
-                throw new ConfigurationException($"Could not find mapper for {typeof(T).Name}");
+                //throw new ConfigurationException($"Could not find mapper for {typeof(T).Name}");
+                return null;
             }
 
+            
             try
             {
-                var actor = mapper.Create(actorConfig, actorType);
 
+                var actor = mapper.Create(actorConfig, actorType);
                 return actor;
+                
+
+                
             }
             catch (Exception ee)
             {

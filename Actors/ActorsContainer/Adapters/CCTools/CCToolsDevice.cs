@@ -47,7 +47,7 @@ namespace HomeCenter.Adapters.Common
 
             if (ContainsProperty(MessageProperties.InterruptPin) && ContainsProperty(MessageProperties.InterruptSource))
             {
-                Subscribe<PinValueChangedEvent>(false, new Broker.RoutingFilter(new Dictionary<string, string>()
+                Subscribe<PinValueChangedEvent>(false, new Broker.RoutingFilter(new Dictionary<string, object>()
                 {
                     [MessageProperties.MessageSource] = this.AsString(MessageProperties.InterruptSource),
                     [MessageProperties.PinNumber] = this.AsString(MessageProperties.InterruptPin)

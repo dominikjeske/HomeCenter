@@ -9,9 +9,9 @@ namespace HomeCenter.Services.Configuration.DTO
     [DebuggerDisplay("[{Uid}] [{Type}]")]
     public class BaseDTO : IBaseObject, IPropertySource
     {
-        public string this[string propertyName]
+        public object this[string propertyName]
         {
-            get => Properties[propertyName].ToString();
+            get => Properties[propertyName];
             set => Properties[propertyName] = value;
         }
 

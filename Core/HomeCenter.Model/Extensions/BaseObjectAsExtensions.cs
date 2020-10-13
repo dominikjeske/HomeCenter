@@ -13,7 +13,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (bool.TryParse(baseObject[propertyName], out bool value))
+            var rawValue = baseObject[propertyName];
+            if(rawValue is bool boolValue)
+            {
+                return boolValue;
+            }
+            else if (bool.TryParse(baseObject[propertyName].ToString(), out bool value))
             {
                 return value;
             }
@@ -25,7 +30,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (int.TryParse(baseObject[propertyName], out int value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is int intValue)
+            {
+                return intValue;
+            }
+            else if (int.TryParse(baseObject[propertyName].ToString(), out int value))
             {
                 return value;
             }
@@ -37,7 +47,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (byte.TryParse(baseObject[propertyName], out byte value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is byte byteValue)
+            {
+                return byteValue;
+            }
+            else if (byte.TryParse(baseObject[propertyName].ToString(), out byte value))
             {
                 return value;
             }
@@ -49,7 +64,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (DateTime.TryParse(baseObject[propertyName], out DateTime value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is DateTime dateValue)
+            {
+                return dateValue;
+            }
+            else if (DateTime.TryParse(baseObject[propertyName].ToString(), out DateTime value))
             {
                 return value;
             }
@@ -61,7 +81,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (TimeSpan.TryParse(baseObject[propertyName], out TimeSpan value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is TimeSpan timeValue)
+            {
+                return timeValue;
+            }
+            else if (TimeSpan.TryParse(baseObject[propertyName].ToString(), out TimeSpan value))
             {
                 return value;
             }
@@ -80,7 +105,12 @@ namespace HomeCenter
                 throw new ArgumentException(propertyName);
             }
 
-            if (int.TryParse(baseObject[propertyName], out int value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is TimeSpan timeValue)
+            {
+                return timeValue;
+            }
+            else if (int.TryParse(baseObject[propertyName].ToString(), out int value))
             {
                 return TimeSpan.FromMilliseconds(value);
             }
@@ -107,7 +137,12 @@ namespace HomeCenter
 
         private static double AsDoubleInner(BaseObject baseObject, string propertyName)
         {
-            if (baseObject[propertyName].ParseAsDouble(out double value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is double doubleValue)
+            {
+                return doubleValue;
+            }
+            else if (baseObject[propertyName].ToString().ParseAsDouble(out double value))
             {
                 return value;
             }
@@ -119,7 +154,12 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            if (uint.TryParse(baseObject[propertyName], out uint value))
+            var rawValue = baseObject[propertyName];
+            if (rawValue is uint uintValue)
+            {
+                return uintValue;
+            }
+            else if (uint.TryParse(baseObject[propertyName].ToString(), out uint value))
             {
                 return value;
             }
@@ -131,28 +171,46 @@ namespace HomeCenter
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            return baseObject[propertyName];
+            return baseObject[propertyName].ToString();
         }
 
         public static IList<string> AsList(this BaseObject baseObject, string propertyName, IList<string> defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return (IList<string>)defaultValue ?? throw new ArgumentException(propertyName);
 
-            return baseObject[propertyName].Split(',').Select(x => x.Trim()).ToList();
+            var rawValue = baseObject[propertyName];
+            if (rawValue is IList<string> listValue)
+            {
+                return listValue;
+            }
+
+            return baseObject[propertyName].ToString().Split(',').Select(x => x.Trim()).ToList();
         }
 
         public static byte[] AsByteArray(this BaseObject baseObject, string propertyName, byte[] defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            return baseObject[propertyName].ToBytes();
+            var rawValue = baseObject[propertyName];
+            if (rawValue is byte[] bytesValue)
+            {
+                return bytesValue;
+            }
+
+            return rawValue.ToString().ToBytes();
         }
 
         public static IDictionary<string, string> AsDictionary(this BaseObject baseObject, string propertyName, IDictionary<string, string> defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
-            return JsonSerializer.Deserialize<IDictionary<string, string>>(baseObject[propertyName]);
+            var rawValue = baseObject[propertyName];
+            if (rawValue is IDictionary<string, string> dictionaryValue)
+            {
+                return dictionaryValue;
+            }
+
+            return JsonSerializer.Deserialize<IDictionary<string, string>>(baseObject[propertyName].ToString());
         }
     }
 }

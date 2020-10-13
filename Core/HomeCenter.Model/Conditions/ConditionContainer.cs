@@ -10,10 +10,10 @@ namespace HomeCenter.Model.Conditions
         private const string CONDITION_NAME = "C";
         private const string DEFAULT_OPERATOR = "AND";
 
-        [Map] public string Expression { get; set; }
-        [Map] public bool IsInverted { get; private set; }
-        [Map] public string DefaultOperator { get; private set; } = DEFAULT_OPERATOR;
-        [Map] public IList<IValidable> Conditions { get; private set; } = new List<IValidable>();
+        public string Expression { get; set; }
+        public bool IsInverted { get; private set; }
+        public string DefaultOperator { get; private set; } = DEFAULT_OPERATOR;
+        public IList<IValidable> Conditions { get; private set; } = new List<IValidable>();
 
         public async Task<bool> Validate()
         {

@@ -2,7 +2,7 @@
 {
     public interface IPropertySource
     {
-        string this[string propertyName] { get; set; }
+        object this[string propertyName] { get; set; }
 
         bool ContainsProperty(string propertyName);
     }

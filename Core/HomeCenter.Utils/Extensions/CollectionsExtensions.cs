@@ -116,7 +116,7 @@ namespace HomeCenter.Utils.Extensions
 
         public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) => new ReadOnlyDictionary<TKey, TValue>(dictionary);
 
-        public static bool IsEqual(this Dictionary<string, string> source, Dictionary<string, string> dest)
+        public static bool IsEqual(this Dictionary<string, object> source, Dictionary<string, object> dest)
         {
             if (ReferenceEquals(source, dest)) return true;
             if (source.Count != dest?.Count) return false;
@@ -125,7 +125,8 @@ namespace HomeCenter.Utils.Extensions
             {
                 if (!dest.ContainsKey(attribute.Key)) return false;
 
-                if (dest[attribute.Key].Compare(attribute.Value) != 0) return false;
+                //TODO check this
+                if (dest[attribute.Key].ToString().Compare(attribute.Value.ToString()) != 0) return false;
             }
             return true;
         }

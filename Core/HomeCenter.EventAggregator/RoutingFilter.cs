@@ -6,19 +6,19 @@ namespace HomeCenter.Broker
     public class RoutingFilter
     {
         public string RoutingKey { get; }
-        public Dictionary<string, string> RoutingAttributes { get; } = new Dictionary<string, string>();
+        public Dictionary<string, object> RoutingAttributes { get; } = new Dictionary<string, object>();
 
         public RoutingFilter(string routingKey)
         {
             RoutingKey = routingKey;
         }
 
-        public RoutingFilter(IDictionary<string, string> routingAttributes)
+        public RoutingFilter(IDictionary<string, object> routingAttributes)
         {
             RoutingAttributes.AddRangeNewOnly(routingAttributes);
         }
 
-        public RoutingFilter(string routingKey, IDictionary<string, string> routingAttributes)
+        public RoutingFilter(string routingKey, IDictionary<string, object> routingAttributes)
         {
             RoutingKey = routingKey;
             RoutingAttributes.AddRangeNewOnly(routingAttributes);
@@ -40,7 +40,8 @@ namespace HomeCenter.Broker
                     {
                         if (!propertiesSource.ContainsProperty(attribute.Key)) return false;
 
-                        if (!propertiesSource[attribute.Key].InvariantEquals(attribute.Value)) return false;
+                        //TODO DNF - check if this still works
+                        if (!propertiesSource[attribute.Key].ToString().InvariantEquals(attribute.Value.ToString())) return false;
                     }
                 }
 

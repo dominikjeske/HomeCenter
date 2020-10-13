@@ -158,7 +158,8 @@ namespace HomeCenter.Model.Actors
         {
             if (actorConfig.ContainsProperty("Routing"))
             {
-                return int.Parse(actorConfig["Routing"]);
+                //TODO fix this
+                return int.Parse(actorConfig["Routing"].ToString());
             }
 
             return 0;

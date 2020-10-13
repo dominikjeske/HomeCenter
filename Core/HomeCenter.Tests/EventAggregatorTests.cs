@@ -107,7 +107,7 @@ namespace HomeCenter.Tests.MessageBroker
         {
             var aggregator = InitAggregator();
 
-            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, object>
             {
                 [MessageProperties.MessageSource] = "Adapter"
             }));
@@ -122,7 +122,7 @@ namespace HomeCenter.Tests.MessageBroker
         {
             var aggregator = InitAggregator();
 
-            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, object>
             {
                 [MessageProperties.MessageSource] = "Adapter"
             }));
@@ -140,7 +140,7 @@ namespace HomeCenter.Tests.MessageBroker
         {
             var aggregator = InitAggregator();
 
-            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, string>
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter(new Dictionary<string, object>
             {
                 [MessageProperties.MessageSource] = "Adapter",
                 [MessageProperties.PinNumber] = "5"
@@ -161,7 +161,7 @@ namespace HomeCenter.Tests.MessageBroker
         {
             var aggregator = InitAggregator();
 
-            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter("*", new Dictionary<string, string>
+            aggregator.Subscribe<Event>(handler => { }, new RoutingFilter("*", new Dictionary<string, object>
             {
                 [MessageProperties.MessageSource] = "Adapter",
                 [MessageProperties.PinNumber] = "5"

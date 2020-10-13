@@ -4,6 +4,7 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Services.Configuration.DTO;
 using Proto;
 using System;
+using System.Text.Json;
 
 namespace HomeCenter.Services.Actors
 {
@@ -32,7 +33,56 @@ namespace HomeCenter.Services.Actors
 
             foreach (var property in config.Properties)
             {
-                instance.SetProperty(property.Key, property.Value.ToString());
+                if (property.Value is JsonElement element)
+                {
+                    if(element.ValueKind == JsonValueKind.Number)
+                    {
+                        if(element.TryGetInt32(out int intValue))
+                        {
+                            instance.SetProperty(property.Key, intValue);
+                        }
+                        if (element.TryGetDouble(out double douleValue))
+                        {
+                            instance.SetProperty(property.Key, douleValue);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                    else if (element.ValueKind == JsonValueKind.True)
+                    {
+                        instance.SetProperty(property.Key, true);
+                    }
+                    else if (element.ValueKind == JsonValueKind.False)
+                    {
+                        instance.SetProperty(property.Key, false);
+                    }
+                    else if (element.ValueKind == JsonValueKind.String)
+                    {
+                        var stringValue = element.GetString();
+                        if(TimeSpan.TryParse(stringValue, out TimeSpan timeValue))
+                        {
+                            instance.SetProperty(property.Key, timeValue);
+                        }
+                        else if (DateTime.TryParse(stringValue, out DateTime dateValue))
+                        {
+                            instance.SetProperty(property.Key, timeValue);
+                        }
+                        else if (Guid.TryParse(stringValue, out Guid guidValue))
+                        {
+                            instance.SetProperty(property.Key, timeValue);
+                        }
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
 
             return instance as IActor;

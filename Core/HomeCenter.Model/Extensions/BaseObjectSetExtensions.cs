@@ -16,31 +16,37 @@ namespace HomeCenter
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, DateTimeOffset value)
         {
-            baseObject[propertyName] = value.ToString();
+            baseObject[propertyName] = value;
             return baseObject;
         }
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, TimeSpan value)
         {
-            baseObject[propertyName] = value.ToString();
+            baseObject[propertyName] = value;
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, Guid value)
+        {
+            baseObject[propertyName] = value;
             return baseObject;
         }
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, int value)
         {
-            baseObject[propertyName] = value.ToString();
+            baseObject[propertyName] = value;
             return baseObject;
         }
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, double value)
         {
-            baseObject[propertyName] = value.ToString();
+            baseObject[propertyName] = value;
             return baseObject;
         }
 
         public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, bool value)
         {
-            baseObject[propertyName] = value.ToString();
+            baseObject[propertyName] = value;
             return baseObject;
         }
 
@@ -59,6 +65,12 @@ namespace HomeCenter
         public static BaseObject SetPropertyList(this BaseObject baseObject, string propertyName, params string[] values)
         {
             baseObject[propertyName] = string.Join(", ", values);
+            return baseObject;
+        }
+
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, object value)
+        {
+            baseObject[propertyName] = value;
             return baseObject;
         }
 

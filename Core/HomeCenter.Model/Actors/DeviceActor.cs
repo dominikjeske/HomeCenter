@@ -19,13 +19,12 @@ namespace HomeCenter.Model.Actors
         [DI] protected IMessageBroker MessageBroker { get; set; }
         [DI] protected ILogger Logger { get; set; }
 
-        [Map]
         public bool IsEnabled
         {
-            get => this.AsBool(MessageProperties.Tags, true);
+            get => this.AsBool(MessageProperties.IsEnabled, true);
             init => this.SetProperty(MessageProperties.IsEnabled, value);
         }
-        [Map]
+
         protected IList<string> Tags
         {
             get => this.AsList(MessageProperties.Tags);

@@ -12,10 +12,10 @@ namespace HomeCenter.Model.Capabilities
 
             this.SetProperty(StateProperties.ReadWriteMode, readWriteMode);
         }
-
-        public string ReadWrite => this[StateProperties.ReadWriteMode];
-        public string Name => this[StateProperties.StateName];
-        public string CapabilityName => this[StateProperties.CapabilityName];
+        //TODO - check if object value in props not break state
+        public string ReadWrite => this[StateProperties.ReadWriteMode].ToString();
+        public string Name => this[StateProperties.StateName].ToString();
+        public string CapabilityName => this[StateProperties.CapabilityName].ToString();
         public IList<string> SupportedCommands => this.AsList(StateProperties.SupportedCommands);
     }
 }
