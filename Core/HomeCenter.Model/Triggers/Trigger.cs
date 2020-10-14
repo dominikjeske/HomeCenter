@@ -13,10 +13,10 @@ namespace HomeCenter.Model.Triggers
 {
     public class Trigger
     {
-        public Event Event { get; private set; }
-        public IList<Command> Commands { get; set; }
-        public Schedule Schedule { get; private set; }
-        public IValidable Condition { get; private set; }
+        public Event Event { get; init; }
+        public IList<Command> Commands { get; init; }
+        public Schedule Schedule { get; init; }
+        public IValidable Condition { get; init; }
 
         public Task<bool> ValidateCondition() => Condition.Validate();
 

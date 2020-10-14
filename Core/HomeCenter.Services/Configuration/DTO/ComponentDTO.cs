@@ -7,35 +7,30 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class ComponentDTO : DeviceActorDTO
     {
+        public ComponentDTO() => Type = "Component";
+
         [JsonPropertyName("AdapterRefs")]
-        public IList<AdapterReferenceDTO> AdapterReferences { get; set; } = new List<AdapterReferenceDTO>(); 
+        public IList<AdapterReferenceDTO> AdapterReferences { get; set; } = new List<AdapterReferenceDTO>();
+        
+        [JsonPropertyName("Adapter")]
+        public AdapterDTO Adapter { get; set; } = new AdapterDTO();
 
         [JsonPropertyName("Translators")]
-        public IList<TranslatorDTO> Translators { get; set; }
-
-        [JsonPropertyName("Adapter")]
-        public AdapterDTO Adapter { get; set; }
-
-        [JsonPropertyName("Converters")]
-        //[JsonConverter(typeof(ValueConverter))] //TODO DNF
-        public IDictionary<string, IValueConverter> Converters { get; set; }
+        public IList<TranslatorDTO> Translators { get; set; } = new List<TranslatorDTO>();
         
         [JsonPropertyName("Triggers")]
-        public IList<TriggerDTO> Triggers { get; set; }
+        public IList<TriggerDTO> Triggers { get; set; } = new List<TriggerDTO>();
 
         [DefaultValue("Template")]
-        public string Template { get; set; }
+        public string Template { get; set; } = string.Empty;
 
         [JsonPropertyName("TemplateProperties")]
-        public Dictionary<string, string> TemplateProperties { get; set; }
+        public Dictionary<string, string> TemplateProperties { get; set; } = new Dictionary<string, string>();
 
         [JsonPropertyName("AttachedProperties")]
-        public IList<AttachedPropertyDTO> AttachedProperties { get; set; }
+        public IList<AttachedPropertyDTO> AttachedProperties { get; set; } = new List<AttachedPropertyDTO>();
 
-        public ComponentDTO()
-        {
-            Type = "Component";
-        }
-
+        //[JsonPropertyName("Converters")]
+        //public IDictionary<string, IValueConverter> Converters { get; set; } = new Dictionary<string, IValueConverter>();
     }
 }

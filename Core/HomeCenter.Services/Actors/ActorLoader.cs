@@ -82,7 +82,7 @@ namespace HomeCenter.Services.Actors
             try
             {
 
-                var actor = mapper.Create(actorConfig, actorType);
+                var actor = mapper.Map(actorConfig, actorType);
                 return actor;
                 
 

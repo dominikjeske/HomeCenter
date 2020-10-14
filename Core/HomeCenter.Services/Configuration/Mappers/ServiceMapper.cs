@@ -15,9 +15,9 @@ namespace HomeCenter.Services.Actors
             _actorMapper = actorMapper;
         }
 
-        public IActor Create(ServiceDTO config, Type destinationType)
+        public IActor Map(ServiceDTO config, Type destinationType)
         {
-            if (_actorMapper.Create(config, destinationType) is not Service actor)
+            if (_actorMapper.Map(config, destinationType) is not Service actor)
             {
                 throw new ArgumentException($"{nameof(destinationType)} should be '{typeof(Service).Name}' type");
             }

@@ -1,41 +1,48 @@
-﻿using HomeCenter.Model.Actors;
+﻿using HomeCenter.Model.Core;
 using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Messages;
 using HomeCenter.Services.Configuration.DTO;
-using Proto;
 using System;
 using System.Text.Json;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class DeviceActorMapper : ITypeMapper<DeviceActorDTO>
+    internal class BaseObjectMapper
     {
         private readonly ClassActivator _classActivator;
 
-        public DeviceActorMapper(ClassActivator classActivator)
+        public BaseObjectMapper(ClassActivator classActivator)
         {
             _classActivator = classActivator;
         }
 
-        public IActor Create(DeviceActorDTO config, Type destinationType)
+        public T Map<T>(BaseDTO config) where T : class
         {
-            destinationType.MustDeriveFrom<IActor>();
-
-            if (_classActivator.Create(destinationType) is not DeviceActor instance)
+            if (Map(config, typeof(T)) is not T result)
             {
-                throw new InvalidCastException($"Type {destinationType} is not {typeof(DeviceActor).Name}");
+                throw new InvalidOperationException($"Cannot create type {typeof(T).Name} from {config.GetType().Name}");
+            }
+
+            return result;
+        }
+ 
+        public BaseObject Map(BaseDTO config, Type destinationType)
+        {
+            destinationType.MustDeriveFrom<BaseObject>();
+
+            if (_classActivator.Create(destinationType) is not BaseObject instance)
+            {
+                throw new InvalidCastException($"Type {destinationType} is not {typeof(BaseObject).Name}");
             }
 
             instance.SetProperty(MessageProperties.Uid, config.Uid);
             instance.SetProperty(MessageProperties.Type, config.Type);
-            instance.SetProperty(MessageProperties.IsEnabled, config.IsEnabled);
-            instance.SetProperty(MessageProperties.Tags, config.Tags);
             SetProperties(config, instance);
 
-            return instance as IActor;
+            return instance;
         }
 
-        private static void SetProperties(DeviceActorDTO config, DeviceActor instance)
+        private static void SetProperties(BaseDTO config, BaseObject instance)
         {
             foreach (var property in config.Properties)
             {

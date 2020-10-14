@@ -2,7 +2,6 @@
 using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
-using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Events;
@@ -23,9 +22,23 @@ namespace HomeCenter.Model.Components
     {
         private ComponentState _componentState;
 
-        private IList<AdapterReference> _adapterReferences { get; set; } = new List<AdapterReference>();
-        private IList<Trigger> _triggers { get; set; } = new List<Trigger>();
-        private IList<Translator> _translators { get; set; } = new List<Translator>();
+        public IList<AdapterReference> AdapterReferences
+        {
+            get => this.As<IList<AdapterReference>>(MessageProperties.AdapterReferences);
+            set => this.SetProperty(MessageProperties.AdapterReferences, value);
+        }
+
+        public IList<Translator> Translators
+        {
+            get => this.As<IList<Translator>>(MessageProperties.Translators);
+            set => this.SetProperty(MessageProperties.Translators, value);
+        }
+
+        public IList<Trigger> Triggers
+        {
+            get => this.As<IList<Trigger>>(MessageProperties.Translators);
+            set => this.SetProperty(MessageProperties.Translators, value);
+        }
 
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
@@ -54,7 +67,7 @@ namespace HomeCenter.Model.Components
 
         private void InitEventTriggers()
         {
-            foreach (var trigger in _triggers.Where(x => x.Schedule == null))
+            foreach (var trigger in Triggers.Where(x => x.Schedule == null))
             {
                 Subscribe<Event>(false, GetRoutingFilterFromProperties(trigger.Event));
             }
@@ -77,7 +90,7 @@ namespace HomeCenter.Model.Components
         {
             if (ev.ContainsProperty(MessageProperties.MessageSource))
             {
-                var adapter = _adapterReferences.FirstOrDefault(a => a.Uid == ev.MessageSource);
+                var adapter = AdapterReferences.FirstOrDefault(a => a.Uid == ev.MessageSource);
                 if (adapter != null)
                 {
                     foreach (var property in adapter.RequierdProperties)
@@ -94,7 +107,7 @@ namespace HomeCenter.Model.Components
 
         private async Task InitScheduledTriggers()
         {
-            foreach (var trigger in _triggers.Where(x => x.Schedule != null))
+            foreach (var trigger in Triggers.Where(x => x.Schedule != null))
             {
                 if (!string.IsNullOrWhiteSpace(trigger.Schedule.CronExpression))
                 {
@@ -113,7 +126,7 @@ namespace HomeCenter.Model.Components
 
         private async Task InitializeAdapters()
         {
-            var discoveryResponses = (await _adapterReferences.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)));
+            var discoveryResponses = (await AdapterReferences.WhenAll(adapter => MessageBroker.Request<DiscoverQuery, DiscoveryResponse>(DiscoverQuery.CreateQuery(adapter), adapter.Uid)));
 
             foreach (var response in discoveryResponses)
             {
@@ -144,9 +157,9 @@ namespace HomeCenter.Model.Components
                 // TODO use value converter before publish
                 foreach (var adapter in _componentState.GetCommandAdapter(command))
                 {
-                    var adapterCommand = _adapterReferences.Single(a => a.Uid == adapter).GetDeviceCommand(command);
+                    var adapterCommand = AdapterReferences.Single(a => a.Uid == adapter).GetDeviceCommand(command);
 
-                    var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Command && e.From.Equals(adapterCommand));
+                    var translator = Translators.FirstOrDefault(e => e.Type == MessageType.Command && e.From.Equals(adapterCommand));
 
                     if (translator != null)
                     {
@@ -169,7 +182,7 @@ namespace HomeCenter.Model.Components
 
         protected async Task Handle(Event ev)
         {
-            var trigger = _triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
+            var trigger = Triggers.Where(e => e.Event != null).FirstOrDefault(t => t.Event.Equals(ev));
             if (trigger != null)
             {
                 await HandleEventInTrigger(trigger);
@@ -186,7 +199,7 @@ namespace HomeCenter.Model.Components
             if (_componentState.IsStateProvidingAdapter(propertyChanged.MessageSource, propertyChanged.PropertyChangedName)
                 && _componentState.TryUpdateState(propertyChanged.PropertyChangedName, propertyChanged.NewValue, out var oldValue))
             {
-                var translator = _translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
+                var translator = Translators.FirstOrDefault(e => e.Type == MessageType.Event && e.From.Equals(propertyChanged));
 
                 if (translator != null)
                 {

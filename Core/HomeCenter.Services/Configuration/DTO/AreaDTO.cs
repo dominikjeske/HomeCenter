@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace HomeCenter.Services.Configuration.DTO
 {
-    public class AreaDTO : BaseDTO
+    public class AreaDTO : DeviceActorDTO
     {
         [JsonPropertyName("Areas")]
         public IList<AreaDTO> Areas { get; set; } = new List<AreaDTO>();

@@ -50,10 +50,12 @@ namespace HomeCenter.Tests.ComponentModel
             var c2 = Mock.Of<IValidable>();
             Mock.Get(c1).Setup(c => c.Validate()).ReturnsAsync(true);
             Mock.Get(c2).Setup(c => c.Validate()).ReturnsAsync(false);
-            var container = new ConditionContainer();
+            var container = new ConditionContainer()
+            {
+                Expression = "C1 and (not C2)"
+            };
             container.Conditions.Add(c1);
             container.Conditions.Add(c2);
-            container.Expression = "C1 and (not C2)";
 
             var result = await container.Validate();
 

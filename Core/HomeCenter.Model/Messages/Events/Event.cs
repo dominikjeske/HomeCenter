@@ -3,6 +3,7 @@ using System;
 
 namespace HomeCenter.Model.Messages.Events
 {
+    //TODO - Why it has to be property based
     public class Event : ActorMessage
     {
         public Event()
