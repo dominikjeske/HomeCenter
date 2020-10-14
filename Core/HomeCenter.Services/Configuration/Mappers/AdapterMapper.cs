@@ -7,9 +7,9 @@ namespace HomeCenter.Services.Actors
 {
     internal class AdapterMapper : ITypeMapper<AdapterDTO>
     {
-        private readonly ITypeMapper<DeviceActorDTO> _actorMapper;
+        private readonly DeviceActorMapper _actorMapper;
 
-        public AdapterMapper(ITypeMapper<DeviceActorDTO> actorMapper)
+        public AdapterMapper(DeviceActorMapper actorMapper)
         {
             _actorMapper = actorMapper;
         }

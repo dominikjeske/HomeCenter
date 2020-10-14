@@ -88,8 +88,5 @@
         //Components
         public const string RelayNotTranslatedEvents = nameof(RelayNotTranslatedEvents);
         public const string ComponentId = nameof(ComponentId);
-        public const string AdapterReferences = nameof(AdapterReferences);
-        public const string Translators = nameof(Translators);
-        public const string Triggers = nameof(Triggers);
     }
 }

@@ -13,10 +13,10 @@ namespace HomeCenter.Services.Actors
 {
     internal class ComponentMapper : ITypeMapper<ComponentDTO>
     {
-        private readonly ITypeMapper<DeviceActorDTO> _actorMapper;
+        private readonly DeviceActorMapper _actorMapper;
         private readonly BaseObjectMapper _baseObjectMapper;
 
-        public ComponentMapper(ITypeMapper<DeviceActorDTO> actorMapper, BaseObjectMapper baseObjectMapper)
+        public ComponentMapper(DeviceActorMapper actorMapper, BaseObjectMapper baseObjectMapper)
         {
             _actorMapper = actorMapper;
             _baseObjectMapper = baseObjectMapper;
@@ -24,50 +24,50 @@ namespace HomeCenter.Services.Actors
 
         public IActor Map(ComponentDTO config, Type destinationType)
         {
-            if (_actorMapper.Map(config, destinationType) is not Component component)
+            var component = new Component
             {
-                throw new ArgumentException($"{nameof(destinationType)} should be '{typeof(Component).Name}' type");
-            }
-
-            component.AdapterReferences = config.AdapterReferences.Select(ar => new AdapterReference
-            {
-                IsMainAdapter = ar.IsMainAdapter,
-                Type = ar.Type,
-                Uid = ar.Uid
-            }).ToList();
-
-            component.Translators = config.Translators.Select(ar => new Translator
-            {
-                From = _baseObjectMapper.Map<ActorMessage>(ar.From),
-                To = _baseObjectMapper.Map<ActorMessage>(ar.To)
-            }).ToList();
-
-            component.Triggers = config.Triggers.Select(ar => new Trigger
-            {
-                Commands = ar.Commands.Select(c => _baseObjectMapper.Map<Command>(c)).ToList(),
-                Event = _baseObjectMapper.Map<Event>(ar.Event),
-                Schedule = new Schedule
+                AdapterReferences = config.AdapterReferences.Select(ar => new AdapterReference
                 {
-                    Calendar = ar.Schedule.Calendar,
-                    CronExpression = ar.Schedule.CronExpression,
-                    WorkingTime = ar.Schedule.WorkingTime,
-                    ManualSchedules = ar.Schedule.ManualSchedules.Select(schedule => new ManualSchedule
+                    IsMainAdapter = ar.IsMainAdapter,
+                    Type = ar.Type,
+                    Uid = ar.Uid
+                }).ToList(),
+
+                Translators = config.Translators.Select(ar => new Translator
+                {
+                    From = _baseObjectMapper.Map<ActorMessage>(ar.From),
+                    To = _baseObjectMapper.Map<ActorMessage>(ar.To)
+                }).ToList(),
+
+                Triggers = config.Triggers.Select(ar => new Trigger
+                {
+                    Commands = ar.Commands.Select(c => _baseObjectMapper.Map<Command>(c)).ToList(),
+                    Event = _baseObjectMapper.Map<Event>(ar.Event),
+                    Schedule = new Schedule
                     {
-                        Start = schedule.Start,
-                        Finish = schedule.Finish,
-                        WorkingTime = schedule.WorkingTime
-                    }).ToList(),
-                },
-                Condition = new ConditionContainer
-                {
-                    IsInverted = ar.Condition.IsInverted,
-                    DefaultOperator = ar.Condition.DefaultOperator,
-                    Expression = ar.Condition.Expression,
+                        Calendar = ar.Schedule.Calendar,
+                        CronExpression = ar.Schedule.CronExpression,
+                        WorkingTime = ar.Schedule.WorkingTime,
+                        ManualSchedules = ar.Schedule.ManualSchedules.Select(schedule => new ManualSchedule
+                        {
+                            Start = schedule.Start,
+                            Finish = schedule.Finish,
+                            WorkingTime = schedule.WorkingTime
+                        }).ToList(),
+                    },
+                    Condition = new ConditionContainer
+                    {
+                        IsInverted = ar.Condition.IsInverted,
+                        DefaultOperator = ar.Condition.DefaultOperator,
+                        Expression = ar.Condition.Expression,
 
-                    //TODO
-                    //Conditions = ar.Condition.Conditions.Select(x =>
-                }
-            }).ToList();
+                        //TODO
+                        //Conditions = ar.Condition.Conditions.Select(x =>
+                    }
+                }).ToList()
+            };
+
+            _actorMapper.Map(config, component);
 
             return component;
         }

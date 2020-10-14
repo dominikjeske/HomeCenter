@@ -25,7 +25,16 @@ namespace HomeCenter.Services.Actors
 
             return result;
         }
- 
+
+        public BaseObject Map(BaseDTO config, BaseObject instance)
+        {
+            instance.SetProperty(MessageProperties.Uid, config.Uid);
+            instance.SetProperty(MessageProperties.Type, config.Type);
+            SetProperties(config, instance);
+
+            return instance;
+        }
+
         public BaseObject Map(BaseDTO config, Type destinationType)
         {
             destinationType.MustDeriveFrom<BaseObject>();
@@ -35,11 +44,7 @@ namespace HomeCenter.Services.Actors
                 throw new InvalidCastException($"Type {destinationType} is not {typeof(BaseObject).Name}");
             }
 
-            instance.SetProperty(MessageProperties.Uid, config.Uid);
-            instance.SetProperty(MessageProperties.Type, config.Type);
-            SetProperties(config, instance);
-
-            return instance;
+            return Map(config, instance);
         }
 
         private static void SetProperties(BaseDTO config, BaseObject instance)

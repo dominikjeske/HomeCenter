@@ -7,7 +7,7 @@ using System;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class DeviceActorMapper : ITypeMapper<DeviceActorDTO>
+    internal class DeviceActorMapper
     {
         private readonly BaseObjectMapper _baseObjectMapper;
 
@@ -16,7 +16,7 @@ namespace HomeCenter.Services.Actors
             _baseObjectMapper = baseObjectMapper;
         }
 
-        public IActor Map(DeviceActorDTO config, Type destinationType)
+        public DeviceActor Map(DeviceActorDTO config, Type destinationType)
         {
             destinationType.MustDeriveFrom<IActor>();
 
@@ -25,10 +25,15 @@ namespace HomeCenter.Services.Actors
                 throw new InvalidCastException($"Type {destinationType} is not {typeof(DeviceActor).Name}");
             }
 
+            return Map(config, instance);
+        }
+
+        public DeviceActor Map(DeviceActorDTO config, DeviceActor instance)
+        {
             instance.SetProperty(MessageProperties.IsEnabled, config.IsEnabled);
             instance.SetProperty(MessageProperties.Tags, config.Tags);
 
-            return instance as IActor;
+            return instance;
         }
     }
 }

@@ -21,24 +21,9 @@ namespace HomeCenter.Model.Components
     public class Component : DeviceActor
     {
         private ComponentState _componentState;
-
-        public IList<AdapterReference> AdapterReferences
-        {
-            get => this.As<IList<AdapterReference>>(MessageProperties.AdapterReferences);
-            set => this.SetProperty(MessageProperties.AdapterReferences, value);
-        }
-
-        public IList<Translator> Translators
-        {
-            get => this.As<IList<Translator>>(MessageProperties.Translators);
-            set => this.SetProperty(MessageProperties.Translators, value);
-        }
-
-        public IList<Trigger> Triggers
-        {
-            get => this.As<IList<Trigger>>(MessageProperties.Translators);
-            set => this.SetProperty(MessageProperties.Translators, value);
-        }
+        public IList<AdapterReference> AdapterReferences { get; init; }
+        public IList<Translator> Translators { get; init; }
+        public IList<Trigger> Triggers { get; init; }
 
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
