@@ -1,30 +1,8 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Mapper;
 
 namespace HomeCenter.Runner.Codegen
 {
-    //[Adapter]
-    public partial class MyAdapter : BaseAdapter<Src, Dst>, IMapper<Src, Dst>
-    {
-        public Dst Map(Src source)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void Configure(IConfigureMapping<Src, Dst> config)
-        {
-            config.ForMember(x => x.IgnoredDestination).Ignore();
-            config.IgnoreSourceMember(x => x._ignoredSource);
-            config.ForMember(x => x.DefaultValuedProperty).WithDefault(7);
-            config.ForMember(x => x.CustomValue).WithValue(s => s._age + 1);
-
-            config.WithSourceResolver<UnderscoreResolver>();
-            config.WithPropertiesComparer<IgnoreCaseComparer>();
-        }
-    }
-
-    
-
+   
 
 
     //[ProxyCodeGenerator]

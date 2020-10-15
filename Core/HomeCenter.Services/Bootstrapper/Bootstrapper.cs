@@ -1,10 +1,10 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
+using HomeCenter.Model.Components;
 using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Actors;
-using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
@@ -69,6 +69,8 @@ namespace HomeCenter.Services.Bootstrapper
 
             foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())
             {
+                if (actorProxy == typeof(ComponentProxy)) continue;
+
                 var registration = Lifestyle.Transient.CreateRegistration(actorProxy, _container);
 
                 _container.AddRegistration(actorProxy, registration);
@@ -97,7 +99,6 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterSingleton<IEventAggregator, EventAggregator>();
             _container.RegisterSingleton<IMessageBroker, MessageBroker>();
             _container.RegisterSingleton<IConcurrencyProvider, ConcurrencyProvider>();
-
 
             _container.RegisterSingleton<IRoslynCompilerService, RoslynCompilerService>();
         }

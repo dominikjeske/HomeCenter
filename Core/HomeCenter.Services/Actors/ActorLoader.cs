@@ -5,10 +5,7 @@ using HomeCenter.Model.Calendars;
 using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Extensions;
 using HomeCenter.Model.Triggers.Calendars;
-using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.Networking;
 using HomeCenter.Utils;
 using HomeCenter.Utils.Extensions;
 using Proto;
@@ -22,9 +19,6 @@ namespace HomeCenter.Services.Actors
 {
     internal class ActorLoader : IActorLoader
     {
-        //private MapperConfigurationExpression _mapperConfigurationExpression;
-        //private IMapper _mapper;
-        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Type> _dynamicTypes = new Dictionary<string, Type>();
         private readonly IScheduler _scheduler;
         private readonly IEnumerable<ITypeMapper> _typeMappers;
@@ -33,13 +27,11 @@ namespace HomeCenter.Services.Actors
         {
             LoadDynamicTypes();
 
-            //_mapper = RegisterTypesInAutomapper();
             await LoadCalendars();
         }
 
-        public ActorLoader(IServiceProvider serviceProvider, IScheduler scheduler, IEnumerable<ITypeMapper> typeFactories)
+        public ActorLoader(IScheduler scheduler, IEnumerable<ITypeMapper> typeFactories)
         {
-            _serviceProvider = serviceProvider;
             _scheduler = scheduler;
             _typeMappers = typeFactories;
         }
@@ -74,55 +66,11 @@ namespace HomeCenter.Services.Actors
 
             if (_typeMappers.FirstOrDefault(type => type is ITypeMapper<T>) is not ITypeMapper<T> mapper)
             {
-                //throw new ConfigurationException($"Could not find mapper for {typeof(T).Name}");
-                return null;
+                throw new ConfigurationException($"Could not find mapper for {typeof(T).Name}");
             }
 
-            
-            try
-            {
-
-                var actor = mapper.Map(actorConfig, actorType);
-                return actor;
-                
-
-                
-            }
-            catch (Exception ee)
-            {
-
-                throw;
-            }
-            
+            var actor = mapper.Map(actorConfig, actorType);
+            return actor;
         }
-
-        //private IMapper RegisterTypesInAutomapper()
-        //{
-        //    _mapperConfigurationExpression = new MapperConfigurationExpression();
-        //    _mapperConfigurationExpression.ConstructServicesUsing(_serviceProvider.GetService);
-
-        //    foreach (var profile in AssemblyHelper.GetAllTypes<Profile>())
-        //    {
-        //        _mapperConfigurationExpression.AddProfile(profile);
-        //    }
-
-        //    _mapperConfigurationExpression.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
-
-        //    foreach (var actorType in _dynamicTypes.Values)
-        //    {
-        //        if (typeof(Adapter).IsAssignableFrom(actorType))
-        //        {
-        //            _mapperConfigurationExpression.CreateMap(typeof(AdapterDTO), actorType).ConstructUsingServiceLocator();
-        //        }
-        //        else if (typeof(Service).IsAssignableFrom(actorType))
-        //        {
-        //            _mapperConfigurationExpression.CreateMap(typeof(ServiceDTO), actorType).ConstructUsingServiceLocator();
-        //        }
-        //    }
-
-        //    var mapper = new Mapper(new MapperConfiguration(_mapperConfigurationExpression), t => _serviceProvider.GetService(t));
-
-        //    return mapper;
-        //}
     }
 }

@@ -20,10 +20,17 @@ namespace HomeCenter.Model.Components
     [ProxyCodeGenerator]
     public class Component : DeviceActor
     {
+        public Component(IList<AdapterReference> adapterReferences, IList<Translator> translators, IList<Trigger> triggers)
+        {
+            AdapterReferences = adapterReferences;
+            Translators = translators;
+            Triggers = triggers;
+        }
+
         private ComponentState _componentState;
-        public IList<AdapterReference> AdapterReferences { get; init; }
-        public IList<Translator> Translators { get; init; }
-        public IList<Trigger> Triggers { get; init; }
+        public IList<AdapterReference> AdapterReferences { get; }
+        public IList<Translator> Translators { get; }
+        public IList<Trigger> Triggers { get; }
 
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached

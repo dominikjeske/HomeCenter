@@ -11,6 +11,5 @@ namespace HomeCenter.Model.Actors
         public static EventId ActorState = new EventId(MessageBase + 2, nameof(ActorState));
         public static EventId ActorStart = new EventId(MessageBase + 3, nameof(ActorStart));
         public static EventId EventPublished = new EventId(MessageBase + 4, nameof(EventPublished));
-
     }
 }

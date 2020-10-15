@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter
 {
     public static class TypeExtensions
     {

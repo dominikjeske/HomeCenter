@@ -5,8 +5,8 @@ namespace HomeCenter.Services.Configuration.DTO
     public class TranslatorDTO : BaseDTO
     {
         [JsonPropertyName("From")]
-        public ActorMessageDTO From { get; set; }
+        public ActorMessageDTO? From { get; set; }
         [JsonPropertyName("To")]
-        public ActorMessageDTO To { get; set; }
+        public ActorMessageDTO? To { get; set; }
     }
 }

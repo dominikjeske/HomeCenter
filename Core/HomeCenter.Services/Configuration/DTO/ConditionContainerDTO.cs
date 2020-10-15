@@ -6,15 +6,15 @@ namespace HomeCenter.Services.Configuration.DTO
     public class ConditionContainerDTO
     {
         [JsonPropertyName("Expression")]
-        public string Expression { get; set; }
+        public string? Expression { get; set; }
 
         [JsonPropertyName("Conditions")]
-        public IList<ConditionDTO> Conditions { get; set; }
+        public IList<ConditionDTO> Conditions { get; set; } = new List<ConditionDTO>();
 
         [JsonPropertyName("IsInverted")]
         public bool IsInverted { get; set; }
 
         [JsonPropertyName("DefaultOperator")]
-        public string DefaultOperator { get; set; }
+        public string? DefaultOperator { get; set; }
     }
 }

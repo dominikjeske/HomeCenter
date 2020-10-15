@@ -18,10 +18,10 @@ namespace HomeCenter.Services.Configuration.DTO
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
 
         [JsonPropertyName("Uid")]
-        public string Uid { get; set; } = "";
+        public string Uid { get; set; } = string.Empty;
 
         [JsonPropertyName("Type")]
-        public string Type { get; set; } = "";
+        public string Type { get; set; } = string.Empty;
 
         [JsonPropertyName("Properties")]
         public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();

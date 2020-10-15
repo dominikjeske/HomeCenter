@@ -21,50 +21,52 @@ namespace HomeCenter.Runner
     {
         public async Task<string> Generate(string code)
         {
-            var generator = new RoslymapperBuilder();
-            var models = await GetModels(code);
+            //var generator = new RoslymapperBuilder();
+            //var models = await GetModels(code);
 
-            var syntaxTree = models.syntaxTree;
-            var semanticModel = models.semanticModel;
-            var classToDecorate = models.syntaxTree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
+            //var syntaxTree = models.syntaxTree;
+            //var semanticModel = models.semanticModel;
+            //var classToDecorate = models.syntaxTree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
 
-            if (classToDecorate.Count == 0) return "No class found to decorate";
+            //if (classToDecorate.Count == 0) return "No class found to decorate";
 
-            NamespaceDeclarationSyntax oldNamespace = classToDecorate[0].Parent as NamespaceDeclarationSyntax;
-            NamespaceDeclarationSyntax newNamespace = oldNamespace;
-            var classList = new List<MemberDeclarationSyntax>();
+            //NamespaceDeclarationSyntax oldNamespace = classToDecorate[0].Parent as NamespaceDeclarationSyntax;
+            //NamespaceDeclarationSyntax newNamespace = oldNamespace;
+            //var classList = new List<MemberDeclarationSyntax>();
 
-            foreach (var classModel in classToDecorate)
-            {
-                var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
+            //foreach (var classModel in classToDecorate)
+            //{
+            //    var classSemantic = semanticModel.GetDeclaredSymbol(classModel);
 
-                // if (HasBaseType(classSemantic, "DeviceActor"))
-                // {
-                // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
+            //    // if (HasBaseType(classSemantic, "DeviceActor"))
+            //    // {
+            //    // ExternAliasDirectiveSyntax - Represents an ExternAlias directive syntax, e.g. "extern alias MyAlias;" with specifying "/r:MyAlias=SomeAssembly.dll " on the compiler command line.
 
-                var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
-                var result = generator.Build(proxy);
+            //    var proxy = new TransformationContext(classModel, semanticModel, models.compilation, "", null, null);
+            //    var result = generator.Build(proxy);
 
-                foreach (var res in result.Members)
-                {
-                    ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
-                    ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
+            //    foreach (var res in result.Members)
+            //    {
+            //        ConsoleEx.WriteOKLine($"{classSemantic.Name}:");
+            //        ConsoleEx.Write($"{res.NormalizeWhitespace().ToFullString()}");
 
-                    classList.Add(res);
-                }
-                // }
-            }
+            //        classList.Add(res);
+            //    }
+            //    // }
+            //}
 
-            foreach (var proxyClass in classList)
-            {
-                newNamespace = newNamespace.AddMembers(proxyClass);
-            }
+            //foreach (var proxyClass in classList)
+            //{
+            //    newNamespace = newNamespace.AddMembers(proxyClass);
+            //}
 
-            syntaxTree = syntaxTree.ReplaceNode(oldNamespace, newNamespace);
+            //syntaxTree = syntaxTree.ReplaceNode(oldNamespace, newNamespace);
 
-            Veryfy(syntaxTree);
+            //Veryfy(syntaxTree);
 
-            return syntaxTree.NormalizeWhitespace().ToFullString();
+            //return syntaxTree.NormalizeWhitespace().ToFullString();
+
+            return "";
         }
 
         private bool HasBaseType(INamedTypeSymbol type, string baseType)

@@ -11,9 +11,9 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonPropertyName("AdapterRefs")]
         public IList<AdapterReferenceDTO> AdapterReferences { get; set; } = new List<AdapterReferenceDTO>();
-        
+
         [JsonPropertyName("Adapter")]
-        public AdapterDTO Adapter { get; set; } = new AdapterDTO();
+        public AdapterDTO? Adapter { get; set; }
 
         [JsonPropertyName("Translators")]
         public IList<TranslatorDTO> Translators { get; set; } = new List<TranslatorDTO>();
@@ -22,7 +22,7 @@ namespace HomeCenter.Services.Configuration.DTO
         public IList<TriggerDTO> Triggers { get; set; } = new List<TriggerDTO>();
 
         [DefaultValue("Template")]
-        public string Template { get; set; } = string.Empty;
+        public string? Template { get; set; }
 
         [JsonPropertyName("TemplateProperties")]
         public Dictionary<string, string> TemplateProperties { get; set; } = new Dictionary<string, string>();

@@ -91,6 +91,10 @@ namespace HomeCenter.Services.Actors
                         {
                             instance.SetProperty(property.Key, timeValue);
                         }
+                        else
+                        {
+                            instance.SetProperty(property.Key, stringValue);
+                        }
                     }
                     else
                     {

@@ -9,7 +9,7 @@ namespace HomeCenter.Services.Configuration.DTO
         public IList<AdapterDTO> SharedAdapters { get; set; } = new List<AdapterDTO>();
 
         [JsonPropertyName("MainArea")]
-        public AreaDTO MainArea { get; set; }
+        public AreaDTO? MainArea { get; set; }
 
         [JsonPropertyName("Services")]
         public IList<ServiceDTO> Services { get; set; } = new List<ServiceDTO>();
