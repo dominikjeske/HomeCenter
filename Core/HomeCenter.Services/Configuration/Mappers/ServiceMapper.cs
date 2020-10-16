@@ -9,10 +9,12 @@ namespace HomeCenter.Services.Actors
     internal class ServiceMapper : ITypeMapper<ServiceDTO>
     {
         private readonly DeviceActorMapper _actorMapper;
+        private readonly BaseObjectMapper _baseObjectMapper;
 
-        public ServiceMapper(DeviceActorMapper actorMapper)
+        public ServiceMapper(DeviceActorMapper actorMapper, BaseObjectMapper baseObjectMapper)
         {
             _actorMapper = actorMapper;
+            _baseObjectMapper = baseObjectMapper;
         }
 
         public IActor Map(ServiceDTO config, Type destinationType)
@@ -31,14 +33,27 @@ namespace HomeCenter.Services.Actors
                 Uid = p.Uid
             }).ToList();
 
-            actor.ComponentsAttachedProperties = config.ComponentsAttachedProperties.Select(p => new AttachedProperty
+
+            actor.ComponentsAttachedProperties = config.ComponentsAttachedProperties.Select(p => new
             {
-                AttachedActor = p.AttachedActor,
-                AttachedArea = p.AttachedArea,
-                Service = p.Service,
-                Type = p.Type,
-                Uid = p.Uid
-            }).ToList();
+                Source = p,
+                Destination = new AttachedProperty
+                {
+                    AttachedActor = p.AttachedActor,
+                    AttachedArea = p.AttachedArea,
+                    Service = p.Service
+                }
+            }).Select(x => _baseObjectMapper.Map(x.Source, x.Destination)).ToList();
+
+
+            //actor.ComponentsAttachedProperties = config.ComponentsAttachedProperties.Select(p => _baseObjectMapper.Map<AttachedProperty>(p) new AttachedProperty
+            //{
+            //    AttachedActor = p.AttachedActor,
+            //    AttachedArea = p.AttachedArea,
+            //    Service = p.Service,
+            //    Type = p.Type,
+            //    Uid = p.Uid
+            //}).ToList();
 
             return actor;
         }

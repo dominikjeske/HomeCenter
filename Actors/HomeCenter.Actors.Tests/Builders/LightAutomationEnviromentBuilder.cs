@@ -1,7 +1,10 @@
 ﻿using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
+using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.DI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using SimpleInjector;
@@ -112,29 +115,21 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterInstance<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
             _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
             _container.RegisterInstance<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
+            _container.RegisterSingleton<DeviceActorMapper>();
+            _container.RegisterSingleton<BaseObjectMapper>();
+            _container.RegisterSingleton<ClassActivator>();
+            _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
 
-            //var actor = ConfigureMapper().CreateMapper().Map<ServiceDTO, LightAutomationServiceProxy>(_serviceConfig);
+            var sm = _container.GetService<ServiceMapper>();
 
-            LightAutomationServiceProxy actor = null;
+
+            LightAutomationServiceProxy actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
 
             var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
 
             return actorContext;
         }
-
-
-        //private MapperConfiguration ConfigureMapper()
-        //{
-        //    return new MapperConfiguration(p =>
-        //    {
-        //        p.CreateMap(typeof(ServiceDTO), typeof(LightAutomationServiceProxy)).ConstructUsingServiceLocator();
-        //        p.CreateMap<AttachedPropertyDTO, AttachedProperty>();
-
-        //        p.ShouldMapProperty = propInfo => (propInfo.CanWrite && propInfo.GetGetMethod(true).IsPublic) || propInfo.IsDefined(typeof(MapAttribute), false);
-        //        p.ConstructServicesUsing(_container.GetInstance);
-        //    });
-        //}
 
         private Dictionary<string, FakeMotionLamp> CreateFakeLamps()
         {

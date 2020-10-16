@@ -26,7 +26,9 @@ namespace HomeCenter.Services.Actors
             return result;
         }
 
-        public BaseObject Map(BaseDTO config, BaseObject instance)
+        
+
+        public T Map<T>(BaseDTO config, T instance) where T : BaseObject
         {
             instance.SetProperty(MessageProperties.Uid, config.Uid);
             instance.SetProperty(MessageProperties.Type, config.Type);

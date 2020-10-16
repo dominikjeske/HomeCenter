@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Services.Configuration.DTO;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -92,8 +93,8 @@ namespace HomeCenter.Services.MotionService.Tests
                 AttachedArea = area,
                 Properties = new Dictionary<string, object>
                 {
-                    [MotionProperties.Neighbors] = string.Join(", ", neighbors),
-                    [MotionProperties.Lamp] = motionSensor
+                    [MotionProperties.Neighbors] = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(string.Join(", ", neighbors))),
+                    [MotionProperties.Lamp] = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(motionSensor))
                 }
             });
         }
