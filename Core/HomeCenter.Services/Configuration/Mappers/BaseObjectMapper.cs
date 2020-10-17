@@ -103,6 +103,10 @@ namespace HomeCenter.Services.Actors
                         throw new NotImplementedException();
                     }
                 }
+                else if (property.Value is string stringElement)
+                {
+                    instance.SetProperty(property.Key, stringElement);
+                }
                 else
                 {
                     throw new NotImplementedException();

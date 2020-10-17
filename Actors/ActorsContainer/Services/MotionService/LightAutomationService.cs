@@ -74,30 +74,21 @@ namespace HomeCenter.Services.MotionService
 
         private void ReadRoomsFromAttachedProperties(Dictionary<string, AreaDescriptor> areas)
         {
-            try
+            var rooms = new List<Room>();
+
+            CheckForMissingRooms();
+
+            foreach (var motionDetector in ComponentsAttachedProperties)
             {
-                var rooms = new List<Room>();
+                var neighbours = new Lazy<IEnumerable<Room>>(() => from neighbor in motionDetector.AsList(MotionProperties.Neighbors)
+                                                                   join room in rooms on neighbor equals room.Uid
+                                                                   select room);
 
-                CheckForMissingRooms();
-
-                foreach (var motionDetector in ComponentsAttachedProperties)
-                {
-                    var neighbours = new Lazy<IEnumerable<Room>>(() => from neighbor in motionDetector.AsList(MotionProperties.Neighbors)
-                                                                       join room in rooms on neighbor equals room.Uid
-                                                                       select room);
-
-                    rooms.Add(new Room(motionDetector.AttachedActor, neighbours, motionDetector.AsString(MotionProperties.Lamp),
-                                        _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
-                }
-
-                _roomService = new RoomService(rooms, _motionConfiguration);
+                rooms.Add(new Room(motionDetector.AttachedActor, neighbours, motionDetector.AsString(MotionProperties.Lamp),
+                                    _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
-            catch (Exception ee)
-            {
 
-                throw;
-            }
-          
+            _roomService = new RoomService(rooms, _motionConfiguration);
         }
 
         private void CheckForMissingRooms()

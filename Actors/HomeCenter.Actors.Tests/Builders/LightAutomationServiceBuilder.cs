@@ -52,7 +52,7 @@ namespace HomeCenter.Services.MotionService.Tests
 
             if (_confusionResolutionTime.HasValue)
             {
-                serviceDto.Properties.Add(MotionProperties.ConfusionResolutionTime, _confusionResolutionTime.ToString());
+                serviceDto.Properties.Add(MotionProperties.ConfusionResolutionTime, ToJsonElement(_confusionResolutionTime.ToString()));
             }
 
             return serviceDto;
@@ -68,12 +68,12 @@ namespace HomeCenter.Services.MotionService.Tests
 
             if (!string.IsNullOrWhiteSpace(_workingTime))
             {
-                area.Properties[MotionProperties.WorkingTime] = _workingTime;
+                area.Properties[MotionProperties.WorkingTime] = ToJsonElement(_workingTime);
             }
 
             foreach (var property in roomBuilder.Properties)
             {
-                area.Properties[property.Key] = property.Value;
+                area.Properties[property.Key] = ToJsonElement(property.Value);
             }
 
             foreach (var detector in roomBuilder.Detectors.Values)
@@ -93,10 +93,15 @@ namespace HomeCenter.Services.MotionService.Tests
                 AttachedArea = area,
                 Properties = new Dictionary<string, object>
                 {
-                    [MotionProperties.Neighbors] = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(string.Join(", ", neighbors))),
-                    [MotionProperties.Lamp] = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(motionSensor))
+                    [MotionProperties.Neighbors] = ToJsonElement(string.Join(", ", neighbors)),
+                    [MotionProperties.Lamp] = ToJsonElement(motionSensor)
                 }
             });
+        }
+
+        private static JsonElement ToJsonElement(string motionSensor)
+        {
+            return JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(motionSensor));
         }
     }
 }

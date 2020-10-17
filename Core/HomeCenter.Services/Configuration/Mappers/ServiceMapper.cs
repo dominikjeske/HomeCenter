@@ -24,36 +24,17 @@ namespace HomeCenter.Services.Actors
                 throw new ArgumentException($"{nameof(destinationType)} should be '{typeof(Service).Name}' type");
             }
 
-            actor.AreasAttachedProperties = config.AreasAttachedProperties.Select(p => new AttachedProperty
+            actor.AreasAttachedProperties = config.AreasAttachedProperties.Select(p => new
             {
-                AttachedActor = p.AttachedActor,
-                AttachedArea = p.AttachedArea,
-                Service = p.Service,
-                Type = p.Type,
-                Uid = p.Uid
-            }).ToList();
-
+                Source = p,
+                Destination = new AttachedProperty(p.Service, p.AttachedActor, p.AttachedArea)
+            }).Select(x => _baseObjectMapper.Map(x.Source, x.Destination)).ToList();
 
             actor.ComponentsAttachedProperties = config.ComponentsAttachedProperties.Select(p => new
             {
                 Source = p,
-                Destination = new AttachedProperty
-                {
-                    AttachedActor = p.AttachedActor,
-                    AttachedArea = p.AttachedArea,
-                    Service = p.Service
-                }
+                Destination = new AttachedProperty(p.Service, p.AttachedActor, p.AttachedArea)
             }).Select(x => _baseObjectMapper.Map(x.Source, x.Destination)).ToList();
-
-
-            //actor.ComponentsAttachedProperties = config.ComponentsAttachedProperties.Select(p => _baseObjectMapper.Map<AttachedProperty>(p) new AttachedProperty
-            //{
-            //    AttachedActor = p.AttachedActor,
-            //    AttachedArea = p.AttachedArea,
-            //    Service = p.Service,
-            //    Type = p.Type,
-            //    Uid = p.Uid
-            //}).ToList();
 
             return actor;
         }

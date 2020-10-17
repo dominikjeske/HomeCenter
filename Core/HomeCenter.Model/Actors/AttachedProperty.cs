@@ -1,13 +1,25 @@
 ﻿using HomeCenter.Model.Core;
+using Light.GuardClauses;
 
 namespace HomeCenter.Model.Actors
 {
     public class AttachedProperty : BaseObject
     {
-        public string Service { get; set; } = string.Empty;
+        public AttachedProperty(string? service, string? attachedActor, string? attachedArea)
+        {
+            service = service.MustNotBeNullOrWhiteSpace();
+            attachedActor = attachedActor.MustNotBeNullOrWhiteSpace();
+            attachedArea = attachedArea.MustNotBeNullOrWhiteSpace();
 
-        public string AttachedActor { get; set; } = string.Empty;
+            Service = service;
+            AttachedActor = attachedActor;
+            AttachedArea = attachedArea;
+        }
 
-        public string AttachedArea { get; set; } = string.Empty;
+        public string Service { get;}
+
+        public string AttachedActor { get; }
+
+        public string AttachedArea { get; }
     }
 }
