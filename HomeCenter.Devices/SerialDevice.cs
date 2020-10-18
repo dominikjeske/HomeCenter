@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace HomeCenter.Services.Devices
+namespace HomeCenter.Devices
 {
     public class SerialDevice : ISerialDevice
     {

@@ -7,7 +7,6 @@ using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Core;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Controllers;
-using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
@@ -114,7 +113,7 @@ namespace HomeCenter.Services.Bootstrapper
         }
 
         protected abstract ILoggerProvider[] GetLogProviders();
-        
+
         protected virtual void ConfigureLoggerFactory(ILoggerFactory loggerFacory)
         {
         }
@@ -131,12 +130,8 @@ namespace HomeCenter.Services.Bootstrapper
             _container.Register(typeof(ILogger<>), typeof(Logger<>), Lifestyle.Singleton);
         }
 
-        protected virtual void RegisterNativeServices()
-        {
-            _container.RegisterSingleton<II2cBus, I2cBus>();
-            _container.RegisterSingleton<ISerialDevice, SerialDevice>();
-            _container.RegisterSingleton<IGpioDevice, GpioDevice>();
-        }
+        protected abstract void RegisterNativeServices();
+        
 
         public void Dispose() => _container.Dispose();
 

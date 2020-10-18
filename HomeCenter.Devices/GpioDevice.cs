@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Messages;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Device.Gpio.Drivers;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace HomeCenter.Services.Devices
+namespace HomeCenter.Devices
 {
     public class GpioDevice : IGpioDevice
     {

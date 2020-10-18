@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.InteropServices;
 
-namespace HomeCenter.Services.Devices
+namespace HomeCenter.Devices
 {
     // TODO try use build-in from .net core and https://github.com/dotnet/iot/pull/452
 

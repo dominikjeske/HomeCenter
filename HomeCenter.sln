@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Extensions", "Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Assemblies", "HomeCenter.Assemblies\HomeCenter.Assemblies.csproj", "{80FE35E5-ED7C-4A22-8157-4A7E9311934C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Devices", "HomeCenter.Devices\HomeCenter.Devices.csproj", "{C84451C5-B437-4E3F-B49E-C480E07E16DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{80FE35E5-ED7C-4A22-8157-4A7E9311934C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80FE35E5-ED7C-4A22-8157-4A7E9311934C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80FE35E5-ED7C-4A22-8157-4A7E9311934C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
