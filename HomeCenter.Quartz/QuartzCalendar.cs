@@ -2,7 +2,7 @@
 using Quartz.Impl.Calendar;
 using System;
 
-namespace HomeCenter.Model.Triggers.Calendars
+namespace HomeCenter.Quartz
 {
     public class QuartzCalendar : HolidayCalendar
     {

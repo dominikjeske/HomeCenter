@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Devices\" />
+    <Folder Include="Quartz\" />
   </ItemGroup>
 
 </Project>

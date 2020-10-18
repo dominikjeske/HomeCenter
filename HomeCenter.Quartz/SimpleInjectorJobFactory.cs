@@ -1,17 +1,16 @@
 ﻿using Quartz;
 using Quartz.Spi;
-using SimpleInjector;
 using System;
 
-namespace HomeCenter.Services.Quartz
+namespace HomeCenter.Quartz
 {
     public class SimpleInjectorJobFactory : IJobFactory
     {
-        private readonly Container _container;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SimpleInjectorJobFactory(Container container)
+        public SimpleInjectorJobFactory(IServiceProvider serviceProvider)
         {
-            _container = container ?? throw new ArgumentNullException(nameof(container));
+            _serviceProvider = serviceProvider;
         }
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
@@ -21,7 +20,7 @@ namespace HomeCenter.Services.Quartz
 
             try
             {
-                return new JobWrapper(bundle, _container);
+                return new JobWrapper(bundle, _serviceProvider);
             }
             catch (Exception ex)
             {

@@ -1,7 +1,7 @@
 ﻿using Quartz;
 using System;
 
-namespace HomeCenter.Model.Extensions
+namespace HomeCenter.Quartz
 {
     public static class TimeSpanExtensions
     {

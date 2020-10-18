@@ -1,20 +1,19 @@
 ﻿using Quartz;
 using Quartz.Spi;
-using SimpleInjector;
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.Quartz
+namespace HomeCenter.Quartz
 {
     internal class JobWrapper : IJob
     {
         private readonly TriggerFiredBundle _bundle;
-        private readonly Container _container;
+        private readonly IServiceProvider _serviceProvider;
 
-        public JobWrapper(TriggerFiredBundle bundle, Container container)
+        public JobWrapper(TriggerFiredBundle bundle, IServiceProvider serviceProvider)
         {
             _bundle = bundle;
-            _container = container;
+            _serviceProvider = serviceProvider;
         }
 
         protected IJob RunningJob { get; private set; }
@@ -23,7 +22,7 @@ namespace HomeCenter.Services.Quartz
         {
             try
             {
-                RunningJob = _container.GetInstance(_bundle.JobDetail.JobType) as IJob;
+                RunningJob = _serviceProvider.GetService(_bundle.JobDetail.JobType) as IJob;
                 return RunningJob.Execute(context);
             }
             catch (JobExecutionException)

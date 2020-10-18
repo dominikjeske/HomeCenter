@@ -1,9 +1,9 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
+using HomeCenter.Model.Messages.Scheduler;
 using Quartz;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Messages.Scheduler
+namespace HomeCenter.Quartz
 {
     public class ActorMessageJob : IJob
     {

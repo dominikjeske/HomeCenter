@@ -26,11 +26,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Storage.RavenDB"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Tests", "HomeCenter.Tests\HomeCenter.Tests.csproj", "{4D27E428-D799-4B31-8BBF-46B2F6CE234E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Extensions", "HomeCenter.Extensions\HomeCenter.Extensions.csproj", "{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Extensions", "HomeCenter.Extensions\HomeCenter.Extensions.csproj", "{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Assemblies", "HomeCenter.Assemblies\HomeCenter.Assemblies.csproj", "{80FE35E5-ED7C-4A22-8157-4A7E9311934C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Assemblies", "HomeCenter.Assemblies\HomeCenter.Assemblies.csproj", "{80FE35E5-ED7C-4A22-8157-4A7E9311934C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Devices", "HomeCenter.Devices\HomeCenter.Devices.csproj", "{C84451C5-B437-4E3F-B49E-C480E07E16DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Devices", "HomeCenter.Devices\HomeCenter.Devices.csproj", "{C84451C5-B437-4E3F-B49E-C480E07E16DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Quartz", "HomeCenter.Quartz\HomeCenter.Quartz.csproj", "{FAC5EEC5-B1FC-48A8-964E-918FC5C253C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,10 @@ Global
 		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C84451C5-B437-4E3F-B49E-C480E07E16DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAC5EEC5-B1FC-48A8-964E-918FC5C253C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAC5EEC5-B1FC-48A8-964E-918FC5C253C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAC5EEC5-B1FC-48A8-964E-918FC5C253C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAC5EEC5-B1FC-48A8-964E-918FC5C253C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

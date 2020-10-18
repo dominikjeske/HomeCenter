@@ -1,13 +1,14 @@
 ﻿using Quartz;
 using Quartz.Impl.Matchers;
+using Quartz.Spi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Extensions
-{
+namespace HomeCenter.Quartz
+{ 
     public static class QuartzExtensions
     {
         private const string CONTEXT = "context";
@@ -206,7 +207,7 @@ namespace HomeCenter.Model.Extensions
         /// <returns></returns>
         public static IReadOnlyList<DateTimeOffset> GetFireTimes(this ITrigger trigger, int numTimes = 10)
         {
-            return TriggerUtils.ComputeFireTimes(trigger as Quartz.Spi.IOperableTrigger, null, numTimes);
+            return TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, null, numTimes);
         }
 
         /// <summary>
