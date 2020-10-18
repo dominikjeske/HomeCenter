@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class ClassActivator
+    public class ClassActivator
     {
         private readonly IServiceProvider _serviceProvider;
 

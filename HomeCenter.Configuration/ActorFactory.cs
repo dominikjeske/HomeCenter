@@ -28,7 +28,7 @@ namespace HomeCenter.Model.Actors
                             IActorLoader typeLoader, ActorPropsRegistry actorPropsRegistry)
         {
             System = new ActorSystem();
-            Context  = new RootContext(System);
+            Context = new RootContext(System);
 
             _serviceProvider = serviceProvider;
             _actorPropsRegistry = actorPropsRegistry;

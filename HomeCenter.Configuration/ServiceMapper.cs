@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class ServiceMapper : ITypeMapper<ServiceDTO>
+    public class ServiceMapper : ITypeMapper<ServiceDTO>
     {
         private readonly DeviceActorMapper _actorMapper;
         private readonly BaseObjectMapper _baseObjectMapper;

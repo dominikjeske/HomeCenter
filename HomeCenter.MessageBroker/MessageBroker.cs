@@ -8,8 +8,8 @@ using HomeCenter.Model.Messages.Events;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Model.Messages.Scheduler;
+using HomeCenter.Model.Quartz;
 using Proto;
-using Quartz;
 using System;
 using System.Text.Json;
 using System.Threading;
@@ -21,16 +21,16 @@ namespace HomeCenter.Model.Core
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IActorFactory _actorFactory;
-        private readonly IScheduler _scheduler;
+        private readonly IActorScheduler _actorScheduler;
         private readonly MessageGenerator _messageGenerator = new MessageGenerator();
 
         private readonly ConcurrentHashSet<SubscriptionCache> _subscriptionCahce = new ConcurrentHashSet<SubscriptionCache>();
 
-        public MessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory, IScheduler scheduler)
+        public MessageBroker(IEventAggregator eventAggregator, IActorFactory actorFactory, IActorScheduler actorScheduler)
         {
             _eventAggregator = eventAggregator;
             _actorFactory = actorFactory;
-            _scheduler = scheduler;
+            _actorScheduler = actorScheduler;
         }
 
         public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
@@ -162,37 +162,27 @@ namespace HomeCenter.Model.Core
 
         public Task SendWithSimpleRepeat(ActorMessageContext message, TimeSpan interval, CancellationToken token = default)
         {
-            return _scheduler.ScheduleInterval<ActorMessageJob, ActorMessageContext>(interval, message, message.GetMessageUid(), token);
+            return _actorScheduler.SendWithSimpleRepeat(message, interval, token);
         }
 
         public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string calendar = default)
         {
-            var uid = message.GetMessageUid();
-
-            return _scheduler.ScheduleCron<ActorMessageJob, ActorMessageContext>(cronExpression, message, uid, token, calendar);
+            return _actorScheduler.SendWithCronRepeat(message, cronExpression, token);
         }
 
-        public async Task SendAfterDelay(ActorMessageContext message, TimeSpan delay, bool cancelExisting = true, CancellationToken token = default)
+        public Task SendAfterDelay(ActorMessageContext message, TimeSpan delay, bool cancelExisting = true, CancellationToken token = default)
         {
-            var uid = message.GetMessageUid();
-
-            if (cancelExisting) await _scheduler.CancelJob(uid);
-
-            await _scheduler.DelayExecution<ActorMessageJob, ActorMessageContext>(delay, message, uid, token);
+            return _actorScheduler.SendAfterDelay(message, delay, cancelExisting, token);
         }
 
-        public async Task SendAtTime(ActorMessageContext message, DateTimeOffset time, CancellationToken token = default)
+        public Task SendAtTime(ActorMessageContext message, DateTimeOffset time, CancellationToken token = default)
         {
-            var uid = message.GetMessageUid();
-
-            await _scheduler.DelayExecution<ActorMessageJob, ActorMessageContext>(time, message, uid, token);
+            return _actorScheduler.SendAtTime(message, time, token);
         }
 
-        public async Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default)
+        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default)
         {
-            var uid = message.GetMessageUid();
-
-            await _scheduler.ScheduleDailyTimeInterval<ActorMessageJob, ActorMessageContext>(time, message, uid, token);
+            return _actorScheduler.SendDailyAt(message, time, token, calendar);
         }
 
         public PID GetPID(string uid, string address = null)

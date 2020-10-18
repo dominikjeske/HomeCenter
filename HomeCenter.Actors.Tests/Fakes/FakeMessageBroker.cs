@@ -11,7 +11,6 @@ using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Model.Messages.Scheduler;
 using Microsoft.Reactive.Testing;
 using Proto;
-using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -89,11 +88,6 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         public Task<R> Request<T, R>(T message, string uid) where T : ActorMessage
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<JobKey> ScheduleInterval<M>(M message, PID actor, TimeSpan interval, CancellationToken token = default(CancellationToken)) where M : ActorMessage
         {
             throw new NotImplementedException();
         }

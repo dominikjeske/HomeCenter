@@ -2,8 +2,6 @@
 using HomeCenter.Assemblies;
 using HomeCenter.Extensions;
 using HomeCenter.Model.Adapters;
-using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.Controllers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -30,8 +28,9 @@ namespace HomeCenter.Services.Roslyn
         {
             var assemblies = new List<Result<string>>();
             var modelAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Adapter));
-            var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Controller));
-            var references = modelAssemblies.Union(servicesAssemblies).Distinct();
+            //TODO
+            //var servicesAssemblies = AssemblyHelper.GetReferencedAssemblies(typeof(Controller));
+            //var references = modelAssemblies.Union(servicesAssemblies).Distinct();
             var result = new List<Result<string>>();
 
             foreach (string adapterDictionary in Directory.GetDirectories(sourceDictionary))
@@ -39,24 +38,25 @@ namespace HomeCenter.Services.Roslyn
                 var adapterInfoPath = Path.Combine(adapterDictionary, AdapterInfoFileName);
                 if (!File.Exists(adapterInfoPath)) continue;
 
-                var adapterDescription = JsonSerializer.Deserialize<AdapterInfoDTO>(File.ReadAllText(adapterInfoPath));
-                var adapterAssembly = Path.Combine(adapterDictionary, $"{adapterDescription.Name}.dll");
-                AssemblyName currentAssembly = null;
-                if (File.Exists(adapterAssembly))
-                {
-                    currentAssembly = AssemblyName.GetAssemblyName(adapterAssembly);
-                }
+                //TODO
+                //var adapterDescription = JsonSerializer.Deserialize<AdapterInfoDTO>(File.ReadAllText(adapterInfoPath));
+                //var adapterAssembly = Path.Combine(adapterDictionary, $"{adapterDescription.Name}.dll");
+                //AssemblyName currentAssembly = null;
+                //if (File.Exists(adapterAssembly))
+                //{
+                //    currentAssembly = AssemblyName.GetAssemblyName(adapterAssembly);
+                //}
 
-                if (currentAssembly?.Version.Differ(adapterDescription.Version) ?? true)
-                {
-                    result.Add(GenerateAssembly(adapterDescription.Name, adapterDescription.Version, adapterDictionary, references,
-                                                adapterDescription.CommonReferences, generatePdb)
-                              );
-                }
-                else
-                {
-                    result.Add(Result.Ok(adapterAssembly));
-                }
+                //if (currentAssembly?.Version.Differ(adapterDescription.Version) ?? true)
+                //{
+                //    result.Add(GenerateAssembly(adapterDescription.Name, adapterDescription.Version, adapterDictionary, references,
+                //                                adapterDescription.CommonReferences, generatePdb)
+                //              );
+                //}
+                //else
+                //{
+                //    result.Add(Result.Ok(adapterAssembly));
+                //}
             }
 
             return result;

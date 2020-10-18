@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class BaseObjectMapper
+    public class BaseObjectMapper
     {
         private readonly ClassActivator _classActivator;
 

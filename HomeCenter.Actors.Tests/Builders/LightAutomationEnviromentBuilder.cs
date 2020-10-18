@@ -3,8 +3,6 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.DI;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using SimpleInjector;
@@ -118,9 +116,8 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterSingleton<DeviceActorMapper>();
             _container.RegisterSingleton<BaseObjectMapper>();
             _container.RegisterSingleton<ClassActivator>();
-            _container.RegisterSingleton<IServiceProvider, SimpleInjectorServiceProvider>();
 
-            var sm = _container.GetService<ServiceMapper>();
+            var sm = _container.GetInstance<ServiceMapper>();
 
 
             LightAutomationServiceProxy actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;

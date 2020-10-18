@@ -4,9 +4,8 @@ using HomeCenter.Model.Contracts;
 using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Services.Configuration;
+using HomeCenter.Model.Quartz;
 using Proto;
-using Quartz;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Controllers
@@ -16,14 +15,14 @@ namespace HomeCenter.Services.Controllers
     {
         private readonly StartupConfiguration _startupConfiguration;
         private readonly IActorFactory _actorFactory;
+        private readonly IActorScheduler _actorScheduler;
         private PID _configService;
-        private readonly IScheduler _scheduler;
 
-        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory, IScheduler scheduler)
+        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory, IActorScheduler actorScheduler)
         {
             _actorFactory = actorFactory;
+            _actorScheduler = actorScheduler;
             _startupConfiguration = startupConfiguration;
-            _scheduler = scheduler;
         }
 
         protected override async Task OnStarted(IContext context)
@@ -35,9 +34,10 @@ namespace HomeCenter.Services.Controllers
 
         private void StartSystemFromConfiguration(IContext context)
         {
-            _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
+            //TODO DNF
+            //_configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
 
-            MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), _configService);
+            //MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), _configService);
         }
 
         protected override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
@@ -51,13 +51,13 @@ namespace HomeCenter.Services.Controllers
 
             await _actorFactory.Context.StopAsync(_configService);
 
-            await _scheduler.Shutdown();
+            await _actorScheduler.ShutDown();
 
             await _actorFactory.Context.StopAsync(_actorFactory.GetExistingActor(nameof(Controller)));
 
             return true;
         }
 
-        private Task RunScheduler() => _scheduler.Start(Token);
+        private Task RunScheduler() => _actorScheduler.Start(Token);
     }
 }

@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
-    <PackageReference Include="Quartz" Version="3.2.0" />
+    <PackageReference Include="FastDeepCloner" Version="1.3.5" />
   </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Assemblies\HomeCenter.Assemblies.csproj" />
+    <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
     <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 

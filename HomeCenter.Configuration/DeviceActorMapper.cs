@@ -7,7 +7,7 @@ using System;
 
 namespace HomeCenter.Services.Actors
 {
-    internal class DeviceActorMapper
+    public class DeviceActorMapper
     {
         private readonly BaseObjectMapper _baseObjectMapper;
 
