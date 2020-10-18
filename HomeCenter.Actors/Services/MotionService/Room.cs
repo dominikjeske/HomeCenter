@@ -5,7 +5,7 @@ using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Services.MotionService.Model;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

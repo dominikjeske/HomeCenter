@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Messages;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System.Collections.Generic;
 
 namespace HomeCenter.Model.Core

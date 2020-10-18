@@ -2,7 +2,7 @@
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Utils.ConsoleExtentions;
+using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace HomeCenter.Runner
                     break;
 
                 case 1:
-                    cmd = new TurnOffCommand();                    
+                    cmd = new TurnOffCommand();
 
                     break;
 

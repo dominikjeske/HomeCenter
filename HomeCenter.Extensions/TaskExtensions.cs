@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Utils.Extensions
+namespace HomeCenter.Extensions
 {
     public static class TaskExtensions
     {

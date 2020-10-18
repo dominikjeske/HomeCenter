@@ -3,7 +3,7 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;

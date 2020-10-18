@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace HomeCenter.Utils.Extensions
+namespace HomeCenter.Extensions
 {
     public static class NumericExtensions
     {

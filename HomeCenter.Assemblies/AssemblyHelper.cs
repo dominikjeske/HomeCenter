@@ -1,10 +1,10 @@
-﻿using HomeCenter.Utils.Extensions;
+﻿using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace HomeCenter.Utils
+namespace HomeCenter.Assemblies
 {
     public static class AssemblyHelper
     {

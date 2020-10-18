@@ -3,7 +3,7 @@ using HomeCenter.Model.Messages;
 using HomeCenter.Model.Messages.Commands;
 using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Utils.ConsoleExtentions;
+using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace HomeCenter.Runner
 {
     public class CCToolsLampRunner : Runner
     {
-        int? pinNumber = 10;
+        private int? pinNumber = 10;
 
         public CCToolsLampRunner(string uid) : base(uid)
         {
@@ -28,7 +28,7 @@ namespace HomeCenter.Runner
 
         public override async Task RunTask(int taskId)
         {
-            if(!pinNumber.HasValue)
+            if (!pinNumber.HasValue)
             {
                 ConsoleEx.WriteWarning("Write PIN number:");
                 pinNumber = int.Parse(Console.ReadLine());
@@ -49,9 +49,11 @@ namespace HomeCenter.Runner
                     cmd = new RefreshCommand();
                     cmd.LogLevel = nameof(Microsoft.Extensions.Logging.LogLevel.Information);
                     break;
+
                 case 3:
                     cmd = new SwitchPowerStateCommand();
                     break;
+
                 case 4:
                     var inputUid = "HSPE16InputOnly_2";
                     var properyChangeEvent = PropertyChangedEvent.Create(inputUid, PowerState.StateName, false, true, new Dictionary<string, string>()
@@ -61,6 +63,7 @@ namespace HomeCenter.Runner
 
                     await MessageBroker.Publish(properyChangeEvent, inputUid);
                     return;
+
                 case 5:
                     var inputUid2 = "HSPE16InputOnly_2";
                     var properyChangeEvent2 = PropertyChangedEvent.Create(inputUid2, PowerState.StateName, true, false, new Dictionary<string, string>()
@@ -72,7 +75,7 @@ namespace HomeCenter.Runner
                     return;
             }
 
-            if(pinNumber.HasValue && pinNumber.Value < 10)
+            if (pinNumber.HasValue && pinNumber.Value < 10)
             {
                 cmd.SetProperty(MessageProperties.PinNumber, pinNumber.Value);
             }

@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using Light.GuardClauses;
 using System;
 using System.Collections.Generic;

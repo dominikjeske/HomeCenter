@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Adapters.Sony.Messages;
 using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Utils.ConsoleExtentions;
+using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.Threading.Tasks;
 
@@ -48,8 +48,9 @@ namespace HomeCenter.Runner
                 case 7:
                     MessageBroker.Send(InputSetCommand.Create("HDMI1"), Uid);
                     break;
+
                 case 8:
-                    
+
                     var command = new SonyRegisterQuery();
                     var result = await MessageBroker.Request<SonyRegisterQuery, string>(command, "Sony");
 
@@ -61,8 +62,6 @@ namespace HomeCenter.Runner
                     Console.WriteLine($"Device was registered successfully. Application hash: {result}");
                     break;
             }
-
-            
         }
     }
 }

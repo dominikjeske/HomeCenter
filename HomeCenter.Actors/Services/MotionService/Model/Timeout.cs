@@ -1,4 +1,4 @@
-﻿using HomeCenter.Utils.Extensions;
+﻿using HomeCenter.Extensions;
 using System;
 
 namespace HomeCenter.Services.MotionService.Model

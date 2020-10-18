@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Broker.Behaviors;
 using HomeCenter.Broker.Exceptions;
 using HomeCenter.Broker.Handlers;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

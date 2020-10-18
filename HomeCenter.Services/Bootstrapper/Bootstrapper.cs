@@ -1,4 +1,5 @@
-﻿using HomeCenter.Broker;
+﻿using HomeCenter.Assemblies;
+using HomeCenter.Broker;
 using HomeCenter.CodeGeneration;
 using HomeCenter.Model.Actors;
 using HomeCenter.Model.Components;
@@ -10,8 +11,6 @@ using HomeCenter.Services.Devices;
 using HomeCenter.Services.DI;
 using HomeCenter.Services.Quartz;
 using HomeCenter.Services.Roslyn;
-using HomeCenter.Utils;
-using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Quartz;
@@ -26,7 +25,7 @@ namespace HomeCenter.Services.Bootstrapper
     // TODO Add https://wakeupandcode.com/generic-host-builder-in-asp-net-core/
     //          https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert/41244169#41244169
 
-    public class Bootstrapper
+    public abstract class Bootstrapper
     {
         public Bootstrapper(Container container)
         {
@@ -114,11 +113,8 @@ namespace HomeCenter.Services.Bootstrapper
             _container.RegisterInstance(scheduler);
         }
 
-        protected virtual ILoggerProvider[] GetLogProviders()
-        {
-            return new ILoggerProvider[] { new ConsoleLogProvider() };
-        }
-
+        protected abstract ILoggerProvider[] GetLogProviders();
+        
         protected virtual void ConfigureLoggerFactory(ILoggerFactory loggerFacory)
         {
         }

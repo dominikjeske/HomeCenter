@@ -11,7 +11,7 @@ using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using Proto;
 using System;
 using System.Collections.Generic;

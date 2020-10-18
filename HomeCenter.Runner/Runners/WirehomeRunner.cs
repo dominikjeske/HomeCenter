@@ -40,7 +40,7 @@ namespace HomeCenter.Runner
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                _bootstrapper = new Bootstrapper(container);
+                _bootstrapper = new RaspbianBootstrapper(container);
             }
             else
             {

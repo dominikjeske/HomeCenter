@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 
 namespace HomeCenter.Tests.Helpers
 {

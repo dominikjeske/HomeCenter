@@ -1,4 +1,4 @@
-﻿using HomeCenter.Utils.Extensions;
+﻿using HomeCenter.Extensions;
 using System.Collections.Generic;
 
 namespace HomeCenter.Broker

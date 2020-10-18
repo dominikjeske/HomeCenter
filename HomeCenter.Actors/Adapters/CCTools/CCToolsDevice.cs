@@ -9,7 +9,7 @@ using HomeCenter.Model.Messages.Commands.Service;
 using HomeCenter.Model.Messages.Events.Device;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;

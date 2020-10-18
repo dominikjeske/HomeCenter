@@ -2,6 +2,7 @@
 using HomeCenter.Services.Bootstrapper;
 using HomeCenter.Services.Controllers;
 using HomeCenter.Storage.RavenDB;
+using HomeCenter.Utils.LogProviders;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Exceptions.Database;
@@ -18,6 +19,7 @@ using System.Reactive.Linq;
 
 namespace HomeCenter.Runner
 {
+
     public class FakeBootstrapper : Bootstrapper
     {
         public FakeBootstrapper(Container container) : base(container)
@@ -27,8 +29,7 @@ namespace HomeCenter.Runner
 
         protected override ILoggerProvider[] GetLogProviders()
         {
-            var providers = base.GetLogProviders().ToList();
-            return providers.ToArray();
+            return new ILoggerProvider[] { new ConsoleLogProvider() };
         }
 
         public static IDocumentStore EnsureExists(IDocumentStore store)

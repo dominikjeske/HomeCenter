@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
+    <ProjectReference Include="..\HomeCenter.Extensions\HomeCenter.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

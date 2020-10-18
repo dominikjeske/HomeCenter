@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Utils.Extensions
+namespace HomeCenter.Extensions
 {
     public static class HttpContentExtensions
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace HomeCenter.Utils.Extensions
+namespace HomeCenter.Extensions
 {
     public static class ByteExtensions
     {

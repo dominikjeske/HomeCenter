@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeCenter.Utils.Extensions
+namespace HomeCenter.Extensions
 {
     public static class DateTimeExtensions
     {

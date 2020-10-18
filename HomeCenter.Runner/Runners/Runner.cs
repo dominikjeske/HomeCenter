@@ -1,12 +1,12 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Utils.ConsoleExtentions;
+using HomeCenter.Runner.ConsoleExtentions;
 using SimpleInjector;
 using System;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    public abstract class Runner 
+    public abstract class Runner
     {
         protected string[] _tasks;
         protected Container Container;
@@ -23,10 +23,8 @@ namespace HomeCenter.Runner
 
         public virtual void RunnerReset()
         {
-
         }
 
-       
         public void SetContainer(Container container)
         {
             Container = container;

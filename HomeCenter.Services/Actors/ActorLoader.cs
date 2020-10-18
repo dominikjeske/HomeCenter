@@ -1,4 +1,6 @@
-﻿using HomeCenter.Model.Actors;
+﻿using HomeCenter.Assemblies;
+using HomeCenter.Extensions;
+using HomeCenter.Model.Actors;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Model.Areas;
 using HomeCenter.Model.Calendars;
@@ -6,8 +8,6 @@ using HomeCenter.Model.Components;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Exceptions;
 using HomeCenter.Model.Triggers.Calendars;
-using HomeCenter.Utils;
-using HomeCenter.Utils.Extensions;
 using Proto;
 using Quartz;
 using System;

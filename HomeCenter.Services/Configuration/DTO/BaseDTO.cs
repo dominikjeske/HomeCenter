@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;

@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Assemblies;
+using HomeCenter.Extensions;
 using HomeCenter.Model.Adapters;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.Controllers;
-using HomeCenter.Utils;
-using HomeCenter.Utils.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;

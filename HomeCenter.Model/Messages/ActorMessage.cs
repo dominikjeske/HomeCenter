@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System;
 using System.Text.Json.Serialization;
 

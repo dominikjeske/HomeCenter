@@ -1,7 +1,7 @@
 ﻿using HomeCenter.Broker;
 using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages.Events;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

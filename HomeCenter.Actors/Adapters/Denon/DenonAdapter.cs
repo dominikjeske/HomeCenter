@@ -7,7 +7,7 @@ using HomeCenter.Model.Messages.Commands.Device;
 using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;
 using System;

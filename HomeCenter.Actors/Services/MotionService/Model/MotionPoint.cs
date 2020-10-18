@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 

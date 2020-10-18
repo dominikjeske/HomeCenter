@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Model.Core;
-using HomeCenter.Utils.ConsoleExtentions;
+using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -55,7 +55,7 @@ namespace HomeCenter.Utils.LogProviders
         public class CustomConsoleLogger : ILogger
         {
             private readonly string _categoryName;
-            
+
             private readonly ConsoleLogProvider _consoleLogProvider;
 
             public CustomConsoleLogger(string categoryName, ConsoleLogProvider consoleLogProvider)
@@ -71,7 +71,7 @@ namespace HomeCenter.Utils.LogProviders
                     return;
                 }
 
-               // _consoleLogProvider.Log(logLevel, $"{formatter(state, exception)}");
+                // _consoleLogProvider.Log(logLevel, $"{formatter(state, exception)}");
             }
 
             public bool IsEnabled(LogLevel logLevel)

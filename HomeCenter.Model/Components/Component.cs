@@ -10,7 +10,7 @@ using HomeCenter.Model.Messages.Events.Service;
 using HomeCenter.Model.Messages.Queries.Device;
 using HomeCenter.Model.Messages.Scheduler;
 using HomeCenter.Model.Triggers;
-using HomeCenter.Utils.Extensions;
+using HomeCenter.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
