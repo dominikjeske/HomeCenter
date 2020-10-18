@@ -5,7 +5,7 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     internal class RoomBuilder
     {
-        public Dictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
+        public Dictionary<string, object> Properties { get; private set; } = new Dictionary<string, object>();
         public Dictionary<string, DetectorDescription> Detectors { get; private set; } = new Dictionary<string, DetectorDescription>();
 
         public string Name { get; private set; }
@@ -31,7 +31,7 @@ namespace HomeCenter.Services.MotionService.Tests
             return this;
         }
 
-        public RoomBuilder WithProperty(string propertyKey, string propertyValue)
+        public RoomBuilder WithProperty(string propertyKey, object propertyValue)
         {
             Properties.Add(propertyKey, propertyValue);
 

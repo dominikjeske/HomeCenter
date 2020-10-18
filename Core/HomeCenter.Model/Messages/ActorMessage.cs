@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace HomeCenter.Model.Messages
 {
-    public class ActorMessage : BaseObject, IEquatable<ActorMessage>
+    public abstract class ActorMessage : BaseObject, IEquatable<ActorMessage>
     {
         [JsonIgnore]
         public Proto.IContext Context { get; set; }

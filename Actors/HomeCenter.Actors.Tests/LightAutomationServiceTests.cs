@@ -578,7 +578,7 @@ namespace HomeCenter.Services.MotionService.Tests
             builder.WithRoom(new RoomBuilder(Rooms.Kitchen).WithDetector(Detectors.kitchenDetector, new List<string> { Detectors.hallwayDetectorToilet }));
             builder.WithRoom(new RoomBuilder(Rooms.Livingroom).WithDetector(Detectors.livingRoomDetector, new List<string> { Detectors.balconyDetector, Detectors.hallwayDetectorLivingRoom }));
             builder.WithRoom(new RoomBuilder(Rooms.Staircase).WithDetector(Detectors.staircaseDetector, new List<string> { Detectors.hallwayDetectorToilet }));
-            builder.WithRoom(new RoomBuilder(Rooms.Toilet).WithDetector(Detectors.toiletDetector, new List<string> { Detectors.hallwayDetectorToilet }).WithProperty(MotionProperties.MaxPersonCapacity, "1"));
+            builder.WithRoom(new RoomBuilder(Rooms.Toilet).WithDetector(Detectors.toiletDetector, new List<string> { Detectors.hallwayDetectorToilet }).WithProperty(MotionProperties.MaxPersonCapacity, 1));
 
             return builder;
         }

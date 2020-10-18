@@ -63,7 +63,8 @@ namespace HomeCenter.Services.MotionService.Tests
             var area = new AttachedPropertyDTO
             {
                 AttachedActor = roomBuilder.Name,
-                Properties = new Dictionary<string, object>()
+                Properties = new Dictionary<string, object>(),
+                Service = "MotionService"
             };
 
             if (!string.IsNullOrWhiteSpace(_workingTime))
@@ -91,6 +92,7 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 AttachedActor = motionSensor,
                 AttachedArea = area,
+                Service = "MotionService",
                 Properties = new Dictionary<string, object>
                 {
                     [MotionProperties.Neighbors] = ToJsonElement(string.Join(", ", neighbors)),
@@ -99,7 +101,7 @@ namespace HomeCenter.Services.MotionService.Tests
             });
         }
 
-        private static JsonElement ToJsonElement(string motionSensor)
+        private static JsonElement ToJsonElement(object motionSensor)
         {
             return JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(motionSensor));
         }

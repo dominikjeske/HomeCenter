@@ -54,7 +54,7 @@ namespace HomeCenter.Model.Actors
 
                 return Behavior.ReceiveAsync(context);
             }
-            catch (Exception)
+            catch (Exception rr)
             {
                 throw;
             }

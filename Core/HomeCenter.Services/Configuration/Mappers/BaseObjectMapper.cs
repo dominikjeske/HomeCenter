@@ -1,8 +1,9 @@
-﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Extensions;
+﻿using HomeCenter.Broker;
+using HomeCenter.Model.Core;
 using HomeCenter.Model.Messages;
 using HomeCenter.Services.Configuration.DTO;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace HomeCenter.Services.Actors
@@ -26,8 +27,6 @@ namespace HomeCenter.Services.Actors
             return result;
         }
 
-        
-
         public T Map<T>(BaseDTO config, T instance) where T : BaseObject
         {
             instance.SetProperty(MessageProperties.Uid, config.Uid);
@@ -36,6 +35,17 @@ namespace HomeCenter.Services.Actors
 
             return instance;
         }
+
+        //public IPropertySource GetProperties<T>(BaseDTO config)
+        //{
+
+
+        //    instance.SetProperty(MessageProperties.Uid, config.Uid);
+        //    instance.SetProperty(MessageProperties.Type, config.Type);
+        //    SetProperties(config, instance);
+
+        //    return instance;
+        //}
 
         public BaseObject Map(BaseDTO config, Type destinationType)
         {
@@ -81,7 +91,15 @@ namespace HomeCenter.Services.Actors
                     else if (element.ValueKind == JsonValueKind.String)
                     {
                         var stringValue = element.GetString();
-                        if (TimeSpan.TryParse(stringValue, out TimeSpan timeValue))
+                        if (int.TryParse(stringValue, out int intValue))
+                        {
+                            instance.SetProperty(property.Key, intValue);
+                        }
+                        else if (double.TryParse(stringValue, out double doubleValue))
+                        {
+                            instance.SetProperty(property.Key, doubleValue);
+                        }
+                        else if (TimeSpan.TryParse(stringValue, out TimeSpan timeValue))
                         {
                             instance.SetProperty(property.Key, timeValue);
                         }
@@ -114,5 +132,4 @@ namespace HomeCenter.Services.Actors
             }
         }
     }
-
 }
