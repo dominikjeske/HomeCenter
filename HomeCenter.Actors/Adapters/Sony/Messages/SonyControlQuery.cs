@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using HomeCenter.Abstractions;
+using HomeCenter.Messages.Queries.Services;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {

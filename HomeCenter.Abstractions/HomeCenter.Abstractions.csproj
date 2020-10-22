@@ -22,4 +22,22 @@
     <ProjectReference Include="..\HomeCenter.Extensions\HomeCenter.Extensions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="State.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Update="Defaults\Capabilities.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Update="Defaults\ReadWriteMode.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Update="Defaults\StateProperties.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+    <Compile Update="Defaults\ValueUnit.cs">
+      <Generator>MSBuild:GenerateCodeFromAttributes</Generator>
+    </Compile>
+  </ItemGroup>
+
 </Project>

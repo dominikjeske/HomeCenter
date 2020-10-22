@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CSharpFunctionalExtensions;
 
 namespace HomeCenter.Services.MotionService.Model
 {

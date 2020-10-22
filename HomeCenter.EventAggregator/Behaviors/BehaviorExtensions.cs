@@ -2,7 +2,7 @@
 
 namespace HomeCenter.EventAggregator.Behaviors
 {
-    internal static class BehaviorExtensions
+    public static class BehaviorExtensions
     {
         public static BehaviorChain WithRetry(this BehaviorChain chain, int retryNumber = 3)
         {

@@ -1,4 +1,7 @@
-﻿namespace HomeCenter.Services.MotionService.Tests
+﻿using HomeCenter.EventAggregator;
+using HomeCenter.Messages.Events.Device;
+
+namespace HomeCenter.Actors.Tests.Helpers
 {
     public class MotionEnvelope : MessageEnvelope<MotionEvent>
     {

@@ -1,7 +1,7 @@
-﻿using HomeCenter.Model.Capabilities.Constants;
+﻿using HomeCenter.Abstractions.Defaults;
 using System.Collections.Generic;
 
-namespace HomeCenter.Model.Capabilities
+namespace HomeCenter.Abstractions
 {
     public abstract class StateBase : BaseObject
     {

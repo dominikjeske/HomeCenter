@@ -1,5 +1,6 @@
 using HomeCenter.ActorCompiler;
 using HomeCenter.Configuration;
+using HomeCenter.Core;
 using HomeCenter.MessageBroker;
 using HomeCenter.Quartz;
 using Microsoft.AspNetCore.Hosting;

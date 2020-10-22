@@ -16,7 +16,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
-    <ProjectReference Include="..\HomeCenter.Assemblies\HomeCenter.Assemblies.csproj" />
+    <ProjectReference Include="..\HomeCenter.Actors.Core\HomeCenter.Actors.Core.csproj" />
     <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
+    <ProjectReference Include="..\HomeCenter.Extensions.Assemblies\HomeCenter.Extensions.Assemblies.csproj" />
+    <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
   </ItemGroup>
 </Project>

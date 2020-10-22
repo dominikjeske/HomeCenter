@@ -16,40 +16,50 @@ namespace HomeCenter.CodeGeneration
 
         public RichGenerationResult Generate(TransformationContext context)
         {
-            _context = context;
-            var classSyntax = (ClassDeclarationSyntax)context.ProcessingNode;
-            var model = context.SemanticModel;
-            ClassDeclarationSyntax classDeclaration = null;
-
-            var classSemantic = model.GetDeclaredSymbol(classSyntax);
-            var className = $"{classSemantic.Name}Proxy";
-
             try
             {
-                classDeclaration = GenerateClass(classSemantic, className);
 
-                classDeclaration = AddReciveMapMethod(classSyntax, model, classDeclaration);
+                _context = context;
+                var classSyntax = (ClassDeclarationSyntax)context.ProcessingNode;
+                var model = context.SemanticModel;
+                ClassDeclarationSyntax classDeclaration = null;
 
-                classDeclaration = AddConstructor(classDeclaration, classSemantic, className);
+                var classSemantic = model.GetDeclaredSymbol(classSyntax);
+                var className = $"{classSemantic.Name}Proxy";
 
-                classDeclaration = AddSubscriptions(classSyntax, model, classDeclaration);
+                try
+                {
+                    classDeclaration = GenerateClass(classSemantic, className);
+
+                    classDeclaration = AddReciveMapMethod(classSyntax, model, classDeclaration);
+
+                    classDeclaration = AddConstructor(classDeclaration, classSemantic, className);
+
+                    classDeclaration = AddSubscriptions(classSyntax, model, classDeclaration);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e.ToString(), "");
+                    classDeclaration = ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
+                }
+
+                var namespaveDeclaration = AddNamespace(classSyntax, classDeclaration);
+
+                var result = new RichGenerationResult
+                {
+                    Members = List<MemberDeclarationSyntax>().Add(namespaveDeclaration)
+                };
+
+                result.Usings = GenerateUsingStatements();
+
+                return result;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Error(e.ToString(), "");
-                classDeclaration = ClassDeclaration(className).WithCloseBraceToken(Token(TriviaList(Comment($"//{e}")), SyntaxKind.CloseBraceToken, TriviaList()));
+                Logger.Error(ex.ToString(), "");
+
+                return new RichGenerationResult();
             }
-
-            var namespaveDeclaration = AddNamespace(classSyntax, classDeclaration);
-
-            var result = new RichGenerationResult
-            {
-                Members = List<MemberDeclarationSyntax>().Add(namespaveDeclaration)
-            };
-
-            result.Usings = GenerateUsingStatements();
-
-            return result;
         }
 
         private SyntaxList<UsingDirectiveSyntax> GenerateUsingStatements()
@@ -58,7 +68,7 @@ namespace HomeCenter.CodeGeneration
 
             _usingSyntax.Add(UsingDirective(IdentifierName("System")));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Threading")), IdentifierName("Tasks"))));
-            _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Model")), IdentifierName("Core"))));
+            _usingSyntax.Add(UsingDirective(QualifiedName(IdentifierName("HomeCenter"), IdentifierName("Abstractions"))));
             _usingSyntax.Add(UsingDirective(QualifiedName(QualifiedName(IdentifierName("Microsoft"), IdentifierName("Extensions")), IdentifierName("Logging"))));
 
             foreach (var usingSyntax in _usingSyntax)
@@ -297,7 +307,7 @@ namespace HomeCenter.CodeGeneration
 
         public StatementSyntax FillContextData()
         {
-            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("HomeCenter.Model.Messages.ActorMessage"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
+            return IfStatement(IsPatternExpression(IdentifierName("msg"), DeclarationPattern(IdentifierName("HomeCenter.Abstractions.ActorMessage"), SingleVariableDesignation(Identifier("ic")))), Block(SingletonList<StatementSyntax>(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ic"), IdentifierName("Context")), IdentifierName("context"))))));
         }
 
         private StatementSyntax GetQueryInvocationBody(string handlerName, string paramName, string returnType)

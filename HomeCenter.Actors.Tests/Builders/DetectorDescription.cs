@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Builders
 {
     internal class DetectorDescription
     {

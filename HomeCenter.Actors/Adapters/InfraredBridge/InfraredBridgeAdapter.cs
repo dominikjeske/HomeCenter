@@ -2,6 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Capabilities;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Commands.Service;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Messages.Queries.Device;
+using HomeCenter.Messages.Queries.Service;
+using Proto;
 
 namespace HomeCenter.Adapters.InfraredBridge
 {

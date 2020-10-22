@@ -1,11 +1,18 @@
-﻿using Microsoft.Reactive.Testing;
-using Proto;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Helpers;
+using HomeCenter.EventAggregator;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Messages.Queries.Device;
+using HomeCenter.Services.MotionService.Tests;
+using Microsoft.Reactive.Testing;
+using Proto;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Fakes
 {
     public class FakeMessageBroker : IMessageBroker
     {

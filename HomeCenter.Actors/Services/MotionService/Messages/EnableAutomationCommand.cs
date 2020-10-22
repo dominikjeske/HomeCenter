@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Services.MotionService.Commands
+﻿using HomeCenter.Abstractions;
+
+namespace HomeCenter.Services.MotionService.Commands
 {
     public class EnableAutomationCommand : Command
     {

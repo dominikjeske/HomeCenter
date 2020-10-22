@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using HomeCenter.Abstractions;
+using HomeCenter.Messages.Commands.Service;
 
 namespace HomeCenter.Adapters.Samsung.Messages
 {

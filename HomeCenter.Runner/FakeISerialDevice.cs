@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Model.Contracts;
 using System;
 using System.Reactive.Disposables;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {

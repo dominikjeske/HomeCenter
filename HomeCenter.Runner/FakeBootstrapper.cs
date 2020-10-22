@@ -14,8 +14,10 @@ using Serilog.Exceptions.Core;
 using Serilog.Exceptions.Filters;
 using SimpleInjector;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {

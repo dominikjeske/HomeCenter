@@ -6,7 +6,7 @@ using System.Linq;
 namespace HomeCenter.Storage.RavenDB
 {
     /// <summary>
-    /// A wrapper class for <see cref="Events.LogEvent"/> that is used to store as a document in RavenDB
+    /// A wrapper class for <see cref="LogEvent"/> that is used to store as a document in RavenDB
     /// </summary>
     public class LogEntry
     {
@@ -67,7 +67,7 @@ namespace HomeCenter.Storage.RavenDB
         public object Exception { get; set; }
 
         /// <summary>
-        /// Properties associated with the event, including those presented in <see cref="Events.LogEvent.MessageTemplate"/>.
+        /// Properties associated with the event, including those presented in <see cref="Serilog.Events.MessageTemplate"/>.
         /// </summary>
         public IDictionary<string, object> Properties { get; set; }
     }

@@ -1,9 +1,11 @@
-﻿using HomeCenter.Services.Configuration.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.MotionService;
+using HomeCenter.Services.MotionService.Tests;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Builders
 {
     internal class LightAutomationServiceBuilder
     {

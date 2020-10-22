@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Abstractions;
+using HomeCenter.EventAggregator;
 using HomeCenter.Model.Extensions;
 using Microsoft.Extensions.Logging;
 using Proto;

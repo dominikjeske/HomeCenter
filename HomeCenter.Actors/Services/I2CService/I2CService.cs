@@ -1,5 +1,11 @@
+using CodeGeneration.Roslyn;
 using HomeCenter.CodeGeneration;
 using System;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Messages.Commands.Service;
+using HomeCenter.Messages.Queries.Services;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.Networking
 {

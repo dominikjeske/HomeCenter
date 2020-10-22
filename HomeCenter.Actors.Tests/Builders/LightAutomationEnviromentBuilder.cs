@@ -1,14 +1,20 @@
-﻿using HomeCenter.Services.Actors;
-using HomeCenter.Services.Configuration.DTO;
-using Microsoft.Extensions.Logging;
-using Microsoft.Reactive.Testing;
-using SimpleInjector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Fakes;
+using HomeCenter.Actors.Tests.Helpers;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Services.Actors;
+using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.MotionService;
+using HomeCenter.Services.MotionService.Tests;
+using Microsoft.Extensions.Logging;
+using Microsoft.Reactive.Testing;
+using SimpleInjector;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Builders
 {
     internal class LightAutomationEnviromentBuilder
     {

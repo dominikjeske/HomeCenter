@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using HomeCenter.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Devices
 {

@@ -1,7 +1,8 @@
-﻿using Microsoft.Reactive.Testing;
-using System.Reactive.Concurrency;
+﻿using System.Reactive.Concurrency;
+using HomeCenter.Abstractions;
+using Microsoft.Reactive.Testing;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Helpers
 {
     public class TestConcurrencyProvider : IConcurrencyProvider
     {

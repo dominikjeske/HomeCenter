@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Services.MotionService.Tests
+﻿namespace HomeCenter.Actors.Tests.Helpers
 {
     public static class Rooms
     {

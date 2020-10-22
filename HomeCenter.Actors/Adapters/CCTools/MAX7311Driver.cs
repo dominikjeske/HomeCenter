@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HomeCenter.Extensions;
 
 namespace HomeCenter.Adapters.Common
 {

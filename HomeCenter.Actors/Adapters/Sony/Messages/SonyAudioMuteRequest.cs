@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Adapters.Sony.Messages
+﻿using System.Text.Json.Serialization;
+
+namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyAudioMuteRequest
     {

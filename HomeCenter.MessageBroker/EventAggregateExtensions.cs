@@ -1,6 +1,8 @@
-﻿using System;
+﻿using HomeCenter.EventAggregator;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HomeCenter.EventAggregator.Behaviors;
 
 namespace HomeCenter.Model.Extensions
 {

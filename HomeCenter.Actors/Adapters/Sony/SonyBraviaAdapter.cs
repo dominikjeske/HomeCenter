@@ -3,6 +3,13 @@ using HomeCenter.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Capabilities;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Commands.Service;
+using HomeCenter.Messages.Queries.Device;
+using Proto;
 
 namespace HomeCenter.Adapters.Sony
 {

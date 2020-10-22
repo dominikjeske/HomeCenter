@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Abstractions;
+using HomeCenter.EventAggregator;
 using HomeCenter.MessageBroker;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace HomeCenter.MessageBroker
             builder.ConfigureServices(s =>
             {
                 s.AddSingleton<IMessageBroker, MessageBroker>();
-                s.AddSingleton<IEventAggregator, EventAggregator>();
+                s.AddSingleton<IEventAggregator, EventAggregator.EventAggregator>();
             });
         }
     }

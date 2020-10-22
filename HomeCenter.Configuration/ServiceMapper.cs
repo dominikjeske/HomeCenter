@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
 using HomeCenter.Services.Configuration.DTO;
 using Proto;
 using System;

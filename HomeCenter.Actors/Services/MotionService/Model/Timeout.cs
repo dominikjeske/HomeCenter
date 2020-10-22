@@ -1,4 +1,5 @@
 ﻿using System;
+using HomeCenter.Extensions;
 
 namespace HomeCenter.Services.MotionService.Model
 {

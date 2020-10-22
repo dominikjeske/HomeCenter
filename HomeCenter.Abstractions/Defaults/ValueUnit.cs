@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Capabilities.Constants
+﻿namespace HomeCenter.Abstractions
 {
     public static class ValueUnit
     {

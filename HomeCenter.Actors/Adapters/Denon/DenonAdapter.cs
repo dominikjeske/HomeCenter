@@ -2,6 +2,13 @@
 using HomeCenter.CodeGeneration;
 using System;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Capabilities;
+using HomeCenter.Extensions;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Queries.Device;
+using Proto;
 
 namespace HomeCenter.Adapters.Denon
 {

@@ -1,9 +1,9 @@
-﻿using Microsoft.Reactive.Testing;
-using System;
+﻿using System;
 using System.Linq;
-using System.Reactive.Linq;
+using HomeCenter.Services.MotionService.Tests;
+using Microsoft.Reactive.Testing;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Helpers
 {
     public static class TestExtensions
     {

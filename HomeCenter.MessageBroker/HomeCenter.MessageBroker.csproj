@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -9,8 +9,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
+    <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
   </ItemGroup>
   
 </Project>

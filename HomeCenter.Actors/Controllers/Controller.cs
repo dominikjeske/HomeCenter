@@ -1,5 +1,11 @@
 ﻿using HomeCenter.CodeGeneration;
+using HomeCenter.Services.Controllers;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Messages.Events.Service;
+using HomeCenter.Messages.Queries;
+using Proto;
 
 namespace HomeCenter.Actors.Controllers
 {

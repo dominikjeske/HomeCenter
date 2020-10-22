@@ -1,4 +1,8 @@
-﻿namespace HomeCenter.Adapters.PC.Messages
+﻿using System.Text.Json;
+using HomeCenter.Abstractions;
+using HomeCenter.Messages.Commands.Service;
+
+namespace HomeCenter.Adapters.PC.Messages
 {
     public class ComputerCommand : HttpCommand, IFormatableMessage<ComputerCommand>
     {

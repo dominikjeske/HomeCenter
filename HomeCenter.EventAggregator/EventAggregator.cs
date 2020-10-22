@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.EventAggregator
 {
-    internal sealed class EventAggregator : IEventAggregator, IDisposable
+    public sealed class EventAggregator : IEventAggregator, IDisposable
     {
         private const int DEFAULT_TIMEOUT = 20000;
 

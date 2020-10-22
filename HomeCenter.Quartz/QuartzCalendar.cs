@@ -1,5 +1,6 @@
 ﻿using Quartz.Impl.Calendar;
 using System;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Quartz
 {

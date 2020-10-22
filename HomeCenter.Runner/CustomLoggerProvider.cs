@@ -2,6 +2,7 @@
 using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using System;
+using Raven.Client.Util;
 
 namespace HomeCenter.Utils.LogProviders
 {

@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.Services.MotionService
+﻿using Microsoft.Extensions.Logging;
+
+namespace HomeCenter.Services.MotionService
 {
     // TODO add unit test for unique number
     public static class MoveType

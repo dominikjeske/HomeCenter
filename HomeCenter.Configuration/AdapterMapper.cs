@@ -2,6 +2,7 @@
 using HomeCenter.Services.Configuration.DTO;
 using Proto;
 using System;
+using HomeCenter.Actors.Core;
 
 namespace HomeCenter.Services.Actors
 {

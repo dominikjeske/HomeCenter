@@ -1,5 +1,8 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
+using HomeCenter.Abstractions;
+using HomeCenter.Extensions;
+using HomeCenter.Messages.Queries.Services;
 
 namespace HomeCenter.Adapters.Denon.Messages
 {

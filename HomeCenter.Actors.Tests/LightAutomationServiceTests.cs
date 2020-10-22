@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Builders;
+using HomeCenter.Actors.Tests.Helpers;
 
 namespace HomeCenter.Services.MotionService.Tests
 {

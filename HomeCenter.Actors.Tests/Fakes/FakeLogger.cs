@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
+using HomeCenter.Services.MotionService.Tests;
+using Microsoft.Extensions.Logging;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Fakes
 {
     public class FakeLogger<T> : ILogger<T>, IDisposable
     {

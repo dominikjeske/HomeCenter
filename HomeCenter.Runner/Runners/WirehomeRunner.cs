@@ -4,9 +4,11 @@ using HomeCenter.Services.Bootstrapper;
 using Microsoft.Extensions.Logging;
 using SimpleInjector;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using HomeCenter.EventAggregator;
 
 namespace HomeCenter.Runner
 {

@@ -1,10 +1,14 @@
-﻿using Microsoft.Reactive.Testing;
-using Proto;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Fakes;
+using HomeCenter.Messages.Queries.Services;
+using HomeCenter.Services.MotionService.Tests;
+using Microsoft.Reactive.Testing;
+using Proto;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Helpers
 {
     internal class ActorEnvironment : IDisposable
     {

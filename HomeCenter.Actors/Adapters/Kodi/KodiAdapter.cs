@@ -5,6 +5,12 @@ using HomeCenter.Adapters.PC.Model;
 using HomeCenter.CodeGeneration;
 using System;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Capabilities;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Queries.Device;
+using Proto;
 
 namespace HomeCenter.Adapters.Kodi
 {

@@ -1,10 +1,17 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using CodeGeneration.Roslyn;
+using HomeCenter.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Messages.Commands.Service;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Messages.Queries.Service;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.Networking
 {
@@ -25,7 +32,9 @@ namespace HomeCenter.Services.Networking
             await base.OnStarted(context);
 
             _serialDevice.Init();
-            _disposeContainer.Add(_serialDevice.Subscribe(Handle));
+            
+            //TODO DNF
+            //_disposeContainer.Add(_serialDevice.Subscribe(System.Reflection.Metadata.Handle));
             _disposeContainer.Add(_serialDevice);
         }
 

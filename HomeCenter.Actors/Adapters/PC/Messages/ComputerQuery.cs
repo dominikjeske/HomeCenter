@@ -1,4 +1,8 @@
-﻿namespace HomeCenter.Adapters.PC.Messages
+﻿using System.Text.Json;
+using HomeCenter.Abstractions;
+using HomeCenter.Messages.Queries.Services;
+
+namespace HomeCenter.Adapters.PC.Messages
 {
     public class ComputerQuery : HttpPostQuery, IFormatableMessage<ComputerQuery>
     {

@@ -3,6 +3,7 @@ using HomeCenter.Quartz;
 using Microsoft.AspNetCore.Hosting;
 using Quartz;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 
 [assembly: HostingStartup(typeof(QuartzHosting))]
 

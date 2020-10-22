@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using HomeCenter.Services.MotionService;
+using HomeCenter.Services.MotionService.Tests;
 
-namespace HomeCenter.Services.MotionService.Tests
+namespace HomeCenter.Actors.Tests.Builders
 {
     internal class RoomBuilder
     {

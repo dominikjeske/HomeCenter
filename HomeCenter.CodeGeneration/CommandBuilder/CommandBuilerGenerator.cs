@@ -28,7 +28,7 @@ namespace HomeCenter.CodeGeneration
                 classDeclaration = GenerateClass(classSemantic, className);
 
                 classDeclaration = AddPublish(classSyntax, model, classDeclaration, "PublishEvent", "Event");
-                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration, "HomeCenter.Model.Messages.Commands.Command", "CreateCommand", "Command");
+                classDeclaration = AddBuildMethod(classSyntax, model, classDeclaration, "Abstractions.Command", "CreateCommand", "Command");
             }
             catch (Exception e)
             {
@@ -58,17 +58,17 @@ namespace HomeCenter.CodeGeneration
 
         private ClassDeclarationSyntax AddPublish(ClassDeclarationSyntax classSyntax, SemanticModel model, ClassDeclarationSyntax classDeclaration, string methodName, string typeName)
         {
-            var methodDeclaration = MethodDeclaration(GenericName(Identifier("System.Threading.Tasks.Task")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName("HomeCenter.Model.Messages.Events.Event")))), Identifier(methodName))
+            var methodDeclaration = MethodDeclaration(GenericName(Identifier("System.Threading.Tasks.Task")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName("Abstractions.Event")))), Identifier(methodName))
                                            .WithModifiers(TokenList(new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword) }))
                                            .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
                                            {
-                                                       Parameter(Identifier("source")).WithType(IdentifierName("ActorMessage")),
+                                                       Parameter(Identifier("source")).WithType(IdentifierName("Abstractions.ActorMessage")),
                                                        Token(SyntaxKind.CommaToken),
-                                                       Parameter(Identifier("destination")).WithType(IdentifierName("ActorMessage")),
+                                                       Parameter(Identifier("destination")).WithType(IdentifierName("Abstractions.ActorMessage")),
                                                        Token(SyntaxKind.CommaToken),
-                                                       Parameter(Identifier("messageBroker")).WithType(IdentifierName("HomeCenter.Model.Core.IMessageBroker")),
+                                                       Parameter(Identifier("messageBroker")).WithType(IdentifierName("Abstractions.IMessageBroker")),
                                                        Token(SyntaxKind.CommaToken),
-                                                       Parameter(Identifier("routingFilter")).WithType(IdentifierName("HomeCenter.Broker.RoutingFilter"))
+                                                       Parameter(Identifier("routingFilter")).WithType(IdentifierName("EventAggregator.RoutingFilter"))
                                             })))
                                             .WithBody(Block(
                                                 GenPublishIf(classSyntax, model, typeName),
@@ -98,10 +98,62 @@ namespace HomeCenter.CodeGeneration
 
         public StatementSyntax GenPublishLastReturn()
         {
-            return Block(LocalDeclarationStatement(VariableDeclaration(SyntaxFactory.IdentifierName("var")).WithVariables(SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("ev")).WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.QualifiedName(SyntaxFactory.QualifiedName(SyntaxFactory.QualifiedName(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("HomeCenter"), SyntaxFactory.IdentifierName("Model")), SyntaxFactory.IdentifierName("Messages")), SyntaxFactory.IdentifierName("Events")), SyntaxFactory.IdentifierName("Event"))).WithArgumentList(SyntaxFactory.ArgumentList())))))),
-                SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName("ev"), SyntaxFactory.IdentifierName("SetProperties"))).WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList<ArgumentSyntax>(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("source")))))), SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName("ev"), SyntaxFactory.IdentifierName("SetProperties"))).WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SingletonSeparatedList<ArgumentSyntax>(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("destination")))))),
-                ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("messageBroker"), IdentifierName("Publish"))).WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName("ev")), Token(SyntaxKind.CommaToken), Argument(IdentifierName("routingFilter")) }))))),
-                ReturnStatement(IdentifierName("ev")));
+            return Block(
+                    LocalDeclarationStatement(
+                        VariableDeclaration(
+                            IdentifierName("var"))
+                        .WithVariables(
+                            SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                VariableDeclarator(
+                                    Identifier("ev"))
+                                .WithInitializer(
+                                    EqualsValueClause(
+                                        ObjectCreationExpression(
+                                            QualifiedName(
+                                                IdentifierName("Abstractions"),
+                                                IdentifierName("Event")))
+                                        .WithArgumentList(
+                                            ArgumentList())))))),
+                    ExpressionStatement(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("ev"),
+                                IdentifierName("SetProperties")))
+                        .WithArgumentList(
+                            ArgumentList(
+                                SingletonSeparatedList<ArgumentSyntax>(
+                                    Argument(
+                                        IdentifierName("source")))))),
+                    ExpressionStatement(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("ev"),
+                                IdentifierName("SetProperties")))
+                        .WithArgumentList(
+                            ArgumentList(
+                                SingletonSeparatedList<ArgumentSyntax>(
+                                    Argument(
+                                        IdentifierName("destination")))))),
+                    ExpressionStatement(
+                        AwaitExpression(
+                            InvocationExpression(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("messageBroker"),
+                                    IdentifierName("Publish")))
+                            .WithArgumentList(
+                                ArgumentList(
+                                    SeparatedList<ArgumentSyntax>(
+                                        new SyntaxNodeOrToken[]{
+                                            Argument(
+                                                IdentifierName("ev")),
+                                            Token(SyntaxKind.CommaToken),
+                                            Argument(
+                                                IdentifierName("routingFilter"))}))))),
+                    ReturnStatement(
+                        IdentifierName("ev")));
         }
 
         private IfStatementSyntax GenIfEvent(string commandName, string commandNamespace)

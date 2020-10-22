@@ -6,6 +6,7 @@ using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {

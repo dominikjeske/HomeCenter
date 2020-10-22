@@ -7,6 +7,7 @@ using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {

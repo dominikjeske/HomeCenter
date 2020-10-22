@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Actors\HomeCenter.Actors.csproj" />
     <ProjectReference Include="..\HomeCenter.Configuration\HomeCenter.Configuration.csproj" />
+    <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
   </ItemGroup>
 
 </Project>

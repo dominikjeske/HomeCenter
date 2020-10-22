@@ -1,4 +1,6 @@
-﻿using HomeCenter.Extensions;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.EventAggregator;
+using HomeCenter.Extensions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;

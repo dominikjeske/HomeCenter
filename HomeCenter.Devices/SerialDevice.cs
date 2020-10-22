@@ -3,6 +3,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using HomeCenter.Abstractions;
 
 namespace HomeCenter.Devices
 {

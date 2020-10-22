@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
     <PackageReference Include="RavenDB.Client" Version="5.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Analyzers" Version="0.2.0-rtm-35636" />
   </ItemGroup>
 
 </Project>

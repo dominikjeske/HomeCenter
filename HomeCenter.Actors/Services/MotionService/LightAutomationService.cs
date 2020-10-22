@@ -1,4 +1,5 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using CodeGeneration.Roslyn;
+using HomeCenter.CodeGeneration;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using System;
@@ -6,6 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Extensions;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Messages.Queries.Services;
+using HomeCenter.Model.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.MotionService
 {

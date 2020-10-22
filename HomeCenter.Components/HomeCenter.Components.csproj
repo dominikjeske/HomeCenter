@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CodeGeneration.Roslyn.Tool" Version="0.7.63" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
+    <ProjectReference Include="..\HomeCenter.Actors.Core\HomeCenter.Actors.Core.csproj" />
+    <ProjectReference Include="..\HomeCenter.Conditions\HomeCenter.Conditions.csproj" />
+    <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
+    <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" OutputItemType="CodeGenerationRoslynPlugin" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

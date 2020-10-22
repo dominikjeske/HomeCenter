@@ -15,6 +15,7 @@ using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using HomeCenter.Actors.Core;
 
 namespace HomeCenter.ActorCompiler
 {
