@@ -1,14 +1,4 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Messages.Queries.Service;
-using Proto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -2,7 +2,7 @@
 {
     public class VisitType
     {
-        public double Value {get; private set;}
+        public double Value { get; private set; }
 
         private VisitType(double value)
         {

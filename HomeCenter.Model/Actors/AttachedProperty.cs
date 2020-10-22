@@ -1,6 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using Light.GuardClauses;
+﻿using Light.GuardClauses;
 
 namespace HomeCenter.Model.Actors
 {
@@ -16,7 +14,7 @@ namespace HomeCenter.Model.Actors
             AttachedArea = attachedArea;
         }
 
-        public string Service { get;}
+        public string Service { get; }
 
         public string AttachedActor { get; }
 

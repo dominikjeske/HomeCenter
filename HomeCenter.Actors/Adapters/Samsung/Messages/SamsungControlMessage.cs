@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -70,7 +68,7 @@ namespace HomeCenter.Adapters.Samsung.Messages
 
             return binaryMessage.ToArray();
         }
-        
+
         private byte[] CreateSecondParameter()
         {
             var message = ((char)0xc8) + ((char)0x00) + string.Empty;
@@ -104,7 +102,5 @@ namespace HomeCenter.Adapters.Samsung.Messages
         {
             return char.ToString((char)value);
         }
-
-        
     }
 }

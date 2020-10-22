@@ -1,9 +1,5 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Services.Configuration.DTO;
+﻿using HomeCenter.Services.Configuration.DTO;
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 
 namespace HomeCenter.Services.Actors
@@ -38,8 +34,6 @@ namespace HomeCenter.Services.Actors
 
         //public IPropertySource GetProperties<T>(BaseDTO config)
         //{
-
-
         //    instance.SetProperty(MessageProperties.Uid, config.Uid);
         //    instance.SetProperty(MessageProperties.Type, config.Type);
         //    SetProperties(config, instance);

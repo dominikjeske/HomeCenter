@@ -1,6 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using HomeCenter.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model

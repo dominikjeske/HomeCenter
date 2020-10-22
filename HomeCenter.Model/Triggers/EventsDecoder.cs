@@ -1,7 +1,5 @@
-﻿using HomeCenter.Broker;
+﻿using HomeCenter.Extensions;
 using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +55,7 @@ namespace HomeCenter.Services.MotionService
                 }
             }
 
-            if(foundIndex == EventDescriptors.Count -1)
+            if (foundIndex == EventDescriptors.Count - 1)
             {
                 // action
             }

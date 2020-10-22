@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.ActorCompiler\HomeCenter.ActorCompiler.csproj" />
+    <ProjectReference Include="..\HomeCenter.Actors\HomeCenter.Actors.csproj" />
+    <ProjectReference Include="..\HomeCenter.Configuration\HomeCenter.Configuration.csproj" />
+    <ProjectReference Include="..\HomeCenter.MessageBroker\HomeCenter.MessageBroker.csproj" />
+    <ProjectReference Include="..\HomeCenter.Quartz\HomeCenter.Quartz.csproj" />
+  </ItemGroup>
+
+</Project>

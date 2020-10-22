@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Queries.Device;
-using System;
+﻿using System;
 
 namespace HomeCenter.Model.Conditions.Specific
 {

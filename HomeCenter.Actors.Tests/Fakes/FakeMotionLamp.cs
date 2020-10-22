@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HomeCenter.Services.MotionService.Tests
+﻿namespace HomeCenter.Services.MotionService.Tests
 {
     public class FakeMotionLamp
     {
@@ -17,7 +15,7 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         public string Id { get; }
-        
+
         // public void SetPowerStateSource(IObservable<PowerStateChangeEvent> source) => PowerStateChange = source;
         public override string ToString() => $"{Id} : {IsTurnedOn}";
     }

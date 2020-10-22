@@ -1,10 +1,7 @@
-﻿
-using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Model.Capabilities.Constants;
 
 namespace HomeCenter.Model.Capabilities
 {
-
     public class CurrentState : StateBase
     {
         public static string StateName { get; } = nameof(CurrentState);

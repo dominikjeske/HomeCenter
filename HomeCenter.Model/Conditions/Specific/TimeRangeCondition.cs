@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using HomeCenter.Extensions;
+﻿using HomeCenter.Extensions;
 using System;
 using System.Threading.Tasks;
 

@@ -39,7 +39,6 @@ namespace HomeCenter.Storage.RavenDB
                     Properties.Add(pair.Key, RavenPropertyFormatter.Simplify(pair.Value));
                 }
             }
-
         }
 
         /// <summary>

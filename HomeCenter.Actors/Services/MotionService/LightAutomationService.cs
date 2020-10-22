@@ -1,15 +1,6 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Actors;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Queries.Services;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
-using HomeCenter.Extensions;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,11 +37,8 @@ namespace HomeCenter.Services.MotionService
             }
             catch (Exception rr)
             {
-
                 throw;
             }
-
-           
         }
 
         private void ReadConfigurationFromProperties()

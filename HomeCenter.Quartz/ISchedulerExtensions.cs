@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Quartz
-{ 
+{
     public static class QuartzExtensions
     {
         private const string CONTEXT = "context";
@@ -156,7 +156,6 @@ namespace HomeCenter.Quartz
 
             return job.Key;
         }
-
 
         /// <summary>
         /// Cancels job schedule

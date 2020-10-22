@@ -1,14 +1,14 @@
-﻿using CSharpFunctionalExtensions;
-using System;
+﻿using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
     /// <summary>
     /// Represent a probability of person to be in room
     /// </summary>
-    #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+
     public class Probability : ValueObject<Probability>
-    #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         public static readonly Probability Zero = new Probability(0.0);
         public static readonly Probability Full = new Probability(1.0);

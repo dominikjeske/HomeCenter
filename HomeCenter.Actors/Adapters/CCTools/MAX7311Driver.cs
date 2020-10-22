@@ -1,5 +1,4 @@
-﻿using HomeCenter.Extensions;
-using System;
+﻿using System;
 using System.Linq;
 
 namespace HomeCenter.Adapters.Common

@@ -1,10 +1,4 @@
-﻿using HomeCenter.Model.Conditions;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Scheduler;
-using Proto;
+﻿using Proto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

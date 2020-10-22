@@ -1,7 +1,4 @@
-﻿using HomeCenter.Model.Actors;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Services.Actors;
+﻿using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
@@ -118,7 +115,6 @@ namespace HomeCenter.Services.MotionService.Tests
             _container.RegisterSingleton<ClassActivator>();
 
             var sm = _container.GetInstance<ServiceMapper>();
-
 
             LightAutomationServiceProxy actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
 

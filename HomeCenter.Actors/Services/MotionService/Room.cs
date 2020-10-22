@@ -1,12 +1,4 @@
-﻿using ConcurrentCollections;
-using HomeCenter.Model.Conditions;
-using HomeCenter.Model.Conditions.Specific;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Services.MotionService.Model;
-using HomeCenter.Extensions;
-using Microsoft.Extensions.Logging;
+﻿using HomeCenter.Services.MotionService.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

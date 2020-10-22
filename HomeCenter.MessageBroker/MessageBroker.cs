@@ -1,23 +1,13 @@
-﻿using ConcurrentCollections;
-using HomeCenter.Broker;
-using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Model.Messages.Scheduler;
-using HomeCenter.Model.Quartz;
+﻿using HomeCenter.Abstractions;
 using Proto;
 using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Model.Core
+namespace HomeCenter.MessageBroker
 {
-    public class MessageBroker : IMessageBroker
+    internal class MessageBroker : IMessageBroker
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IActorFactory _actorFactory;
@@ -35,7 +25,7 @@ namespace HomeCenter.Model.Core
 
         public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
         {
-            if(subscribeOnParent)
+            if (subscribeOnParent)
             {
                 subscriber = _actorFactory.GetParentActor(subscriber);
             }

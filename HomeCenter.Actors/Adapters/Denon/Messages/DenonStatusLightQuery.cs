@@ -1,7 +1,4 @@
-﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Extensions;
-using System.Linq;
+﻿using System.Linq;
 using System.Xml.Linq;
 
 namespace HomeCenter.Adapters.Denon.Messages

@@ -1,17 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.11.9" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.12.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Assemblies\HomeCenter.Assemblies.csproj" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
 </Project>

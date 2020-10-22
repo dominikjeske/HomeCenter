@@ -1,19 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FastDeepCloner" Version="1.3.5" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Assemblies\HomeCenter.Assemblies.csproj" />
     <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
-
 </Project>

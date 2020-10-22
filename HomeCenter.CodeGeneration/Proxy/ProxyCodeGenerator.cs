@@ -27,6 +27,4 @@ namespace HomeCenter.CodeGeneration
             return Task.FromResult(proxy);
         }
     }
-
-
 }

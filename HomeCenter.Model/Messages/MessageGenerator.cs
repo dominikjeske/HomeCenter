@@ -1,6 +1,6 @@
 ﻿using HomeCenter.CodeGeneration;
 
-namespace HomeCenter.Model.Messages
+namespace HomeCenter.Models.Messages
 {
     [CommandBuilder]
     public partial class MessageGenerator

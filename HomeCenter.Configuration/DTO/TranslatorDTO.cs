@@ -6,6 +6,7 @@ namespace HomeCenter.Services.Configuration.DTO
     {
         [JsonPropertyName("From")]
         public ActorMessageDTO? From { get; set; }
+
         [JsonPropertyName("To")]
         public ActorMessageDTO? To { get; set; }
     }

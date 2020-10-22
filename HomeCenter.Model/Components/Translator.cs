@@ -1,7 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-
-namespace HomeCenter.Model.Components
+﻿namespace HomeCenter.Model.Components
 {
     public class Translator : BaseObject
     {

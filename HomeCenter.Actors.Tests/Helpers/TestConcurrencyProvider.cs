@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using Microsoft.Reactive.Testing;
+﻿using Microsoft.Reactive.Testing;
 using System.Reactive.Concurrency;
 
 namespace HomeCenter.Services.MotionService.Tests

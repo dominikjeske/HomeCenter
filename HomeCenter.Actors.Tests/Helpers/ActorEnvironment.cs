@@ -1,7 +1,4 @@
-﻿using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Model.Messages.Queries.Services;
-using Microsoft.Reactive.Testing;
+﻿using Microsoft.Reactive.Testing;
 using Proto;
 using System;
 using System.Collections.Generic;

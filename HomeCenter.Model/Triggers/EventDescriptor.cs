@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Messages.Events;
-using System;
+﻿using System;
 
 namespace HomeCenter.Services.MotionService
 {

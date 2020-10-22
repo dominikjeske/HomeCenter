@@ -1,16 +1,5 @@
 ﻿using HomeCenter.Adapters.RemoteSocketBridge.Codes;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Messages.Queries.Service;
-using Microsoft.Extensions.Logging;
-using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

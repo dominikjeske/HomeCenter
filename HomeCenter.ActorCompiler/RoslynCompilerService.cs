@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Abstractions;
 using HomeCenter.Assemblies;
 using HomeCenter.Extensions;
-using HomeCenter.Model.Adapters;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -13,11 +13,10 @@ using System.Net;
 using System.Reflection;
 using System.Security;
 using System.Text;
-using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace HomeCenter.Services.Roslyn
+namespace HomeCenter.ActorCompiler
 {
     public class RoslynCompilerService : IRoslynCompilerService
     {

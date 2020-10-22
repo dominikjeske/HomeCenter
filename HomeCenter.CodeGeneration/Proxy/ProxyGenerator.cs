@@ -127,13 +127,13 @@ namespace HomeCenter.CodeGeneration
                 foreach (var method in commands)
                 {
                     var parentSubscription = IsSubscribeToParent(method);
-                 
+
                     var invocation = InvocationExpression(GenericName(Identifier("Subscribe")).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(method.Parameter.Type.Name)))));
                     if (parentSubscription)
                     {
                         invocation = invocation.WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.TrueLiteralExpression)))));
                     }
-                    
+
                     statementSyntaxes.Add(ExpressionStatement(invocation));
                 }
 

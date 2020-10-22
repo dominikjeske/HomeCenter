@@ -16,3 +16,9 @@ indent_size = 4
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
+
+[*.csproj]
+
+#Ident config
+indent_style = space
+indent_size = 2

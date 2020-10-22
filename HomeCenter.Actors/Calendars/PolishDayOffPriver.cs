@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Calendars;
-using System;
+﻿using System;
 
 namespace HomeCenter.Actors.Calendars
 {

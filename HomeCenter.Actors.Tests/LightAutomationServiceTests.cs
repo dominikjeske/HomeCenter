@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using HomeCenter.Model.Core;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;

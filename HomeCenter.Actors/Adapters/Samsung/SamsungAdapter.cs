@@ -1,13 +1,5 @@
 ﻿using HomeCenter.Adapters.Samsung.Messages;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Queries.Device;
-using Proto;
 using System;
 using System.Threading.Tasks;
 

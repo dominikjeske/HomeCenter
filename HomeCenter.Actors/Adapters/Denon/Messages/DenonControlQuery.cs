@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Queries.Services;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 

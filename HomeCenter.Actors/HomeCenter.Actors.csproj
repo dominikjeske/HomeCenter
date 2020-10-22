@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" OutputItemType="CodeGenerationRoslynPlugin" PrivateAssets="all" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

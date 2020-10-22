@@ -1,13 +1,5 @@
 ﻿using HomeCenter.Adapters.Sony.Messages;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Exceptions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Queries.Device;
-using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,8 +30,6 @@ namespace HomeCenter.Adapters.Sony
             { "HDMI4", "AAAAAgAAABoAAABdAw==" }
         };
 
-       
-
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context);
@@ -50,7 +40,7 @@ namespace HomeCenter.Adapters.Sony
             _mac = this.AsString(MessageProperties.MAC);
             _poolInterval = this.AsIntTime(MessageProperties.PoolInterval, DEFAULT_POOL_INTERVAL);
 
-           // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
+            // await ScheduleDeviceRefresh<RefreshStateJob>(_poolInterval);
         }
 
         private SonyControlQuery GetControlCommand(string code)
@@ -74,8 +64,6 @@ namespace HomeCenter.Adapters.Sony
                 Params = parameters
             };
         }
-
-         
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
@@ -178,7 +166,5 @@ namespace HomeCenter.Adapters.Sony
 
             _input = await UpdateState(InputSourceState.StateName, _input, inputName);
         }
-
-       
     }
 }

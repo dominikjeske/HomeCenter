@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using System;
+﻿using System;
 
 namespace HomeCenter.Model.Triggers
 {

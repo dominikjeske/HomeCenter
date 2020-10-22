@@ -2,9 +2,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Broker.Behaviors
+namespace HomeCenter.EventAggregator.Behaviors
 {
-    public class TimeoutBehavior : Behavior
+    internal class TimeoutBehavior : Behavior
     {
         private readonly TimeSpan _timeout;
 

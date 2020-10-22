@@ -4,10 +4,11 @@ using System;
 
 namespace HomeCenter.Quartz
 {
-    public class SimpleInjectorJobFactory : IJobFactory
+    internal class SimpleInjectorJobFactory : IJobFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
+        //TODO do we need IServiceProvider??
         public SimpleInjectorJobFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

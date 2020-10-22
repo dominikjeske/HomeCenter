@@ -1,11 +1,4 @@
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Actors;
-using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Queries.Services;
-using Microsoft.Extensions.Logging;
 using System;
 
 namespace HomeCenter.Services.Networking
@@ -14,7 +7,7 @@ namespace HomeCenter.Services.Networking
     public abstract class I2CService : Service
     {
         private readonly II2cBus _nativeI2CBus;
-        
+
         protected I2CService(II2cBus nativeI2CBus)
         {
             _nativeI2CBus = nativeI2CBus;
@@ -54,8 +47,7 @@ namespace HomeCenter.Services.Networking
             {
                 var result = new byte[bufferSize];
 
-
-                if(initializeWrite != Array.Empty<byte>())
+                if (initializeWrite != Array.Empty<byte>())
                 {
                     _nativeI2CBus.WriteRead(address, initializeWrite, result);
                 }

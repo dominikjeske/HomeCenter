@@ -1,9 +1,7 @@
-﻿using HomeCenter.Extensions;
-using System;
+﻿using System;
 
 namespace HomeCenter.Services.MotionService.Model
 {
-
     /// <summary>
     /// Timeout after person inactivity in room
     /// </summary>
@@ -13,7 +11,7 @@ namespace HomeCenter.Services.MotionService.Model
 
         private TimeSpan _baseTime;
         private DateTimeOffset? _motionStart;
-        
+
         /// <summary>
         /// Value of timeout
         /// </summary>

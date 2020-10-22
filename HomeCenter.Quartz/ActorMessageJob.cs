@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages.Scheduler;
+﻿using HomeCenter.Abstractions;
 using Quartz;
 using System.Threading.Tasks;
 

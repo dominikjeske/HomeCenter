@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Messages.Scheduler;
-using HomeCenter.Model.Quartz;
-using Light.GuardClauses.FrameworkExtensions;
+﻿using HomeCenter.Abstractions;
 using Quartz;
 using System;
 using System.Threading;

@@ -1,8 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Events.Service;
-using HomeCenter.Model.Messages.Queries;
+﻿using HomeCenter.Model.Core;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
@@ -31,14 +27,14 @@ namespace HomeCenter.Model.Actors
             init => this.SetPropertyList(MessageProperties.Tags, value.ToArray());
         }
 
-
         protected readonly Behavior Behavior = new Behavior();
 
         protected private DisposeContainer _disposables = new DisposeContainer();
         protected PID Self { get; private set; }
-        
+
         //Add resource to container that will be released when actor is about to be released
         protected void ProtectResource(IDisposable resource) => _disposables.Add(resource);
+
         protected CancellationToken Token => _disposables.Token;
 
         protected DeviceActor()
@@ -58,7 +54,6 @@ namespace HomeCenter.Model.Actors
             {
                 throw;
             }
-
         }
 
         protected void Log(EventId eventId, string template = "", params object[] arguments)

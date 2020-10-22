@@ -1,6 +1,6 @@
-﻿using HomeCenter.Broker.Behaviors;
-using HomeCenter.Broker.Exceptions;
-using HomeCenter.Broker.Handlers;
+﻿using HomeCenter.EventAggregator.Behaviors;
+using HomeCenter.EventAggregator.Exceptions;
+using HomeCenter.EventAggregator.Handlers;
 using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Broker
+namespace HomeCenter.EventAggregator
 {
-    public sealed class EventAggregator : IEventAggregator, IDisposable
+    internal sealed class EventAggregator : IEventAggregator, IDisposable
     {
         private const int DEFAULT_TIMEOUT = 20000;
 
@@ -168,7 +168,7 @@ namespace HomeCenter.Broker
         {
             return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext, routingFilter));
         }
-        
+
         public void UnSubscribe(Guid token)
         {
             _subscriptions.UnRegister(token);

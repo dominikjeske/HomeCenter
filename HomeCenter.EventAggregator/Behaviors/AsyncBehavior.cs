@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace HomeCenter.Broker.Behaviors
+namespace HomeCenter.EventAggregator.Behaviors
 {
-    public class AsyncBehavior : Behavior
+    internal class AsyncBehavior : Behavior
     {
         public AsyncBehavior()
         {

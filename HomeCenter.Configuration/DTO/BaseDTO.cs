@@ -1,6 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using HomeCenter.Extensions;
+﻿using HomeCenter.Extensions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
@@ -19,7 +17,6 @@ namespace HomeCenter.Services.Configuration.DTO
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
 
         public IReadOnlyDictionary<string, object> GetProperties() => Properties.AsReadOnly();
-        
 
         [JsonPropertyName("Uid")]
         public string Uid { get; set; } = string.Empty;

@@ -31,7 +31,7 @@ namespace HomeCenter.Extensions
         /// <param name="measuredTime"></param>
         /// <param name="timeWindow"></param>
         public static bool IsPossible(this TimeSpan measuredTime, TimeSpan timeWindow) => measuredTime >= timeWindow;
-                
+
         /// <summary>
         /// Increase <paramref name="time"/> by <paramref name="percentage"/>
         /// </summary>

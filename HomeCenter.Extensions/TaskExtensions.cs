@@ -119,7 +119,7 @@ namespace HomeCenter.Extensions
         }
 
         /// <summary>
-        /// Cast <paramref name="task"/> into <seealso cref="Task<typeparamref name="T"/>"/> 
+        /// Cast <paramref name="task"/> into <seealso cref="Task<typeparamref name="T"/>"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="task"></param>

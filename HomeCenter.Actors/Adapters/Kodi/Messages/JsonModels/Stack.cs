@@ -1,7 +1,4 @@
-﻿
-using System.Text.Json.Serialization;
-
-namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
+﻿namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
 {
     public class Stack
     {

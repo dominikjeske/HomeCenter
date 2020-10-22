@@ -67,6 +67,5 @@ namespace HomeCenter.Model.Extensions
                   .Concat()
                   .ObserveOn(observeOn)
                   .Subscribe(_ => { }, onError, cancellationToken);
- 
     }
 }

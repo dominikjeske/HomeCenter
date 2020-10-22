@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace HomeCenter.Broker.Behaviors
+namespace HomeCenter.EventAggregator.Behaviors
 {
-    public class RetryBehavior : Behavior
+    internal class RetryBehavior : Behavior
     {
         private int _retryCount;
 

@@ -3,13 +3,6 @@ using HomeCenter.Adapters.Kodi.Messages.JsonModels;
 using HomeCenter.Adapters.PC.Messages;
 using HomeCenter.Adapters.PC.Model;
 using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Queries.Device;
-using Proto;
 using System;
 using System.Threading.Tasks;
 

@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Calendars;
-using Quartz.Impl.Calendar;
+﻿using Quartz.Impl.Calendar;
 using System;
 
 namespace HomeCenter.Quartz

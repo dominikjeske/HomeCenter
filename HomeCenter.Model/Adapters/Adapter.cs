@@ -1,7 +1,4 @@
 ﻿using HomeCenter.Model.Actors;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;

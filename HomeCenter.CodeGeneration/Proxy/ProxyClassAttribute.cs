@@ -6,5 +6,4 @@ namespace HomeCenter.CodeGeneration
     public class ProxyClassAttribute : Attribute
     {
     }
-
 }

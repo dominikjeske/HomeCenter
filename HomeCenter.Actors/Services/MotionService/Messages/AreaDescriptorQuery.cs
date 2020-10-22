@@ -1,8 +1,5 @@
-﻿using HomeCenter.Model.Messages.Queries;
-
-namespace HomeCenter.Services.MotionService.Commands
+﻿namespace HomeCenter.Services.MotionService.Commands
 {
-
     public class AreaDescriptorQuery : Query
     {
         public static AreaDescriptorQuery Create(string room) => new AreaDescriptorQuery { RoomId = room };

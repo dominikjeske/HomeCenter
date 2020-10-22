@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
+    <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
+  </ItemGroup>
+  
 </Project>

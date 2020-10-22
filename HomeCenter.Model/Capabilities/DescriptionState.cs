@@ -1,5 +1,4 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Queries.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
@@ -13,7 +12,6 @@ namespace HomeCenter.Model.Capabilities
             this[StateProperties.CapabilityName] = Constants.Capabilities.InfoController;
 
             this.SetPropertyList(StateProperties.SupportedCommands, nameof(DescriptionQuery));
-
         }
     }
 }

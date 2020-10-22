@@ -1,8 +1,4 @@
-﻿
-
-using System.Text.Json.Serialization;
-
-namespace HomeCenter.Adapters.Sony.Messages
+﻿namespace HomeCenter.Adapters.Sony.Messages
 {
     public class ActRegisterRequest
     {

@@ -1,13 +1,13 @@
-﻿using HomeCenter.Broker.Handlers;
+﻿using HomeCenter.EventAggregator.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Broker
+namespace HomeCenter.EventAggregator
 {
-    public class Subscriptions
+    internal class Subscriptions
     {
         private readonly List<BaseCommandHandler> _allSubscriptions = new List<BaseCommandHandler>();
         private int _subscriptionRevision;

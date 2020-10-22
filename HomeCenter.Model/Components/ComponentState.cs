@@ -1,9 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using HomeCenter.Extensions;
 using HomeCenter.Model.Capabilities;
 using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

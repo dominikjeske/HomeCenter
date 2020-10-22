@@ -1,8 +1,5 @@
 ﻿using HomeCenter.Adapters.Kodi.Messages.JsonModels;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Queries.Services;
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {

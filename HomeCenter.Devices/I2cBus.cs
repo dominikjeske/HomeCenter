@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Contracts;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace HomeCenter.Devices

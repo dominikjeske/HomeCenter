@@ -1,11 +1,8 @@
-﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Queries.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {

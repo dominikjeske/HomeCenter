@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace HomeCenter.Broker.Behaviors
+namespace HomeCenter.EventAggregator.Behaviors
 {
-    public static class BehaviorExtensions
+    internal static class BehaviorExtensions
     {
         public static BehaviorChain WithRetry(this BehaviorChain chain, int retryNumber = 3)
         {

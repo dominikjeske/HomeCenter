@@ -1,8 +1,5 @@
-﻿using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Queries.Services;
-using System;
+﻿using System;
 using System.Net;
-using System.Text.Json;
 
 namespace HomeCenter.Adapters.Sony.Messages
 {
@@ -39,7 +36,6 @@ namespace HomeCenter.Adapters.Sony.Messages
             return this;
         }
 
-   
         //public object ParseResult(string responseData, Type responseType = null)
         //{
         //    var response = (JObject)JsonConvert.DeserializeObject(responseData);

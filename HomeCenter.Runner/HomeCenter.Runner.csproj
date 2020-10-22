@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Bootstrapper\HomeCenter.Bootstrapper.csproj" />
+ 
     <ProjectReference Include="..\HomeCenter.CodeGeneration\HomeCenter.CodeGeneration.csproj" OutputItemType="CodeGenerationRoslynPlugin" PrivateAssets="all" />
     <ProjectReference Include="..\HomeCenter.Devices\HomeCenter.Devices.csproj" />
     <ProjectReference Include="..\HomeCenter.Storage.RavenDB\HomeCenter.Storage.RavenDB.csproj" />

@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Conditions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService.Model
 {

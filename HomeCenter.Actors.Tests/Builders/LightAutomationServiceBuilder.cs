@@ -5,7 +5,6 @@ using System.Text.Json;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-
     internal class LightAutomationServiceBuilder
     {
         private TimeSpan? _confusionResolutionTime;
@@ -35,7 +34,6 @@ namespace HomeCenter.Services.MotionService.Tests
             _rooms.Add(room.Name, room);
             return this;
         }
-
 
         public ServiceDTO Build()
         {
@@ -81,7 +79,6 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 AddMotionSensor(detector.DetectorName, roomBuilder.Name, detector.Neighbors, serviceDto);
             }
-
 
             serviceDto.AreasAttachedProperties.Add(area);
         }

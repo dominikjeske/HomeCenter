@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Exceptions;
-using System;
+﻿using System;
 using System.IO.Ports;
 using System.Linq;
 using System.Reactive.Linq;

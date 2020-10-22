@@ -1,14 +1,7 @@
 ﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Actors;
-using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Messages.Commands.Service;
-using HomeCenter.Model.Messages.Events.Service;
-using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Model.Quartz;
-using Proto;
 using System.Threading.Tasks;
 
-namespace HomeCenter.Services.Controllers
+namespace HomeCenter.Actors.Controllers
 {
     [ProxyCodeGenerator]
     public abstract class Controller : DeviceActor

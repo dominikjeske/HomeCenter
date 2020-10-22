@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.EventAggregator.Abstractions\HomeCenter.EventAggregator.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Extensions\HomeCenter.Extensions.csproj" />
   </ItemGroup>
 

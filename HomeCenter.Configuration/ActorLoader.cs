@@ -1,12 +1,6 @@
-﻿using HomeCenter.Assemblies;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Assemblies;
 using HomeCenter.Extensions;
-using HomeCenter.Model.Actors;
-using HomeCenter.Model.Adapters;
-using HomeCenter.Model.Areas;
-using HomeCenter.Model.Calendars;
-using HomeCenter.Model.Components;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Exceptions;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -41,8 +35,6 @@ namespace HomeCenter.Services.Actors
             AssemblyHelper.GetAllTypes<Area>(false).ForEach(type => _dynamicTypes.Add(type.Name, type));
             AssemblyHelper.GetAllTypes<Component>(false).ForEach(type => _dynamicTypes.Add(type.Name, type));
         }
-
-      
 
         public IActor GetProxyType<T>(T actorConfig) where T : IBaseObject
         {

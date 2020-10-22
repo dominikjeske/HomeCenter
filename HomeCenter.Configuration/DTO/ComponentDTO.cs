@@ -1,5 +1,4 @@
-﻿using HomeCenter.Model.Components;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
@@ -17,7 +16,7 @@ namespace HomeCenter.Services.Configuration.DTO
 
         [JsonPropertyName("Translators")]
         public IList<TranslatorDTO> Translators { get; set; } = new List<TranslatorDTO>();
-        
+
         [JsonPropertyName("Triggers")]
         public IList<TriggerDTO> Triggers { get; set; } = new List<TriggerDTO>();
 

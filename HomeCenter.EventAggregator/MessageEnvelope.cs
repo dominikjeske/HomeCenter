@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 
-namespace HomeCenter.Broker
+namespace HomeCenter.EventAggregator
 {
-    public class MessageEnvelope<T> : IMessageEnvelope<T>
+    internal class MessageEnvelope<T> : IMessageEnvelope<T>
     {
         public MessageEnvelope(T message, CancellationToken token = default, Type responseType = null)
         {

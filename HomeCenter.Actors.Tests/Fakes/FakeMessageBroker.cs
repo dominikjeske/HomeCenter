@@ -1,15 +1,4 @@
-﻿using HomeCenter.Broker;
-using HomeCenter.Model.Core;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events;
-using HomeCenter.Model.Messages.Events.Device;
-using HomeCenter.Model.Messages.Queries;
-using HomeCenter.Model.Messages.Queries.Device;
-using HomeCenter.Model.Messages.Queries.Services;
-using HomeCenter.Model.Messages.Scheduler;
-using Microsoft.Reactive.Testing;
+﻿using Microsoft.Reactive.Testing;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -22,6 +11,7 @@ namespace HomeCenter.Services.MotionService.Tests
     {
         private readonly ITestableObservable<MotionEnvelope> _motionData;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
+
         public FakeMessageBroker(ITestableObservable<MotionEnvelope> motionData, Dictionary<string, FakeMotionLamp> lamps)
         {
             _motionData = motionData;
@@ -167,7 +157,5 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             throw new NotImplementedException();
         }
-
-       
     }
 }

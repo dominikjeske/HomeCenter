@@ -1,19 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
-    <PackageReference Include="Quartz" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0-rc.2.20475.5" />
+    <PackageReference Include="Quartz" Version="3.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Assemblies\HomeCenter.Assemblies.csproj" />
-    <ProjectReference Include="..\HomeCenter.Model\HomeCenter.Model.csproj" />
   </ItemGroup>
 
 </Project>

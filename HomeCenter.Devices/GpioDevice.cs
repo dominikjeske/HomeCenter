@@ -1,6 +1,4 @@
-﻿using HomeCenter.Model.Contracts;
-using HomeCenter.Model.Messages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Device.Gpio.Drivers;

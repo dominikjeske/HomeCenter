@@ -1,9 +1,7 @@
 ﻿using HomeCenter.Model.Capabilities.Constants;
-using HomeCenter.Model.Messages.Commands.Device;
 
 namespace HomeCenter.Model.Capabilities
 {
-    
     public class InfraredReceiverState : StateBase
     {
         public static string StateName { get; } = nameof(InfraredReceiverState);

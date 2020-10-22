@@ -1,4 +1,4 @@
-﻿namespace HomeCenter.Model.Messages
+﻿namespace HomeCenter.Models.Messages
 {
     //TODO move
     public static class PinModes
