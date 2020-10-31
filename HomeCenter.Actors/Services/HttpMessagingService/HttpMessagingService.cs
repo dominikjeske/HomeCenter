@@ -1,17 +1,16 @@
-﻿using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Extensions;
+using HomeCenter.Messages.Queries.Services;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
-using HomeCenter.Actors.Core;
-using HomeCenter.Extensions;
-using HomeCenter.Messages.Queries.Services;
 
 namespace HomeCenter.Services.Networking
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public class HttpMessagingService : Service
     {
         [Subscribe(true)]

@@ -2,7 +2,6 @@
 using FastDeepCloner;
 using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
-using HomeCenter.CodeGeneration;
 using HomeCenter.EventAggregator;
 using HomeCenter.Extensions;
 using HomeCenter.Messages.Commands.Service;
@@ -18,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class ConfigurationService : Service
     {
         private readonly IActorFactory _actorFactory;

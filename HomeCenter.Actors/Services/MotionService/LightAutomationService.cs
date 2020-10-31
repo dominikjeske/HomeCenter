@@ -1,24 +1,22 @@
-﻿using CodeGeneration.Roslyn;
-using HomeCenter.CodeGeneration;
-using HomeCenter.Services.MotionService.Commands;
-using HomeCenter.Services.MotionService.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Extensions;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Services;
 using HomeCenter.Model.Extensions;
+using HomeCenter.Services.MotionService.Commands;
+using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
     //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class LightAutomationService : Service
     {
         private readonly IConcurrencyProvider _concurrencyProvider;

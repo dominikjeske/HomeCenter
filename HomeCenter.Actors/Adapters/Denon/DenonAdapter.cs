@@ -1,18 +1,17 @@
-﻿using HomeCenter.Adapters.Denon.Messages;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.Denon.Messages;
 using HomeCenter.Capabilities;
 using HomeCenter.Extensions;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Denon
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class DenonAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 2000;

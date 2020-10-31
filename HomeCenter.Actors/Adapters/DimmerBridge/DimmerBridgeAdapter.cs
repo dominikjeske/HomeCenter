@@ -1,7 +1,4 @@
-﻿using HomeCenter.CodeGeneration;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Service;
@@ -9,10 +6,12 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Proto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.CurrentBridge
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class DimmerBridgeAdapter : Adapter
     {
         private const int I2C_ACTION_DIMMER = 5;

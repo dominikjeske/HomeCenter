@@ -1,9 +1,4 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Model.Triggers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.EventAggregator;
@@ -11,10 +6,14 @@ using HomeCenter.Extensions;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries.Device;
+using HomeCenter.Model.Triggers;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Model.Components
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public class Component : DeviceActor
     {
         public Component(IList<AdapterReference> adapterReferences, IList<Translator> translators, IList<Trigger> triggers)

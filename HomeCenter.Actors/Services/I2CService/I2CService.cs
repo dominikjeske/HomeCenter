@@ -1,15 +1,13 @@
-using CodeGeneration.Roslyn;
-using HomeCenter.CodeGeneration;
-using System;
 using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace HomeCenter.Services.Networking
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class I2CService : Service
     {
         private readonly II2cBus _nativeI2CBus;

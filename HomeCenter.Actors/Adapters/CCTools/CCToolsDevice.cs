@@ -1,11 +1,4 @@
-﻿using CodeGeneration.Roslyn;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
@@ -18,11 +11,16 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
 using Proto;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Common
 {
     // TODO add reverse state - to interpreted true as false and opposite
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class CCToolsAdapter : Adapter
     {
         private readonly MAX7311Driver _driver = new MAX7311Driver();

@@ -1,15 +1,14 @@
-﻿using HomeCenter.CodeGeneration;
-using HomeCenter.Services.Controllers;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries;
+using HomeCenter.Services.Controllers;
 using Proto;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Controllers
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class Controller : DeviceActor
     {
         private readonly StartupConfiguration _startupConfiguration;

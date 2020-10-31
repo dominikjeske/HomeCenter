@@ -1,7 +1,4 @@
-﻿using HomeCenter.CodeGeneration;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
@@ -11,10 +8,12 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using HomeCenter.Model.Extensions;
 using Proto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class RaspberryAdapter : Adapter
     {
         private readonly IGpioDevice _gpioDevice;

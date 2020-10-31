@@ -1,11 +1,6 @@
-﻿using CodeGeneration.Roslyn;
-using HomeCenter.Adapters.RemoteSocketBridge.Codes;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.RemoteSocketBridge.Codes;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Commands.Service;
@@ -14,10 +9,13 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Microsoft.Extensions.Logging;
 using Proto;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.RemoteSocketBridge
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class RemoteSocketBridgeAdapter : Adapter
     {
         private const int DEFAULT_REPEAT = 3;

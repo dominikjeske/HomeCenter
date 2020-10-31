@@ -1,9 +1,10 @@
-﻿using HomeCenter.Actors.Core;
-using HomeCenter.CodeGeneration;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+
 
 namespace HomeCenter.Model.Areas
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public class Area : DeviceActor
     {
     }

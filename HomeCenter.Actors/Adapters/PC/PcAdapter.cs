@@ -1,19 +1,18 @@
-﻿using HomeCenter.Adapters.PC.Messages;
-using HomeCenter.Adapters.PC.Model;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.PC.Messages;
+using HomeCenter.Adapters.PC.Model;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class PcAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;

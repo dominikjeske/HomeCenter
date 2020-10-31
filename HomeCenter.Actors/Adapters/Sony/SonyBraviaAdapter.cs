@@ -1,19 +1,18 @@
-﻿using HomeCenter.Adapters.Sony.Messages;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.Sony.Messages;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Sony
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class SonyBraviaAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;

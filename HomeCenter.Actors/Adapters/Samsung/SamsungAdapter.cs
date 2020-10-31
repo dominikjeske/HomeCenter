@@ -1,18 +1,17 @@
-﻿using HomeCenter.Adapters.Samsung.Messages;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.Samsung.Messages;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Samsung
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class SamsungAdapter : Adapter
     {
         private const uint TURN_ON_IR_CODE = 3772793023;

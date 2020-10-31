@@ -1,20 +1,19 @@
-﻿using HomeCenter.Adapters.Kodi.Messages;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Adapters.Kodi.Messages;
 using HomeCenter.Adapters.Kodi.Messages.JsonModels;
 using HomeCenter.Adapters.PC.Messages;
 using HomeCenter.Adapters.PC.Model;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
-using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Kodi
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class KodiAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;

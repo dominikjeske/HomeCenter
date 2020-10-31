@@ -1,8 +1,4 @@
-﻿using CodeGeneration.Roslyn;
-using HomeCenter.CodeGeneration;
-using System;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
@@ -11,10 +7,12 @@ using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries.Device;
 using Microsoft.Extensions.Logging;
 using Proto;
+using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.CurrentBridge
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class DimmerSCO812Adapter : Adapter
     {
         private const int CHANGE_POWER_STATE_TIME = 200;

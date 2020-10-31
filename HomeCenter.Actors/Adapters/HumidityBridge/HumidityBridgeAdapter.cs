@@ -1,7 +1,4 @@
-﻿using HomeCenter.CodeGeneration;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
@@ -10,10 +7,12 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Proto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.HumidityBridge
 {
-    [ProxyCodeGenerator]
+    [Proxy]
     public abstract class HumidityBridgeAdapter : Adapter
     {
         private const int I2C_ACTION_HUMANITY = 6;
