@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.PC
 {
     [Proxy]
-    public abstract class PcAdapter : Adapter
+    public class PcAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 

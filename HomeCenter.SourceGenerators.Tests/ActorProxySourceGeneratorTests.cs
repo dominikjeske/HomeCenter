@@ -14,20 +14,20 @@ namespace HomeCenter.SourceGenerators.Tests
 
             var result = GeneratorRunner.Run(userSource, new ActorProxySourceGenerator());
 
-            expectedResult.AssertSourceCodesEquals(result.generatedCode);
+            expectedResult.AssertSourceCodesEquals(result.GeneratedCode);
         }
 
 
-        [Fact]
-        public async Task MessageFactoryTest()
-        {
-            var userSource = await File.ReadAllTextAsync(@"..\..\..\TestInputs\TestMessageFactory.cs");
-            var expectedResult = await File.ReadAllTextAsync(@"..\..\..\TestOutputs\TestMessageFactoryOutput.cs");
+        //[Fact]
+        //public async Task MessageFactoryTest()
+        //{
+        //    var userSource = await File.ReadAllTextAsync(@"..\..\..\TestInputs\TestMessageFactory.cs");
+        //    var expectedResult = await File.ReadAllTextAsync(@"..\..\..\TestOutputs\TestMessageFactoryOutput.cs");
 
-            var result = GeneratorRunner.Run(userSource, new MessageFactoryGenerator());
+        //    var result = GeneratorRunner.Run(userSource, new MessageFactoryGenerator());
 
-            expectedResult.AssertSourceCodesEquals(result.generatedCode);
-        }
+        //    expectedResult.AssertSourceCodesEquals(result.GeneratedCode);
+        //}
     }
 
 }

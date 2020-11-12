@@ -1,4 +1,7 @@
 ﻿using HomeCenter.Abstractions;
+using HomeCenter.Conditions;
+using HomeCenter.Model.Components;
+using HomeCenter.Model.Triggers;
 using HomeCenter.Services.Configuration.DTO;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -12,10 +15,10 @@ namespace HomeCenter.Services.Actors
         private readonly DeviceActorMapper _actorMapper;
         private readonly BaseObjectMapper _baseObjectMapper;
         private readonly IMessageBroker _messageBroker;
-        private readonly ILogger<ComponentProxy> _logger;
+        private readonly ILogger<HomeCenter.Model.Components.ComponentProxy> _logger;
 
         public ComponentMapper(DeviceActorMapper actorMapper, BaseObjectMapper baseObjectMapper,
-            IMessageBroker messageBroker, ILogger<ComponentProxy> logger)
+            IMessageBroker messageBroker, ILogger<HomeCenter.Model.Components.ComponentProxy> logger)
         {
             _actorMapper = actorMapper;
             _baseObjectMapper = baseObjectMapper;
@@ -65,7 +68,7 @@ namespace HomeCenter.Services.Actors
                 }
             }).ToList();
 
-            var component = new ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
+            var component = new HomeCenter.Model.Components.ComponentProxy.ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
 
             _actorMapper.Map(config, component);
 

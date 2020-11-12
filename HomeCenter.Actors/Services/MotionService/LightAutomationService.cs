@@ -17,7 +17,7 @@ namespace HomeCenter.Services.MotionService
 {
     //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
     [Proxy]
-    public abstract class LightAutomationService : Service
+    public class LightAutomationService : Service
     {
         private readonly IConcurrencyProvider _concurrencyProvider;
         private readonly MotionConfiguration _motionConfiguration = new MotionConfiguration();

@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.SourceGenerators
 {
-    internal record EventDescriptor
+    internal class EventDescriptor
     {
         public string Name { get; set; }
 

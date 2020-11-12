@@ -18,22 +18,20 @@ using System.Threading.Tasks;
 namespace HomeCenter.Services.Configuration
 {
     [Proxy]
-    public abstract class ConfigurationService : Service
+    public class ConfigurationService : Service
     {
         private readonly IActorFactory _actorFactory;
         private readonly IActorLoader _typeLoader;
-        private readonly IMessageBroker _messageBroker;
 
         private IDictionary<string, PID> _services = new Dictionary<string, PID>();
         private IDictionary<string, PID> _adapters = new Dictionary<string, PID>();
         private IDictionary<string, PID> _components = new Dictionary<string, PID>();
         private PID _mainArea;
 
-        protected ConfigurationService(IActorFactory actorFactory, IActorLoader typeLoader, IMessageBroker messageBroker)
+        protected ConfigurationService(IActorFactory actorFactory, IActorLoader typeLoader)
         {
             _actorFactory = actorFactory;
             _typeLoader = typeLoader;
-            _messageBroker = messageBroker;
         }
 
         protected async Task Handle(StartSystemCommand startFromConfigCommand)
@@ -86,7 +84,7 @@ namespace HomeCenter.Services.Configuration
         {
             var areaActor = _actorFactory.CreateActor(area, parent);
 
-            var actorContext = await _messageBroker.Request<ActorContextQuery, IContext>(ActorContextQuery.Default, areaActor);
+            var actorContext = await MessageBroker.Request<ActorContextQuery, IContext>(ActorContextQuery.Default, areaActor);
 
             foreach (var component in area.Components)
             {
@@ -98,7 +96,7 @@ namespace HomeCenter.Services.Configuration
 
                 var componentActor = _actorFactory.CreateActor(componentCopy, actorContext);
                 _components.Add(componentCopy.Uid, componentActor);
-                var componentContext = await _messageBroker.Request<ActorContextQuery, IContext>(ActorContextQuery.Default, componentActor);
+                var componentContext = await MessageBroker.Request<ActorContextQuery, IContext>(ActorContextQuery.Default, componentActor);
 
                 if (component.Adapter != null)
                 {

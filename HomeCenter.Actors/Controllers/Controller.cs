@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Actors.Controllers
 {
     [Proxy]
-    public abstract class Controller : DeviceActor
+    public class Controller : DeviceActor
     {
         private readonly StartupConfiguration _startupConfiguration;
         private readonly IActorFactory _actorFactory;

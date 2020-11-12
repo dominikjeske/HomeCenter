@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.Kodi
 {
     [Proxy]
-    public abstract class KodiAdapter : Adapter
+    public class KodiAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 

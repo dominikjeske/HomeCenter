@@ -1,9 +1,11 @@
 ﻿using HomeCenter.Abstractions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace HomeCenter.SourceGenerators
 {
@@ -17,30 +19,36 @@ namespace HomeCenter.SourceGenerators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (context.SyntaxReceiver is not MessageFactorySyntaxReceiver actorSyntaxReciver) return;
+            using var sourceGenContext = SourceGeneratorContext<MessageFactoryGenerator>.Create(context);
 
-            foreach (var proxy in actorSyntaxReciver.CandidateProxies)
+            if (context.SyntaxReceiver is MessageFactorySyntaxReceiver actorSyntaxReciver)
             {
-                var source = GenearteProxy(proxy, context.Compilation);
-                context.AddSource(source.FileName, source.SourceCode);
+                foreach (var proxy in actorSyntaxReciver.CandidateProxies)
+                {
+                    var source = GenearteProxy(proxy, sourceGenContext);
+                    context.AddSource(source.FileName, SourceText.From(source.SourceCode, Encoding.UTF8));
+                }
             }
         }
 
-        private GeneratedSource GenearteProxy(ClassDeclarationSyntax proxy, Compilation compilation)
+        private GeneratedSource GenearteProxy(ClassDeclarationSyntax proxy, SourceGeneratorContext<MessageFactoryGenerator> context)
         {
             try
             {
-                var factoryModel = GetModel(proxy, compilation);
+                var factoryModel = GetModel(proxy, context.GeneratorExecutionContext.Compilation);
 
                 var templateString = ResourceReader.GetResource("MessageFactory.scriban");
 
                 var result = TemplateGenerator.Execute(templateString, factoryModel);
 
+                context.TryLogSourceCode(proxy, result);
+
                 return new GeneratedSource(result, nameof(MessageFactoryGenerator));
             }
             catch (Exception ex)
             {
-                return new GeneratedSource(ex.GenerateErrorSourceCode(), proxy.Identifier.Text);
+                context.TryLogException(proxy, ex);
+                return context.GenerateErrorSourceCode(ex, proxy);
             }
         }
 

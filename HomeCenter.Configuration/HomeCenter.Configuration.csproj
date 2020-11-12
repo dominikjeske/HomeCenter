@@ -17,8 +17,9 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Actors.Core\HomeCenter.Actors.Core.csproj" />
+    <ProjectReference Include="..\HomeCenter.Components\HomeCenter.Components.csproj" />
     <ProjectReference Include="..\HomeCenter.Extensions.Assemblies\HomeCenter.Extensions.Assemblies.csproj" />
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
-    <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

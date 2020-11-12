@@ -2,7 +2,7 @@
 
 namespace HomeCenter.SourceGenerators
 {
-    internal record MessageFactoryModel
+    internal class MessageFactoryModel
     {
         public string ClassName { get; set; }
 
@@ -13,7 +13,6 @@ namespace HomeCenter.SourceGenerators
         public List<string> Usings { get; set; } = new List<string>();
 
         public List<CommandDescriptor> Commands { get; set; } = new List<CommandDescriptor>();
-
         public List<EventDescriptor> Events { get; set; } = new List<EventDescriptor>();
     }
 }

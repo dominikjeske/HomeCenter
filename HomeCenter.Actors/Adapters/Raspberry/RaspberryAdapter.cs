@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.PC
 {
     [Proxy]
-    public abstract class RaspberryAdapter : Adapter
+    public class RaspberryAdapter : Adapter
     {
         private readonly IGpioDevice _gpioDevice;
 

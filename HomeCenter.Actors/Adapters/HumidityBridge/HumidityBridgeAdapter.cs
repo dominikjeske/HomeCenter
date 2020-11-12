@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.HumidityBridge
 {
     [Proxy]
-    public abstract class HumidityBridgeAdapter : Adapter
+    public class HumidityBridgeAdapter : Adapter
     {
         private const int I2C_ACTION_HUMANITY = 6;
         private int _i2cAddress;

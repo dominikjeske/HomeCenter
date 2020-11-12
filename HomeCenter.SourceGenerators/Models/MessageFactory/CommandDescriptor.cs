@@ -1,6 +1,6 @@
 ﻿namespace HomeCenter.SourceGenerators
 {
-    internal record CommandDescriptor
+    internal class CommandDescriptor
     {
         public string Name { get; set; }
 

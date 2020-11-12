@@ -30,7 +30,7 @@ namespace HomeCenter.Configuration
                 s.AddSingleton<ITypeMapper, AreaMapper>();
                 s.AddSingleton<ITypeMapper, ComponentMapper>();
 
-                foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyClassAttribute>())
+                foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyAttribute>())
                 {
                     if (actorProxy == typeof(ComponentProxy)) continue;
 

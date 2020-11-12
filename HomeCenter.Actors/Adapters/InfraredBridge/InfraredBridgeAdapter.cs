@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.InfraredBridge
 {
     [Proxy]
-    public abstract class InfraredBridgeAdapter : Adapter
+    public class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
         private int _I2cAddress;

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.Sony
 {
     [Proxy]
-    public abstract class SonyBraviaAdapter : Adapter
+    public class SonyBraviaAdapter : Adapter
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 

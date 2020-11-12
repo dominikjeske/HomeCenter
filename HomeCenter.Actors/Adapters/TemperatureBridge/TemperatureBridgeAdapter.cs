@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.TemperatureBridge
 {
     [Proxy]
-    public abstract class TemperatureBridgeAdapter : Adapter
+    public class TemperatureBridgeAdapter : Adapter
     {
         private const int I2C_ACTION_TEMPERATURE = 1;
         private readonly Dictionary<int, double> _state = new Dictionary<int, double>();

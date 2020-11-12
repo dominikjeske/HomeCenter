@@ -2,9 +2,11 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace HomeCenter.SourceGenerators
 {
@@ -18,30 +20,37 @@ namespace HomeCenter.SourceGenerators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (context.SyntaxReceiver is not ActorSyntaxReceiver actorSyntaxReciver) return;
+            using var sourceGenContext = SourceGeneratorContext<ActorProxySourceGenerator>.Create(context);
 
-            foreach (var proxy in actorSyntaxReciver.CandidateProxies)
+            if (context.SyntaxReceiver is ActorSyntaxReceiver actorSyntaxReciver)
             {
-                var source = GenearteProxy(proxy, context.Compilation);
-                context.AddSource(source.FileName, source.SourceCode);
+                foreach (var proxy in actorSyntaxReciver.CandidateProxies)
+                {
+                    var source = GenearteProxy(proxy, sourceGenContext);
+
+                    context.AddSource(source.FileName, SourceText.From(source.SourceCode, Encoding.UTF8));
+                }
             }
         }
 
-        private GeneratedSource GenearteProxy(ClassDeclarationSyntax proxy, Compilation compilation)
+        private GeneratedSource GenearteProxy(ClassDeclarationSyntax proxy, SourceGeneratorContext<ActorProxySourceGenerator> context)
         {
             try
             {
-                var proxyModel = GetModel(proxy, compilation);
+                var proxyModel = GetModel(proxy, context.GeneratorExecutionContext.Compilation);
 
                 var templateString = ResourceReader.GetResource("ActorProxy.scriban");
 
                 var result = TemplateGenerator.Execute(templateString, proxyModel);
 
+                context.TryLogSourceCode(proxy, result);
+
                 return new GeneratedSource(result, proxyModel.ClassName);
             }
             catch (Exception ex)
             {
-                return new GeneratedSource(ex.GenerateErrorSourceCode(), proxy.Identifier.Text);
+                context.TryLogException(proxy, ex);
+                return context.GenerateErrorSourceCode(ex, proxy);
             }
         }
 
@@ -156,7 +165,7 @@ namespace HomeCenter.SourceGenerators
             var result = filter.Select(method => new
             {
                 Name = method.Identifier.ValueText,
-                ReturnType = model.GetTypeInfo(method.ReturnType).Type as INamedTypeSymbol,
+                ReturnType = model.GetTypeInfo(method.ReturnType).Type,
                 Parameter = model.GetDeclaredSymbol(method.ParameterList.Parameters.FirstOrDefault()),
                 Attributes = method.AttributeLists.SelectMany(a => a.Attributes.Select(ax => new AttributeDescriptor
                 {
@@ -164,15 +173,15 @@ namespace HomeCenter.SourceGenerators
                     Values = (ax?.ArgumentList?.Arguments.Select(x => x.Expression.ToFullString()) ?? Enumerable.Empty<string>()).ToList()
                 }))
             }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType || x.Parameter.Type.BaseType?.BaseType?.Name == parameterType || x.Parameter.Type.Name == parameterType)
-            .Select(c => new MethodDescription
-            {
-                MethodName = c.Name,
-                ParameterType = c.Parameter.Type.Name,
-                ReturnType = c.ReturnType.Name,
-                ReturnTypeGenericArgument = c.ReturnType.TypeArguments.FirstOrDefault()?.ToString(),
-                Attributes = c.Attributes.ToList()
-                // TODO write recursive base type check
-            }).ToList();
+       .Select(c => new MethodDescription
+       {
+           MethodName = c.Name,
+           ParameterType = c.Parameter.Type.Name,
+           ReturnType = c.ReturnType.Name,
+           ReturnTypeGenericArgument = (c.ReturnType as INamedTypeSymbol)?.TypeArguments.FirstOrDefault()?.ToString(),
+           Attributes = c.Attributes.ToList()
+               // TODO write recursive base type check
+           }).ToList();
 
             return result;
         }

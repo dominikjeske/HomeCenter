@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.CurrentBridge
 {
     [Proxy]
-    public abstract class DimmerSCO812Adapter : Adapter
+    public class DimmerSCO812Adapter : Adapter
     {
         private const int CHANGE_POWER_STATE_TIME = 200;
         private const int SWITCH_CHANGE_DIRECTION = 400;

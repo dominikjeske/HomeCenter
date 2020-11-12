@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.Denon
 {
     [Proxy]
-    public abstract class DenonAdapter : Adapter
+    public class DenonAdapter : Adapter
     {
         public const int DEFAULT_POOL_INTERVAL = 2000;
         public const int DEFAULT_VOLUME_CHANGE_FACTOR = 10;

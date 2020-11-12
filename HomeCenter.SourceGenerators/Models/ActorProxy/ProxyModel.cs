@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace HomeCenter.SourceGenerators
 {
-    internal record ProxyModel
+    internal class ProxyModel
     {
         public string ClassName { get; set; }
 

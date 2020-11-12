@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.Samsung
 {
     [Proxy]
-    public abstract class SamsungAdapter : Adapter
+    public class SamsungAdapter : Adapter
     {
         private const uint TURN_ON_IR_CODE = 3772793023;
         private string _hostname;

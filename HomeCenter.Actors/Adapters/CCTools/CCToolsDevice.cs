@@ -21,7 +21,7 @@ namespace HomeCenter.Adapters.Common
 {
     // TODO add reverse state - to interpreted true as false and opposite
     [Proxy]
-    public abstract class CCToolsAdapter : Adapter
+    public class CCToolsAdapter : Adapter
     {
         private readonly MAX7311Driver _driver = new MAX7311Driver();
 

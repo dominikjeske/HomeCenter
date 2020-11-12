@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.CurrentBridge
 {
     [Proxy]
-    public abstract class DimmerBridgeAdapter : Adapter
+    public class DimmerBridgeAdapter : Adapter
     {
         private const int I2C_ACTION_DIMMER = 5;
         private readonly Dictionary<int, double> _state = new Dictionary<int, double>();

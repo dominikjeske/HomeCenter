@@ -8,7 +8,7 @@ using System;
 namespace HomeCenter.Services.Networking
 {
     [Proxy]
-    public abstract class I2CService : Service
+    public class I2CService : Service
     {
         private readonly II2cBus _nativeI2CBus;
 

@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Device.Gpio" Version="1.1.0-prerelease.20276.1" />
-    <PackageReference Include="System.IO.Ports" Version="5.0.0-rc.2.20475.5" />
-    <PackageReference Include="System.Reactive" Version="5.0.0-preview.220" />
+    <PackageReference Include="System.Device.Gpio" Version="1.1.0" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Services.Networking
 {
     [Proxy]
-    public abstract class SerialPortService : Service
+    public class SerialPortService : Service
     {
         private readonly ISerialDevice _serialDevice;
         private readonly Dictionary<int, RegisterSerialCommand> _messageHandlers = new Dictionary<int, RegisterSerialCommand>();

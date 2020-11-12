@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.SourceGenerators
+﻿using System;
+
+namespace HomeCenter.SourceGenerators
 {
     public static class StringExtension
     {

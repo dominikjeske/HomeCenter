@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace HomeCenter.Adapters.RemoteSocketBridge
 {
     [Proxy]
-    public abstract class RemoteSocketBridgeAdapter : Adapter
+    public class RemoteSocketBridgeAdapter : Adapter
     {
         private const int DEFAULT_REPEAT = 3;
         private int _pinNumber;
