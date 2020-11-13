@@ -6,7 +6,7 @@
 
 
     <SourceGenerator_EnableLogging>True</SourceGenerator_EnableLogging>
-    <SourceGenerator_EnableDebug>True</SourceGenerator_EnableDebug>
+    <SourceGenerator_EnableDebug>False</SourceGenerator_EnableDebug>
   </PropertyGroup>
 
   <ItemGroup>

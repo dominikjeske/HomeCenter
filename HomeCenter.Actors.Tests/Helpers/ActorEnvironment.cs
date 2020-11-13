@@ -13,7 +13,7 @@ namespace HomeCenter.Actors.Tests.Helpers
     internal class ActorEnvironment : IDisposable
     {
         private readonly TestScheduler _scheduler;
-        private readonly FakeLogger<LightAutomationServiceProxy> _logger;
+        private readonly FakeLogger<HomeCenter.Services.MotionService.LightAutomationServiceProxy> _logger;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
         private readonly ActorSystem _system = new ActorSystem();
@@ -22,7 +22,7 @@ namespace HomeCenter.Actors.Tests.Helpers
         private readonly string _serviceProcessName;
 
         public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps,
-            FakeLogger<LightAutomationServiceProxy> Logger, LightAutomationServiceProxy actor)
+            FakeLogger<HomeCenter.Services.MotionService.LightAutomationServiceProxy> Logger, HomeCenter.Services.MotionService.LightAutomationServiceProxy actor)
         {
             _scheduler = Scheduler;
             _motionEvents = MotionEvents;

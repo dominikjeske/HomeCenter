@@ -32,7 +32,7 @@ namespace HomeCenter.Configuration
 
                 foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyAttribute>())
                 {
-                    if (actorProxy == typeof(ComponentProxy)) continue;
+                    if (actorProxy == typeof(HomeCenter.Model.Components.ComponentProxy)) continue;
 
                     s.AddTransient(actorProxy);
                 }

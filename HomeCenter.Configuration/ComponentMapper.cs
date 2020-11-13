@@ -68,7 +68,7 @@ namespace HomeCenter.Services.Actors
                 }
             }).ToList();
 
-            var component = new HomeCenter.Model.Components.ComponentProxy.ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
+            var component = new HomeCenter.Model.Components.ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
 
             _actorMapper.Map(config, component);
 
