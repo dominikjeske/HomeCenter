@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>9.0</LangVersion>
-
-
-    <SourceGenerator_EnableLogging>True</SourceGenerator_EnableLogging>
-    <SourceGenerator_EnableDebug>False</SourceGenerator_EnableDebug>
-    <SourceGenerator_IntellisenseFix>True</SourceGenerator_IntellisenseFix>
   </PropertyGroup>
 
   <ItemGroup>

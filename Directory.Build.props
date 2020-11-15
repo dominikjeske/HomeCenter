@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <SourceGenerator_IntellisenseFix>True</SourceGenerator_IntellisenseFix>
+    <SourceGenerator_EnableLogging>False</SourceGenerator_EnableLogging>
+    <SourceGenerator_EnableDebug>False</SourceGenerator_EnableDebug>
+  </PropertyGroup>
+</Project>
