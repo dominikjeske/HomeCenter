@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -7,12 +8,11 @@ namespace HomeCenter.SourceGenerators
     internal class SourceGeneratorOptions<T> where T : ISourceGenerator
     {
         public bool EnableLogging { get; set; }
-
         public bool DetailedLogging { get; set; }
-
         public bool EnableDebug { get; set; }
-
         public string LogPath { get; set; }
+        public bool IntellisenseFix { get; set; }
+        public string IntermediateOutputPath { get; set; }
 
         public List<AdditionalFilesOptions> AdditionalFilesOptions { get; set; } = new List<AdditionalFilesOptions>();
 
@@ -50,7 +50,21 @@ namespace HomeCenter.SourceGenerators
             if (TryReadGlobalOption(context, $"SourceGenerator_EnableDebug_{typeof(T).Name}", out string debugThisGenerator)
                 && bool.TryParse(debugThisGenerator, out var debugThisGeneratorValue))
             {
-                EnableDebug = bool.Parse(debugThisGenerator);
+                EnableDebug = debugThisGeneratorValue;
+            }
+
+            if (TryReadGlobalOption(context, "SourceGenerator_IntellisenseFix", out var intellisenseFix) && bool.TryParse(intellisenseFix, out var intellisenseFixValue))
+            {
+                IntellisenseFix = intellisenseFixValue;
+            }
+
+            if (TryReadGlobalOption(context, "IntermediateOutputPath", out var intermediate))
+            {
+                IntermediateOutputPath = intermediate;
+            }
+            else
+            {
+                throw new NotSupportedException();
             }
 
             foreach (var file in context.AdditionalFiles)

@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
+    <SourceGenerator_IntellisenseFix>True</SourceGenerator_IntellisenseFix>
   </PropertyGroup>
 
   <ItemGroup>

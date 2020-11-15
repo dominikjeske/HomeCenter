@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace HomeCenter.SourceGenerators
 {
@@ -43,6 +45,15 @@ namespace HomeCenter.SourceGenerators
             templateString = templateString.Replace("//Error", $"#error {context} {exception.Message} | Logfile: {Options.LogPath}");
 
             return new GeneratedSource(templateString, classDeclaration.Identifier.Text);
+        }
+
+        public void ApplyDesignTimeFix(string content, string hintName)
+        {
+            if (Options.IntellisenseFix)
+            {
+                var path = Path.Combine(Options.IntermediateOutputPath, hintName + ".generated.cs");
+                File.WriteAllText(path, content, Encoding.UTF8);
+            }
         }
 
         /// <summary>
