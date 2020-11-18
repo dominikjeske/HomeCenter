@@ -62,10 +62,6 @@ namespace HomeCenter.SourceGenerators
             {
                 IntermediateOutputPath = intermediate;
             }
-            else
-            {
-                throw new NotSupportedException();
-            }
 
             foreach (var file in context.AdditionalFiles)
             {

@@ -17,16 +17,30 @@ namespace HomeCenter.SourceGenerators.Tests
             expectedResult.AssertSourceCodesEquals(result.GeneratedCode);
         }
 
+        [Fact]
+        public async Task MessageFactoryTest()
+        {
+            var userSource = await File.ReadAllTextAsync(@"..\..\..\TestInputs\TestMessageFactory.cs");
+            var expectedResult = await File.ReadAllTextAsync(@"..\..\..\TestOutputs\TestMessageFactoryOutput.cs");
 
-        //[Fact]
-        //public async Task MessageFactoryTest()
+            var result = GeneratorRunner.Run(userSource, new MessageFactoryGenerator());
+
+            expectedResult.AssertSourceCodesEquals(result.GeneratedCode);
+        }
+
+        //        var diagnostics = compilation.GetDiagnostics();
+        //if (!VerifyDiagnostics(diagnostics, new[] { "CS0012", "CS0616", "CS0246" }))
         //{
-        //    var userSource = await File.ReadAllTextAsync(@"..\..\..\TestInputs\TestMessageFactory.cs");
-        //    var expectedResult = await File.ReadAllTextAsync(@"..\..\..\TestOutputs\TestMessageFactoryOutput.cs");
+        //    // this will make the test fail, check the input source code!
+        //    return diagnostics;
+        //}
 
-        //    var result = GeneratorRunner.Run(userSource, new MessageFactoryGenerator());
 
-        //    expectedResult.AssertSourceCodesEquals(result.GeneratedCode);
+        //public static bool VerifyDiagnostics(ImmutableArray<Diagnostic> actual, string[] expected)
+        //{
+        //    return actual.Where(d => d.Severity == DiagnosticSeverity.Error)
+        //            .Select(d => d.Id.ToString())
+        //            .All(id => expected.Contains(id)); ;
         //}
     }
 
