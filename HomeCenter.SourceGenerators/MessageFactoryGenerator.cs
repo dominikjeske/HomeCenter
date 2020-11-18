@@ -143,22 +143,24 @@ namespace HomeCenter.SourceGenerators
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            //if (!type.IsAccessibleOutsideOfAssembly() || !_exportedTypes.Add(type))
-            //    return;
-
-            if (!_exportedTypes.Add(type))
-                return;
-
-            var nestedTypes = type.GetTypeMembers();
-
-            if (nestedTypes.IsDefaultOrEmpty)
-                return;
-
-            foreach (INamedTypeSymbol nestedType in nestedTypes)
+            if(type.TypeKind == TypeKind.Class)
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                nestedType.Accept(this);
+                if(type.BaseType?.Name == "Command")
+                {
+                    _exportedTypes.Add(type);
+
+                }
             }
+
+
+            foreach (var childSymbol in type.GetTypeMembers())
+            {
+
+
+
+                childSymbol.Accept(this);
+            }
+
         }
     }
 }

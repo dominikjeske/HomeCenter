@@ -17,6 +17,16 @@ namespace HomeCenter.SourceGenerators
             }
         }
 
+        public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type)
+        {
+            var current = type.BaseType;
+            while (current != null)
+            {
+                yield return current;
+                current = current.BaseType;
+            }
+        }
+
         public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type)
         {
             return type.GetBaseTypesAndThis().SelectMany(n => n.GetMembers());
