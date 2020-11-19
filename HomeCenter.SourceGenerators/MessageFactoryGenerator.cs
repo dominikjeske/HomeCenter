@@ -1,10 +1,8 @@
-﻿using HomeCenter.Abstractions;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -37,7 +35,7 @@ namespace HomeCenter.SourceGenerators
         {
             try
             {
-                var factoryModel = GetModel(proxy, context.GeneratorExecutionContext.Compilation);
+                var factoryModel = GetModel(proxy, context.GeneratorExecutionContext.Compilation, context.GeneratorExecutionContext.CancellationToken);
 
                 var templateString = ResourceReader.GetResource("MessageFactory.scriban");
 
@@ -55,7 +53,7 @@ namespace HomeCenter.SourceGenerators
             }
         }
 
-        private MessageFactoryModel GetModel(ClassDeclarationSyntax classSyntax, Compilation compilation)
+        private MessageFactoryModel GetModel(ClassDeclarationSyntax classSyntax, Compilation compilation, CancellationToken token)
         {
             var root = classSyntax.GetCompilationUnit();
 
@@ -69,98 +67,30 @@ namespace HomeCenter.SourceGenerators
 
                 Namespace = root.GetNamespace(),
 
-                Commands = GetCommands(compilation),
+                Commands = GetCommands(compilation, token),
 
-                Events = GetEvents(compilation)
+                Events = GetEvents(compilation, token)
             };
 
             return proxyModel;
         }
 
-        private List<CommandDescriptor> GetCommands(Compilation compilation)
+        private List<CommandDescriptor> GetCommands(Compilation compilation, CancellationToken token)
         {
-            var visitor = new ExportedTypesCollector(CancellationToken.None);
-            visitor.Visit(compilation.GlobalNamespace);
-
-            var xxx = compilation.GetSymbolsWithName(x => true, SymbolFilter.Type).ToList();
-
-            var xxxc = compilation.GlobalNamespace.GetTypeMembers();
-
-            return compilation.GetSymbolsWithName(x => x.IndexOf(nameof(Command)) > -1, SymbolFilter.Type)
-                              .OfType<INamedTypeSymbol>()
-                              .Where(y => y.BaseType.Name == nameof(Command) && !y.IsAbstract)
-                              .Select(c => new CommandDescriptor
-                              {
-                                  Name = c.Name,
-                                  Namespace = c.ContainingNamespace.ToString()
-                              })
-                              .ToList();
-        }
-
-        private List<EventDescriptor> GetEvents(Compilation compilation)
-        {
-            return compilation.GetSymbolsWithName(x => x.IndexOf(nameof(Event)) > -1, SymbolFilter.Type)
-                              .OfType<INamedTypeSymbol>()
-                              .Where(y => y.BaseType.Name == nameof(Event) && !y.IsAbstract)
-                              .Select(c => new EventDescriptor
-                              {
-                                  Name = c.Name,
-                                  Namespace = c.ContainingNamespace.ToString()
-                              })
-                              .ToList();
-        }
-    }
-
-    internal class ExportedTypesCollector : SymbolVisitor
-    {
-        private readonly CancellationToken _cancellationToken;
-        private readonly HashSet<INamedTypeSymbol> _exportedTypes;
-
-        public ExportedTypesCollector(CancellationToken cancellation)
-        {
-            _cancellationToken = cancellation;
-            _exportedTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
-        }
-
-        public ImmutableArray<INamedTypeSymbol> GetPublicTypes() => _exportedTypes.ToImmutableArray();
-
-        public override void VisitAssembly(IAssemblySymbol symbol)
-        {
-            _cancellationToken.ThrowIfCancellationRequested();
-            symbol.GlobalNamespace.Accept(this);
-        }
-
-        public override void VisitNamespace(INamespaceSymbol symbol)
-        {
-            foreach (INamespaceOrTypeSymbol namespaceOrType in symbol.GetMembers())
+            return compilation.GetAllWithBaseClass("HomeCenter.Abstractions.Command", token).Select(c => new CommandDescriptor
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                namespaceOrType.Accept(this);
-            }
+                Name = c.Name,
+                Namespace = c.ContainingNamespace.ToString()
+            }).ToList();
         }
 
-        public override void VisitNamedType(INamedTypeSymbol type)
+        private List<EventDescriptor> GetEvents(Compilation compilation, CancellationToken token)
         {
-            _cancellationToken.ThrowIfCancellationRequested();
-
-            if(type.TypeKind == TypeKind.Class)
+            return compilation.GetAllWithBaseClass("HomeCenter.Abstractions.Event", token).Select(c => new EventDescriptor
             {
-                if(type.BaseType?.Name == "Command")
-                {
-                    _exportedTypes.Add(type);
-
-                }
-            }
-
-
-            foreach (var childSymbol in type.GetTypeMembers())
-            {
-
-
-
-                childSymbol.Accept(this);
-            }
-
+                Name = c.Name,
+                Namespace = c.ContainingNamespace.ToString()
+            }).ToList();
         }
     }
 }

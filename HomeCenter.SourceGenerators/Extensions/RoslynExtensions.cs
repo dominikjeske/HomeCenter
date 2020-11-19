@@ -1,12 +1,30 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace HomeCenter.SourceGenerators
 {
     public static class RoslynExtensions
     {
+        public static IEnumerable<INamedTypeSymbol> GetAllWithBaseClass(this Compilation compilation, string baseClass, CancellationToken token)
+        {
+            var xx = new Stopwatch();
+            xx.Start();
+
+            var visitor = new TypeVisitor(type => type.TypeKind == TypeKind.Class && 
+                                                 type.GetBaseTypes().Any(x => x.ToDisplayString() == baseClass
+                                        ), token);
+            visitor.Visit(compilation.GlobalNamespace);
+            xx.Stop();
+            var ddd = xx.Elapsed.TotalMilliseconds;
+
+            
+            return visitor.GetResults();
+        }
+
         public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
         {
             var current = type;
