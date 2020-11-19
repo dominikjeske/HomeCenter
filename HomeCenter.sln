@@ -16,11 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Actors.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.EventAggregator", "HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj", "{508683A9-EB1E-4E31-B921-311A6092E3DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Runner", "HomeCenter.Runner\HomeCenter.Runner.csproj", "{8721691B-FAC3-4B80-B28C-C3B92FF28219}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Storage.RavenDB", "HomeCenter.Storage.RavenDB\HomeCenter.Storage.RavenDB.csproj", "{F60D9546-F929-4918-A99D-5FEADBD2D22E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Tests", "HomeCenter.Tests\HomeCenter.Tests.csproj", "{4D27E428-D799-4B31-8BBF-46B2F6CE234E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Extensions", "HomeCenter.Extensions\HomeCenter.Extensions.csproj", "{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}"
 EndProject
@@ -78,18 +74,10 @@ Global
 		{508683A9-EB1E-4E31-B921-311A6092E3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{508683A9-EB1E-4E31-B921-311A6092E3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{508683A9-EB1E-4E31-B921-311A6092E3DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8721691B-FAC3-4B80-B28C-C3B92FF28219}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8721691B-FAC3-4B80-B28C-C3B92FF28219}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8721691B-FAC3-4B80-B28C-C3B92FF28219}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8721691B-FAC3-4B80-B28C-C3B92FF28219}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F60D9546-F929-4918-A99D-5FEADBD2D22E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F60D9546-F929-4918-A99D-5FEADBD2D22E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F60D9546-F929-4918-A99D-5FEADBD2D22E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F60D9546-F929-4918-A99D-5FEADBD2D22E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D27E428-D799-4B31-8BBF-46B2F6CE234E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D27E428-D799-4B31-8BBF-46B2F6CE234E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D27E428-D799-4B31-8BBF-46B2F6CE234E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D27E428-D799-4B31-8BBF-46B2F6CE234E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6A2143D-80BF-49B2-89DB-AD7E4B8F1A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
