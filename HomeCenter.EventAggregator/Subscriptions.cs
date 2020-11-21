@@ -138,7 +138,7 @@ namespace HomeCenter.EventAggregator
             return latestSubscriptions;
         }
 
-        public List<BaseCommandHandler> GetCurrentSubscriptions(object message, RoutingFilter filter = null)
+        public List<BaseCommandHandler> GetCurrentSubscriptions(object message, RoutingFilter? filter = null)
         {
             var latestSubscriptions = GetCurrentSubscriptions();
             var msgTypeInfo = message.GetType().GetTypeInfo();

@@ -18,7 +18,7 @@ namespace HomeCenter.EventAggregator
         private readonly Subscriptions _subscriptions = new Subscriptions();
         public Func<BehaviorChain> DefaultBehavior { get; set; } = () => new BehaviorChain().WithTimeout(TimeSpan.FromMilliseconds(DEFAULT_TIMEOUT));
 
-        public List<BaseCommandHandler> GetSubscriptors(object message, RoutingFilter filter = null)
+        public List<BaseCommandHandler> GetSubscriptors(object message, RoutingFilter? filter = null)
         {
             return _subscriptions.GetCurrentSubscriptions(message, filter);
         }
@@ -26,9 +26,9 @@ namespace HomeCenter.EventAggregator
         public async Task<R> QueryAsync<T, R>
         (
            T message,
-           RoutingFilter filter = null,
+           RoutingFilter? filter = null,
            CancellationToken cancellationToken = default,
-           BehaviorChain behaviors = null
+           BehaviorChain? behaviors = null
         )
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
@@ -43,7 +43,7 @@ namespace HomeCenter.EventAggregator
             return await invokeChain.HandleAsync<T, R>(messageEnvelope);
         }
 
-        private IAsyncCommandHandler BuildBehaviorChain(BehaviorChain behaviors, IAsyncCommandHandler subscriber)
+        private IAsyncCommandHandler BuildBehaviorChain(BehaviorChain? behaviors, IAsyncCommandHandler subscriber)
         {
             if (behaviors == null) behaviors = DefaultBehavior();
             return behaviors.Build(subscriber);

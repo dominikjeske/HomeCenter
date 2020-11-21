@@ -18,7 +18,7 @@ namespace HomeCenter.EventAggregator.Handlers
             SubscriptionFilter = filter;
         }
 
-        public bool IsFilterMatch(object message, RoutingFilter messageFilter)
+        public bool IsFilterMatch(object message, RoutingFilter? messageFilter)
         {
             if (SubscriptionFilter == null)
             {

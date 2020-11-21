@@ -24,7 +24,7 @@ namespace HomeCenter.EventAggregator
             RoutingAttributes.AddRangeNewOnly(routingAttributes);
         }
 
-        public bool EvaluateFilter(object message, RoutingFilter messageFilter)
+        public bool EvaluateFilter(object message, RoutingFilter? messageFilter)
         {
             // If routing key is defined on subscription we check if it is match with message key
             // If Subscriber or sender use * we skip routing key comparison
