@@ -7,7 +7,7 @@ namespace HomeCenter.Abstractions
     public abstract class ActorMessage : BaseObject, IEquatable<ActorMessage>
     {
         [JsonIgnore]
-        public Proto.IContext Context { get; set; }
+        public Proto.IContext? Context { get; set; }
 
         public string LogLevel
         {

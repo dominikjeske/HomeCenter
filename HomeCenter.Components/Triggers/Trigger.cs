@@ -15,20 +15,12 @@ namespace HomeCenter.Model.Triggers
 
         public Task<bool> ValidateCondition() => Condition.Validate();
 
-        public ActorMessageContext ToActorContext(PID actor) => new ActorMessageContext
-        {
-            Condition = Condition,
-            Actor = actor,
-            Commands = Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToList()
-        };
+        public ActorMessageContext ToActorContext(PID actor) => ActorMessageContext.Create(actor, Condition, Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToArray());
 
-        public ActorMessageContext ToActorContextWithFinish(PID actor) => new ActorMessageContext
-        {
-            Condition = Condition,
-            Actor = actor,
-            Commands = Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)).ToList(),
-            FinishCommands = Commands.Where(x => x.ContainsProperty(MessageProperties.IsFinishComand)).ToList(),
-            FinishCommandTime = Schedule.WorkingTime
-        };
+
+        //TODO default fo Schedule.WorkingTime
+        public ActorMessageContext ToActorContextWithFinish(PID actor)
+            => ActorMessageContext.Create(actor, Condition, Commands.Where(x => x.ContainsProperty(MessageProperties.IsFinishComand)), Schedule.WorkingTime.GetValueOrDefault(), Commands.Where(x => !x.ContainsProperty(MessageProperties.IsFinishComand)));
+
     }
 }

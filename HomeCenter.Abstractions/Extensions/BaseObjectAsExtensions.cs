@@ -2,6 +2,7 @@
 using HomeCenter.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 
@@ -167,16 +168,16 @@ namespace HomeCenter
             throw new FormatException($"Property {propertyName} value {baseObject[propertyName]} is not proper uint value");
         }
 
-        public static string AsString(this BaseObject baseObject, string propertyName, string defaultValue = null)
+        public static string AsString(this BaseObject baseObject, string propertyName, [AllowNull] string defaultValue = default)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             return baseObject[propertyName].ToString();
         }
 
-        public static IList<string> AsList(this BaseObject baseObject, string propertyName, IList<string> defaultValue = null)
+        public static IList<string> AsList(this BaseObject baseObject, string propertyName, [AllowNull] IList<string> defaultValue = null)
         {
-            if (!baseObject.ContainsProperty(propertyName)) return (IList<string>)defaultValue ?? throw new ArgumentException(propertyName);
+            if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
             var rawValue = baseObject[propertyName];
             if (rawValue is IList<string> listValue)
@@ -187,7 +188,7 @@ namespace HomeCenter
             return baseObject[propertyName].ToString().Split(',').Select(x => x.Trim()).ToList();
         }
 
-        public static byte[] AsByteArray(this BaseObject baseObject, string propertyName, byte[] defaultValue = null)
+        public static byte[] AsByteArray(this BaseObject baseObject, string propertyName, [AllowNull] byte[] defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
@@ -213,7 +214,7 @@ namespace HomeCenter
             throw new FormatException($"Property {propertyName} is not of type {typeof(T).Name}");
         }
 
-        public static IDictionary<string, string> AsDictionary(this BaseObject baseObject, string propertyName, IDictionary<string, string> defaultValue = null)
+        public static IDictionary<string, string> AsDictionary(this BaseObject baseObject, string propertyName, [AllowNull] IDictionary<string, string> defaultValue = null)
         {
             if (!baseObject.ContainsProperty(propertyName)) return defaultValue ?? throw new ArgumentException(propertyName);
 
@@ -223,7 +224,9 @@ namespace HomeCenter
                 return dictionaryValue;
             }
 
-            return JsonSerializer.Deserialize<IDictionary<string, string>>(baseObject[propertyName].ToString());
+            var serialized = JsonSerializer.Deserialize<IDictionary<string, string>>(baseObject[propertyName].ToString());
+
+            return serialized ?? throw new InvalidOperationException(propertyName);
         }
     }
 }

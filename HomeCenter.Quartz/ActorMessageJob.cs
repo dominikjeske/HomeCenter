@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Abstractions;
 using Quartz;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Quartz
@@ -28,7 +29,7 @@ namespace HomeCenter.Quartz
                 _actorMessageBroker.Send(cmd, actorMessageContext.Actor);
             }
 
-            if (actorMessageContext.FinishCommands?.Count > 0)
+            if (actorMessageContext.FinishCommands.Any())
             {
                 var time = context.FireTimeUtc.Add(actorMessageContext.FinishCommandTime.GetValueOrDefault());
                 var finishContext = ActorMessageContext.Create(actorMessageContext.Actor, actorMessageContext.Condition, actorMessageContext.FinishCommands.ToArray());

@@ -1,11 +1,12 @@
 ﻿using HomeCenter.Abstractions.Defaults;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.Abstractions
 {
     public abstract class StateBase : BaseObject
     {
-        protected StateBase(string readWriteMode = default)
+        protected StateBase([AllowNull] string readWriteMode = default)
         {
             if (readWriteMode == null) readWriteMode = ReadWriteMode.ReadWrite;
 

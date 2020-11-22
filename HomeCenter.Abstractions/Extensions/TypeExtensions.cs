@@ -87,10 +87,10 @@ namespace HomeCenter
             return Expression.Lambda<Func<Command, Task<object>>>(result, commandParameter).Compile();
         }
 
-        //[return: MaybeNull]
         public static T CreateInstance<T>(this Type type) where T : class
         {
-            return type.GetConstructors().FirstOrDefault()?.Invoke(null) as T;
+            if (type.GetConstructors().FirstOrDefault()?.Invoke(null) is not T result) throw new InvalidOperationException($"Cannot create instance of {type.Name}");
+            return result;
         }
     }
 }
