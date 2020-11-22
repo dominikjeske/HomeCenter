@@ -3,15 +3,7 @@
     <SourceGenerator_IntellisenseFix>True</SourceGenerator_IntellisenseFix>
     <SourceGenerator_EnableLogging>False</SourceGenerator_EnableLogging>
     <SourceGenerator_EnableDebug>False</SourceGenerator_EnableDebug>
-    <LangVersion>preview</LangVersion>
-
-    <!--<UsingToolMicrosoftNetCompilers>true</UsingToolMicrosoftNetCompilers>-->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <!--<ItemGroup>
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.8.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>-->
 </Project>

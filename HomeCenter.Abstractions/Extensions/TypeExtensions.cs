@@ -1,10 +1,11 @@
-﻿using System;
+﻿using HomeCenter.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter
 {
@@ -86,6 +87,7 @@ namespace HomeCenter
             return Expression.Lambda<Func<Command, Task<object>>>(result, commandParameter).Compile();
         }
 
+        //[return: MaybeNull]
         public static T CreateInstance<T>(this Type type) where T : class
         {
             return type.GetConstructors().FirstOrDefault()?.Invoke(null) as T;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using HomeCenter.Abstractions;
@@ -14,6 +15,7 @@ namespace HomeCenter.Actors.Core
 
         protected IList<string> RequierdProperties() => _requierdProperties;
 
+        [return: MaybeNull]
         protected async Task<T> UpdateState<T>(string stateName, T oldValue, T newValue, IDictionary<string, string> additionalProperties = null)
         {
             if (newValue == null || EqualityComparer<T>.Default.Equals(oldValue, newValue)) return oldValue;

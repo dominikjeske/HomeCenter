@@ -16,6 +16,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using HomeCenter.Actors.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.ActorCompiler
 {
