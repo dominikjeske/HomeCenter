@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.EventAggregator;
 using HomeCenter.Messages.Events.Service;
@@ -11,14 +6,28 @@ using HomeCenter.Messages.Queries;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
-using Behavior = Proto.Behavior;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Core
 {
     public abstract class DeviceActor : BaseObject, IActor
     {
-        [DI] protected IMessageBroker MessageBroker { get; set; }
-        [DI] protected ILogger Logger { get; set; }
+        [AllowNull]
+        [DI]
+        protected IMessageBroker MessageBroker { get; set; }
+
+        [AllowNull]
+        [DI]
+        protected ILogger Logger { get; set; }
+
+        [AllowNull]
+        protected PID Self { get; private set; }
+
         public bool IsEnabled
         {
             get => this.AsBool(MessageProperties.IsEnabled, true);
@@ -31,10 +40,10 @@ namespace HomeCenter.Actors.Core
             init => this.SetPropertyList(MessageProperties.Tags, value.ToArray());
         }
 
-        protected readonly Behavior Behavior = new Behavior();
+        protected readonly Proto.Behavior Behavior = new Proto.Behavior();
 
         protected DisposeContainer _disposables = new DisposeContainer();
-        protected PID Self { get; private set; }
+
 
         //Add resource to container that will be released when actor is about to be released
         protected void ProtectResource(IDisposable resource) => _disposables.Add(resource);
@@ -48,16 +57,7 @@ namespace HomeCenter.Actors.Core
 
         public Task ReceiveAsync(IContext context)
         {
-            try
-            {
-                //MessageBroker.SendAfterDelay
-
-                return Behavior.ReceiveAsync(context);
-            }
-            catch (Exception rr)
-            {
-                throw;
-            }
+            return Behavior.ReceiveAsync(context);
         }
 
         protected void Log(EventId eventId, string template = "", params object[] arguments)
@@ -85,7 +85,7 @@ namespace HomeCenter.Actors.Core
 
         protected virtual Task ReceiveAsyncInternal(IContext context) => Task.CompletedTask;
 
-        protected virtual Task UnhandledMessage(object message)
+        protected virtual Task UnhandledMessage(object? message)
         {
             if (message is ActorMessage actorMessage)
             {
@@ -93,7 +93,7 @@ namespace HomeCenter.Actors.Core
             }
             else
             {
-                throw new ArgumentException($"Component [{Uid}] cannot process message because type {message.GetType().Name} is not ActorMessage");
+                throw new ArgumentException($"Component [{Uid}] cannot process message because type {message?.GetType().Name} is not ActorMessage");
             }
         }
 
@@ -176,6 +176,8 @@ namespace HomeCenter.Actors.Core
 
         protected virtual Task OnStarted(IContext context)
         {
+            if (context?.Self?.Id is null) throw new InvalidOperationException("Actor should have ita id");
+
             Log(ActorEventType.ActorStart, "Started with id '{deviceId}'", context.Self.Id);
 
             Self = context.Self;
@@ -222,12 +224,12 @@ namespace HomeCenter.Actors.Core
             return Task.CompletedTask;
         }
 
-        protected void Subscribe<T>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : ActorMessage
+        protected void Subscribe<T>(bool subscribeOnParent = false, [AllowNull] RoutingFilter filter = null) where T : ActorMessage
         {
             _disposables.Add(MessageBroker.SubscribeForMessage<T>(Self, subscribeOnParent, filter));
         }
 
-        protected void Subscribe<T, R>(bool subscribeOnParent = false, RoutingFilter filter = null) where T : Query
+        protected void Subscribe<T, R>(bool subscribeOnParent = false, [AllowNull] RoutingFilter filter = null) where T : Query
         {
             _disposables.Add(MessageBroker.SubscribeForQuery<T, R>(Self, subscribeOnParent, filter));
         }

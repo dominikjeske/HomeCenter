@@ -5,22 +5,25 @@ namespace HomeCenter.Model.Triggers
     public class ManualSchedule
     {
         private TimeSpan? _finish;
+        public TimeSpan Start { get; }
+        public TimeSpan? WorkingTime { get;  }
 
-        public TimeSpan Start { get; init; }
+        public ManualSchedule(TimeSpan start, TimeSpan? finish = null, TimeSpan? workingTime = null)
+        {
+            if (finish is null && workingTime is null) throw new ArgumentException("FinishTime or Working time should be defined");
+
+            Start = start;
+            _finish = finish;
+            WorkingTime = workingTime;
+        }
 
         public TimeSpan Finish
         {
             get
             {
-                if (!_finish.HasValue && WorkingTime.HasValue)
-                {
-                    _finish = Start.Add(WorkingTime.Value);
-                }
-                return _finish.Value;
+                return _finish ??= Start.Add(WorkingTime.GetValueOrDefault());
             }
             init { _finish = value; }
         }
-
-        public TimeSpan? WorkingTime { get; init; }
     }
 }

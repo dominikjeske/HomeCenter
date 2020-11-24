@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Messages.Commands.Device;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.Capabilities
 {
@@ -8,7 +9,7 @@ namespace HomeCenter.Capabilities
     {
         public static string StateName { get; } = nameof(MuteState);
 
-        public MuteState(string ReadWriteMode = default) : base(ReadWriteMode)
+        public MuteState([AllowNull] string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(MuteState);
             this[StateProperties.CapabilityName] = Abstractions.Defaults.Capabilities.SpeakerController;

@@ -7,16 +7,16 @@ namespace HomeCenter.Conditions.Specific
 {
     public class TimeRangeCondition : Condition
     {
-        private Func<Task<TimeSpan?>> _startValueProvider = null;
-        private Func<Task<TimeSpan?>> _endValueProvider = null;
+        private Func<Task<TimeSpan>>? _startValueProvider;
+        private Func<Task<TimeSpan>>? _endValueProvider;
 
-        public TimeRangeCondition WithStart(Func<Task<TimeSpan?>> start)
+        public TimeRangeCondition WithStart(Func<Task<TimeSpan>> start)
         {
             _startValueProvider = start;
             return this;
         }
 
-        public TimeRangeCondition WithEnd(Func<Task<TimeSpan?>> end)
+        public TimeRangeCondition WithEnd(Func<Task<TimeSpan>> end)
         {
             _endValueProvider = end;
             return this;
@@ -48,15 +48,13 @@ namespace HomeCenter.Conditions.Specific
 
         public override async Task<bool> Validate()
         {
-            TimeSpan? startValue = ContainsProperty(ConditionProperies.StartTime) ? this.AsTime(ConditionProperies.StartTime) : await _startValueProvider();
-            TimeSpan? endValue = ContainsProperty(ConditionProperies.EndTime) ? this.AsTime(ConditionProperies.EndTime) : await _endValueProvider();
-
-            if (!startValue.HasValue || !endValue.HasValue) return false;
+            var startValue = this.AsTime(ConditionProperies.StartTime, _startValueProvider != null ? await _startValueProvider() : throw new InvalidOperationException());
+            var endValue = this.AsTime(ConditionProperies.EndTime, _endValueProvider != null ? await _endValueProvider() : throw new InvalidOperationException());
 
             startValue += this.AsTime(ConditionProperies.StartAdjustment, TimeSpan.Zero);
             endValue += this.AsTime(ConditionProperies.EndAdjustment, TimeSpan.Zero);
 
-            return SystemTime.Now.TimeOfDay.IsTimeInRange(startValue.Value, endValue.Value);
+            return SystemTime.Now.TimeOfDay.IsTimeInRange(startValue, endValue);
         }
     }
 }

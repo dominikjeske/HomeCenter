@@ -4,8 +4,6 @@ namespace HomeCenter.Abstractions
 {
     public interface ISerialDevice : IDisposable
     {
-        void Init();
-
         void Send(byte[] data);
 
         void Send(string data);

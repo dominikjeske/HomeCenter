@@ -16,7 +16,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using HomeCenter.Actors.Core;
-using System.Diagnostics.CodeAnalysis;
+using Light.GuardClauses;
 
 namespace HomeCenter.ActorCompiler
 {
@@ -100,7 +100,7 @@ namespace HomeCenter.ActorCompiler
                 File.Delete(path);
             }
 
-            return compilationResult.Success ? Result.Ok(path) : Result.Fail<string>(ReadCompilationErrors(compilationResult));
+            return compilationResult.Success ? Result.Success(path) : Result.Failure<string>(ReadCompilationErrors(compilationResult));
         }
 
         private string ReadCompilationErrors(Microsoft.CodeAnalysis.Emit.EmitResult compilationResult)
@@ -135,13 +135,18 @@ namespace HomeCenter.ActorCompiler
 
         private IEnumerable<SyntaxTree> ParseSourceCode(string sourceDir, IEnumerable<string> commons, string filter = "*.cs")
         {
+            sourceDir = sourceDir.MustNotBeNullOrWhiteSpace(sourceDir);
+
             var sources = Directory.GetFiles(sourceDir, filter, SearchOption.AllDirectories)
                                    .Select(file => SyntaxFactory.ParseSyntaxTree(File.ReadAllText(file)))
                                    .ToList();
 
             foreach (var common in commons)
             {
-                var commonPath = Path.Combine(Path.Combine(Path.GetDirectoryName(sourceDir), CommonAdapterDirectory), common);
+                var directoryName = Path.GetDirectoryName(sourceDir);
+                if (directoryName is null) continue;
+
+                var commonPath = Path.Combine(Path.Combine(directoryName, CommonAdapterDirectory), common);
                 sources.Add(SyntaxFactory.ParseSyntaxTree(File.ReadAllText(commonPath)));
             }
 

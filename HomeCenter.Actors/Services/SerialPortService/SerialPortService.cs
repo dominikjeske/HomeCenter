@@ -29,8 +29,6 @@ namespace HomeCenter.Services.Networking
         {
             await base.OnStarted(context);
 
-            _serialDevice.Init();
-
             //TODO DNF
             //_disposeContainer.Add(_serialDevice.Subscribe(System.Reflection.Metadata.Handle));
             _disposeContainer.Add(_serialDevice);

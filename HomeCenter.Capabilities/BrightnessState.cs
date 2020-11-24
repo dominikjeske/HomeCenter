@@ -1,11 +1,12 @@
 ﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.Capabilities
 {
     public class BrightnessState : StateBase
     {
-        public BrightnessState(string ReadWriteMode = default) : base(ReadWriteMode)
+        public BrightnessState([AllowNull] string ReadWriteMode = default) : base(ReadWriteMode)
         {
             //StateName = nameof(BrightnessState);
             //Capability = Constants.Capabilities.BrightnessController;

@@ -5,9 +5,14 @@ namespace HomeCenter.Services.MotionService
 {
     public class EventDescriptor
     {
-        public Event Event { get; set; }
-        public TimeSpan? MinTimeToNext { get; set; }
+        public EventDescriptor(Event @event)
+        {
+            Event = @event;
+        }
 
-        public TimeSpan? MaxTimeToNext { get; set; }
+        public Event Event { get; }
+        //public TimeSpan? MinTimeToNext { get; set; }
+
+        //public TimeSpan? MaxTimeToNext { get; set; }
     }
 }

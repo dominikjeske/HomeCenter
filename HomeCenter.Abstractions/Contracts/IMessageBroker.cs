@@ -1,6 +1,7 @@
 ﻿using HomeCenter.EventAggregator;
 using Proto;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,17 +9,17 @@ namespace HomeCenter.Abstractions
 {
     public interface IMessageBroker
     {
-        Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage;
+        Task Publish<T>(T message, [AllowNull] RoutingFilter routingFilter = null) where T : ActorMessage;
 
-        Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command;
+        Task SendToService<T>(T command, [AllowNull] RoutingFilter filter = null) where T : Command;
 
-        Task<R> QueryService<T, R>(T query, RoutingFilter filter = null)
+        Task<R> QueryService<T, R>(T query, [AllowNull] RoutingFilter filter = null)
             where T : Query;
 
-        Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null)
+        Task<R> QueryJsonService<T, R>(T query, [AllowNull] RoutingFilter filter = null)
             where T : Query;
 
-        Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null)
+        Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, [AllowNull] RoutingFilter filter = null)
             where T : Query, IMessageResult<Q, R>
             where Q : class;
 
@@ -30,15 +31,15 @@ namespace HomeCenter.Abstractions
 
         void Send(object message, string uid, string address = null);
 
-        SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage;
+        SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, [AllowNull] RoutingFilter filter = null) where T : ActorMessage;
 
-        SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query;
+        SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, [AllowNull] RoutingFilter filter = null) where T : Query;
 
-        IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event;
+        IObservable<IMessageEnvelope<T>> Observe<T>([AllowNull] RoutingFilter routingFilter = null) where T : Event;
 
-        SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event;
+        SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, [AllowNull] RoutingFilter filter = null) where T : Event;
 
-        Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null);
+        Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, [AllowNull] RoutingFilter filter = null);
 
         void SendWithTranslate(ActorMessage source, ActorMessage destination, string address);
 

@@ -1,5 +1,6 @@
 ﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.Capabilities
 {
@@ -7,7 +8,7 @@ namespace HomeCenter.Capabilities
     {
         public static string StateName { get; } = nameof(TemperatureState);
 
-        public TemperatureState(string ReadWriteMode = default) : base(ReadWriteMode)
+        public TemperatureState([AllowNull] string ReadWriteMode = default) : base(ReadWriteMode)
         {
             this[StateProperties.StateName] = nameof(TemperatureState);
             this[StateProperties.CapabilityName] = Abstractions.Defaults.Capabilities.TemperatureController;

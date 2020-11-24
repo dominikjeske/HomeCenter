@@ -9,14 +9,11 @@ namespace HomeCenter.Core
 {
     public class CoreHosting : IHostingStartup
     {
-        public static string Assembly => System.Reflection.Assembly.GetAssembly(typeof(CoreHosting)).GetName().Name;
+        public static string? Assembly => System.Reflection.Assembly.GetAssembly(typeof(CoreHosting))?.GetName()?.Name;
 
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<IConcurrencyProvider, ConcurrencyProvider>();
-            });
+            builder.ConfigureServices(services => services.AddSingleton<IConcurrencyProvider, ConcurrencyProvider>());
         }
     }
 }

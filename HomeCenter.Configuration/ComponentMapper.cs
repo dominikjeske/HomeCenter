@@ -35,40 +35,17 @@ namespace HomeCenter.Services.Actors
                 Uid = ar.Uid
             }).ToList();
 
-            var translators = config.Translators.Select(ar => new Translator
-            {
-                From = _baseObjectMapper.Map<ActorMessage>(ar.From),
-                To = _baseObjectMapper.Map<ActorMessage>(ar.To)
-            }).ToList();
+            var translators = config.Translators.Select(ar => new Translator(_baseObjectMapper.Map<ActorMessage>(ar.From), _baseObjectMapper.Map<ActorMessage>(ar.To)));
 
-            var triggers = config.Triggers.Select(ar => new Trigger
-            {
-                Commands = ar.Commands.Select(c => _baseObjectMapper.Map<Command>(c)).ToList(),
-                Event = _baseObjectMapper.Map<Event>(ar.Event),
-                Schedule = new Schedule
-                {
-                    Calendar = ar.Schedule.Calendar,
-                    CronExpression = ar.Schedule.CronExpression,
-                    WorkingTime = ar.Schedule.WorkingTime,
-                    ManualSchedules = ar.Schedule.ManualSchedules.Select(schedule => new ManualSchedule
-                    {
-                        Start = schedule.Start,
-                        Finish = schedule.Finish,
-                        WorkingTime = schedule.WorkingTime
-                    }).ToList(),
-                },
-                Condition = new ConditionContainer
-                {
-                    IsInverted = ar.Condition.IsInverted,
-                    DefaultOperator = ar.Condition.DefaultOperator,
-                    Expression = ar.Condition.Expression,
+            //TODO conitions
+            var triggers = config.Triggers.Select(ar => new Trigger(
+                _baseObjectMapper.Map<Event>(ar.Event),
+                ar.Commands.Select(c => _baseObjectMapper.Map<Command>(c)).ToList(),
+                new Schedule(ar.Schedule.CronExpression, ar.Schedule.Calendar, ar.Schedule.WorkingTime, ar.Schedule.ManualSchedules.Select(schedule => new ManualSchedule(schedule.Start, schedule.Finish, schedule.WorkingTime)).ToList()),
+                new ConditionContainer(ar.Condition.Expression, ar.Condition.IsInverted, ar.Condition.DefaultOperator, null))
+            );
 
-                    //TODO
-                    //Conditions = ar.Condition.Conditions.Select(x =>
-                }
-            }).ToList();
-
-            var component = new HomeCenter.Model.Components.ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
+            var component = new ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
 
             _actorMapper.Map(config, component);
 

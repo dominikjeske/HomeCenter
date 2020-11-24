@@ -8,8 +8,8 @@ namespace HomeCenter.Conditions.Specific
     {
         public IsNightCondition(IMessageBroker messageBroker)
         {
-            WithStart(() => messageBroker.QueryService<SunsetQuery, TimeSpan?>(SunsetQuery.Default));
-            WithEnd(() => messageBroker.QueryService<SunriseQuery, TimeSpan?>(SunriseQuery.Default));
+            WithStart(() => messageBroker.QueryService<SunsetQuery, TimeSpan>(SunsetQuery.Default));
+            WithEnd(() => messageBroker.QueryService<SunriseQuery, TimeSpan>(SunriseQuery.Default));
         }
     }
 }

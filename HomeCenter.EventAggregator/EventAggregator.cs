@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Light.GuardClauses;
 
 namespace HomeCenter.EventAggregator
 {
@@ -23,14 +24,16 @@ namespace HomeCenter.EventAggregator
             return _subscriptions.GetCurrentSubscriptions(message, filter);
         }
 
-        public async Task<R> QueryAsync<T, R>
+        public async Task<R?> QueryAsync<T, R>
         (
            T message,
            RoutingFilter? filter = null,
            CancellationToken cancellationToken = default,
            BehaviorChain? behaviors = null
-        )
+        ) where T : class
         {
+            message.MustNotBeNull(nameof(message));
+
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
             if (!localSubscriptions.Any()) return default;
@@ -49,17 +52,17 @@ namespace HomeCenter.EventAggregator
             return behaviors.Build(subscriber);
         }
 
-        public async Task<R> QueryWithResultCheckAsync<T, R>
+        public async Task<R?> QueryWithResultCheckAsync<T, R>
         (
             T message,
             R expectedResult,
-            RoutingFilter filter = null,
+            RoutingFilter? filter = null,
             CancellationToken cancellationToken = default,
-            BehaviorChain behaviors = null
-        )
+            BehaviorChain? behaviors = null
+        ) where T : class
         {
             var result = await QueryAsync<T, R>(message, filter, cancellationToken, behaviors);
-            if (!EqualityComparer<R>.Default.Equals(result, expectedResult))
+            if (!EqualityComparer<R?>.Default.Equals(result, expectedResult))
             {
                 throw new WrongResultException(result, expectedResult);
             }
@@ -69,10 +72,10 @@ namespace HomeCenter.EventAggregator
         public IObservable<R> QueryWithResults<T, R>
         (
             T message,
-            RoutingFilter filter = null,
+            RoutingFilter? filter = null,
             CancellationToken cancellationToken = default,
-            BehaviorChain behaviors = null
-        )
+            BehaviorChain? behaviors = null
+        ) where T : class
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
@@ -95,10 +98,10 @@ namespace HomeCenter.EventAggregator
         public async Task QueryWithRepublishResult<T, R>
         (
             T message,
-            RoutingFilter filter = null,
+            RoutingFilter? filter = null,
             CancellationToken cancellationToken = default,
-            BehaviorChain behaviors = null
-        )
+            BehaviorChain? behaviors = null
+        ) where T : class
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
@@ -110,7 +113,9 @@ namespace HomeCenter.EventAggregator
             {
                 var invokeChain = BuildBehaviorChain(behaviors, x);
                 var result = await invokeChain.HandleAsync<T, R>(messageEnvelope);
-                await Publish(result);
+                
+                //TODO
+                //await Publish(result);
             });
 
             await publishTask.WhenAll(cancellationToken).Unwrap();
@@ -119,10 +124,10 @@ namespace HomeCenter.EventAggregator
         public async Task Publish<T>
         (
            T message,
-           RoutingFilter filter = null,
+           RoutingFilter? filter = null,
            CancellationToken cancellationToken = default,
-           BehaviorChain behaviors = null
-        )
+           BehaviorChain? behaviors = null
+        ) where T : class
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
             var messageEnvelope = new MessageEnvelope<T>(message, cancellationToken);

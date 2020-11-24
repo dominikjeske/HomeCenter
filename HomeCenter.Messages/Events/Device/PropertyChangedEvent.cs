@@ -1,21 +1,23 @@
 ﻿using HomeCenter.Abstractions;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeCenter.Messages.Events.Device
 {
     public class PropertyChangedEvent : Event
     {
-        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties = null)
+        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, string? oldValue, string newValue, [AllowNull] IDictionary<string, string> additionalProperties = null)
         {
-            return BuildEvent(messageSource, changedPropertyName, oldValue, newValue, additionalProperties);
+            return BuildEvent(messageSource, changedPropertyName, oldValue, newValue, additionalProperties ?? ImmutableDictionary<string, string>.Empty);
         }
 
-        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, bool oldValue, bool newValue, IDictionary<string, string> additionalProperties = null)
+        public static PropertyChangedEvent Create(string messageSource, string changedPropertyName, bool? oldValue, bool newValue, [AllowNull] IDictionary<string, string> additionalProperties = null)
         {
-            return BuildEvent(messageSource, changedPropertyName, oldValue.ToString(), newValue.ToString(), additionalProperties);
+            return BuildEvent(messageSource, changedPropertyName, oldValue.ToString(), newValue.ToString(), additionalProperties ?? ImmutableDictionary<string, string>.Empty);
         }
 
-        private static PropertyChangedEvent BuildEvent(string messageSource, string changedPropertyName, string oldValue, string newValue, IDictionary<string, string> additionalProperties)
+        private static PropertyChangedEvent BuildEvent(string messageSource, string changedPropertyName, string? oldValue, string newValue, IDictionary<string, string> additionalProperties)
         {
             var propertyChangedEvent = new PropertyChangedEvent
             {
@@ -29,12 +31,9 @@ namespace HomeCenter.Messages.Events.Device
                 propertyChangedEvent.OldValue = oldValue;
             }
 
-            if (additionalProperties != null)
+            foreach (var val in additionalProperties)
             {
-                foreach (var val in additionalProperties)
-                {
-                    propertyChangedEvent.SetProperty(val.Key, val.Value);
-                }
+                propertyChangedEvent.SetProperty(val.Key, val.Value);
             }
 
             return propertyChangedEvent;

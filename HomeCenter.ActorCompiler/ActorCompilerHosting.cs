@@ -9,14 +9,11 @@ namespace HomeCenter.ActorCompiler
 {
     public class ActorCompilerHosting : IHostingStartup
     {
-        public static string Assembly => System.Reflection.Assembly.GetAssembly(typeof(ActorCompilerHosting)).GetName().Name;
+        public static string? Assembly => System.Reflection.Assembly.GetAssembly(typeof(ActorCompilerHosting))?.GetName()?.Name;
 
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(s =>
-            {
-                s.AddSingleton<IRoslynCompilerService, RoslynCompilerService>();
-            });
+            builder.ConfigureServices(s => s.AddSingleton<IRoslynCompilerService, RoslynCompilerService>());
         }
     }
 }

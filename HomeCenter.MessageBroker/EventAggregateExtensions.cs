@@ -8,34 +8,34 @@ namespace HomeCenter.Model.Extensions
 {
     public static class EventAggregateExtensions
     {
-        public static Task<R> QueryAsync<T, R>
-        (
-            this IEventAggregator eventAggregate,
-            T message,
-            RoutingFilter filter = null,
-            CancellationToken cancellationToken = default,
-            TimeSpan? timeout = null,
-            int retryCount = 0,
-            bool async = false
-        ) where R : class
-        {
-            var chain = new BehaviorChain().WithTimeout(timeout).WithRetry(retryCount).WithAsync(async);
-            return eventAggregate.QueryAsync<T, R>(message, filter, cancellationToken, chain);
-        }
+        //public static Task<R> QueryAsync<T, R>
+        //(
+        //    this IEventAggregator eventAggregate,
+        //    T message,
+        //    RoutingFilter filter = null,
+        //    CancellationToken cancellationToken = default,
+        //    TimeSpan? timeout = null,
+        //    int retryCount = 0,
+        //    bool async = false
+        //) where R : class
+        //{
+        //    var chain = new BehaviorChain().WithTimeout(timeout).WithRetry(retryCount).WithAsync(async);
+        //    return eventAggregate.QueryAsync<T, R>(message, filter, cancellationToken, chain);
+        //}
 
-        public static Task<R> QueryWitTimeoutAsync<T, R>
-        (
-            this IEventAggregator eventAggregate,
-            T message,
-            TimeSpan? timeout,
-            RoutingFilter filter = null,
-            CancellationToken cancellationToken = default
+        //public static Task<R> QueryWitTimeoutAsync<T, R>
+        //(
+        //    this IEventAggregator eventAggregate,
+        //    T message,
+        //    TimeSpan? timeout,
+        //    RoutingFilter filter = null,
+        //    CancellationToken cancellationToken = default
 
-        ) where R : class
-        {
-            var chain = new BehaviorChain().WithTimeout(timeout);
-            return eventAggregate.QueryAsync<T, R>(message, filter, cancellationToken, chain);
-        }
+        //) where R : class
+        //{
+        //    var chain = new BehaviorChain().WithTimeout(timeout);
+        //    return eventAggregate.QueryAsync<T, R>(message, filter, cancellationToken, chain);
+        //}
 
         // TODO
         //public static void RegisterHandlers(this IEventAggregator eventAggregator, Container container)

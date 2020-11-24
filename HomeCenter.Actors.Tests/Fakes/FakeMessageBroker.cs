@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.EventAggregator;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
-using HomeCenter.Services.MotionService.Tests;
 using Microsoft.Reactive.Testing;
 using Proto;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
 {
@@ -25,12 +25,12 @@ namespace HomeCenter.Actors.Tests.Fakes
             _lamps = lamps;
         }
 
-        public PID GetPID(string uid, string address = null)
+        public PID GetPID(string uid, [AllowNull] string address = null)
         {
             throw new NotImplementedException();
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event
+        public IObservable<IMessageEnvelope<T>> Observe<T>([AllowNull] RoutingFilter routingFilter = null) where T : Event
         {
             if (typeof(T) == typeof(MotionEvent))
             {
@@ -39,32 +39,36 @@ namespace HomeCenter.Actors.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
+        public Task Publish<T>(T message, [AllowNull] RoutingFilter routingFilter = null) where T : ActorMessage
         {
             throw new NotImplementedException();
         }
 
-        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
+        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, [AllowNull] RoutingFilter filter = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null)
+        public Task<R> QueryJsonService<T, R>(T query, [AllowNull] RoutingFilter filter = null)
             where T : Query
         {
             throw new NotImplementedException();
         }
 
-        public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null)
+        public Task<R> QueryService<T, R>(T query, [AllowNull] RoutingFilter filter = null)
             where T : Query
         {
             if (query is SunriseQuery)
             {
-                return Task.FromResult((TimeSpan?)new TimeSpan(6, 0, 0)) as Task<R>;
+                var result = Task.FromResult((TimeSpan?)new TimeSpan(6, 0, 0)) as Task<R>;
+                if (result is null) throw new InvalidCastException();
+                return result;
             }
             else if (query is SunsetQuery)
             {
-                return Task.FromResult((TimeSpan?)new TimeSpan(18, 0, 0)) as Task<R>;
+                var result = Task.FromResult((TimeSpan?)new TimeSpan(18, 0, 0)) as Task<R>;
+                if (result is null) throw new InvalidCastException();
+                return result;
             }
             else
             {
@@ -72,7 +76,7 @@ namespace HomeCenter.Actors.Tests.Fakes
             }
         }
 
-        public Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null)
+        public Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, [AllowNull] RoutingFilter filter = null)
             where T : Query, IMessageResult<Q, R>
             where Q : class
         {
@@ -94,7 +98,7 @@ namespace HomeCenter.Actors.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public void Send(object message, string uid, string address = null)
+        public void Send(object message, string uid, [AllowNull] string address = null)
         {
             if (message is TurnOnCommand)
             {
@@ -120,17 +124,17 @@ namespace HomeCenter.Actors.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default(CancellationToken), string calendar = null)
+        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default(CancellationToken), [AllowNull] string calendar = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
+        public Task SendToService<T>(T command, [AllowNull] RoutingFilter filter = null) where T : Command
         {
             throw new NotImplementedException();
         }
 
-        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default(CancellationToken), string calendar = null)
+        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default(CancellationToken), [AllowNull] string calendar = null)
         {
             throw new NotImplementedException();
         }
@@ -145,22 +149,22 @@ namespace HomeCenter.Actors.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event
+        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, [AllowNull] RoutingFilter filter = null) where T : Event
         {
             throw new NotImplementedException();
         }
 
-        public SubscriptionToken SubscribeForEvent<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter = null) where T : Event
+        public SubscriptionToken SubscribeForEvent<T>(Func<IMessageEnvelope<T>, Task> action, [AllowNull] RoutingFilter filter = null) where T : Event
         {
             throw new NotImplementedException();
         }
 
-        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
+        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, [AllowNull] RoutingFilter filter = null) where T : ActorMessage
         {
             return SubscriptionToken.Empty;
         }
 
-        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query
+        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, [AllowNull] RoutingFilter filter = null) where T : Query
         {
             throw new NotImplementedException();
         }

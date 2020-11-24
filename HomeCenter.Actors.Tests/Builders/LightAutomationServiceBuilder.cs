@@ -1,16 +1,15 @@
-﻿using System;
+﻿using HomeCenter.Services.Configuration.DTO;
+using HomeCenter.Services.MotionService;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using HomeCenter.Services.Configuration.DTO;
-using HomeCenter.Services.MotionService;
-using HomeCenter.Services.MotionService.Tests;
 
 namespace HomeCenter.Actors.Tests.Builders
 {
     internal class LightAutomationServiceBuilder
     {
         private TimeSpan? _confusionResolutionTime;
-        private string _workingTime;
+        private string _workingTime = string.Empty;
 
         private readonly Dictionary<string, RoomBuilder> _rooms = new Dictionary<string, RoomBuilder>();
 
@@ -52,7 +51,11 @@ namespace HomeCenter.Actors.Tests.Builders
 
             if (_confusionResolutionTime.HasValue)
             {
-                serviceDto.Properties.Add(MotionProperties.ConfusionResolutionTime, ToJsonElement(_confusionResolutionTime.ToString()));
+                var confuseValue = _confusionResolutionTime.ToString();
+                if (confuseValue is not null)
+                {
+                    serviceDto.Properties.Add(MotionProperties.ConfusionResolutionTime, ToJsonElement(confuseValue));
+                }
             }
 
             return serviceDto;

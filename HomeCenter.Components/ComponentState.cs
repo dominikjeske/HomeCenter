@@ -4,6 +4,7 @@ using HomeCenter.Extensions;
 using HomeCenter.Messages.Queries.Device;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace HomeCenter.Model.Components
@@ -33,11 +34,11 @@ namespace HomeCenter.Model.Components
 
         public IReadOnlyList<string> SupportedStates() => _states.Keys.ToList().AsReadOnly();
 
-        public IReadOnlyList<string> SupportedCapabilities() => _states.Values.Select(c => c.Capability).Distinct().ToList().AsReadOnly();
+        public IReadOnlyList<string> SupportedCapabilities() => _states.Values.Select(c => c.Capability).Where(x => x != null).OfType<string>().Distinct().ToList().AsReadOnly();
 
         public bool IsStateProvidingAdapter(string adapterName, string stateName) => _states.ContainsKey(stateName) && (_states[stateName].ReadAdapter?.InvariantEquals(adapterName) ?? false);
 
-        public IEnumerable<string> GetCommandAdapter(Command command) => _states.Where(s => s.Value.SupportedCommands.InvariantContains(command.Type)).Select(c => c.Value.WriteAdapter);
+        public IEnumerable<string> GetCommandAdapter(Command command) => _states.Where(s => s.Value.SupportedCommands.InvariantContains(command.Type)).Select(c => c.Value.WriteAdapter).Where(x => x != null).OfType<string>();
 
         public IReadOnlyDictionary<string, string> GetStateValues(params string[] stateNames)
         {
@@ -48,10 +49,10 @@ namespace HomeCenter.Model.Components
                 states = states.Where(s => stateNames.InvariantContains(s.Name));
             }
 
-            return states.ToDictionary(k => k.Name, v => v.Value).AsReadOnly();
+            return states.ToDictionary(k => k.Name, v => v.Value).AsReadOnly() ?? ImmutableDictionary<string, string>.Empty.AsReadOnly();
         }
 
-        public bool TryUpdateState(string stateName, string newValue, out string oldValue)
+        public bool TryUpdateState(string stateName, string newValue, out string? oldValue)
         {
             if (!_states.ContainsKey(stateName))
             {
@@ -71,13 +72,11 @@ namespace HomeCenter.Model.Components
         internal class State
         {
             public string Name { get; }
-            public string Capability { get; private set; }
-            public string Value { get; private set; }
-
-            public string WriteAdapter { get; private set; }
-            public string ReadAdapter { get; private set; }
-
-            public IList<string> SupportedCommands { get; private set; }
+            public string? Capability { get; private set; }
+            public string Value { get; private set; } = string.Empty;
+            public string? WriteAdapter { get; private set; }
+            public string? ReadAdapter { get; private set; }
+            public IList<string> SupportedCommands { get; private set; } = Enumerable.Empty<string>().ToList();
 
             public State(string name, IEnumerable<(AdapterReference Adapter, StateBase State)> stateGroup)
             {
@@ -93,21 +92,22 @@ namespace HomeCenter.Model.Components
 
             private void SetStateAdapter(string adapter, StateBase state, string mode)
             {
+                Capability = state.CapabilityName;
+                SupportedCommands = state.SupportedCommands;
+
                 if (mode == ReadWriteMode.Read)
                 {
                     ReadAdapter = adapter;
-                    Capability = state.CapabilityName;
                 }
                 else
                 {
                     WriteAdapter = adapter;
-                    SupportedCommands = state.SupportedCommands;
                 }
             }
 
             private void SetStateAdapter(IEnumerable<(AdapterReference Adapter, StateBase State)> stateGroup, string readWriteMode)
             {
-                var forcedState = stateGroup.FirstOrDefault(a => a.Adapter.ContainsProperty(Name) && a.Adapter[Name] == readWriteMode);
+                var forcedState = stateGroup.FirstOrDefault(a => a.Adapter.ContainsProperty(Name) && a.Adapter[Name].ToString() == readWriteMode);
 
                 if (!forcedState.Equals(default))
                 {

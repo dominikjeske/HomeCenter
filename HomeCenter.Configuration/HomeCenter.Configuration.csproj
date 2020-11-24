@@ -20,4 +20,5 @@
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
     <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
 </Project>

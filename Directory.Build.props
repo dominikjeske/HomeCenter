@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--Pollyfill for NetStandard 2.0-->
     <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" />
     <PackageReference Include="IsExternalInit" Version="1.0.0" PrivateAssets="all" />
+    <!--Language extensions-->
+    <PackageReference Include="Light.GuardClauses" Version="8.1.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.0" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Concurrency;
-using System.Threading.Tasks;
-using HomeCenter.Services.MotionService.Tests;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
 {
@@ -13,11 +13,11 @@ namespace HomeCenter.Actors.Tests.Fakes
     {
         private const string MESSAGE_TEMPLATE = "{OriginalFormat}";
         private readonly IScheduler _scheduler;
-
-        private DocumentStore _dbStore;
-        private IDocumentSession _dbSession;
         private readonly bool _useRavenDB;
-        private object locki = new object();
+        private readonly object _locki = new object();
+
+        private DocumentStore? _dbStore;
+        private IDocumentSession? _dbSession;
 
         public FakeLogger(IScheduler scheduler, bool useRavenDB)
         {
@@ -29,7 +29,6 @@ namespace HomeCenter.Actors.Tests.Fakes
                 InitRavenDB();
             }
         }
-
         private void InitRavenDB()
         {
             _dbStore = GetDbStore();
@@ -91,18 +90,18 @@ namespace HomeCenter.Actors.Tests.Fakes
                         {
                             if (pair.Key == MESSAGE_TEMPLATE)
                             {
-                                moveInfo.Template = pair.Value?.ToString();
+                                moveInfo.Template = pair.Value?.ToString() ?? "";
                             }
                             else
                             {
-                                moveInfo.Properties.Add(pair.Key, pair.Value);
+                                moveInfo.Properties.Add(pair.Key, pair.Value ?? "");
                             }
                         }
                     }
 
-                    lock (locki)
+                    lock (_locki)
                     {
-                        _dbSession.Store(moveInfo);
+                        _dbSession?.Store(moveInfo);
                     }
                 });
             }
@@ -131,7 +130,7 @@ namespace HomeCenter.Actors.Tests.Fakes
         {
             Task.Run(() =>
             {
-                lock (locki)
+                lock (_locki)
                 {
                     _dbSession?.SaveChanges();
                     _dbSession?.Dispose();

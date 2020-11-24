@@ -8,10 +8,10 @@ namespace HomeCenter.Adapters.Denon.Messages
 {
     internal class DenonControlQuery : HttpGetQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, object>
     {
-        public string Command { get; set; }
-        public string Api { get; set; }
-        public string ReturnNode { get; set; }
-        public string Zone { get; set; }
+        public string? Command { get; init; }
+        public string? Api { get; init; }
+        public string? ReturnNode { get; init; }
+        public string? Zone { get; init; }
 
         public bool Verify(string input, object expectedResult) => (string)expectedResult == input;
 

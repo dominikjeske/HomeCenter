@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Tests.Fakes;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
-using HomeCenter.Services.MotionService.Tests;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using SimpleInjector;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
 
 namespace HomeCenter.Actors.Tests.Builders
 {
@@ -122,7 +121,9 @@ namespace HomeCenter.Actors.Tests.Builders
 
             var sm = _container.GetInstance<ServiceMapper>();
 
-            LightAutomationServiceProxy actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
+            LightAutomationServiceProxy? actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
+
+            if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 
             var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
@@ -136,9 +137,11 @@ namespace HomeCenter.Actors.Tests.Builders
 
             foreach (var detector in _serviceConfig.ComponentsAttachedProperties)
             {
-                var detectorName = detector.Properties[MotionProperties.Lamp];
-
-                lampDictionary.Add(detectorName.ToString(), new FakeMotionLamp(detectorName.ToString()));
+                var detectorName = detector.Properties[MotionProperties.Lamp]?.ToString();
+                if (detectorName is not null)
+                {
+                    lampDictionary.Add(detectorName, new FakeMotionLamp(detectorName));
+                }
             }
 
             return lampDictionary;

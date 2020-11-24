@@ -8,6 +8,7 @@ using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Model.Triggers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,17 +17,17 @@ namespace HomeCenter.Model.Components
     [Proxy]
     public class Component : DeviceActor
     {
-        public Component(IList<AdapterReference> adapterReferences, IList<Translator> translators, IList<Trigger> triggers)
+        public Component(IEnumerable<AdapterReference> adapterReferences, IEnumerable<Translator> translators, IEnumerable<Trigger> triggers)
         {
             AdapterReferences = adapterReferences;
             Translators = translators;
             Triggers = triggers;
         }
-
+        [AllowNull]
         private ComponentState _componentState;
-        public IList<AdapterReference> AdapterReferences { get; }
-        public IList<Translator> Translators { get; }
-        public IList<Trigger> Triggers { get; }
+        public IEnumerable<AdapterReference> AdapterReferences { get; }
+        public IEnumerable<Translator> Translators { get; }
+        public IEnumerable<Trigger> Triggers { get; }
 
         /// <summary>
         /// Decides if we want to re send event from adapters if there is no translator attached
@@ -134,7 +135,7 @@ namespace HomeCenter.Model.Components
         /// <summary>
         /// Every message that is not directly should be check for compatibility with connected adapters
         /// </summary>
-        protected override async Task UnhandledMessage(object message)
+        protected override async Task UnhandledMessage(object? message)
         {
             var actorMessage = message as ActorMessage;
 

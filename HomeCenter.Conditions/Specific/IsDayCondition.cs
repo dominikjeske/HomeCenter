@@ -8,9 +8,9 @@ namespace HomeCenter.Conditions.Specific
     {
         public IsDayCondition(IMessageBroker messageBroker)
         {
-            WithStart(() => messageBroker.QueryService<SunriseQuery, TimeSpan?>(SunriseQuery.Default));
+            WithStart(() => messageBroker.QueryService<SunriseQuery, TimeSpan>(SunriseQuery.Default));
 
-            WithEnd(() => messageBroker.QueryService<SunsetQuery, TimeSpan?>(SunsetQuery.Default));
+            WithEnd(() => messageBroker.QueryService<SunsetQuery, TimeSpan>(SunsetQuery.Default));
         }
     }
 }

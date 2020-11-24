@@ -30,13 +30,13 @@ namespace HomeCenter.EventAggregator
 
         Func<BehaviorChain> DefaultBehavior { get; set; }
 
-        Task<R> QueryAsync<T, R>
+        Task<R?> QueryAsync<T, R>
         (
             T message,
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        );
+        ) where T : class;
 
         Task<R> QueryWithResultCheckAsync<T, R>
         (
@@ -45,7 +45,7 @@ namespace HomeCenter.EventAggregator
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        );
+        ) where T : class;
 
         IObservable<R> QueryWithResults<T, R>
         (
@@ -53,7 +53,7 @@ namespace HomeCenter.EventAggregator
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        );
+        ) where T : class;
 
         Task QueryWithRepublishResult<T, R>
         (
@@ -61,7 +61,7 @@ namespace HomeCenter.EventAggregator
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        );
+        ) where T : class;
 
         Task Publish<T>
         (
@@ -69,6 +69,6 @@ namespace HomeCenter.EventAggregator
             RoutingFilter filter = null,
             CancellationToken cancellationToken = default,
             BehaviorChain behaviors = null
-        );
+        ) where T : class;
     }
 }
