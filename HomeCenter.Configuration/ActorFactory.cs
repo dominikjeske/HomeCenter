@@ -34,7 +34,7 @@ namespace HomeCenter.Model.Actors
             _typeLoader = typeLoader;
         }
 
-        public PID GetExistingActor(string id, string address = default, IContext parent = default)
+        public PID GetExistingActor(string id, string? address = default, IContext? parent = default)
         {
             if (_actorsCache.ContainsKey(id)) return _actorsCache[id];
 
@@ -123,12 +123,12 @@ namespace HomeCenter.Model.Actors
             return pid;
         }
 
-        private PID CreatePidAddress(string uid, string address, IContext parent)
+        private PID CreatePidAddress(string uid, string? address, IContext? parent)
         {
-            address = address ?? NONHOST;
+            address ??= NONHOST;
 
             var pidId = uid;
-            if (parent != null)
+            if (parent?.Self != null)
             {
                 pidId = $"{parent.Self.Id}/{uid}";
             }

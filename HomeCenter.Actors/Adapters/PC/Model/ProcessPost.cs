@@ -2,7 +2,7 @@
 {
     public class ProcessPost
     {
-        public string ProcessName { get; set; }
+        public string? ProcessName { get; set; }
         public bool Start { get; set; }
     }
 }

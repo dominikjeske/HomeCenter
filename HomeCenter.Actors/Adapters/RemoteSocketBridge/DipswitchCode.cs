@@ -26,7 +26,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
                                        (RemoteSocketCommand)Enum.Parse(typeof(RemoteSocketCommand), command)
                                       );
 
-        public static DipswitchCode ParseCode(uint code)
+        public static DipswitchCode? ParseCode(uint code)
         {
             var command = ParseCommand(code);
             if (!command.HasValue) return null;

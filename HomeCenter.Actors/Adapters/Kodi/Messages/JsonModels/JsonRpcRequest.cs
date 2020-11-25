@@ -12,10 +12,10 @@ namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
         public string Id { get; set; } = "KodiJSON-RPC";
 
         [JsonPropertyName("method")]
-        public string Method { get; set; }
+        public string? Method { get; set; }
 
         [JsonPropertyName("params")]
-        public object Parameters { get; set; }
+        public object? Parameters { get; set; }
 
         public override string ToString()
         {

@@ -11,11 +11,11 @@ namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
     {
-        public string ClientID { get; set; } = "";
-        public string ApplicationID { get; set; } = "HomeCenter";
-        public string PIN { get; set; }
+        public string? ClientID { get; set; } = "";
+        public string? ApplicationID { get; set; } = "HomeCenter";
+        public string? PIN { get; set; }
 
-        private Uri _cookieAddress;
+        private Uri? _cookieAddress;
 
         public SonyRegisterQuery FormatMessage()
         {

@@ -17,15 +17,15 @@ namespace HomeCenter.Adapters.PC
     {
         private const int DEFAULT_POOL_INTERVAL = 1000;
 
-        private string _hostname;
+        private string? _hostname;
         private int _port;
-        private string _mac;
+        private string? _mac;
         private TimeSpan _poolInterval;
 
         private bool _powerState;
         private double _volume;
         private bool _mute;
-        private string _input;
+        private string? _input;
 
         protected override async Task OnStarted(IContext context)
         {

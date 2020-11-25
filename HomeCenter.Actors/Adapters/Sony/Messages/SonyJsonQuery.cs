@@ -16,12 +16,12 @@ namespace HomeCenter.Adapters.Sony.Messages
 
     public class SonyJsonQuery : HttpPostQuery, IFormatableMessage<SonyJsonQuery>
     {
-        public string Path { get; set; }
-        public string Method { get; set; }
-        public object Params { get; set; }
+        public string? Path { get; set; }
+        public string? Method { get; set; }
+        public object? Params { get; set; }
         public int Id { get; set; } = 1;
-        public string Version { get; set; } = "1.0";
-        public string AuthorisationKey { get; set; }
+        public string? Version { get; set; } = "1.0";
+        public string? AuthorisationKey { get; set; }
 
         public SonyJsonQuery FormatMessage()
         {

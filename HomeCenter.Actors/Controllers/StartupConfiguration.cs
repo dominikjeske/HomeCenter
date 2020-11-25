@@ -2,6 +2,6 @@
 {
     public class StartupConfiguration
     {
-        public string ConfigurationLocation { get; set; }
+        public string? ConfigurationLocation { get; set; }
     }
 }

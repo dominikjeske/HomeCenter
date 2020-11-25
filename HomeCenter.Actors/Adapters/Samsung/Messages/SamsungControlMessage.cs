@@ -8,7 +8,7 @@ namespace HomeCenter.Adapters.Samsung.Messages
 {
     public class SamsungControlCommand : TcpCommand, IFormatableMessage<SamsungControlCommand>
     {
-        public string Code { get; set; }
+        public string? Code { get; set; }
         public int Port { get; set; } = 55000;
 
         private readonly string _nullValue = char.ToString((char)0x00);

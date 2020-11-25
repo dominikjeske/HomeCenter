@@ -5,10 +5,10 @@ namespace HomeCenter.Adapters.Sony.Messages
     public class ActRegister1Request
     {
         [JsonPropertyName("function")]
-        public System.String Function { get; set; }
+        public System.String? Function { get; set; }
 
         [JsonPropertyName("value")]
-        public System.String Value { get; set; }
+        public System.String? Value { get; set; }
 
         public ActRegister1Request()
         {

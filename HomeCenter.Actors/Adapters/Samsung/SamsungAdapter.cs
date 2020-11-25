@@ -15,12 +15,12 @@ namespace HomeCenter.Adapters.Samsung
     public class SamsungAdapter : Adapter
     {
         private const uint TURN_ON_IR_CODE = 3772793023;
-        private string _hostname;
+        private string? _hostname;
         private bool _powerState;
-        private string _input;
-        private string _infraredAdaperName;
-        private string _mac;
-        private string _appKey;
+        private string? _input;
+        private string? _infraredAdaperName;
+        private string? _mac;
+        private string? _appKey;
 
         protected override async Task OnStarted(IContext context)
         {

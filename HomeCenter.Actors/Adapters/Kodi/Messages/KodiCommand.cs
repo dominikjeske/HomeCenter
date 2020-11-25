@@ -13,11 +13,11 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
     public class KodiCommand : HttpPostQuery, IFormatableMessage<KodiCommand>
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public string Method { get; set; }
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
+        public string? Method { get; set; }
         public int Port { get; set; }
-        public object Parameters { get; set; }
+        public object? Parameters { get; set; }
 
         public KodiCommand()
         {
@@ -40,7 +40,7 @@ namespace HomeCenter.Adapters.Kodi.Messages
             return this;
         }
 
-        public override object Parse(string rawHttpResult)
+        public override object? Parse(string? rawHttpResult)
         {
             var result = JsonSerializer.Deserialize<JsonRpcResponse>(rawHttpResult);
 

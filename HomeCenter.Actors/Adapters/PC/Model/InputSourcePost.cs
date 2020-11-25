@@ -2,6 +2,6 @@
 {
     public class InputSourcePost
     {
-        public string Input { get; set; }
+        public string? Input { get; set; }
     }
 }

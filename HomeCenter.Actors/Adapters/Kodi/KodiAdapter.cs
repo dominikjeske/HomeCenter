@@ -18,11 +18,11 @@ namespace HomeCenter.Adapters.Kodi
     {
         public const int DEFAULT_POOL_INTERVAL = 1000;
 
-        private string _hostname;
+        private string? _hostname;
         private TimeSpan _poolInterval;
         private int _port;
-        private string _userName;
-        private string _Password;
+        private string? _userName;
+        private string? _Password;
 
         private bool _powerState;
         private double _volume;
@@ -60,7 +60,7 @@ namespace HomeCenter.Adapters.Kodi
                                           );
         }
 
-        private KodiCommand GetKodiCommand(string method, object parameters = null)
+        private KodiCommand GetKodiCommand(string method, object? parameters = null)
         {
             return new KodiCommand
             {

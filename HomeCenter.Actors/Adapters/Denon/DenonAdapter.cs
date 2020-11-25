@@ -20,12 +20,12 @@ namespace HomeCenter.Adapters.Denon
         private bool _powerState;
         private double? _volume;
         private bool _mute;
-        private string _input;
-        private string _surround;
-        private DenonDeviceInfo _fullState;
-        private string _description;
+        private string? _input;
+        private string? _surround;
+        private DenonDeviceInfo? _fullState;
+        private string? _description;
 
-        private string _hostName;
+        private string? _hostName;
         private int _zone;
         private TimeSpan _poolInterval;
 

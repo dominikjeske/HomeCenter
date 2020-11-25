@@ -20,13 +20,13 @@ namespace HomeCenter.Adapters.Sony
         private bool _powerState;
         private double _volume;
         private bool _mute;
-        private string _input;
-        private string _clientId;
-        private string _mac;
+        private string? _input;
+        private string? _clientId;
+        private string? _mac;
 
         private TimeSpan _poolInterval;
-        private string _hostname;
-        private string _authorisationKey;
+        private string? _hostname;
+        private string? _authorisationKey;
 
         private readonly Dictionary<string, string> _inputSourceMap = new Dictionary<string, string>
         {

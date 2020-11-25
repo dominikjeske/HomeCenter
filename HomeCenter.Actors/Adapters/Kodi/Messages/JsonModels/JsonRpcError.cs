@@ -6,13 +6,13 @@ namespace HomeCenter.Adapters.Kodi.Messages.JsonModels
     public class JsonRpcError
     {
         [JsonPropertyName("code")]
-        public RpcErrorCode Code { get; set; }
+        public RpcErrorCode? Code { get; set; }
 
         [JsonPropertyName("message")]
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         [JsonPropertyName("data")]
-        public Data Data { get; set; }
+        public Data? Data { get; set; }
 
         public override string ToString()
         {

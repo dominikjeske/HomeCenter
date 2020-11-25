@@ -8,8 +8,8 @@ namespace HomeCenter.Adapters.Sony.Messages
 {
     public class SonyControlQuery : HttpPostQuery, IFormatableMessage<SonyControlQuery>
     {
-        public string Code { get; set; }
-        public string AuthorisationKey { get; set; }
+        public string? Code { get; set; }
+        public string? AuthorisationKey { get; set; }
 
         public SonyControlQuery FormatMessage()
         {
