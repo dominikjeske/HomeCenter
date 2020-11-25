@@ -4,8 +4,8 @@ namespace HomeCenter.SourceGenerators
 {
     internal class AttributeDescriptor
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public List<string> Values { get; set; }
+        public List<string>? Values { get; set; }
     }
 }

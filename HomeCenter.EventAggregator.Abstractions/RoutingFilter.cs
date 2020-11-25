@@ -5,7 +5,7 @@ namespace HomeCenter.EventAggregator
 {
     public class RoutingFilter
     {
-        public string RoutingKey { get; }
+        public string? RoutingKey { get; }
         public Dictionary<string, object> RoutingAttributes { get; } = new Dictionary<string, object>();
 
         public RoutingFilter(string routingKey)
@@ -26,9 +26,12 @@ namespace HomeCenter.EventAggregator
 
         public bool EvaluateFilter(object message, RoutingFilter? messageFilter)
         {
+
             // If routing key is defined on subscription we check if it is match with message key
             // If Subscriber or sender use * we skip routing key comparison
-            if (!string.IsNullOrWhiteSpace(RoutingKey) && !RoutingKey.InvariantEquals(messageFilter?.RoutingKey) && messageFilter?.RoutingKey != "*" && RoutingKey != "*") return false;
+            if (!string.IsNullOrWhiteSpace(RoutingKey) && 
+                !RoutingKey.InvariantEquals(messageFilter?.RoutingKey) && 
+                messageFilter?.RoutingKey != "*" && RoutingKey != "*") return false;
 
             // If subscription have routing attributes
             if (RoutingAttributes.Count > 0)

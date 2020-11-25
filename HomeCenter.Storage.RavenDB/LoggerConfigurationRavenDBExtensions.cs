@@ -32,14 +32,15 @@ namespace HomeCenter.Storage.RavenDB
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             int batchPostingLimit = RavenDBSink.DefaultBatchPostingLimit,
             TimeSpan? period = null,
-            IFormatProvider formatProvider = null,
-            string defaultDatabase = null,
+            IFormatProvider? formatProvider = null,
+            string? defaultDatabase = null,
             TimeSpan? expiration = null,
             TimeSpan? errorExpiration = null,
-            Func<LogEvent, TimeSpan> logExpirationCallback = null)
+            Func<LogEvent, TimeSpan>? logExpirationCallback = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (documentStore == null) throw new ArgumentNullException(nameof(documentStore));
+
 
             var defaultedPeriod = period ?? RavenDBSink.DefaultPeriod;
             return loggerConfiguration.Sink(

@@ -2,6 +2,7 @@
 using HomeCenter.Abstractions;
 using HomeCenter.EventAggregator;
 using HomeCenter.Messages;
+using Light.GuardClauses;
 using Proto;
 using System;
 using System.Text.Json;
@@ -26,7 +27,7 @@ namespace HomeCenter.MessageBroker
             _actorScheduler = actorScheduler;
         }
 
-        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : ActorMessage
+        public SubscriptionToken SubscribeForMessage<T>(PID subscriber, bool subscribeOnParent, RoutingFilter? filter = null) where T : ActorMessage
         {
             if (subscribeOnParent)
             {
@@ -40,8 +41,10 @@ namespace HomeCenter.MessageBroker
             return _eventAggregator.Subscribe<T>(message => _actorFactory.Context.Send(subscriber, message.Message), filter);
         }
 
-        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter filter = null) where T : Query
+        public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter? filter = null) where T : Query
         {
+            //subscriber = subscriber.MustNotBeNull(nameof(subscriber));
+
             if (subscribeOnParent)
             {
                 subscriber = _actorFactory.GetParentActor(subscriber);
@@ -61,12 +64,12 @@ namespace HomeCenter.MessageBroker
             return sub;
         }
 
-        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null) where T : Event
+        public SubscriptionToken SubscribeForEvent<T>(Action<IMessageEnvelope<T>> action, RoutingFilter? filter = null) where T : Event
         {
             return _eventAggregator.Subscribe(action, filter);
         }
 
-        public Task<R> QueryService<T, R>(T query, RoutingFilter filter = null) where T : Query
+        public Task<R?> QueryService<T, R>(T query, RoutingFilter? filter = null) where T : Query
 
         {
             query = FormatMessage(query);
@@ -74,37 +77,44 @@ namespace HomeCenter.MessageBroker
             return _eventAggregator.QueryAsync<T, R>(query, filter);
         }
 
-        public async Task<R> QueryJsonService<T, R>(T query, RoutingFilter filter = null) where T : Query
+        public async Task<R?> QueryJsonService<T, R>(T query, RoutingFilter? filter = null) where T : Query
 
         {
             query = FormatMessage(query);
 
             var json = await _eventAggregator.QueryAsync<T, string>(query, filter);
-            var result = JsonSerializer.Deserialize<R>(json);
-            return result;
+            if(json != null)
+            {
+                var result = JsonSerializer.Deserialize<R>(json);
+                return result;
+            }
+            else
+            {
+                return default;
+            }
         }
 
-        public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter filter = null) where T : Query, IMessageResult<Q, R>
-                                                                                                                      where Q : class
+        public async Task<bool> QueryServiceWithVerify<T, Q, R>(T query, R expectedResult, RoutingFilter? filter = null) where T : Query, IMessageResult<Q, R>
+                                                                                                                         where Q : class
 
         {
             var result = await QueryService<T, Q>(query, filter);
             return query.Verify(result, expectedResult);
         }
 
-        public Task SendToService<T>(T command, RoutingFilter filter = null) where T : Command
+        public Task SendToService<T>(T command, RoutingFilter? filter = null) where T : Command
         {
             command = FormatMessage(command);
 
             return _eventAggregator.Publish(command, filter);
         }
 
-        public Task Publish<T>(T message, RoutingFilter routingFilter = null) where T : ActorMessage
+        public Task Publish<T>(T message, RoutingFilter? routingFilter = null) where T : ActorMessage
         {
             return _eventAggregator.Publish(message, routingFilter);
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null) where T : Event
+        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter? routingFilter = null) where T : Event
         {
             return _eventAggregator.Observe<T>(routingFilter);
         }
@@ -123,12 +133,12 @@ namespace HomeCenter.MessageBroker
             Send(command, address);
         }
 
-        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter filter = null)
+        public Task<Event> PublishWithTranslate(ActorMessage source, ActorMessage destination, RoutingFilter? filter = null)
         {
             return _messageGenerator.PublishEvent(source, destination, this, filter);
         }
 
-        public void Send(object message, string uid, string address = null)
+        public void Send(object message, string uid, string? address = null)
         {
             var pid = _actorFactory.GetExistingActor(uid, address);
             _actorFactory.Context.Send(pid, message);
@@ -158,7 +168,7 @@ namespace HomeCenter.MessageBroker
             return _actorScheduler.SendWithSimpleRepeat(message, interval, token);
         }
 
-        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string calendar = default)
+        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string? calendar = default)
         {
             return _actorScheduler.SendWithCronRepeat(message, cronExpression, token);
         }
@@ -173,12 +183,12 @@ namespace HomeCenter.MessageBroker
             return _actorScheduler.SendAtTime(message, time, token);
         }
 
-        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default)
+        public Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string? calendar = default)
         {
             return _actorScheduler.SendDailyAt(message, time, token, calendar);
         }
 
-        public PID GetPID(string uid, string address = null)
+        public PID GetPID(string uid, string? address = null)
         {
             return _actorFactory.GetExistingActor(uid, address);
         }

@@ -10,7 +10,7 @@ namespace HomeCenter.Quartz
 {
     public class QuartzHosting : IHostingStartup
     {
-        public static string Assembly => System.Reflection.Assembly.GetAssembly(typeof(QuartzHosting)).GetName().Name;
+        public static string? Assembly => System.Reflection.Assembly.GetAssembly(typeof(QuartzHosting))?.GetName()?.Name;
 
         public void Configure(IWebHostBuilder builder)
         {

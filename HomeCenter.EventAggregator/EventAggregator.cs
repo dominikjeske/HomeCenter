@@ -102,6 +102,7 @@ namespace HomeCenter.EventAggregator
             CancellationToken cancellationToken = default,
             BehaviorChain? behaviors = null
         ) where T : class
+          where R : class
         {
             var localSubscriptions = GetSubscriptors(message, filter).OfType<IAsyncCommandHandler>();
 
@@ -114,8 +115,7 @@ namespace HomeCenter.EventAggregator
                 var invokeChain = BuildBehaviorChain(behaviors, x);
                 var result = await invokeChain.HandleAsync<T, R>(messageEnvelope);
                 
-                //TODO
-                //await Publish(result);
+                await Publish(result);
             });
 
             await publishTask.WhenAll(cancellationToken).Unwrap();
@@ -144,32 +144,32 @@ namespace HomeCenter.EventAggregator
             await result.WhenAll(cancellationToken).Unwrap();
         }
 
-        public SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter filter = null)
+        public SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter? filter = null)
         {
             return new SubscriptionToken(_subscriptions.RegisterAsyncWithResult(action, filter), this);
         }
 
-        public SubscriptionToken SubscribeAsync<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter = null)
+        public SubscriptionToken SubscribeAsync<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter? filter = null)
         {
             return new SubscriptionToken(_subscriptions.RegisterAsync(action, filter), this);
         }
 
-        public SubscriptionToken Subscribe<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter = null)
+        public SubscriptionToken Subscribe<T>(Action<IMessageEnvelope<T>> action, RoutingFilter? filter = null)
         {
             return new SubscriptionToken(_subscriptions.Register(action, filter), this);
         }
 
-        public SubscriptionToken Subscribe(Type messageType, Delegate action, RoutingFilter filter = null)
+        public SubscriptionToken Subscribe(Type messageType, Delegate action, RoutingFilter? filter = null)
         {
             return new SubscriptionToken(_subscriptions.Register(messageType, action, filter), this);
         }
 
-        public SubscriptionToken Subscribe(Type messageType, Func<Delegate> actionFactory, RoutingFilter filter = null)
+        public SubscriptionToken Subscribe(Type messageType, Func<Delegate> actionFactory, RoutingFilter? filter = null)
         {
             return new SubscriptionToken(_subscriptions.Register(messageType, actionFactory, filter), this);
         }
 
-        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter routingFilter = null)
+        public IObservable<IMessageEnvelope<T>> Observe<T>(RoutingFilter? routingFilter = null)
         {
             return Observable.Create<IMessageEnvelope<T>>(x => Subscribe<T>(x.OnNext, routingFilter));
         }

@@ -10,12 +10,12 @@ namespace HomeCenter.Storage.RavenDB
 {
     public class RavenDBSink : PeriodicBatchingSink
     {
-        private readonly IFormatProvider _formatProvider;
+        private readonly IFormatProvider? _formatProvider;
         private readonly IDocumentStore _documentStore;
-        private readonly string _defaultDatabase;
+        private readonly string? _defaultDatabase;
         private readonly TimeSpan? _expiration;
         private readonly TimeSpan? _errorExpiration;
-        private readonly Func<LogEvent, TimeSpan> _logExpirationCallback;
+        private readonly Func<LogEvent, TimeSpan>? _logExpirationCallback;
         private readonly bool _disposeDocumentStore;
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace HomeCenter.Storage.RavenDB
         /// <param name="expiration">Optional time before a logged message will be expired assuming the expiration bundle is installed. <see cref="System.Threading.Timeout.InfiniteTimeSpan">Timeout.InfiniteTimeSpan</see> (-00:00:00.0010000) means no expiration. If this is not provided but errorExpiration is, errorExpiration will be used for non-errors too.</param>
         /// <param name="errorExpiration">Optional time before a logged error message will be expired assuming the expiration bundle is installed. <see cref="System.Threading.Timeout.InfiniteTimeSpan">Timeout.InfiniteTimeSpan</see> (-00:00:00.0010000) means no expiration. If this is not provided but expiration is, expiration will be used for errors too.</param>
         /// <param name="logExpirationCallback">Optional callback to dynamically determine log expiration based on event properties.  <see cref="System.Threading.Timeout.InfiniteTimeSpan">Timeout.InfiniteTimeSpan</see> (-00:00:00.0010000) means no expiration. If this is provided, it will be used instead of expiration or errorExpiration.</param>
-        public RavenDBSink(IDocumentStore documentStore, int batchPostingLimit, TimeSpan period, IFormatProvider formatProvider, string defaultDatabase = null,
-            TimeSpan? expiration = null, TimeSpan? errorExpiration = null, Func<LogEvent, TimeSpan> logExpirationCallback = null)
+        public RavenDBSink(IDocumentStore documentStore, int batchPostingLimit, TimeSpan period, IFormatProvider? formatProvider, string? defaultDatabase = null,
+            TimeSpan? expiration = null, TimeSpan? errorExpiration = null, Func<LogEvent, TimeSpan>? logExpirationCallback = null)
             : base(batchPostingLimit, period)
         {
             if (documentStore == null) throw new ArgumentNullException(nameof(documentStore));
@@ -72,8 +72,7 @@ namespace HomeCenter.Storage.RavenDB
                 var expiration =
                     _logExpirationCallback != null ? _logExpirationCallback(logEvent) :
                     _expiration == null ? Timeout.InfiniteTimeSpan :
-                    logEvent.Level == LogEventLevel.Error || logEvent.Level == LogEventLevel.Fatal ? _errorExpiration.Value :
-                    _expiration.Value;
+                    logEvent.Level == LogEventLevel.Error || logEvent.Level == LogEventLevel.Fatal ? _errorExpiration.GetValueOrDefault() : _expiration.Value;
 
                 if (expiration != Timeout.InfiniteTimeSpan)
                 {

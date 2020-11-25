@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Light.GuardClauses;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Diagnostics;
@@ -47,8 +48,10 @@ namespace HomeCenter.SourceGenerators
             return new GeneratedSource(templateString, classDeclaration.Identifier.Text);
         }
 
-        public void ApplyDesignTimeFix(string content, string hintName)
+        public void ApplyDesignTimeFix(string content, string? hintName)
         {
+            if (hintName is null) throw new ArgumentNullException(nameof(hintName));
+
             if (Options.IntellisenseFix)
             {
                 var path = Path.Combine(Options.IntermediateOutputPath, hintName + ".generated.cs");

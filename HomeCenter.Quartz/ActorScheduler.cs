@@ -30,7 +30,7 @@ namespace HomeCenter.Quartz
             return _scheduler.ScheduleInterval<ActorMessageJob, ActorMessageContext>(interval, message, message.GetMessageUid(), token);
         }
 
-        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string calendar = default)
+        public Task SendWithCronRepeat(ActorMessageContext message, string cronExpression, CancellationToken token = default, string? calendar = default)
         {
             var uid = message.GetMessageUid();
 
@@ -53,7 +53,7 @@ namespace HomeCenter.Quartz
             await _scheduler.DelayExecution<ActorMessageJob, ActorMessageContext>(time, message, uid, token);
         }
 
-        public async Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string calendar = default)
+        public async Task SendDailyAt(ActorMessageContext message, TimeSpan time, CancellationToken token = default, string? calendar = default)
         {
             var uid = message.GetMessageUid();
 

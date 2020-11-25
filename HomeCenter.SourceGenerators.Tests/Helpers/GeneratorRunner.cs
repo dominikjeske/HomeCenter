@@ -46,9 +46,9 @@ namespace HomeCenter.SourceGenerators.Tests
             return new GeneratorResult(outputCompilation, diagnostics, generatedCode);
         }
 
-        private static string GetGeneratedCode(ISourceGenerator generators, Compilation outputCompilation)
+        private static string? GetGeneratedCode(ISourceGenerator generators, Compilation outputCompilation)
         {
-            return outputCompilation.SyntaxTrees.FirstOrDefault(file => file.FilePath.IndexOf(generators.GetType().Name) > -1)?.ToString();
+            return outputCompilation?.SyntaxTrees?.FirstOrDefault(file => file.FilePath.IndexOf(generators.GetType().Name) > -1)?.ToString();
         }
     }
 }

@@ -7,10 +7,10 @@ namespace HomeCenter.EventAggregator.Handlers
     {
         internal Guid Token { get; }
         internal TypeInfo MessageType { get; }
-        internal RoutingFilter SubscriptionFilter { get; }
+        internal RoutingFilter? SubscriptionFilter { get; }
         internal object Handler { get; }
 
-        protected BaseCommandHandler(Type type, Guid token, object handler, RoutingFilter filter)
+        protected BaseCommandHandler(Type type, Guid token, object handler, RoutingFilter? filter)
         {
             MessageType = type.GetTypeInfo();
             Token = token;
@@ -22,11 +22,7 @@ namespace HomeCenter.EventAggregator.Handlers
         {
             if (SubscriptionFilter == null)
             {
-                if (messageFilter == null || messageFilter?.RoutingKey == "*")
-                {
-                    return true;
-                }
-                return false;
+                return messageFilter == null || messageFilter?.RoutingKey == "*";
             }
 
             return SubscriptionFilter?.EvaluateFilter(message, messageFilter) ?? true;

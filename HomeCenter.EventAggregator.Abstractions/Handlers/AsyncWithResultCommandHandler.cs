@@ -5,7 +5,7 @@ namespace HomeCenter.EventAggregator.Handlers
 {
     public sealed class AsyncWithResultCommandHandler : BaseCommandHandler, IAsyncCommandHandler
     {
-        public AsyncWithResultCommandHandler(Type type, Guid token, object handler, RoutingFilter filter) : base(type, token, handler, filter)
+        public AsyncWithResultCommandHandler(Type type, Guid token, object handler, RoutingFilter? filter) : base(type, token, handler, filter)
         {
         }
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -11,17 +10,11 @@ namespace HomeCenter.SourceGenerators
     {
         public static IEnumerable<INamedTypeSymbol> GetAllWithBaseClass(this Compilation compilation, string baseClass, CancellationToken token)
         {
-            var xx = new Stopwatch();
-            xx.Start();
-
-            var visitor = new TypeVisitor(type => type.TypeKind == TypeKind.Class && 
+            var visitor = new TypeVisitor(type => type.TypeKind == TypeKind.Class &&
                                                  type.GetBaseTypes().Any(x => x.ToDisplayString() == baseClass
                                         ), token);
             visitor.Visit(compilation.GlobalNamespace);
-            xx.Stop();
-            var ddd = xx.Elapsed.TotalMilliseconds;
 
-            
             return visitor.GetResults();
         }
 
@@ -61,12 +54,11 @@ namespace HomeCenter.SourceGenerators
 
         public static bool HaveAttribute(this ClassDeclarationSyntax classSyntax, string attributeName)
         {
-            return classSyntax.AttributeLists.Count > 0 && 
+            return classSyntax.AttributeLists.Count > 0 &&
                    classSyntax.AttributeLists.SelectMany(al => al.Attributes
-                                             .Where(a => (a.Name as IdentifierNameSyntax).Identifier.Text == attributeName))
+                                             .Where(a => (a.Name as IdentifierNameSyntax)?.Identifier.Text == attributeName))
                                              .Any();
         }
-
 
         public static string GetNamespace(this CompilationUnitSyntax root)
         {

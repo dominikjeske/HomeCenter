@@ -8,7 +8,7 @@ namespace HomeCenter.SourceGenerators.Tests
         {
             if (text == null)
             {
-                return text;
+                return string.Empty;
             }
 
             return Regex.Replace(text, @"\s+", string.Empty);

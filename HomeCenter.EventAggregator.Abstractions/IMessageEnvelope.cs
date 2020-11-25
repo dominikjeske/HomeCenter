@@ -7,6 +7,6 @@ namespace HomeCenter.EventAggregator
     {
         CancellationToken CancellationToken { get; }
         T Message { get; }
-        Type ResponseType { get; }
+        Type? ResponseType { get; }
     }
 }

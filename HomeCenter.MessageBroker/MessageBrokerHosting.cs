@@ -10,7 +10,7 @@ namespace HomeCenter.MessageBroker
 {
     public class MessageBrokerHosting : IHostingStartup
     {
-        public static string Assembly => System.Reflection.Assembly.GetAssembly(typeof(MessageBrokerHosting)).GetName().Name;
+        public static string? Assembly => System.Reflection.Assembly.GetAssembly(typeof(MessageBrokerHosting))?.GetName().Name;
 
         public void Configure(IWebHostBuilder builder)
         {

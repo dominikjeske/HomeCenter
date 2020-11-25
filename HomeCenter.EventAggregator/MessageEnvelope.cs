@@ -5,7 +5,7 @@ namespace HomeCenter.EventAggregator
 {
     public class MessageEnvelope<T> : IMessageEnvelope<T>
     {
-        public MessageEnvelope(T message, CancellationToken token = default, Type responseType = null)
+        public MessageEnvelope(T message, CancellationToken token = default, Type? responseType = null)
         {
             Message = message;
             CancellationToken = token;
@@ -14,6 +14,6 @@ namespace HomeCenter.EventAggregator
 
         public T Message { get; }
         public CancellationToken CancellationToken { get; }
-        public Type ResponseType { get; }
+        public Type? ResponseType { get; }
     }
 }

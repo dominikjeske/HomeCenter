@@ -97,7 +97,7 @@ namespace HomeCenter.Actors.Core
             }
         }
 
-        protected object FormatMessage(object rawMessage)
+        protected object FormatMessage(object? rawMessage)
         {
             if (rawMessage is ActorMessage message)
             {

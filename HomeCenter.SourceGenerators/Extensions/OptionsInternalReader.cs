@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HomeCenter.SourceGenerators
 {
-    internal class OptionsInternalReader
+    internal static class OptionsInternalReader
     {
         /// <summary>
         /// Method is using internal structure via Reflections and it could break in future versions
@@ -71,7 +71,11 @@ namespace HomeCenter.SourceGenerators
                                                .GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                                                .FirstOrDefault(g => g.Name == "_backing");
 
-            return backing.GetValue(analyzerConfigOptions) as ImmutableDictionary<string, string>;
+            var result = backing.GetValue(analyzerConfigOptions) as ImmutableDictionary<string, string>;
+
+            if (result is null) throw new InvalidCastException();
+
+            return result;
         }
 
     }

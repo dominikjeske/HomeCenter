@@ -6,11 +6,11 @@ using System.Reflection;
 
 namespace HomeCenter.SourceGenerators
 {
-    internal class ResourceReader
+    internal static class ResourceReader
     {
         public static string GetResource<TAssembly>(string endWith) => GetResource(endWith, typeof(TAssembly));
-        
-        public static string GetResource(string endWith, Type assemblyType = null)
+
+        public static string GetResource(string endWith, Type? assemblyType = null)
         {
             var assembly = GetAssembly(assemblyType);
 
@@ -24,25 +24,12 @@ namespace HomeCenter.SourceGenerators
             return ReadEmbededResource(assembly, resourceName);
         }
 
-        private static Assembly GetAssembly(Type assemblyType)
-        {
-            Assembly assembly;
-            if (assemblyType == null)
-            {
-                assembly = Assembly.GetExecutingAssembly();
-            }
-            else
-            {
-                assembly = Assembly.GetAssembly(assemblyType);
-            }
-
-            return assembly;
-        }
+        private static Assembly GetAssembly(Type? assemblyType) => assemblyType == null ? Assembly.GetExecutingAssembly() : Assembly.GetAssembly(assemblyType);
 
         private static string ReadEmbededResource(Assembly assembly, string name)
         {
             using var resourceStream = assembly.GetManifestResourceStream(name);
-            if (resourceStream == null) return null;
+            if (resourceStream == null) return string.Empty;
             using var streamReader = new StreamReader(resourceStream);
             return streamReader.ReadToEnd();
         }

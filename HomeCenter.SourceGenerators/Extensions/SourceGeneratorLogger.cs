@@ -12,7 +12,7 @@ namespace HomeCenter.SourceGenerators
         private const int LineSurfixLenght = 20;
         private const int LineLenght = 100;
 
-        private readonly Stopwatch _loggerStopwatch;
+        private readonly Stopwatch _loggerStopwatch = new Stopwatch();
         private readonly GeneratorExecutionContext _executionContext;
         private readonly SourceGeneratorOptions<T> _options;
 
@@ -23,7 +23,6 @@ namespace HomeCenter.SourceGenerators
 
             if (!options.EnableLogging) return;
 
-            _loggerStopwatch = new Stopwatch();
             _loggerStopwatch.Start();
 
             WriteHeader();

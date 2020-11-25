@@ -13,7 +13,7 @@ namespace HomeCenter.Messages.Queries.Services
 
         public virtual object Parse(string rawHttpResult) => rawHttpResult;
 
-        public CookieContainer Cookies { get; protected set; }
+        public CookieContainer? Cookies { get; protected set; }
 
         public string Address
         {

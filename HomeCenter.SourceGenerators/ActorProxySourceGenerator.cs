@@ -125,23 +125,23 @@ namespace HomeCenter.SourceGenerators
             return methodDescription.Attributes.Where(a => a.Name == "Subscribe").Any(x => x.Values.Any(val => val.IndexOf("true", StringComparison.OrdinalIgnoreCase) > -1));
         }
 
-        private List<ParameterDescriptor> GetConstructor(INamedTypeSymbol classSymbol)
+        private IEnumerable<ParameterDescriptor> GetConstructor(INamedTypeSymbol? classSymbol)
         {
-            IMethodSymbol baseConstructor = classSymbol.Constructors.OrderByDescending(p => p.Parameters.Length).FirstOrDefault();
+            IMethodSymbol? baseConstructor = classSymbol?.Constructors.OrderByDescending(p => p.Parameters.Length).FirstOrDefault();
 
-            var parList = baseConstructor.Parameters.Select(par => new ParameterDescriptor()
+            var parList = baseConstructor?.Parameters.Select(par => new ParameterDescriptor()
             {
                 Name = par.Name,
                 Type = par.Type.ToString()
             }).ToList();
 
-            return parList;
+            return parList ?? Enumerable.Empty<ParameterDescriptor>();
         }
 
-        private List<PropertyAssignDescriptor> GetInjectedProperties(INamedTypeSymbol classSymbol)
+        private IEnumerable<PropertyAssignDescriptor> GetInjectedProperties(INamedTypeSymbol? classSymbol)
         {
-            var dependencyProperties = classSymbol.GetAllMembers()
-                                                  .Where(x => x.Kind == SymbolKind.Property && x.GetAttributes().Any(a => a.AttributeClass.Name == nameof(DIAttribute)))
+            var dependencyProperties = classSymbol?.GetAllMembers()
+                                                  .Where(x => x.Kind == SymbolKind.Property && x.GetAttributes().Any(a => a.AttributeClass?.Name == nameof(DIAttribute)))
                                                   .OfType<IPropertySymbol>()
                                                   .Select(par => new PropertyAssignDescriptor()
                                                   {
@@ -149,10 +149,10 @@ namespace HomeCenter.SourceGenerators
                                                       Type = par.Type.ToString(),
                                                       Source = par.Name.ToCamelCase()
                                                   }).ToList();
-            return dependencyProperties;
+            return dependencyProperties ?? Enumerable.Empty<PropertyAssignDescriptor>();
         }
 
-        private List<MethodDescription> GetMethodWithParameter(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string attributeType = null)
+        private List<MethodDescription> GetMethodWithParameter(ClassDeclarationSyntax classSyntax, SemanticModel model, string parameterType, string? attributeType = null)
         {
             var filter = classSyntax.DescendantNodes()
                                     .OfType<MethodDeclarationSyntax>()
@@ -167,22 +167,24 @@ namespace HomeCenter.SourceGenerators
             {
                 Name = method.Identifier.ValueText,
                 ReturnType = model.GetTypeInfo(method.ReturnType).Type,
+#pragma warning disable CS8604 // Possible null reference argument.
                 Parameter = model.GetDeclaredSymbol(method.ParameterList.Parameters.FirstOrDefault()),
+#pragma warning restore CS8604 // Possible null reference argument.
                 Attributes = method.AttributeLists.SelectMany(a => a.Attributes.Select(ax => new AttributeDescriptor
                 {
                     Name = ax.Name.ToString(),
                     Values = (ax?.ArgumentList?.Arguments.Select(x => x.Expression.ToFullString()) ?? Enumerable.Empty<string>()).ToList()
                 }))
             }).Where(x => x.Parameter.Type.BaseType?.Name == parameterType || x.Parameter.Type.BaseType?.BaseType?.Name == parameterType || x.Parameter.Type.Name == parameterType)
-       .Select(c => new MethodDescription
-       {
-           MethodName = c.Name,
-           ParameterType = c.Parameter.Type.Name,
-           ReturnType = c.ReturnType.Name,
-           ReturnTypeGenericArgument = (c.ReturnType as INamedTypeSymbol)?.TypeArguments.FirstOrDefault()?.ToString(),
-           Attributes = c.Attributes.ToList()
-               // TODO write recursive base type check
-           }).ToList();
+              .Select(c => new MethodDescription
+              {
+                  MethodName = c.Name,
+                  ParameterType = c.Parameter.Type.Name,
+                  ReturnType = c.ReturnType.Name,
+                  ReturnTypeGenericArgument = (c.ReturnType as INamedTypeSymbol)?.TypeArguments.FirstOrDefault()?.ToString(),
+                  Attributes = c.Attributes.ToList()
+                  // TODO write recursive base type check
+              }).ToList();
 
             return result;
         }

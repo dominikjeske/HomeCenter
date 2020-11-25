@@ -42,7 +42,7 @@ namespace HomeCenter.SourceGenerators.Tests
         {
         }
 
-        protected Task OnSystemStarted(SystemStartedEvent command)
+        protected override Task OnSystemStarted(SystemStartedEvent command)
         {
             return Task.CompletedTask;
         }

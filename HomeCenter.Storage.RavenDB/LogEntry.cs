@@ -33,7 +33,7 @@ namespace HomeCenter.Storage.RavenDB
             }
             else
             {
-                Properties = new Dictionary<string, object>();
+                Properties = new Dictionary<string, object?>();
                 foreach (var pair in logEvent.Properties)
                 {
                     Properties.Add(pair.Key, RavenPropertyFormatter.Simplify(pair.Value));
@@ -44,31 +44,31 @@ namespace HomeCenter.Storage.RavenDB
         /// <summary>
         /// The time at which the event occurred.
         /// </summary>
-        public DateTimeOffset Timestamp { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
         /// The template that was used for the log message.
         /// </summary>
-        public string MessageTemplate { get; set; }
+        public string? MessageTemplate { get; set; }
 
         /// <summary>
         /// The level of the log.
         /// </summary>
-        public LogEventLevel Level { get; set; }
+        public LogEventLevel? Level { get; set; }
 
         /// <summary>
         /// The rendered log message.
         /// </summary>
-        public string RenderedMessage { get; set; }
+        public string? RenderedMessage { get; set; }
 
         /// <summary>
         /// Exception
         /// </summary>
-        public object Exception { get; set; }
+        public object? Exception { get; set; }
 
         /// <summary>
         /// Properties associated with the event, including those presented in <see cref="Serilog.Events.MessageTemplate"/>.
         /// </summary>
-        public IDictionary<string, object> Properties { get; set; }
+        public IDictionary<string, object?>? Properties { get; set; }
     }
 }

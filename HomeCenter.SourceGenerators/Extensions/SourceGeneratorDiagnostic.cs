@@ -18,7 +18,7 @@ namespace HomeCenter.SourceGenerators
             _options = Options;
         }
 
-        public void ReportInformation(Location location = null)
+        public void ReportInformation(Location ?location = null)
         {
             if (location == null)
             {
@@ -28,7 +28,7 @@ namespace HomeCenter.SourceGenerators
             _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(_infoRule, location, typeof(T).Name));
         }
 
-        public void ReportError(Exception e, Location location = null)
+        public void ReportError(Exception e, Location? location = null)
         {
             if(location == null)
             {

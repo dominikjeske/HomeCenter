@@ -103,7 +103,7 @@ namespace HomeCenter.Quartz
         /// <param name="uid">UID for job registration</param>
         /// <param name="token">Cancellation token</param>
         /// <param name="calendar">Calendar that amends working days</param>
-        public static async Task<JobKey> ScheduleCron<T, D>(this IScheduler scheduler, string cronExpression, D dataContext, string uid, CancellationToken token = default, string calendar = null) where T : IJob
+        public static async Task<JobKey> ScheduleCron<T, D>(this IScheduler scheduler, string cronExpression, D dataContext, string uid, CancellationToken token = default, string? calendar = null) where T : IJob
         {
             var job = JobBuilder.Create<T>()
                                 .WithIdentity(GetUniqueName(uid))
@@ -135,7 +135,7 @@ namespace HomeCenter.Quartz
         /// <param name="uid">UID for job registration</param>
         /// <param name="token">Cancellation token</param>
         /// <param name="calendar">Calendar that amends working days</param>
-        public static async Task<JobKey> ScheduleDailyTimeInterval<T, D>(this IScheduler scheduler, TimeSpan dayTimeExecution, D dataContext, string uid, CancellationToken token = default, string calendar = null) where T : IJob
+        public static async Task<JobKey> ScheduleDailyTimeInterval<T, D>(this IScheduler scheduler, TimeSpan dayTimeExecution, D dataContext, string uid, CancellationToken token = default, string? calendar = null) where T : IJob
         {
             var job = JobBuilder.Create<T>()
                                 .WithIdentity(GetUniqueName(uid))
@@ -181,7 +181,12 @@ namespace HomeCenter.Quartz
 
             foreach (JobKey jobKey in await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()))
             {
-                jobs.Add(await scheduler.GetJobDetail(jobKey));
+                var jobDetail = await scheduler.GetJobDetail(jobKey);
+                if(jobDetail is not null)
+                {
+                    jobs.Add(jobDetail);
+                }
+                
             }
 
             return jobs;
@@ -206,7 +211,9 @@ namespace HomeCenter.Quartz
         /// <returns></returns>
         public static IReadOnlyList<DateTimeOffset> GetFireTimes(this ITrigger trigger, int numTimes = 10)
         {
-            return TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, null, numTimes);
+            if(trigger is not IOperableTrigger) throw new ArgumentNullException(nameof(trigger));
+
+            return TriggerUtils.ComputeFireTimes((IOperableTrigger)trigger, null, numTimes);
         }
 
         /// <summary>
@@ -215,17 +222,20 @@ namespace HomeCenter.Quartz
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static T GetDataContext<T>(this IJobExecutionContext context) where T : class
+        public static T? GetDataContext<T>(this IJobExecutionContext context) where T : class
         {
-            if (context.JobDetail.JobDataMap.TryGetValue(CONTEXT, out object value))
+            if (context.JobDetail.JobDataMap.TryGetValue(CONTEXT, out object value) && value is T result)
             {
-                return value as T;
+                return result;
             }
+
             return default;
         }
 
         private static JobDataMap WrapJobData<D>(D data)
         {
+            if (data is null) throw new ArgumentNullException(nameof(data));
+
             return new JobDataMap
             {
                 { CONTEXT, data }

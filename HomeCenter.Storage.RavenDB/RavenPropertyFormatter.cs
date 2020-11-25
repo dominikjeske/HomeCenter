@@ -26,7 +26,7 @@ namespace HomeCenter.Storage.RavenDB
         /// </summary>
         /// <param name="value">The value to simplify (possibly null).</param>
         /// <returns>A simplified representation.</returns>
-        public static object Simplify(LogEventPropertyValue value)
+        public static object? Simplify(LogEventPropertyValue value)
         {
             var scalar = value as ScalarValue;
             if (scalar != null)
@@ -35,14 +35,16 @@ namespace HomeCenter.Storage.RavenDB
             var dict = value as DictionaryValue;
             if (dict != null)
             {
-                var result = new Dictionary<object, object>();
+                var result = new Dictionary<object, object?>();
                 foreach (var element in dict.Elements)
                 {
                     var key = SimplifyScalar(element.Key.Value);
+                    if (key is null) continue;
+
                     if (result.ContainsKey(key))
                     {
                         SelfLog.WriteLine("The key {0} is not unique in the provided dictionary after simplification to {1}.", element.Key, key);
-                        return dict.Elements.Select(e => new Dictionary<string, object>
+                        return dict.Elements.Select(e => new Dictionary<string, object?>
                         {
                             { "Key", SimplifyScalar(e.Key.Value) },
                             { "Value", Simplify(e.Value) }
@@ -74,7 +76,7 @@ namespace HomeCenter.Storage.RavenDB
             return null;
         }
 
-        private static object SimplifyScalar(object value)
+        private static object? SimplifyScalar(object? value)
         {
             if (value == null) return null;
 

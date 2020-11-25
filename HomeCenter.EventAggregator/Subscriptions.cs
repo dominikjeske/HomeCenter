@@ -11,11 +11,10 @@ namespace HomeCenter.EventAggregator
     {
         private readonly List<BaseCommandHandler> _allSubscriptions = new List<BaseCommandHandler>();
         private int _subscriptionRevision;
-
         private int _localSubscriptionRevision;
-        private BaseCommandHandler[] _localSubscriptions;
+        private BaseCommandHandler[]? _localSubscriptions;
 
-        internal Guid RegisterAsyncWithResult<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter)
+        internal Guid RegisterAsyncWithResult<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter? filter)
         {
             var type = typeof(T);
             var key = Guid.NewGuid();
@@ -30,7 +29,7 @@ namespace HomeCenter.EventAggregator
             return key;
         }
 
-        internal Guid RegisterAsync<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter filter)
+        internal Guid RegisterAsync<T>(Func<IMessageEnvelope<T>, Task> action, RoutingFilter? filter)
         {
             var type = typeof(T);
             var key = Guid.NewGuid();
@@ -45,19 +44,19 @@ namespace HomeCenter.EventAggregator
             return key;
         }
 
-        internal Guid Register<T>(Action<IMessageEnvelope<T>> action, RoutingFilter filter)
+        internal Guid Register<T>(Action<IMessageEnvelope<T>> action, RoutingFilter? filter)
         {
             return RegisterCore(typeof(T), action, filter);
         }
 
-        internal Guid Register(Type messageType, Delegate action, RoutingFilter filter)
+        internal Guid Register(Type messageType, Delegate action, RoutingFilter? filter)
         {
             ValidateDelegate(messageType, action);
 
             return RegisterCore(messageType, action, filter);
         }
 
-        internal Guid Register(Type messageType, Func<Delegate> action, RoutingFilter filter)
+        internal Guid Register(Type messageType, Func<Delegate> action, RoutingFilter? filter)
         {
             //ValidateDelegate(messageType, action);
 
@@ -74,7 +73,7 @@ namespace HomeCenter.EventAggregator
             }
         }
 
-        private Guid RegisterCore(Type messageType, object action, RoutingFilter filter)
+        private Guid RegisterCore(Type messageType, object action, RoutingFilter? filter)
         {
             var type = messageType;
             var key = Guid.NewGuid();

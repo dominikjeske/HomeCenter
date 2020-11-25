@@ -6,7 +6,7 @@ namespace HomeCenter.EventAggregator
     {
         public static SubscriptionToken Empty = new SubscriptionToken();
 
-        private readonly IEventAggregator _eventAggregator;
+        private readonly IEventAggregator? _eventAggregator;
 
         private SubscriptionToken()
         {
@@ -24,7 +24,7 @@ namespace HomeCenter.EventAggregator
         {
             if (this == Empty) return;
 
-            _eventAggregator.UnSubscribe(Token);
+            _eventAggregator?.UnSubscribe(Token);
         }
     }
 }

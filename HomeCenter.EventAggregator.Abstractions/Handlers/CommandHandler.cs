@@ -5,11 +5,11 @@ namespace HomeCenter.EventAggregator.Handlers
 {
     public sealed class CommandHandler : BaseCommandHandler, IAsyncCommandHandler
     {
-        public CommandHandler(Type type, Guid token, object handler, RoutingFilter filter) : base(type, token, handler, filter)
+        public CommandHandler(Type type, Guid token, object handler, RoutingFilter? filter) : base(type, token, handler, filter)
         {
         }
 
-        public Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
+        public Task<R?> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
             var handler = Handler as Action<IMessageEnvelope<T>>;
             if (handler == null && Handler is Func<Delegate> factory)

@@ -18,11 +18,13 @@ namespace HomeCenter.Quartz
         {
             var actorMessageContext = context.GetDataContext<ActorMessageContext>();
 
-            if (actorMessageContext.Condition != null)
+            if (actorMessageContext?.Condition != null)
             {
                 var validationResult = await actorMessageContext.Condition.Validate();
                 if (!validationResult) return;
             }
+
+            if (actorMessageContext == null) return;
 
             foreach (var cmd in actorMessageContext.Commands)
             {

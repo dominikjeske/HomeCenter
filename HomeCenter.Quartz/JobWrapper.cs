@@ -16,14 +16,16 @@ namespace HomeCenter.Quartz
             _serviceProvider = serviceProvider;
         }
 
-        protected IJob RunningJob { get; private set; }
+        protected IJob? RunningJob { get; private set; }
 
         public Task Execute(IJobExecutionContext context)
         {
             try
             {
+                if (context is null) throw new ArgumentNullException(nameof(context));
+
                 RunningJob = _serviceProvider.GetService(_bundle.JobDetail.JobType) as IJob;
-                return RunningJob.Execute(context);
+                return RunningJob?.Execute(context) ?? Task.CompletedTask;
             }
             catch (JobExecutionException)
             {

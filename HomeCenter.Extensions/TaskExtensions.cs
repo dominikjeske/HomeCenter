@@ -65,15 +65,16 @@ namespace HomeCenter.Extensions
         /// <typeparam name="R"></typeparam>
         /// <param name="tasks"></param>
         /// <param name="timeout"></param>
-        /// <returns></returns>
         public static async Task<R> WhenAny<R>(this IEnumerable<Task> tasks, TimeSpan timeout) where R : class
         {
             var timeoutTask = Task.Delay(timeout);
             var result = await Task.WhenAny(tasks.ToList().AddChained(timeoutTask));
 
             if (result == timeoutTask) throw new TimeoutException();
+            var typedResult = result as Task<R>;
+            if (typedResult is null) throw new InvalidCastException();
 
-            return (result as Task<R>)?.Result;
+            return typedResult.Result;
         }
 
         /// <summary>
@@ -102,8 +103,11 @@ namespace HomeCenter.Extensions
 
                 throw new InvalidOperationException("Not supported result in Timeout");
             }
+            var typedResult = result as Task<R>;
+            if (typedResult is null) throw new InvalidCastException();
 
-            return (result as Task<R>).Result;
+
+            return typedResult.Result;
         }
 
         /// <summary>
@@ -179,6 +183,6 @@ namespace HomeCenter.Extensions
         /// <typeparam name="TResult"></typeparam>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static Task<object> ToGenericTaskResult<TResult>(this Task<TResult> source) => source.ContinueWith(t => (object)t.Result);
+        public static Task<object?> ToGenericTaskResult<TResult>(this Task<TResult> source) => source.ContinueWith(t => (object?)t.Result);
     }
 }

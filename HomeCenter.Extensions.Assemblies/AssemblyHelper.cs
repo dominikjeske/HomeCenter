@@ -65,7 +65,7 @@ namespace HomeCenter.Assemblies
             var allAsseblies = AppDomain.CurrentDomain.GetAssemblies();
             var referenced = sourceType.GetTypeInfo().Assembly.GetReferencedAssemblies().Select(a => a.FullName).ToList().AddChained(sourceType.GetTypeInfo().Assembly.FullName);
 
-            return referenced.Select(assembly => Array.Find(allAsseblies, a => a.FullName == assembly)?.Location).Where(x => !string.IsNullOrWhiteSpace(x));
+            return referenced.Select(assembly => Array.Find(allAsseblies, a => a.FullName == assembly)?.Location).Where(x => !string.IsNullOrWhiteSpace(x)).OfType<string>();
         }
 
         public static IEnumerable<Type> GetTypesWithAttribute<T>(bool inherit = false)
