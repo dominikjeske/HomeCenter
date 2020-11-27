@@ -10,10 +10,10 @@
     <PackageReference Include="Scriban" Version="3.0.2" PrivateAssets="all" LocalSourceGenerators="true" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
