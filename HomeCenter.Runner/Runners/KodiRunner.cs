@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Messages.Commands.Device;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner

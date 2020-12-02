@@ -1,10 +1,8 @@
-﻿using HomeCenter.Model.Core;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Runner.ConsoleExtentions;
-using SimpleInjector;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {
@@ -30,7 +28,7 @@ namespace HomeCenter.Runner
         public void SetContainer(Container container)
         {
             Container = container;
-            MessageBroker = container.GetInstance<IMessageBroker>();
+            //MessageBroker = container.GetInstance<IMessageBroker>();
         }
 
         public virtual async Task Run()

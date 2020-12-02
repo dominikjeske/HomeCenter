@@ -1,12 +1,8 @@
-﻿using HomeCenter.Model.Extensions;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
-using Quartz;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {
@@ -56,17 +52,6 @@ namespace HomeCenter.Runner
             }
 
             MessageBroker.Send(cmd, Uid);
-
-            return Task.CompletedTask;
-        }
-    }
-
-    public class TestJob : IJob
-    {
-        public Task Execute(IJobExecutionContext context)
-        {
-            var logger = context.GetDataContext<ILogger>();
-            logger.LogWarning("Executed");
 
             return Task.CompletedTask;
         }

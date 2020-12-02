@@ -1,4 +1,4 @@
-﻿using HomeCenter.Model.Messages.Commands.Device;
+﻿using HomeCenter.Messages.Commands.Device;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
@@ -45,8 +45,6 @@ namespace HomeCenter.Runner
                 case 7:
                     MessageBroker.Send(InputSetCommand.Create("TODO"), Uid);
                     break;
-
-
             }
 
             return Task.CompletedTask;

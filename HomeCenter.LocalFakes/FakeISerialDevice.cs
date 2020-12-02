@@ -1,11 +1,9 @@
-﻿using HomeCenter.Model.Contracts;
+﻿using HomeCenter.Abstractions;
 using System;
 using System.Reactive.Disposables;
-using HomeCenter.Abstractions;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Fakes
 {
-
     public class FakeISerialDevice : ISerialDevice
     {
         public void Dispose()

@@ -17,7 +17,11 @@ namespace HomeCenter.App
 
         public static string GetHostingAssemblies()
         {
-            return $"{CoreHosting.Assembly};{MessageBrokerHosting.Assembly};{ActorCompilerHosting.Assembly};{ConfigurationHosting.Assembly};{QuartzHosting.Assembly}";
+            var hostings = $"{CoreHosting.Assembly};{MessageBrokerHosting.Assembly};{ActorCompilerHosting.Assembly};{ConfigurationHosting.Assembly};{QuartzHosting.Assembly}";
+#if DEBUG
+            hostings += $";{Fakes.LocalFakesHosting.Assembly}";
+#endif
+            return hostings;
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

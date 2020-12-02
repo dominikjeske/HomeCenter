@@ -17,9 +17,11 @@ namespace HomeCenter.Services.Actors
         private readonly Dictionary<string, Type> _dynamicTypes = new Dictionary<string, Type>();
         private readonly IEnumerable<ITypeMapper> _typeMappers;
 
-        public async Task LoadTypes()
+        public Task LoadTypes()
         {
             LoadDynamicTypes();
+
+            return Task.CompletedTask;
         }
 
         public ActorLoader(IEnumerable<ITypeMapper> typeFactories)

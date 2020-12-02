@@ -12,7 +12,7 @@ namespace HomeCenter.Configuration
 {
     public class ConfigurationHosting : IHostingStartup
     {
-        public static string Assembly => System.Reflection.Assembly.GetAssembly(typeof(ConfigurationHosting)).GetName().Name;
+        public static string? Assembly => System.Reflection.Assembly.GetAssembly(typeof(ConfigurationHosting))?.GetName().Name;
 
         public void Configure(IWebHostBuilder builder)
         {

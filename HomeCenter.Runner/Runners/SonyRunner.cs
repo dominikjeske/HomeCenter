@@ -1,5 +1,5 @@
 ﻿using HomeCenter.Adapters.Sony.Messages;
-using HomeCenter.Model.Messages.Commands.Device;
+using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.Threading.Tasks;

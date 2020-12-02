@@ -1,6 +1,6 @@
 ﻿using HomeCenter.Extensions;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Queries.Device;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Runner.ConsoleExtentions;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -5,10 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="componentConfiguration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="componentConfiguration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HomeCenter.ActorCompiler\HomeCenter.ActorCompiler.csproj" />
     <ProjectReference Include="..\HomeCenter.Actors\HomeCenter.Actors.csproj" />
     <ProjectReference Include="..\HomeCenter.Configuration\HomeCenter.Configuration.csproj" />
     <ProjectReference Include="..\HomeCenter.Core\HomeCenter.Core.csproj" />
+    <ProjectReference Include="..\HomeCenter.LocalFakes\HomeCenter.LocalFakes.csproj" />
     <ProjectReference Include="..\HomeCenter.MessageBroker\HomeCenter.MessageBroker.csproj" />
     <ProjectReference Include="..\HomeCenter.Quartz\HomeCenter.Quartz.csproj" />
   </ItemGroup>

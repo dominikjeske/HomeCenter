@@ -1,6 +1,7 @@
 ﻿using HomeCenter.Abstractions;
 using HomeCenter.EventAggregator;
 using HomeCenter.Model.Extensions;
+using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Router;
@@ -60,7 +61,7 @@ namespace HomeCenter.Model.Actors
             return actor;
         }
 
-        public PID CreateActor<C>(C actorConfig, IContext parent = default) where C : IBaseObject, IPropertySource
+        public PID CreateActor<C>(C actorConfig, IContext? parent = default) where C : IBaseObject, IPropertySource
         {
             var routing = GetRouting(actorConfig);
             var id = actorConfig.Uid;
@@ -72,17 +73,17 @@ namespace HomeCenter.Model.Actors
             }
 
             //TODO what when parent is null
-            return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => parent.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
+            return GetOrCreateActor(id, null, parent, () => CreateActorInternal(typeof(object), id, parent, () => parent?.NewRoundRobinPool(WithChildGuardiad(Props.FromProducer(actorProducer)), routing)));
         }
 
-        public PID CreateActor<T>(string id = default, IContext parent = default) where T : class, IActor
+        public PID CreateActor<T>(string? id = default, IContext? parent = default) where T : class, IActor
         {
             var actorType = typeof(T);
-            id = id ?? actorType.FullName;
+            id ??= actorType.FullName;
             return GetOrCreateActor(id, null, parent, () => CreateActorInternal(actorType, id, parent, () => WithGuardiad(new Props().WithProducer(() => _serviceProvider.GetActorProxy(actorType)), parent)));
         }
 
-        private Props WithGuardiad(Props props, IContext parent)
+        private Props WithGuardiad(Props props, IContext? parent)
         {
             if (parent == null)
             {
@@ -106,8 +107,10 @@ namespace HomeCenter.Model.Actors
             return SupervisorDirective.Resume;
         }
 
-        private PID GetOrCreateActor(string uid, string address, IContext parent, Func<PID> create)
+        private PID GetOrCreateActor(string? uid, string? address, IContext? parent, Func<PID> create)
         {
+            uid = uid.MustNotBeNullOrWhiteSpace(nameof(uid));
+
             var pid = CreatePidAddress(uid, address, parent);
             var reff = System.ProcessRegistry.Get(pid);
             if (reff is DeadLetterProcess)
@@ -137,14 +140,19 @@ namespace HomeCenter.Model.Actors
             return pid;
         }
 
-        private PID CreateActorInternal(Type actorType, string id, IContext parent, Func<Props> producer)
+        private PID CreateActorInternal(Type actorType, string? id, IContext? parent, Func<Props?> producer)
         {
+            id = id.MustNotBeNullOrWhiteSpace(nameof(id));
+
             if (!_actorPropsRegistry.RegisteredProps.TryGetValue(actorType, out var props))
             {
                 props = x => x;
             }
 
-            var props2 = props(producer());
+            var produced = producer?.Invoke();
+            if (produced == null) throw new InvalidOperationException();
+
+            var props2 = props(produced);
             if (parent == null)
             {
                 return Context.SpawnNamed(props2, id);
@@ -157,7 +165,8 @@ namespace HomeCenter.Model.Actors
             if (actorConfig.ContainsProperty("Routing"))
             {
                 //TODO fix this
-                return int.Parse(actorConfig["Routing"].ToString());
+                var routing = actorConfig["Routing"].ToString()!;
+                return int.Parse(routing);
             }
 
             return 0;

@@ -1,13 +1,11 @@
-﻿using HomeCenter.Model.Capabilities;
-using HomeCenter.Model.Messages;
-using HomeCenter.Model.Messages.Commands;
-using HomeCenter.Model.Messages.Commands.Device;
-using HomeCenter.Model.Messages.Events.Device;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Capabilities;
+using HomeCenter.Messages.Commands.Device;
+using HomeCenter.Messages.Events.Device;
 using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
 
 namespace HomeCenter.Runner
 {

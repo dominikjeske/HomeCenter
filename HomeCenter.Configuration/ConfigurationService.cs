@@ -8,11 +8,13 @@ using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries;
 using HomeCenter.Services.Configuration.DTO;
+using Light.GuardClauses;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.Configuration
@@ -22,11 +24,10 @@ namespace HomeCenter.Services.Configuration
     {
         private readonly IActorFactory _actorFactory;
         private readonly IActorLoader _typeLoader;
-
-        private IDictionary<string, PID> _services = new Dictionary<string, PID>();
-        private IDictionary<string, PID> _adapters = new Dictionary<string, PID>();
-        private IDictionary<string, PID> _components = new Dictionary<string, PID>();
-        private PID _mainArea;
+        private readonly IDictionary<string, PID> _services = new Dictionary<string, PID>();
+        private readonly IDictionary<string, PID> _adapters = new Dictionary<string, PID>();
+        private readonly IDictionary<string, PID> _components = new Dictionary<string, PID>();
+        private PID? _mainArea;
 
         protected ConfigurationService(IActorFactory actorFactory, IActorLoader typeLoader)
         {
@@ -42,7 +43,9 @@ namespace HomeCenter.Services.Configuration
 
             var rawConfig = File.ReadAllText(configPath);
 
-            var result = System.Text.Json.JsonSerializer.Deserialize<HomeCenterConfigDTO>(rawConfig);
+            var result = JsonSerializer.Deserialize<HomeCenterConfigDTO>(rawConfig);
+
+            if (result is null) throw new InvalidOperationException($"Cannot deserialize {nameof(HomeCenterConfigDTO)}");
 
             await LoadTypes();
 
@@ -64,6 +67,10 @@ namespace HomeCenter.Services.Configuration
 
         private async Task LoadActors(HomeCenterConfigDTO result)
         {
+            if (result is null) throw new ArgumentNullException(nameof(result));
+            if (result.HomeCenter is null) throw new ArgumentNullException(nameof(result.HomeCenter));
+            if (result.HomeCenter.MainArea is null) throw new ArgumentNullException(nameof(result));
+
             _services.AddRangeNewOnly(CreataActors(result.HomeCenter.Services));
             _adapters.AddRangeNewOnly(CreataActors(result.HomeCenter.SharedAdapters));
             _mainArea = await CreateAreaWithChildren(result.HomeCenter.MainArea);

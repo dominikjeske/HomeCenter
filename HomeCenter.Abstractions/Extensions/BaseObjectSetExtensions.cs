@@ -9,8 +9,10 @@ namespace HomeCenter
 {
     public static class BaseObjectSetExtensions
     {
-        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, string value)
+        public static BaseObject SetProperty(this BaseObject baseObject, string propertyName, string? value)
         {
+            value = value.MustNotBeNull(value);
+
             baseObject[propertyName] = value;
             return baseObject;
         }

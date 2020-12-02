@@ -1,9 +1,7 @@
 ﻿using HomeCenter.Abstractions;
-using HomeCenter.Model.Contracts;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Fakes
 {
-
     public class FakeII2cBus : II2cBus
     {
         public void Read(int address, byte[] buffer)

@@ -1,11 +1,9 @@
-﻿using HomeCenter.Model.Contracts;
+﻿using HomeCenter.Abstractions;
 using System;
 using System.Reactive.Linq;
-using HomeCenter.Abstractions;
 
-namespace HomeCenter.Runner
+namespace HomeCenter.Fakes
 {
-
     public class FakeGpioDevice : IGpioDevice
     {
         public IObservable<PinChanged> PinChanged => Observable.Empty<PinChanged>();

@@ -32,7 +32,10 @@ namespace HomeCenter.Services.Actors
             foreach (var par in ctor.Parameters)
             {
                 var parInstance = _serviceProvider.GetService(par.ParameterType);
-                paramsList.Add(parInstance);
+                if (parInstance != null)
+                {
+                    paramsList.Add(parInstance);
+                }
             }
 
             var instance = ctor.Ctor.Invoke(paramsList.ToArray());
