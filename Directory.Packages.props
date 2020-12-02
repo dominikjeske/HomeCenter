@@ -1,0 +1,9 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
+    <PackageReference Include="Light.GuardClauses" Version="8.1.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.0" />
+    <PackageReference Include="Nullable" Version="1.3.0" />
+    <PackageReference Include="IsExternalInit" Version="1.0.0" />
+  </ItemGroup>
+</Project>
