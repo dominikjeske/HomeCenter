@@ -28,7 +28,7 @@ namespace HomeCenter.App
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseSetting(WebHostDefaults.HostingStartupExcludeAssembliesKey, GetHostingAssemblies())
+                    webBuilder.UseSetting(WebHostDefaults.HostingStartupAssembliesKey, GetHostingAssemblies())
                               .UseStartup<Startup>();
                 });
     }

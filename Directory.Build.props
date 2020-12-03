@@ -16,7 +16,7 @@
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.13.2" />
   </ItemGroup>
 
-  <!-- Workaround for https://github.com/dotnet/roslyn/issues/4655 -->
+   <!--Workaround for https://github.com/dotnet/roslyn/issues/4655-->
   <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\AnalyzerReleases.Shipped.md')" >
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
   </ItemGroup>

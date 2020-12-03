@@ -17,9 +17,6 @@ indent_size = 4
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
 
-# RS2007: Analyzer release file 'AnalyzerReleases.Unshipped.md' has a missing or invalid release header '## Release 1.0'.
-dotnet_diagnostic.RS2007.severity = suggestion
-
 [*.csproj]
 
 #Ident config

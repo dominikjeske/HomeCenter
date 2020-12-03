@@ -25,6 +25,7 @@ namespace HomeCenter.App
         {
             //TODO start actor
             await _quartzInitializer.Initialize();
+            CreateController();
         }
 
         private PID CreateController()
