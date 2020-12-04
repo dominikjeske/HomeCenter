@@ -1,6 +1,8 @@
-﻿### New Rules
+﻿; Unshipped analyzer release
+; https://github.com/dotnet/roslyn-analyzers/blob/master/src/Microsoft.CodeAnalysis.Analyzers/ReleaseTrackingAnalyzers.Help.md
+
+### New Rules
 Rule ID | Category | Severity | Notes
---------|----------|----------|--------------------
-SG0001  |  SourceGenerators  |   Error  | Error in source generator with log
-SG0002  |  SourceGenerators  |   Error  | Error in source generator
-SG0003  |  SourceGenerators  |   Info   | Source code generated
+--------|----------|----------|-------
+SG0001 | SourceGenerator | Error | SourceGeneratorDiagnostic
+SG0002 | SourceGenerator | Info | SourceGeneratorDiagnostic
