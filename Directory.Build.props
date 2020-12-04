@@ -6,14 +6,15 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
 
-  <ItemGroup>
-    <!--Pollyfill for NetStandard 2.0-->
-    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" />
-    <PackageReference Include="IsExternalInit" Version="1.0.0" PrivateAssets="all" />
-    <!--Language extensions-->
-    <PackageReference Include="Light.GuardClauses" Version="8.1.0" />
-    <!--<PackageReference Include="CSharpFunctionalExtensions" Version="2.13.2" />-->
+
+  <!-- Fix for IDE to make intellisense working-->
+  <ItemGroup Condition="'$(SourceGenerator_IntellisenseFix)' == 'true'">
+    <Compile Include="$(IntermediateOutputPath)*.generated.cs"
+        Condition="'$(DesignTimeBuild)' == 'true'"
+        Link="%(Filename)%(Extension)"
+        Visible="false" />
   </ItemGroup>
 
    <!--Workaround for https://github.com/dotnet/roslyn/issues/4655-->

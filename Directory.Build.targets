@@ -1,4 +1,5 @@
 <Project>
+  
   <!-- Include each file with given extension from None collection to EmbeddedResource-->
   <ItemGroup>
     <EmbeddedResource Include="@(None -> WithMetadataValue('Extension', '.scriban'))" />
@@ -13,15 +14,7 @@
     <CompilerVisibleProperty Include="IntermediateOutputPath" />
     <CompilerVisibleProperty Include="SourceGenerator_IntellisenseFix" />
   </ItemGroup>
-
-  <!-- Fix for IDE to make intellisense working-->
-  <ItemGroup Condition="'$(SourceGenerator_IntellisenseFix)' == 'true'">
-    <Compile Include="$(IntermediateOutputPath)*.generated.cs"
-        Condition="'$(DesignTimeBuild)' == 'true'"
-        Link="%(Filename)%(Extension)"
-        Visible="false" />
-  </ItemGroup>
-
+  
   <!-- Include each nuget reference with property 'LocalSourceGenerators' into final-->
   <Target Name="AddLocalDependencies" 
           Inputs="@(RuntimeCopyLocalItems)" 

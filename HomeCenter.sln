@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Actors", "HomeCenter.Actors\HomeCenter.Actors.csproj", "{1AC6251F-1264-4841-9F3A-E23C13DCB1E3}"
@@ -58,9 +59,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.SourceGenerators
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Runner", "HomeCenter.Runner\HomeCenter.Runner.csproj", "{BC9D2A1D-D00B-4D25-8FC8-A25495E8F949}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.LocalFakes", "HomeCenter.LocalFakes\HomeCenter.LocalFakes.csproj", "{B638BB36-E603-4740-9854-C75B15ADE507}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.LocalFakes", "HomeCenter.LocalFakes\HomeCenter.LocalFakes.csproj", "{B638BB36-E603-4740-9854-C75B15ADE507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCenter.Utils", "..\HomeCenter.Utils\HomeCenter.Utils.csproj", "{B5AD121A-18B8-4F07-B272-36DA5E05DCCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCenter.Utils", "HomeCenter.Utils\HomeCenter.Utils.csproj", "{39CF7B14-85BA-4689-9AD5-466FF8779BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,10 +169,10 @@ Global
 		{B638BB36-E603-4740-9854-C75B15ADE507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B638BB36-E603-4740-9854-C75B15ADE507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B638BB36-E603-4740-9854-C75B15ADE507}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5AD121A-18B8-4F07-B272-36DA5E05DCCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5AD121A-18B8-4F07-B272-36DA5E05DCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5AD121A-18B8-4F07-B272-36DA5E05DCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5AD121A-18B8-4F07-B272-36DA5E05DCCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39CF7B14-85BA-4689-9AD5-466FF8779BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39CF7B14-85BA-4689-9AD5-466FF8779BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39CF7B14-85BA-4689-9AD5-466FF8779BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39CF7B14-85BA-4689-9AD5-466FF8779BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

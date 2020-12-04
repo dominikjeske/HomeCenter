@@ -14,5 +14,6 @@
     <ProjectReference Include="..\HomeCenter.Capabilities\HomeCenter.Capabilities.csproj" />
     <ProjectReference Include="..\HomeCenter.Devices\HomeCenter.Devices.csproj" />
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
+    <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
   </ItemGroup>
 </Project>
