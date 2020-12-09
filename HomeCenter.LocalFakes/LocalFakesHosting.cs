@@ -18,7 +18,6 @@ namespace HomeCenter.Fakes
                 s.AddSingleton<II2cBus, FakeII2cBus>();
                 s.AddSingleton<ISerialDevice, FakeISerialDevice>();
                 s.AddSingleton<IGpioDevice, FakeGpioDevice>();
-
             });
         }
     }

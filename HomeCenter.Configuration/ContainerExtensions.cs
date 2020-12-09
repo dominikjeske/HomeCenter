@@ -7,9 +7,11 @@ namespace HomeCenter.Model.Extensions
 {
     public static class ContainerExtensions
     {
-        public static IActor GetActorProxy(this IServiceProvider container, Type actorType)
+        public static IActor? GetActorProxy(this IServiceProvider container, Type actorType)
         {
-            var proxyType = AssemblyHelper.GetAllTypes(actorType).Single();
+            //TODO make it better - not only by Proxy name
+
+            var proxyType = AssemblyHelper.GetAllTypes(actorType).Where(t => t.Name == $"{actorType.Name}Proxy").Single();
             var proxy = container.GetService(proxyType);
             return proxy as IActor;
         }

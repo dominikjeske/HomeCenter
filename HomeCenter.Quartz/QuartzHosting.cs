@@ -1,4 +1,5 @@
-﻿using HomeCenter.Quartz;
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Quartz;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
@@ -18,6 +19,8 @@ namespace HomeCenter.Quartz
             {
                 s.AddSingleton<IJobFactory, SimpleInjectorJobFactory>();
                 s.AddSingleton<ISchedulerFactory, SimpleInjectorSchedulerFactory>();
+                s.AddSingleton<IActorScheduler, ActorScheduler>();
+                s.AddSingleton<QuartzInitializer>(); //TODO do init in other way
             });
         }
     }

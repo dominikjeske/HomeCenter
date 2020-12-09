@@ -20,7 +20,7 @@ namespace HomeCenter.Model.Actors
         private readonly IActorLoader _typeLoader;
         private readonly Dictionary<string, PID> _actorsCache = new Dictionary<string, PID>();
 
-        public RootContext Context { get; }
+        public IRootContext Context { get; }
         public ActorSystem System { get; }
 
         public ActorFactory(IServiceProvider serviceProvider, ILogger<ActorFactory> logger,

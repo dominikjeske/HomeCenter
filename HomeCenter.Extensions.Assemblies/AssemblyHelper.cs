@@ -1,4 +1,5 @@
 ﻿using HomeCenter.Extensions;
+using Microsoft.Extensions.DependencyModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,22 @@ namespace HomeCenter.Assemblies
     {
         private const string TestAssembliesName = "Test";
 
+
+        private static Assembly[] GetAssemblies(string filter)
+        {
+            var assemblies = new List<Assembly>();
+            var dependencies = DependencyContext.Default.RuntimeLibraries;
+            foreach (var library in dependencies)
+            {
+                if (library.Name == filter || library.Dependencies.Any(d => d.Name.StartsWith(filter)))
+                {
+                    var assembly = Assembly.Load(new AssemblyName(library.Name));
+                    assemblies.Add(assembly);
+                }
+            }
+            return assemblies.ToArray();
+        }
+
         /// <summary>
         /// Get a list of all assemblies in solution
         /// </summary>
@@ -19,8 +36,8 @@ namespace HomeCenter.Assemblies
         {
             var mainAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
             var applicationNameName = mainAssemblyName.Substring(0, mainAssemblyName.IndexOf("."));
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
+            var assemblies = GetAssemblies(applicationNameName);
             var list = assemblies.Where(a => a.GetCustomAttribute<AssemblyProductAttribute>()?.Product?.IndexOf(applicationNameName) > -1);
             if (ignoreTestAssemblies)
             {

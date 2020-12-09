@@ -30,7 +30,7 @@ namespace HomeCenter.App
 
         private PID CreateController()
         {
-            return _actorFactory.CreateActor<Controller>(nameof(Controller));
+            return _actorFactory.CreateActor<RootActor>(nameof(RootActor));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

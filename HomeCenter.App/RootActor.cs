@@ -1,26 +1,30 @@
 ﻿using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
+using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries;
-using HomeCenter.Services.Controllers;
+using HomeCenter.Services.Configuration;
+using Microsoft.Extensions.Options;
 using Proto;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Controllers
 {
     [Proxy]
-    public class Controller : DeviceActor
+    public class RootActor : DeviceActor
     {
-        private readonly StartupConfiguration _startupConfiguration;
         private readonly IActorFactory _actorFactory;
         private readonly IActorScheduler _actorScheduler;
         private PID _configService;
+        private readonly HomeCenterOptions _homeCenterOptions;
 
-        protected Controller(StartupConfiguration startupConfiguration, IActorFactory actorFactory, IActorScheduler actorScheduler)
+        protected RootActor(IOptions<HomeCenterOptions> homeCenterOptions, IActorFactory actorFactory, IActorScheduler actorScheduler)
         {
             _actorFactory = actorFactory;
             _actorScheduler = actorScheduler;
-            _startupConfiguration = startupConfiguration;
+            _homeCenterOptions = homeCenterOptions.Value;
         }
 
         protected override async Task OnStarted(IContext context)
@@ -32,10 +36,11 @@ namespace HomeCenter.Actors.Controllers
 
         private void StartSystemFromConfiguration(IContext context)
         {
-            //TODO DNF
-            //_configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
+            _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
 
-            //MessageBroker.Send(StartSystemCommand.Create(_startupConfiguration.ConfigurationLocation), _configService);
+            var assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var configPath = Path.Combine(assemblyLocation, _homeCenterOptions.ConfigurationLocation);
+            MessageBroker.Send(StartSystemCommand.Create(configPath), _configService);
         }
 
         protected override Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
@@ -51,7 +56,7 @@ namespace HomeCenter.Actors.Controllers
 
             await _actorScheduler.ShutDown();
 
-            await _actorFactory.Context.StopAsync(_actorFactory.GetExistingActor(nameof(Controller)));
+            await _actorFactory.Context.StopAsync(_actorFactory.GetExistingActor(nameof(RootActor)));
 
             return true;
         }

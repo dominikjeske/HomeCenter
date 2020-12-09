@@ -14,16 +14,17 @@ namespace HomeCenter.Services.Actors
     {
         private readonly DeviceActorMapper _actorMapper;
         private readonly BaseObjectMapper _baseObjectMapper;
-        private readonly IMessageBroker _messageBroker;
-        private readonly ILogger<HomeCenter.Model.Components.ComponentProxy> _logger;
+
+        private readonly ILogger<ComponentProxy> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public ComponentMapper(DeviceActorMapper actorMapper, BaseObjectMapper baseObjectMapper,
-            IMessageBroker messageBroker, ILogger<HomeCenter.Model.Components.ComponentProxy> logger)
+            IServiceProvider serviceProvider, ILogger<ComponentProxy> logger)
         {
             _actorMapper = actorMapper;
             _baseObjectMapper = baseObjectMapper;
-            _messageBroker = messageBroker;
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
         public IActor Map(ComponentDTO config, Type destinationType)
@@ -45,7 +46,9 @@ namespace HomeCenter.Services.Actors
                 new ConditionContainer(ar.Condition.Expression, ar.Condition.IsInverted, ar.Condition.DefaultOperator, null))
             );
 
-            var component = new ComponentProxy(adapterReferences, translators, triggers, _messageBroker, _logger);
+            var broker = _serviceProvider.Get<IMessageBroker>();
+
+            var component = new ComponentProxy(adapterReferences, translators, triggers, broker, _logger);
 
             _actorMapper.Map(config, component);
 

@@ -9,7 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="componentConfiguration.json" />
+    <None Include="componentConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,7 @@
     <ProjectReference Include="..\HomeCenter.LocalFakes\HomeCenter.LocalFakes.csproj" />
     <ProjectReference Include="..\HomeCenter.MessageBroker\HomeCenter.MessageBroker.csproj" />
     <ProjectReference Include="..\HomeCenter.Quartz\HomeCenter.Quartz.csproj" />
+    <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

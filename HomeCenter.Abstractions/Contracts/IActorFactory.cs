@@ -5,7 +5,7 @@ namespace HomeCenter.Abstractions
 {
     public interface IActorFactory
     {
-        RootContext Context { get; }
+        IRootContext Context { get; }
 
         PID GetExistingActor(string id, string? address = default, IContext? parent = default);
 

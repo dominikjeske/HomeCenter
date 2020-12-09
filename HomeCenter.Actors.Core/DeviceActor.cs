@@ -23,7 +23,7 @@ namespace HomeCenter.Actors.Core
 
         [AllowNull]
         [DI]
-        protected ILogger Logger { get; set; }
+        protected ILogger<DeviceActor> Logger { get; set; }
 
         [AllowNull]
         protected PID Self { get; private set; }

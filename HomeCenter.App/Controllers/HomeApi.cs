@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HomeCenter.Adapters.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HomeCenter.App.Controllers
 {
@@ -6,6 +7,11 @@ namespace HomeCenter.App.Controllers
     [Route("[controller]")]
     public class HomeApi : ControllerBase
     {
+        public HomeApi(CCToolsAdapterProxy cCToolsAdapterProxy)
+        {
+
+        }
+
         [HttpGet]
         public string Get()
         {

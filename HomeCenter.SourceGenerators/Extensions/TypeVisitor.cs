@@ -48,12 +48,6 @@ namespace HomeCenter.SourceGenerators
             {
                 _exportedTypes.Add(type);
             }
-
-            foreach(var x in type.GetTypeMembers())
-            {
-                var xxx = x.Name;
-                var vvv = x.TypeKind;
-            }
         }
     }
 }

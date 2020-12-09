@@ -5,6 +5,8 @@ using HomeCenter.Model.Actors;
 using HomeCenter.Services.Actors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
 
 [assembly: HostingStartup(typeof(ConfigurationHosting))]
 
@@ -30,9 +32,9 @@ namespace HomeCenter.Configuration
                 s.AddSingleton<ITypeMapper, AreaMapper>();
                 s.AddSingleton<ITypeMapper, ComponentMapper>();
 
-                foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<ProxyAttribute>())
+                foreach (var actorProxy in AssemblyHelper.GetTypesWithAttribute<GeneratedCodeAttribute>())
                 {
-                    if (actorProxy == typeof(HomeCenter.Model.Components.ComponentProxy)) continue;
+                    if (actorProxy == typeof(Model.Components.ComponentProxy)) continue;
 
                     s.AddTransient(actorProxy);
                 }

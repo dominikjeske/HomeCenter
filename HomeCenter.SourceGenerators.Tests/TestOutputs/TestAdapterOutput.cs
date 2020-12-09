@@ -14,7 +14,7 @@ namespace HomeCenter.SourceGenerators.Tests
     [GeneratedCode]
     public sealed class TestAdapterProxy : TestAdapter
     {
-        public TestAdapterProxy(HomeCenter.Abstractions.IValueConverter valueConverter, System.Collections.Generic.IList<string> list, HomeCenter.Abstractions.IMessageBroker messageBroker, Microsoft.Extensions.Logging.ILogger logger) : base(valueConverter, list)
+        public TestAdapterProxy(HomeCenter.Abstractions.IValueConverter valueConverter, System.Collections.Generic.IList<string> list, HomeCenter.Abstractions.IMessageBroker messageBroker, Microsoft.Extensions.Logging.ILogger<DeviceActor> logger) : base(valueConverter, list)
         {
             MessageBroker = messageBroker;
             Logger = logger;
