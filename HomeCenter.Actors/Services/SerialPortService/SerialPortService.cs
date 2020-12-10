@@ -37,12 +37,14 @@ namespace HomeCenter.Services.Networking
         [Subscribe]
         protected Task Handle(RegisterSerialCommand registration)
         {
-            if (_messageHandlers.ContainsKey(registration.MessageType))
+            if (registration.MessageType is null) throw new ArgumentNullException();
+
+            if (_messageHandlers.ContainsKey(registration.MessageType.Value))
             {
                 throw new ArgumentException($"Message type {registration.MessageType} is already registered in {nameof(SerialPortService)}");
             }
 
-            _messageHandlers.Add(registration.MessageType, registration);
+            _messageHandlers.Add(registration.MessageType.Value, registration);
 
             return Task.CompletedTask;
         }

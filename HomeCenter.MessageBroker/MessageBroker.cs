@@ -43,7 +43,7 @@ namespace HomeCenter.MessageBroker
 
         public SubscriptionToken SubscribeForQuery<T, R>(PID subscriber, bool subscribeOnParent, RoutingFilter? filter = null) where T : Query
         {
-            //subscriber = subscriber.MustNotBeNull(nameof(subscriber));
+            subscriber = subscriber.MustNotBeNull(nameof(subscriber));
 
             if (subscribeOnParent)
             {

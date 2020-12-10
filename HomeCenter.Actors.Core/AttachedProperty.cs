@@ -5,7 +5,7 @@ namespace HomeCenter.Actors.Core
 {
     public class AttachedProperty : BaseObject
     {
-        public AttachedProperty(string? service, string? attachedActor, string? attachedArea)
+        public AttachedProperty(string service, string attachedActor, string attachedArea)
         {
             service = service.MustNotBeNullOrWhiteSpace();
             attachedActor = attachedActor.MustNotBeNullOrWhiteSpace();
@@ -19,6 +19,6 @@ namespace HomeCenter.Actors.Core
 
         public string AttachedActor { get; }
 
-        public string? AttachedArea { get; }
+        public string AttachedArea { get; }
     }
 }

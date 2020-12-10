@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.EventAggregator.Behaviors
 {
@@ -11,6 +12,8 @@ namespace HomeCenter.EventAggregator.Behaviors
 
         public override Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
+            if (_asyncCommandHandler == null) return base.HandleAsync<T, R>(message);
+
             return Task.Run(() => _asyncCommandHandler.HandleAsync<T, R>(message));
         }
     }

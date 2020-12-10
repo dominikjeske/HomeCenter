@@ -146,6 +146,8 @@ namespace HomeCenter.EventAggregator
 
         public SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter? filter = null)
         {
+            action = action.MustNotBeNull();
+
             return new SubscriptionToken(_subscriptions.RegisterAsyncWithResult(action, filter), this);
         }
 

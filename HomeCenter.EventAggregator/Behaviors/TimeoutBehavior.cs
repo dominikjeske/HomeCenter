@@ -16,6 +16,8 @@ namespace HomeCenter.EventAggregator.Behaviors
 
         public override Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
+            if (_asyncCommandHandler == null) throw new InvalidOperationException();
+
             return _asyncCommandHandler.HandleAsync<T, R>(message).WhenDone(_timeout, message.CancellationToken);
         }
     }

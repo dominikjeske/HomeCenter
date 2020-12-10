@@ -33,18 +33,11 @@ namespace HomeCenter.Services.MotionService
         {
             await base.OnStarted(context);
 
-            try
-            {
-                ReadConfigurationFromProperties();
-                var areas = ReadAreasFromAttachedProperties();
-                ReadRoomsFromAttachedProperties(areas);
+            ReadConfigurationFromProperties();
+            var areas = ReadAreasFromAttachedProperties();
+            ReadRoomsFromAttachedProperties(areas);
 
-                StartWatchForEvents();
-            }
-            catch (Exception rr)
-            {
-                throw;
-            }
+            StartWatchForEvents();
         }
 
         private void ReadConfigurationFromProperties()
