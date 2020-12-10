@@ -3,6 +3,7 @@ using HomeCenter.Abstractions.Defaults;
 using HomeCenter.EventAggregator;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries;
+using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
 using Proto;
 using Proto.Mailbox;
@@ -99,6 +100,8 @@ namespace HomeCenter.Actors.Core
 
         protected object FormatMessage(object? rawMessage)
         {
+            rawMessage = rawMessage.MustNotBeNull();
+
             if (rawMessage is ActorMessage message)
             {
                 Log(ActorEventType.Messagee, "Incoming message '{message}'", message);

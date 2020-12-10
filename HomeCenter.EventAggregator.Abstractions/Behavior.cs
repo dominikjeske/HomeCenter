@@ -16,7 +16,9 @@ namespace HomeCenter.EventAggregator
 
         public virtual Task<R> HandleAsync<T, R>(IMessageEnvelope<T> message)
         {
-            return _asyncCommandHandler?.HandleAsync<T, R>(message);
+            if (_asyncCommandHandler == null) throw new InvalidOperationException();
+
+            return _asyncCommandHandler.HandleAsync<T, R>(message);
         }
     }
 }

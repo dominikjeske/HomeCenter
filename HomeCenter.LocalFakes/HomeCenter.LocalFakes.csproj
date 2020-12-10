@@ -9,10 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
   </ItemGroup>
-
 
 </Project>

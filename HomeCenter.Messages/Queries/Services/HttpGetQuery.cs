@@ -11,13 +11,13 @@ namespace HomeCenter.Messages.Queries.Services
             RequestType = "GET";
         }
 
-        public string Address
+        public string? Address
         {
             get => this.AsString(MessageProperties.Address);
             set => this.SetProperty(MessageProperties.Address, value);
         }
 
-        public string RequestType
+        public string? RequestType
         {
             get => this.AsString(MessageProperties.RequestType);
             set => this.SetProperty(MessageProperties.RequestType, value);

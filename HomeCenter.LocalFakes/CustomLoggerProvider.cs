@@ -2,6 +2,7 @@
 using HomeCenter.Runner.ConsoleExtentions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Reactive.Disposables;
 
 namespace HomeCenter.Utils.LogProviders
 {
@@ -81,7 +82,7 @@ namespace HomeCenter.Utils.LogProviders
 
             public IDisposable BeginScope<TState>(TState state)
             {
-                return null;
+                return Disposable.Empty;
             }
         }
     }

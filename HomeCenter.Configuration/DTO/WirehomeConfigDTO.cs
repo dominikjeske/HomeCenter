@@ -6,5 +6,10 @@ namespace HomeCenter.Services.Configuration.DTO
     {
         [JsonPropertyName("HomeCenter")]
         public HomeCenterDTO HomeCenter { get; set; }
+
+        public HomeCenterConfigDTO(HomeCenterDTO homeCenter)
+        {
+            HomeCenter = homeCenter;
+        }
     }
 }

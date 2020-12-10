@@ -5,6 +5,13 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class ManualScheduleDTO
     {
+        public ManualScheduleDTO(TimeSpan start, TimeSpan finish, TimeSpan workingTime)
+        {
+            Start = start;
+            Finish = finish;
+            WorkingTime = workingTime;
+        }
+
         [JsonPropertyName("Start")]
         public TimeSpan Start { get; set; }
 

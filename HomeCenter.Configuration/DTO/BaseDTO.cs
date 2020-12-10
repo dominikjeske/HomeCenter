@@ -16,17 +16,24 @@ namespace HomeCenter.Services.Configuration.DTO
             set => Properties[propertyName] = value;
         }
 
+        public BaseDTO(string uid, string type, Dictionary<string, object> properties)
+        {
+            Uid = uid;
+            Type = type;
+            Properties = properties;
+        }
+
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
 
         public IReadOnlyDictionary<string, object> GetProperties() => Properties.AsReadOnly();
 
         [JsonPropertyName("Uid")]
-        public string Uid { get; set; } = string.Empty;
+        public string Uid { get; set; }
 
         [JsonPropertyName("Type")]
-        public string Type { get; set; } = string.Empty;
+        public string Type { get; set; }
 
         [JsonPropertyName("Properties")]
-        public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Properties { get; set; }
     }
 }

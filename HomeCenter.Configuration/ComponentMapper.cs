@@ -43,7 +43,7 @@ namespace HomeCenter.Services.Actors
                 _baseObjectMapper.Map<Event>(ar.Event),
                 ar.Commands.Select(c => _baseObjectMapper.Map<Command>(c)).ToList(),
                 new Schedule(ar.Schedule.CronExpression, ar.Schedule.Calendar, ar.Schedule.WorkingTime, ar.Schedule.ManualSchedules.Select(schedule => new ManualSchedule(schedule.Start, schedule.Finish, schedule.WorkingTime)).ToList()),
-                new ConditionContainer(ar.Condition.Expression, ar.Condition.IsInverted, ar.Condition.DefaultOperator, null))
+                new ConditionContainer(ar.Condition.Expression, ar.Condition.IsInverted, ar.Condition.DefaultOperator, Enumerable.Empty<IValidable>().ToList()))
             );
 
             var broker = _serviceProvider.Get<IMessageBroker>();

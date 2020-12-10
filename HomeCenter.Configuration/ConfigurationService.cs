@@ -8,10 +8,10 @@ using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries;
 using HomeCenter.Services.Configuration.DTO;
-using Light.GuardClauses;
 using Proto;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -87,7 +87,7 @@ namespace HomeCenter.Services.Configuration
             return actors;
         }
 
-        private async Task<PID> CreateAreaWithChildren(AreaDTO area, IContext parent = null)
+        private async Task<PID> CreateAreaWithChildren(AreaDTO area, IContext? parent = null)
         {
             var areaActor = _actorFactory.CreateActor(area, parent);
 
@@ -98,7 +98,8 @@ namespace HomeCenter.Services.Configuration
                 var componentCopy = component.Clone(); // clone to prevents override of componentConfig when executed in multi thread
                 if (componentCopy.Adapter != null)
                 {
-                    componentCopy.AdapterReferences.Add(new AdapterReferenceDTO { IsMainAdapter = true, Uid = componentCopy.Adapter.Uid });
+                    //TODO
+                    componentCopy.AdapterReferences.Add(new AdapterReferenceDTO(componentCopy.Adapter.Uid, "", ImmutableDictionary<string, object>.Empty.ToDictionary(), true));
                 }
 
                 var componentActor = _actorFactory.CreateActor(componentCopy, actorContext);
@@ -133,8 +134,10 @@ namespace HomeCenter.Services.Configuration
                 await _actorFactory.Context.StopAsync(adapter);
             }
 
-            await _actorFactory.Context.StopAsync(_mainArea);
-
+            if (_mainArea != null)
+            {
+                await _actorFactory.Context.StopAsync(_mainArea);
+            }
             return true;
         }
 
@@ -168,7 +171,7 @@ namespace HomeCenter.Services.Configuration
                     foreach (var property in adapter.Properties.Keys.ToList())
                     {
                         var propvalue = adapter.Properties[property].ToString();
-                        if (propvalue.IndexOf("#") > -1)
+                        if (propvalue?.IndexOf("#") > -1)
                         {
                             if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");
                             adapter.Properties[property] = component.Component.TemplateProperties[propvalue];
@@ -181,7 +184,7 @@ namespace HomeCenter.Services.Configuration
                     foreach (var property in attachedProperty.Properties.Keys.ToList())
                     {
                         var propvalue = attachedProperty.Properties[property].ToString();
-                        if (propvalue.IndexOf("#") > -1)
+                        if (propvalue?.IndexOf("#") > -1)
                         {
                             if (!component.Component.TemplateProperties.ContainsKey(propvalue)) throw new ConfigurationException($"Property '{propvalue}' was not found in component '{component.Component.Uid}'");
                             attachedProperty.Properties[property] = component.Component.TemplateProperties[propvalue];
@@ -238,9 +241,9 @@ namespace HomeCenter.Services.Configuration
 
         private void CheckForDuplicateUid(HomeCenterConfigDTO configuration)
         {
-            var allUids = configuration.HomeCenter?.SharedAdapters?.Select(a => a.Uid).ToList();
+            var allUids = configuration.HomeCenter.SharedAdapters.Select(a => a.Uid).ToList();
             allUids.AddRange(GetFlatComponentList(configuration.HomeCenter.MainArea).Select(c => c.Component.Uid));
-            allUids.AddRange(configuration.HomeCenter?.Services?.Select(c => c.Uid));
+            allUids.AddRange(configuration.HomeCenter.Services.Select(c => c.Uid));
 
             var duplicateKeys = allUids.GroupBy(x => x)
                                        .Where(group => group.Count() > 1)

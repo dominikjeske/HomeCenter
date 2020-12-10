@@ -19,9 +19,9 @@ namespace HomeCenter.Adapters.CurrentBridge
         private const int SWITCH_CHANGE_DIRECTION = 400;
         private const int WAIT_AFTER_CHANGE = 500;
 
-        private string _PowerAdapterUid;
+        private string? _PowerAdapterUid;
         private int _PowerAdapterPin;
-        private string _PowerLevelAdapterUid;
+        private string? _PowerLevelAdapterUid;
         private int _PowerLevelAdapterPin;
         private double? _Minimum;
         private double? _Maximum;

@@ -63,7 +63,7 @@ namespace HomeCenter.Adapters.Denon
             _description = await UpdateState(DescriptionState.StateName, _description, GetDescription());
         }
 
-        private string GetDescription() => $"{_fullState.FriendlyName} [Model: {_fullState.Model}, Zone: {_zone}, Address: {_hostName}]";
+        private string GetDescription() => $"{_fullState?.FriendlyName} [Model: {_fullState?.Model}, Zone: {_zone}, Address: {_hostName}]";
 
         protected async Task Handle(RefreshLightCommand message)
         {
