@@ -51,7 +51,8 @@ namespace HomeCenter.Adapters.PC
         protected async Task Handle(RefreshCommand message)
         {
             if (!IsEnabled) return;
-
+            if (_hostname is null) throw new InvalidOperationException();
+            
             var cmd = new ComputerQuery
             {
                 Address = _hostname,
@@ -61,6 +62,8 @@ namespace HomeCenter.Adapters.PC
 
             var state = await MessageBroker.QueryJsonService<ComputerQuery, ComputerStatus>(cmd);
 
+            if (state.MasterVolume is null) throw new InvalidOperationException();
+
             _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput);
             _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume.Value);
             _mute = await UpdateState(MuteState.StateName, _mute, state.Mute);
@@ -69,6 +72,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(TurnOnCommand message)
         {
+            if (_mac is null) throw new InvalidOperationException();
+
             var cmd = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(cmd);
 
@@ -78,6 +83,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(TurnOffCommand message)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -90,6 +97,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeUpCommand command)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
@@ -103,6 +112,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeDownCommand command)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
@@ -117,6 +128,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeSetCommand command)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var volume = command.AsDouble(MessageProperties.Value);
             var cmd = new ComputerCommand
             {
@@ -131,6 +144,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(MuteCommand message)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -144,6 +159,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(UnmuteCommand message)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
@@ -157,6 +174,8 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(InputSetCommand message)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var inputName = message.AsString(MessageProperties.InputSource);
 
             var cmd = new ComputerCommand

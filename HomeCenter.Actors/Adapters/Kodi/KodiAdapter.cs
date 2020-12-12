@@ -62,6 +62,8 @@ namespace HomeCenter.Adapters.Kodi
 
         private KodiCommand GetKodiCommand(string method, object? parameters = null)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             return new KodiCommand
             {
                 Address = _hostname,
@@ -75,6 +77,8 @@ namespace HomeCenter.Adapters.Kodi
 
         protected async Task Handle(TurnOnCommand message)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             var cmd = new ComputerCommand
             {
                 Address = _hostname,

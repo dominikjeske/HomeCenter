@@ -124,7 +124,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             if (context.Message is StopCommand stopCommand)
             {
                 // Ignore previous commands if we receive any
-                if (stopCommand[MessageProperties.Context] == "MAX")
+                if (stopCommand[MessageProperties.Context].ToString() == "MAX")
                 {
                     return;
                 }
@@ -242,7 +242,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             int powerOnTime = 0;
             var dest = TimeForPercentage(destinationLevel);
-            var current = TimeForPercentage(_PowerLevel.Value);
+            var current = TimeForPercentage(_PowerLevel.GetValueOrDefault());
 
             if (destinationLevel > _PowerLevel)
             {
@@ -293,9 +293,9 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         private double GetPowerLevel(double currentValue)
         {
-            if (currentValue < _Minimum.Value) return 0;
+            if (currentValue < _Minimum.GetValueOrDefault()) return 0;
 
-            return ((currentValue - _Minimum.Value) / _Range.Value) * 100.0;
+            return ((currentValue - _Minimum.GetValueOrDefault()) / _Range.GetValueOrDefault()) * 100.0;
         }
 
         private async Task ChangePowerState()
@@ -306,6 +306,8 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         private void ForwardToPowerAdapter(Command command)
         {
+            if (_PowerAdapterUid is null) throw new InvalidOperationException();
+
             command.SetProperty(MessageProperties.PinNumber, _PowerAdapterPin);
 
             MessageBroker.Send(command, _PowerAdapterUid);

@@ -144,7 +144,7 @@ namespace HomeCenter.EventAggregator
             await result.WhenAll(cancellationToken).Unwrap();
         }
 
-        public SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object>> action, RoutingFilter? filter = null)
+        public SubscriptionToken SubscribeForAsyncResult<T>(Func<IMessageEnvelope<T>, Task<object?>> action, RoutingFilter? filter = null)
         {
             action = action.MustNotBeNull();
 

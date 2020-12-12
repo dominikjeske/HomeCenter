@@ -59,6 +59,8 @@ namespace HomeCenter.Adapters.Samsung.Messages
 
         private byte[] Serialize()
         {
+            if (Code is null) throw new InvalidOperationException();
+
             var identifier = CreateIdentifier();
             var secondParameter = CreateSecondParameter();
             var command = CreateCommand(Code);

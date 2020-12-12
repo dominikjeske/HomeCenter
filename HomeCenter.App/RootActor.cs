@@ -9,6 +9,8 @@ using Proto;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System;
+using Light.GuardClauses;
 
 namespace HomeCenter.Actors.Controllers
 {
@@ -17,7 +19,7 @@ namespace HomeCenter.Actors.Controllers
     {
         private readonly IActorFactory _actorFactory;
         private readonly IActorScheduler _actorScheduler;
-        private PID _configService;
+        private PID? _configService;
         private readonly HomeCenterOptions _homeCenterOptions;
 
         protected RootActor(IOptions<HomeCenterOptions> homeCenterOptions, IActorFactory actorFactory, IActorScheduler actorScheduler)
@@ -36,9 +38,13 @@ namespace HomeCenter.Actors.Controllers
 
         private void StartSystemFromConfiguration(IContext context)
         {
+            if (string.IsNullOrWhiteSpace(_homeCenterOptions.ConfigurationLocation)) throw new ArgumentNullException(nameof(_homeCenterOptions.ConfigurationLocation));
+
             _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
 
             var assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (assemblyLocation is null) throw new InvalidOperationException(); ;
+
             var configPath = Path.Combine(assemblyLocation, _homeCenterOptions.ConfigurationLocation);
             MessageBroker.Send(StartSystemCommand.Create(configPath), _configService);
         }
@@ -50,6 +56,8 @@ namespace HomeCenter.Actors.Controllers
 
         protected async Task<bool> Handle(StopSystemQuery stopSystemCommand)
         {
+            if (_configService is null) throw new InvalidOperationException();
+
             await MessageBroker.Request<StopSystemQuery, bool>(StopSystemQuery.Default, _configService);
 
             await _actorFactory.Context.StopAsync(_configService);

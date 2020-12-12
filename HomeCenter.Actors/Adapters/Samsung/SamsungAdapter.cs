@@ -43,6 +43,10 @@ namespace HomeCenter.Adapters.Samsung
 
         private SamsungControlCommand GetCommand(string code)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+            if (_mac is null) throw new InvalidOperationException();
+            if (_appKey is null) throw new InvalidOperationException();
+
             return new SamsungControlCommand
             {
                 Address = _hostname,
@@ -54,6 +58,8 @@ namespace HomeCenter.Adapters.Samsung
 
         protected Task Handle(TurnOnCommand message)
         {
+            if (_infraredAdaperName is null) throw new InvalidOperationException();
+
             MessageBroker.Send(SendCodeCommand.Create(TURN_ON_IR_CODE), _infraredAdaperName);
             return Task.CompletedTask;
         }
@@ -107,6 +113,7 @@ namespace HomeCenter.Adapters.Samsung
             }
 
             if (source?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on Samsung available device input sources");
+            if (source is null) throw new InvalidOperationException();
 
             var cmd = GetCommand(source);
             await MessageBroker.SendToService(cmd);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.Json;
 using HomeCenter.Abstractions;
 using HomeCenter.Messages.Queries.Services;
+using Light.GuardClauses;
+using System;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {
@@ -26,6 +28,10 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
         public KodiCommand FormatMessage()
         {
+            UserName = UserName.MustNotBeNull(nameof(UserName));
+            Password = Password.MustNotBeNull(nameof(Password));
+
+
             Creditionals = new Dictionary<string, string>() { [UserName] = Password };
             Address = $"http://{Address}:{Port}/jsonrpc";
 
@@ -40,9 +46,13 @@ namespace HomeCenter.Adapters.Kodi.Messages
             return this;
         }
 
-        public override object? Parse(string? rawHttpResult)
+        public override object Parse(string? rawHttpResult)
         {
+            rawHttpResult = rawHttpResult.MustNotBeNull(nameof(rawHttpResult));
+
             var result = JsonSerializer.Deserialize<JsonRpcResponse>(rawHttpResult);
+
+            if (result is null) throw new InvalidOperationException();
 
             return result;
         }

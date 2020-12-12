@@ -242,6 +242,8 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
         {
             var other = obj as DipswitchCode;
 
+            if (other is null) return false;
+
             return AreEqual(this, other);
         }
 

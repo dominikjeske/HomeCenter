@@ -51,6 +51,8 @@ namespace HomeCenter.Adapters.Sony.Messages
 
         public string ReadAuthKey()
         {
+            if (Cookies is null) throw new InvalidOperationException();
+
             return Cookies.GetCookies(_cookieAddress)
                           .OfType<Cookie>()
                           .First(x => x.Name == "auth")

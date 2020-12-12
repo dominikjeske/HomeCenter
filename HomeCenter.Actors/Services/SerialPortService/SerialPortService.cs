@@ -77,6 +77,8 @@ namespace HomeCenter.Services.Networking
                     return;
                 }
 
+                if (registration?.ResultFormat == null || registration?.Actor == null) throw new InvalidOperationException();
+
                 if (messageBodySize != registration.MessageSize) throw new ArgumentException($"Message type {messageType} have wrong size");
                 var result = ReadData(registration.ResultFormat, reader);
 

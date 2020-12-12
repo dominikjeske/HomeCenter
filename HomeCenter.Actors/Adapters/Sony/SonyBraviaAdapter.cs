@@ -51,6 +51,8 @@ namespace HomeCenter.Adapters.Sony
 
         private SonyControlQuery GetControlCommand(string code)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             return new SonyControlQuery
             {
                 Address = _hostname,
@@ -59,8 +61,10 @@ namespace HomeCenter.Adapters.Sony
             };
         }
 
-        private SonyJsonQuery GetJsonCommand(string path, string method, object parameters = null)
+        private SonyJsonQuery GetJsonCommand(string path, string method, object? parameters = null)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             return new SonyJsonQuery
             {
                 Address = _hostname,
@@ -82,6 +86,8 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task<string> Handle(SonyRegisterQuery sonyRegisterQuery)
         {
+            if (_hostname is null) throw new InvalidOperationException();
+
             sonyRegisterQuery.Address = _hostname;
             sonyRegisterQuery.ClientID = _clientId;
 
@@ -103,6 +109,8 @@ namespace HomeCenter.Adapters.Sony
 
         protected async Task Handle(TurnOnCommand message)
         {
+            if (_mac is null) throw new InvalidOperationException();
+
             var command = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(command);
             //var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
