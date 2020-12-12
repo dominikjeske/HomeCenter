@@ -5,7 +5,7 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class AttachedPropertyDTO : BaseDTO
     {
-        public AttachedPropertyDTO(string uid, string type, Dictionary<string, object> properties, string service, string attachedActor, string attachedArea) : base(uid, type, properties)
+        public AttachedPropertyDTO(string uid, string type, IDictionary<string, object> properties, string service, string attachedActor, string attachedArea) : base(uid, type, properties)
         {
             Service = service;
             AttachedActor = attachedActor;

@@ -3,13 +3,13 @@ using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Reactive.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HomeCenter.Abstractions;
 using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
+using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
@@ -33,10 +33,9 @@ namespace HomeCenter.Services.MotionService.Tests
     // LEGEND: v/< - Motion Detector
     //         <x> - Max number of persons
 
-    [TestClass]
     public class LightAutomationServiceTests : ReactiveTest
     {
-        [TestMethod]
+        [Fact]
         public void WorkingTime_DuringDaylight_ShuldPowerOnDayLights()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
@@ -56,7 +55,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.livingRoomDetector).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void WorkingTime_AfterDusk_ShouldNotPowerOnDayLight()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
@@ -76,7 +75,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.livingRoomDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void WorkingTime_DuringDaylight_ShuldNotPowerOnNightLight()
         {
             var servieConfig = GetLightAutomationServiceBuilder().WithWorkingTime(WorkingTime.AfterDusk).Build();
@@ -96,7 +95,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.livingRoomDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Automation_WhenDisabled_ShouldNoturnOnLights()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -112,7 +111,7 @@ namespace HomeCenter.Services.MotionService.Tests
             automationState.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Automation_WhenReEnabled_ShouldTurnOnLights()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -129,7 +128,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.toiletDetector).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_FromOnePeopleRoomWithNoConfusion_ShouldTurnOffLightImmediately()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -143,7 +142,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.toiletDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_FromOnePeopleRoomWithConfusion_ShouldTurnOffAfterResolvingConfusion()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -163,7 +162,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchenDetector).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_FromSeparateRoomsIntoOne_ShouldTurnOffLightInBoth()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -182,7 +181,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_ToOtherRoom_ShouldSpeedUpResolutionInNeighbor()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -203,7 +202,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_ToOtherRoomAfterLongerBeeing_Should()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -228,7 +227,7 @@ namespace HomeCenter.Services.MotionService.Tests
             //env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_AfterMoveAroundRoom()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -246,7 +245,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(15));
         }
 
-        [TestMethod]
+        [Fact]
         public void Leave_ConfusedFromRoom_ShouldNotResolveOtherConfusions()
         {
             var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
@@ -275,7 +274,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Move_OnSeparateRooms_ShouldTurnOnLight()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -292,7 +291,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.livingRoomDetector).Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Move_Timeout_ShouldTurnOffAfterTimeout()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -310,7 +309,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchenDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Move_TurnOnAfterTurnOff_ShouldIncreaseTimeout()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -324,7 +323,7 @@ namespace HomeCenter.Services.MotionService.Tests
             status.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Timeout_WhenPassthrough_ShouldBeQuick()
         {
             var timeout = TimeSpan.FromSeconds(5);
@@ -342,7 +341,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchenDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Timeout_AfterShortVisit_ShouldBeLonger()
         {
             var timeout = TimeSpan.FromSeconds(5);
@@ -360,7 +359,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchenDetector).Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Timeout_AsfterLongVisit_ShouldBeLonger()
         {
             var timeout = TimeSpan.FromSeconds(5);
@@ -383,7 +382,7 @@ namespace HomeCenter.Services.MotionService.Tests
         /// HT -> HL is eliminated because of that
         /// T -> HT -> K | L -> HL -> HT -> K
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task Confusion_NotConfusedVectors_ShouldNotBeConfused()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -404,7 +403,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchenDetector).Should().BeTrue();
         }
 
-        //[TestMethod]
+        //[Fact]
         //public void Confusion_MoveWithNoConfusion_ShouldTurnOfLightImmediately()
         //{
         //    new LightAutomationEnviromentBuilder(_context).WithServiceConfig(Default().Build()).WithMotions(new Dictionary<int, string>
@@ -435,7 +434,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    //Assert.AreEqual(true, lampDictionary[Detectors.kitchenDetector].IsTurnedOn);
         //}
 
-        [TestMethod]
+        [Fact]
         public async Task Count_WhenCrossPassing_ShouldCountNumberOfPeople()
         {
             using var env = GetLightAutomationEnviromentBuilder(GetLightAutomationServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
@@ -464,7 +463,7 @@ namespace HomeCenter.Services.MotionService.Tests
             //Assert.AreEqual(2, status.NumberOfPersonsInHouse); //TODO
         }
 
-        //[TestMethod]
+        //[Fact]
         //public async Task Count_TwoVectorsToSameRoom()
         //{
         //    var servieConfig = Default().WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000)).Build();
@@ -485,7 +484,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    num.Should().Be(2);
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public async Task MoveCloseToRoomWithOtherPersonShouldConfuzeVectorsNearThatRoom()
         //{
         //    var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithMotion
@@ -511,7 +510,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    Assert.AreEqual(false, lampDictionary[Detectors.hallwayDetectorToilet].IsTurnedOn);
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public async Task AnalyzeMoveShouldCountPeopleNumberInHouse()
         //{
         //    var (motionEvents, scheduler, lampDictionary) = new LightAutomationServiceBuilder(_context).WithConfusionResolutionTime(TimeSpan.FromMilliseconds(5000))
@@ -532,7 +531,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    Assert.AreEqual(2, status.NumberOfPersonsInHouse);
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public async Task Move_SplitFromOneRoom_ShouldCountPeople()
         //{
         //    new LightAutomationEnviromentBuilder(_context).WithServiceConfig(DefaultServiceConfig().Build()).WithMotions(new Dictionary<int, string>

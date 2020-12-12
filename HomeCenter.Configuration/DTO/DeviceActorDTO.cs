@@ -6,7 +6,7 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class DeviceActorDTO : BaseDTO
     {
-        public DeviceActorDTO(string uid, string type, Dictionary<string, object> properties, IDictionary<string, string> tags, bool isEnabled) : base(uid, type, properties)
+        public DeviceActorDTO(string uid, string type, IDictionary<string, object> properties, IDictionary<string, string> tags, bool isEnabled) : base(uid, type, properties)
         {
             Tags = tags;
             IsEnabled = isEnabled;

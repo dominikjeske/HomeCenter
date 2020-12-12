@@ -2,6 +2,8 @@
 using HomeCenter.Services.MotionService;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text.Json;
 
 namespace HomeCenter.Actors.Tests.Builders
@@ -38,11 +40,7 @@ namespace HomeCenter.Actors.Tests.Builders
 
         public ServiceDTO Build()
         {
-            var serviceDto = new ServiceDTO
-            {
-                IsEnabled = true,
-                Properties = new Dictionary<string, object>()
-            };
+            var serviceDto = new ServiceDTO("LightAutomation", "Service", ImmutableDictionary<string, object>.Empty, ImmutableDictionary<string, string>.Empty, true, Enumerable.Empty<AttachedPropertyDTO>(), Enumerable.Empty<AttachedPropertyDTO>());
 
             foreach (var room in _rooms.Values)
             {
@@ -63,12 +61,7 @@ namespace HomeCenter.Actors.Tests.Builders
 
         private void AddRoom(ServiceDTO serviceDto, RoomBuilder roomBuilder)
         {
-            var area = new AttachedPropertyDTO
-            {
-                AttachedActor = roomBuilder.Name,
-                Properties = new Dictionary<string, object>(),
-                Service = "MotionService"
-            };
+            var area = new AttachedPropertyDTO("Propery", string.Empty, ImmutableDictionary<string, object>.Empty, "MotionService", roomBuilder.Name, "");
 
             if (!string.IsNullOrWhiteSpace(_workingTime))
             {
@@ -90,17 +83,11 @@ namespace HomeCenter.Actors.Tests.Builders
 
         private void AddMotionSensor(string motionSensor, string area, IEnumerable<string> neighbors, ServiceDTO serviceDto)
         {
-            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO
+            serviceDto.ComponentsAttachedProperties.Add(new AttachedPropertyDTO("AttachedProp", string.Empty, new Dictionary<string, object>
             {
-                AttachedActor = motionSensor,
-                AttachedArea = area,
-                Service = "MotionService",
-                Properties = new Dictionary<string, object>
-                {
-                    [MotionProperties.Neighbors] = ToJsonElement(string.Join(", ", neighbors)),
-                    [MotionProperties.Lamp] = ToJsonElement(motionSensor)
-                }
-            });
+                [MotionProperties.Neighbors] = ToJsonElement(string.Join(", ", neighbors)),
+                [MotionProperties.Lamp] = ToJsonElement(motionSensor)
+            }, "MotionService", motionSensor, area));
         }
 
         private static JsonElement ToJsonElement(object motionSensor)

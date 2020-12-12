@@ -4,10 +4,10 @@ namespace HomeCenter.Services.Configuration.DTO
 {
     public class ServiceDTO : DeviceActorDTO
     {
-        public ServiceDTO(string uid, string type, Dictionary<string, object> properties, IDictionary<string, string> tags, bool isEnabled, List<AttachedPropertyDTO> componentsAttachedProperties, List<AttachedPropertyDTO> areasAttachedProperties) : base(uid, type, properties, tags, isEnabled)
+        public ServiceDTO(string uid, string type, IDictionary<string, object> properties, IDictionary<string, string> tags, bool isEnabled, IEnumerable<AttachedPropertyDTO> componentsAttachedProperties, IEnumerable<AttachedPropertyDTO> areasAttachedProperties) : base(uid, type, properties, tags, isEnabled)
         {
-            ComponentsAttachedProperties = componentsAttachedProperties;
-            AreasAttachedProperties = areasAttachedProperties;
+            ComponentsAttachedProperties.AddRange(componentsAttachedProperties);
+            AreasAttachedProperties.AddRange(areasAttachedProperties);
         }
 
         public List<AttachedPropertyDTO> ComponentsAttachedProperties { get; set; } = new List<AttachedPropertyDTO>();

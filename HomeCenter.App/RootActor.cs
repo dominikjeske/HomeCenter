@@ -6,11 +6,10 @@ using HomeCenter.Messages.Queries;
 using HomeCenter.Services.Configuration;
 using Microsoft.Extensions.Options;
 using Proto;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System;
-using Light.GuardClauses;
 
 namespace HomeCenter.Actors.Controllers
 {
@@ -38,7 +37,7 @@ namespace HomeCenter.Actors.Controllers
 
         private void StartSystemFromConfiguration(IContext context)
         {
-            if (string.IsNullOrWhiteSpace(_homeCenterOptions.ConfigurationLocation)) throw new ArgumentNullException(nameof(_homeCenterOptions.ConfigurationLocation));
+            if (string.IsNullOrWhiteSpace(_homeCenterOptions.ConfigurationLocation)) throw new ArgumentException(nameof(_homeCenterOptions.ConfigurationLocation));
 
             _configService = _actorFactory.CreateActor<ConfigurationService>(parent: context);
 

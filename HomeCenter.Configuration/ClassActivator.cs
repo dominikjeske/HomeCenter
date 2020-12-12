@@ -20,25 +20,28 @@ namespace HomeCenter.Services.Actors
             var ctor = destinationType.GetConstructors()
                                       .Select
                                       (
-                                         x => new
+                                         constructor => new
                                          {
-                                             Ctor = x,
-                                             Parameters = x.GetParameters()
+                                             Constructor = constructor,
+                                             Parameters = constructor.GetParameters()
                                          }
                                       )
-                                      .OrderByDescending(y => y.Parameters.Count())
+                                      .OrderByDescending(y => y.Parameters.Length)
                                       .Single();
 
             foreach (var par in ctor.Parameters)
             {
                 var parInstance = _serviceProvider.GetService(par.ParameterType);
+
+                if (parInstance is null) throw new InvalidOperationException($"Type not registered {par.ParameterType.FullName}");
+
                 if (parInstance != null)
                 {
                     paramsList.Add(parInstance);
                 }
             }
 
-            var instance = ctor.Ctor.Invoke(paramsList.ToArray());
+            var instance = ctor.Constructor.Invoke(paramsList.ToArray());
 
             return instance;
         }

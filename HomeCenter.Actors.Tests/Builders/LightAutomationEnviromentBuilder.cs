@@ -5,9 +5,8 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Reactive.Testing;
-using SimpleInjector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace HomeCenter.Actors.Tests.Builders
     {
         private readonly ServiceDTO _serviceConfig;
         private readonly TestScheduler _scheduler = new TestScheduler();
-        private readonly Container _container = new Container();
+        private readonly ServiceCollection _container = new ServiceCollection();
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
 
@@ -31,8 +30,6 @@ namespace HomeCenter.Actors.Tests.Builders
         {
             _serviceConfig = serviceConfig;
             _useRavenDbLogs = useRavenDbLogs;
-
-            _container.Options.ResolveUnregisteredConcreteTypes = true;
         }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
@@ -75,7 +72,6 @@ namespace HomeCenter.Actors.Tests.Builders
         /// <param name="roomUid"></param>
         /// <param name="motionTime"></param>
         /// <param name="waitTime">Deafault value is 3 seconds</param>
-        /// <returns></returns>
         public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
         {
             var time = waitTime ?? TimeSpan.FromSeconds(3);
@@ -112,16 +108,19 @@ namespace HomeCenter.Actors.Tests.Builders
 
             var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs);
 
-            _container.RegisterInstance<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
-            _container.RegisterInstance<ILogger<LightAutomationServiceProxy>>(logger);
-            _container.RegisterInstance<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
-            _container.RegisterSingleton<DeviceActorMapper>();
-            _container.RegisterSingleton<BaseObjectMapper>();
-            _container.RegisterSingleton<ClassActivator>();
+            _container.AddLogging();
+            _container.AddSingleton<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
+            _container.AddSingleton<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
+            _container.AddSingleton<DeviceActorMapper>();
+            _container.AddSingleton<BaseObjectMapper>();
+            _container.AddSingleton<ClassActivator>();
+            _container.AddSingleton<ServiceMapper>();
 
-            var sm = _container.GetInstance<ServiceMapper>();
+            var serviceProvider = _container.BuildServiceProvider();
 
-            LightAutomationServiceProxy? actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
+            var sm = serviceProvider.Get<ServiceMapper>();
+
+            var actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
 
             if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 

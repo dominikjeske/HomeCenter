@@ -16,11 +16,11 @@ namespace HomeCenter.Services.Configuration.DTO
             set => Properties[propertyName] = value;
         }
 
-        public BaseDTO(string uid, string type, Dictionary<string, object> properties)
+        public BaseDTO(string uid, string type, IDictionary<string, object> properties)
         {
             Uid = uid;
             Type = type;
-            Properties = properties;
+            Properties = new Dictionary<string, object>(properties);
         }
 
         public bool ContainsProperty(string propertyName) => Properties.ContainsKey(propertyName);
