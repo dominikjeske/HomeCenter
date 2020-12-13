@@ -6,6 +6,7 @@ using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using System;
 using System.Collections.Generic;
@@ -106,9 +107,7 @@ namespace HomeCenter.Actors.Tests.Builders
             var lampDictionary = CreateFakeLamps();
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
 
-            var logger = new FakeLogger<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs);
-
-            _container.AddLogging();
+            _container.AddLogging(lb => lb.AddProvider(new FakeLoggerProvider<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs)));
             _container.AddSingleton<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
             _container.AddSingleton<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
             _container.AddSingleton<DeviceActorMapper>();
@@ -124,6 +123,7 @@ namespace HomeCenter.Actors.Tests.Builders
 
             if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 
+            var logger = serviceProvider.Get<ILogger<LightAutomationServiceProxy>>() as FakeLogger<LightAutomationServiceProxy>;
             var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
             actorContext.IsAlive();
 

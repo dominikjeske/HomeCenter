@@ -493,7 +493,20 @@ namespace HomeCenter.Services.MotionService
             _turnOffTimeOut.Reset();
         }
 
-        private Task<bool> CanTurnOnLamp() => _turnOnConditionsValidator.Validate();
+        private async Task<bool> CanTurnOnLamp()
+        {
+            try
+            {
+                var xx = await _turnOnConditionsValidator.Validate();
+                return xx;
+            }
+            catch (Exception ee)
+            {
+
+                throw;
+            }
+            
+        }
 
         private Task<bool> CanTurnOffLamp() => _turnOffConditionsValidator.Validate();
     }
