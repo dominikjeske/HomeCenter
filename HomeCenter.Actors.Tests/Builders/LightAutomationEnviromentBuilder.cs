@@ -123,8 +123,9 @@ namespace HomeCenter.Actors.Tests.Builders
 
             if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 
-            var logger = serviceProvider.Get<ILogger<LightAutomationServiceProxy>>() as FakeLogger<LightAutomationServiceProxy>;
-            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, logger, actor);
+            var loggerProvider = serviceProvider.Get<ILoggerProvider>();
+            
+            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, loggerProvider, actor);
             actorContext.IsAlive();
 
             return actorContext;

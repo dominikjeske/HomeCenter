@@ -2,6 +2,7 @@
 using HomeCenter.Actors.Tests.Fakes;
 using HomeCenter.Messages.Queries.Services;
 using HomeCenter.Services.MotionService;
+using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Proto;
 using System;
@@ -13,24 +14,26 @@ namespace HomeCenter.Actors.Tests.Helpers
     internal class ActorEnvironment : IDisposable
     {
         private readonly TestScheduler _scheduler;
-        private readonly FakeLogger<LightAutomationServiceProxy> _logger;
+        private readonly ILogger<LightAutomationServiceProxy> _logger;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
         private readonly ActorSystem _system = new ActorSystem();
         private readonly RootContext _context;
         private readonly PID _pid;
         private readonly string _serviceProcessName;
+        private readonly ILoggerProvider _loggerProvider;
 
         public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps,
-            FakeLogger<LightAutomationServiceProxy> Logger, LightAutomationServiceProxy actor)
+            ILoggerProvider loggerProvider, LightAutomationServiceProxy actor)
         {
             _scheduler = Scheduler;
             _motionEvents = MotionEvents;
-            _logger = Logger;
+            
             _lamps = Lamps;
             _serviceProcessName = $"motionService_{Guid.NewGuid()}";
             _context = new RootContext(_system);
             _pid = _context.SpawnNamed(Props.FromProducer(() => actor), _serviceProcessName);
+            _loggerProvider = loggerProvider;
         }
 
         public void Send(Command actorMessage)
@@ -54,7 +57,7 @@ namespace HomeCenter.Actors.Tests.Helpers
 
         public void Dispose()
         {
-            _logger.Dispose();
+            _loggerProvider.Dispose();
 
             _context.StopAsync(_pid);
         }

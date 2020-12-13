@@ -1,37 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Session;
+using Raven.Client.Json.Serialization.NewtonsoftJson;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
 {
-
-    public sealed class FakeLoggerProvider<T> : ILoggerProvider
-    {
-        private readonly IScheduler _scheduler;
-        private readonly bool _useRavenDB;
-        private Lazy<FakeLogger<T>> _logger;
-
-        public FakeLoggerProvider(IScheduler scheduler, bool useRavenDB)
-        {
-            _scheduler = scheduler;
-            _useRavenDB = useRavenDB;
-            _logger = new Lazy<FakeLogger<T>>(() => new FakeLogger<T>(_scheduler, _useRavenDB));
-        }
-
-        public ILogger CreateLogger(string categoryName) => _logger.Value;
-        
-
-        public void Dispose()
-        {
-            _logger.Value.Dispose();
-        }
-    }
-
     public class FakeLogger<T> : ILogger<T>, IDisposable
     {
         private const string MESSAGE_TEMPLATE = "{OriginalFormat}";
@@ -52,12 +30,13 @@ namespace HomeCenter.Actors.Tests.Fakes
                 InitRavenDB();
             }
         }
+
         private void InitRavenDB()
         {
             _dbStore = GetDbStore();
 
             _dbSession = _dbStore.OpenSession();
-
+         
             ClearCurrentMessages();
         }
 
@@ -85,10 +64,7 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (logLevel == LogLevel.Error)
-            {
-                throw exception;
-            }
+
             var message = formatter(state, exception);
             var time = $"{_scheduler.Now:ss:fff}";
 
@@ -106,6 +82,11 @@ namespace HomeCenter.Actors.Tests.Fakes
                         Exception = exception,
                         Message = message
                     };
+
+                    if (logLevel == LogLevel.Error)
+                    {
+                        //throw exception;
+                    }
 
                     if (state is IEnumerable<KeyValuePair<string, object>> list)
                     {
@@ -128,6 +109,11 @@ namespace HomeCenter.Actors.Tests.Fakes
                     }
                 });
             }
+
+            if (logLevel == LogLevel.Error)
+            {
+                //throw exception;
+            }
         }
 
         private DocumentStore GetDbStore()
@@ -142,8 +128,18 @@ namespace HomeCenter.Actors.Tests.Fakes
                 Conventions = { }
             };
 
-            //TODO - fix
-            //docStore.Conventions.CustomizeJsonSerializer = s => s.TypeNameHandling = TypeNameHandling.None;
+            docStore.Conventions = new DocumentConventions
+            {
+                Serialization = new NewtonsoftJsonSerializationConventions
+                {
+                    IgnoreUnsafeMembers = true,
+                    CustomizeJsonSerializer = s =>
+                    {
+                        s.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                        s.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    }
+                }
+            };
 
             docStore.Initialize();
             return docStore;
@@ -151,14 +147,22 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public void Dispose()
         {
-            Task.Run(() =>
-            {
-                lock (_locki)
+            //Task.Run(() =>
+            //{
+                try
                 {
-                    _dbSession?.SaveChanges();
-                    _dbSession?.Dispose();
+                    lock (_locki)
+                    {
+                        _dbSession?.SaveChanges();
+                        _dbSession?.Dispose();
+                    }
                 }
-            });
+                catch (Exception ee)
+                {
+                    Console.WriteLine(ee.ToString());
+                }
+
+           // });
         }
     }
 }

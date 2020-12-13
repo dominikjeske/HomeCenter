@@ -49,6 +49,7 @@ namespace HomeCenter.Services.MotionService.Tests
             SystemTime.Set(TimeSpan.FromHours(12));
 
             env.AdvanceToEnd();
+            env.Dispose();
 
             env.LampState(Detectors.toiletDetector).Should().BeTrue();
             env.LampState(Detectors.kitchenDetector).Should().BeTrue();
