@@ -60,13 +60,13 @@ namespace HomeCenter.Actors.Tests.Fakes
         {
             if (query is SunriseQuery)
             {
-                var result = Task.FromResult((TimeSpan?)new TimeSpan(6, 0, 0)) as Task<R>;
+                var result = Task.FromResult(new TimeSpan(6, 0, 0)) as Task<R>;
                 if (result is null) throw new InvalidCastException();
                 return result;
             }
             else if (query is SunsetQuery)
             {
-                var result = Task.FromResult((TimeSpan?)new TimeSpan(18, 0, 0)) as Task<R>;
+                var result = Task.FromResult(new TimeSpan(18, 0, 0)) as Task<R>;
                 if (result is null) throw new InvalidCastException();
                 return result;
             }
