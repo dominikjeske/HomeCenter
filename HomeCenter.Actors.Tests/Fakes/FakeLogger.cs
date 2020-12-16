@@ -3,9 +3,9 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
 {
@@ -19,39 +19,41 @@ namespace HomeCenter.Actors.Tests.Fakes
         private DocumentStore? _dbStore;
         private IDocumentSession? _dbSession;
 
-        public FakeLogger(IScheduler scheduler, bool useRavenDB)
+        public FakeLogger(IScheduler scheduler, bool useRavenDB, bool clearLogs)
         {
             _scheduler = scheduler;
             _useRavenDB = useRavenDB;
 
             if (_useRavenDB)
             {
-                InitRavenDB();
+                InitRavenDB(clearLogs);
             }
         }
 
-        private void InitRavenDB()
+        private void InitRavenDB(bool clearLogs)
         {
             _dbStore = GetDbStore();
 
             _dbSession = _dbStore.OpenSession();
 
-            ClearCurrentMessages();
+            if (clearLogs)
+            {
+                ClearCurrentMessages();
+            }
         }
 
         private void ClearCurrentMessages()
         {
-            //TODO DNF
-            //var objects = _dbSession.Query<MoveInfo>();
-            //while (objects.Any())
-            //{
-            //    foreach (var obj in objects)
-            //    {
-            //        _dbSession.Delete(obj);
-            //    }
+            var objects = _dbSession?.Query<MoveInfo>();
+            while (objects?.Any() ?? false)
+            {
+                foreach (var obj in objects)
+                {
+                    _dbSession?.Delete(obj);
+                }
 
-            //    _dbSession.SaveChanges();
-            //}
+                _dbSession?.SaveChanges();
+            }
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -70,37 +72,34 @@ namespace HomeCenter.Actors.Tests.Fakes
 
             if (_useRavenDB)
             {
-                Task.Run(() =>
+                var moveInfo = new MoveInfo
                 {
-                    var moveInfo = new MoveInfo
-                    {
-                        Time = time,
-                        LogLevel = logLevel,
-                        EventId = eventId,
-                        Exception = exception,
-                        Message = message
-                    };
+                    Time = time,
+                    LogLevel = logLevel,
+                    EventId = eventId,
+                    Exception = exception,
+                    Message = message
+                };
 
-                    if (state is IEnumerable<KeyValuePair<string, object>> list)
+                if (state is IEnumerable<KeyValuePair<string, object>> list)
+                {
+                    foreach (var pair in list)
                     {
-                        foreach (var pair in list)
+                        if (pair.Key == MESSAGE_TEMPLATE)
                         {
-                            if (pair.Key == MESSAGE_TEMPLATE)
-                            {
-                                moveInfo.Template = pair.Value?.ToString() ?? "";
-                            }
-                            else
-                            {
-                                moveInfo.Properties.Add(pair.Key, pair.Value?.ToString() ?? "");
-                            }
+                            moveInfo.Template = pair.Value?.ToString() ?? "";
+                        }
+                        else
+                        {
+                            moveInfo.Properties.Add(pair.Key, pair.Value?.ToString() ?? "");
                         }
                     }
+                }
 
-                    lock (_locki)
-                    {
-                        _dbSession?.Store(moveInfo);
-                    }
-                });
+                lock (_locki)
+                {
+                    _dbSession?.Store(moveInfo);
+                }
             }
 
             if (logLevel == LogLevel.Error)

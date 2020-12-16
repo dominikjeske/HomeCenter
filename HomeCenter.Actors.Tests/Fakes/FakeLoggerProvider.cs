@@ -10,11 +10,11 @@ namespace HomeCenter.Actors.Tests.Fakes
         private readonly bool _useRavenDB;
         private Lazy<FakeLogger<T>> _logger;
 
-        public FakeLoggerProvider(IScheduler scheduler, bool useRavenDB)
+        public FakeLoggerProvider(IScheduler scheduler, bool useRavenDB, bool clearLogs)
         {
             _scheduler = scheduler;
             _useRavenDB = useRavenDB;
-            _logger = new Lazy<FakeLogger<T>>(() => new FakeLogger<T>(_scheduler, _useRavenDB));
+            _logger = new Lazy<FakeLogger<T>>(() => new FakeLogger<T>(_scheduler, _useRavenDB, clearLogs));
         }
 
         public ILogger CreateLogger(string categoryName) => _logger.Value;

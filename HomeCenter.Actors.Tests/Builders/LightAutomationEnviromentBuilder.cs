@@ -26,11 +26,13 @@ namespace HomeCenter.Actors.Tests.Builders
         private int? _timeDuration;
         private TimeSpan? _periodicCheckTime;
         private readonly bool _useRavenDbLogs;
+        private readonly bool _clearRavenLogs;
 
-        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig, bool useRavenDbLogs)
+        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig, bool useRavenDbLogs, bool clearRavenLogs)
         {
             _serviceConfig = serviceConfig;
             _useRavenDbLogs = useRavenDbLogs;
+            _clearRavenLogs = clearRavenLogs;
         }
 
         public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
@@ -107,7 +109,7 @@ namespace HomeCenter.Actors.Tests.Builders
             var lampDictionary = CreateFakeLamps();
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
 
-            _container.AddLogging(lb => lb.AddProvider(new FakeLoggerProvider<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs)));
+            _container.AddLogging(lb => lb.AddProvider(new FakeLoggerProvider<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs, _clearRavenLogs)));
             _container.AddSingleton<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
             _container.AddSingleton<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
             _container.AddSingleton<DeviceActorMapper>();

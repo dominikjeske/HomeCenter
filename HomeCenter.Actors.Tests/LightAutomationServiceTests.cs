@@ -561,7 +561,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    IsTurnedOn(Detectors.hallwayDetectorToilet).Should().BeFalse();
         //}
 
-        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, true);
+        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, true, true);
 
         /// <summary>
         /// Get predefinied rooms configuration
