@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Session;
-using Raven.Client.Json.Serialization.NewtonsoftJson;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
@@ -36,7 +35,7 @@ namespace HomeCenter.Actors.Tests.Fakes
             _dbStore = GetDbStore();
 
             _dbSession = _dbStore.OpenSession();
-         
+
             ClearCurrentMessages();
         }
 
@@ -64,7 +63,6 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-
             var message = formatter(state, exception);
             var time = $"{_scheduler.Now:ss:fff}";
 
@@ -83,11 +81,6 @@ namespace HomeCenter.Actors.Tests.Fakes
                         Message = message
                     };
 
-                    if (logLevel == LogLevel.Error)
-                    {
-                        //throw exception;
-                    }
-
                     if (state is IEnumerable<KeyValuePair<string, object>> list)
                     {
                         foreach (var pair in list)
@@ -98,7 +91,7 @@ namespace HomeCenter.Actors.Tests.Fakes
                             }
                             else
                             {
-                                moveInfo.Properties.Add(pair.Key, pair.Value ?? "");
+                                moveInfo.Properties.Add(pair.Key, pair.Value?.ToString() ?? "");
                             }
                         }
                     }
@@ -112,7 +105,8 @@ namespace HomeCenter.Actors.Tests.Fakes
 
             if (logLevel == LogLevel.Error)
             {
-                //throw exception;
+                var exceptionDispatch = ExceptionDispatchInfo.Capture(exception);
+                exceptionDispatch.Throw();
             }
         }
 
@@ -128,41 +122,14 @@ namespace HomeCenter.Actors.Tests.Fakes
                 Conventions = { }
             };
 
-            docStore.Conventions = new DocumentConventions
-            {
-                Serialization = new NewtonsoftJsonSerializationConventions
-                {
-                    IgnoreUnsafeMembers = true,
-                    CustomizeJsonSerializer = s =>
-                    {
-                        s.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                        s.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
-                    }
-                }
-            };
-
             docStore.Initialize();
             return docStore;
         }
 
         public void Dispose()
         {
-            //Task.Run(() =>
-            //{
-                try
-                {
-                    lock (_locki)
-                    {
-                        _dbSession?.SaveChanges();
-                        _dbSession?.Dispose();
-                    }
-                }
-                catch (Exception ee)
-                {
-                    Console.WriteLine(ee.ToString());
-                }
-
-           // });
+            _dbSession?.SaveChanges();
+            _dbSession?.Dispose();
         }
     }
 }

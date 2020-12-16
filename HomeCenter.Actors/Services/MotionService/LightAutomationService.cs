@@ -143,7 +143,10 @@ namespace HomeCenter.Services.MotionService
         /// Exception logger for all Rx queries
         /// </summary>
         /// <param name="ex"></param>
-        private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
+        private void HandleError(Exception ex)
+        {
+            Logger.LogError(ex, "Exception in LightAutomationService");
+        }
 
         /// <summary>
         /// Checks periodically all rooms for current state - parallel to move

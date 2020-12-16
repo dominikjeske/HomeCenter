@@ -16,7 +16,7 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public EventId EventId { get; set; }
 
-        public Exception? Exception { get; set; }
+        public Exception Exception { get; set; }
 
         public string? Template { get; set; }
     }

@@ -1,18 +1,18 @@
-﻿using HomeCenter.Services.MotionService.Model;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using ConcurrentCollections;
+﻿using ConcurrentCollections;
 using HomeCenter.Abstractions;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
 using HomeCenter.Extensions;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
+using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -495,17 +495,7 @@ namespace HomeCenter.Services.MotionService
 
         private async Task<bool> CanTurnOnLamp()
         {
-            try
-            {
-                var xx = await _turnOnConditionsValidator.Validate();
-                return xx;
-            }
-            catch (Exception ee)
-            {
-
-                throw;
-            }
-            
+            return await _turnOnConditionsValidator.Validate();
         }
 
         private Task<bool> CanTurnOffLamp() => _turnOffConditionsValidator.Validate();

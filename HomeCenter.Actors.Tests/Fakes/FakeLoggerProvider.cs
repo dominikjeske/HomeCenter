@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Concurrency;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Fakes
 {
