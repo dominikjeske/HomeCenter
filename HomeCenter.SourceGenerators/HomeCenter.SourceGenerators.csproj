@@ -10,8 +10,4 @@
     <PackageReference Include="Scriban" Version="3.0.7" PrivateAssets="all" LocalSourceGenerators="true" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
-  </ItemGroup>
-
 </Project>

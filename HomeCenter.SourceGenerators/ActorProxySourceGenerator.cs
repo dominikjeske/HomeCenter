@@ -1,5 +1,4 @@
-﻿using HomeCenter.Abstractions;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -65,7 +64,7 @@ namespace HomeCenter.SourceGenerators
             {
                 ClassBase = classSyntax.GetClassName(),
 
-                ClassName = $"{classSyntax.GetClassName()}{ProxyAttribute.Name}",
+                ClassName = $"{classSyntax.GetClassName()}{"Proxy"}",
 
                 ClassModifier = classSyntax.GetClassModifier(),
 
@@ -73,11 +72,11 @@ namespace HomeCenter.SourceGenerators
 
                 Namespace = root.GetNamespace(),
 
-                Commands = GetMethodWithParameter(classSyntax, classSemanticModel, nameof(Command)),
+                Commands = GetMethodWithParameter(classSyntax, classSemanticModel, "Command"),
 
-                Queries = GetMethodWithParameter(classSyntax, classSemanticModel, nameof(Query)),
+                Queries = GetMethodWithParameter(classSyntax, classSemanticModel, "Query"),
 
-                Events = GetMethodWithParameter(classSyntax, classSemanticModel, nameof(Event)),
+                Events = GetMethodWithParameter(classSyntax, classSemanticModel, "Event"),
 
                 ConstructorParameters = GetConstructor(classSymbol),
 
@@ -141,7 +140,7 @@ namespace HomeCenter.SourceGenerators
         private IEnumerable<PropertyAssignDescriptor> GetInjectedProperties(INamedTypeSymbol? classSymbol)
         {
             var dependencyProperties = classSymbol?.GetAllMembers()
-                                                  .Where(x => x.Kind == SymbolKind.Property && x.GetAttributes().Any(a => a.AttributeClass?.Name == nameof(DIAttribute)))
+                                                  .Where(x => x.Kind == SymbolKind.Property && x.GetAttributes().Any(a => a.AttributeClass?.Name == "DIAttribute"))
                                                   .OfType<IPropertySymbol>()
                                                   .Select(par => new PropertyAssignDescriptor()
                                                   {
