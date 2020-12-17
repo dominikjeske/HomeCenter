@@ -14,7 +14,6 @@ namespace HomeCenter.Actors.Tests.Helpers
     internal class ActorEnvironment : IDisposable
     {
         private readonly TestScheduler _scheduler;
-        private readonly ILogger<LightAutomationServiceProxy> _logger;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
         private readonly ActorSystem _system = new ActorSystem();
@@ -28,7 +27,7 @@ namespace HomeCenter.Actors.Tests.Helpers
         {
             _scheduler = Scheduler;
             _motionEvents = MotionEvents;
-            
+
             _lamps = Lamps;
             _serviceProcessName = $"motionService_{Guid.NewGuid()}";
             _context = new RootContext(_system);
