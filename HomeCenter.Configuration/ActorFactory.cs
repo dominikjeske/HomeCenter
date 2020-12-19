@@ -65,7 +65,7 @@ namespace HomeCenter.Model.Actors
         {
             var routing = GetRouting(actorConfig);
             var id = actorConfig.Uid;
-            IActor? actorProducer() => _typeLoader.GetProxyType(actorConfig);
+            IActor actorProducer() => _typeLoader.GetProxyType(actorConfig);
 
             if (routing == 0)
             {
