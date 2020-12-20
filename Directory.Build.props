@@ -7,8 +7,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   
-
-
   <!-- Fix for IDE to make intellisense working-->
   <ItemGroup Condition="'$(SourceGenerator_IntellisenseFix)' == 'true'">
     <Compile Include="$(IntermediateOutputPath)*.generated.cs"
