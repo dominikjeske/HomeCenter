@@ -17,6 +17,9 @@ indent_size = 4
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
 
+# RCS1090: Add call to 'ConfigureAwait' (or vice versa).
+dotnet_diagnostic.RCS1090.severity = none
+
 [*.csproj]
 
 #Ident config
