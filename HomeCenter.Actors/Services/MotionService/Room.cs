@@ -1,5 +1,6 @@
 ﻿using ConcurrentCollections;
 using HomeCenter.Abstractions;
+using HomeCenter.Abstractions.Extensions;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
 using HomeCenter.Extensions;
@@ -27,11 +28,10 @@ namespace HomeCenter.Services.MotionService
         private readonly IMessageBroker _messageBroker;
         private readonly Lazy<IEnumerable<Room>> _neighboursFactory;
         private readonly string _lamp;
-        private readonly Timeout _turnOffTimeOut;
-        private readonly MotionStamp _lastMotion = new MotionStamp();
-        private readonly RoomStatistic _roomStatistic = new RoomStatistic();
+
+        private readonly RoomStatistic _roomStatistic;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
-        private Probability _presenceProbability = Probability.Zero;
+        private Probability _currentProbability = Probability.Zero;
 
         private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
 
@@ -50,10 +50,10 @@ namespace HomeCenter.Services.MotionService
 
         public string Uid { get; }
         public bool AutomationDisabled { get; private set; }
-        public int NumberOfPersons { get; private set; }
+        public int NumberOfPersons => _roomStatistic.NumberOfPersons;
         public AreaDescriptor AreaDescriptor { get; }
 
-        public override string ToString() => $"{Uid} [Last move: {_lastMotion}] [Persons: {NumberOfPersons}]";
+        public override string ToString() => $"{Uid} [Last move: {_roomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
 
         public Room(string uid, Lazy<IEnumerable<Room>> neighbours, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
@@ -80,23 +80,15 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            _turnOffTimeOut = new Timeout(AreaDescriptor.TurnOffTimeout, _motionConfiguration);
+            _roomStatistic = new RoomStatistic(_logger, Uid, AreaDescriptor.TurnOffTimeout, _motionConfiguration);
 
             RegisterChangeStateSource();
         }
 
-        private void Log(EventId eventId, string template = "", params object[] arguments)
+        private void RegisterChangeStateSource()
         {
-            if (string.IsNullOrEmpty(template))
-            {
-                template = eventId.Name;
-            }
-
-            template = "[{Uid}] " + template;
-            var args = new List<object>(arguments);
-            args.Insert(0, Uid);
-
-            _logger.LogInformation(eventId, template, args.ToArray());
+            //TODO
+            //_disposeContainer.Add(Lamp.PowerStateChange.Subscribe(PowerStateChangeHandler));
         }
 
         public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
@@ -104,27 +96,18 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Take action when there is a move in the room
         /// </summary>
-        /// <param name="motionTime"></param>
-        /// <returns></returns>
         public async Task MarkMotion(DateTimeOffset motionTime)
         {
-            Log(MoveType.Motion, "Motion at {motionTime}", motionTime);
+            _logger.LogDeviceEvent(Uid, MoveEventId.Motion, "Motion at {motionTime}", motionTime);
 
-            TryTuneTurnOffTimeOut(motionTime);
+            _roomStatistic.UpdateMotion(motionTime, _currentProbability, Probability.Full);
 
-            _lastMotion.SetTime(motionTime);
-
-            await SetProbability(Probability.Full, motionTime);
-
-            CheckAutoIncrementForOnePerson(motionTime);
-
-            _turnOffTimeOut.Increment(motionTime);
+            await SetProbability(Probability.Full);
         }
 
         /// <summary>
         /// Update room state on time intervals
         /// </summary>
-        /// <returns></returns>
         public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
             CheckForTurnOnAutomationAgain();
@@ -134,8 +117,6 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Try to resolve confusion in previously marked vectors
         /// </summary>
-        /// <param name="currentTime"></param>
-        /// <returns></returns>
         public async Task EvaluateConfusions(DateTimeOffset currentTime)
         {
             await GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
@@ -149,11 +130,9 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
         /// </summary>
-        /// <param name="motionVector"></param>
-        /// <returns></returns>
         private Task TryResolveAfterCancel(MotionVector motionVector)
         {
-            Log(MoveType.VectorCancel, "{motionVector} [Cancel]", motionVector);
+            _logger.LogDeviceEvent(Uid, MoveEventId.VectorCancel, "{motionVector} [Cancel]", motionVector);
 
             RemoveConfusedVector(motionVector);
 
@@ -169,7 +148,6 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
         /// </summary>
-        /// <param name="currentTime"></param>
         private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers(DateTimeOffset currentTime)
         {
             //!!!!!!TODO
@@ -202,24 +180,23 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        public void DisableAutomation()
-        {
-            AutomationDisabled = true;
-
-            Log(MoveType.AutomationDisabled);
-        }
-
         public void EnableAutomation()
         {
             AutomationDisabled = false;
 
-            Log(MoveType.AutomationEnabled);
+            _logger.LogDeviceEvent(Uid, MoveEventId.AutomationEnabled);
         }
 
         public void DisableAutomation(TimeSpan time)
         {
-            DisableAutomation();
-            _roomStatistic.AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
+            AutomationDisabled = true;
+
+            _logger.LogDeviceEvent(Uid, MoveEventId.AutomationDisabled);
+
+            if (time != TimeSpan.Zero)
+            {
+                _roomStatistic.AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
+            }
         }
 
         public void Dispose() => _disposeContainer.Dispose();
@@ -227,25 +204,17 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Check if <paramref name="motionVector"/> is vector that turned on the light
         /// </summary>
-        /// <param name="motionVector"></param>
-        /// <returns></returns>
         private bool IsTurnOnVector(MotionVector motionVector)
         {
-            if (!_roomStatistic.FirstEnterTime.HasValue || _roomStatistic.FirstEnterTime == motionVector.EndTime)
-            {
-                return true;
-            }
-            return false;
+            return !_roomStatistic.FirstEnterTime.HasValue || _roomStatistic.FirstEnterTime == motionVector.EndTime;
         }
 
         /// <summary>
         /// Marks enter to target room and leave from source room
         /// </summary>
-        /// <param name="motionVector"></param>
-        /// <returns></returns>
         private async Task MarkVector(MotionVector motionVector, bool resolved)
         {
-            Log(MoveType.MarkVector, "Vector {motionVector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
+            _logger.LogDeviceEvent(Uid, MoveEventId.MarkVector, "Vector {motionVector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
 
             await GetSourceRoom(motionVector).MarkLeave(motionVector);
             MarkEnter(motionVector);
@@ -254,19 +223,14 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Marks entrance of last motion vector
         /// </summary>
-        /// <param name="vector"></param>
-        private void MarkEnter(MotionVector vector)
-        {
-            IncrementNumberOfPersons(vector.EndTime);
-        }
+        private void MarkEnter(MotionVector vector) => _roomStatistic.IncrementNumberOfPersons(vector.EndTime);
 
         /// <summary>
         /// Mark some motion that can be enter vector but we are not sure
         /// </summary>
-        /// <param name="vector"></param>
         private void MarkConfusion(MotionVector vector)
         {
-            Log(MoveType.ConfusedVector, "Confused vector {vector}", vector);
+            _logger.LogDeviceEvent(Uid, MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
 
             _confusingVectors.Add(vector);
         }
@@ -274,7 +238,6 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Get list of all confused vectors that should be resolved
         /// </summary>
-        /// <param name="dateTimeOffset">We get all vectors before this time</param>
         private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
         {
             var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
@@ -288,7 +251,6 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Executed when after some time we can resolve confused vectors
         /// </summary>
-        /// <param name="vector"></param>
         private async Task ResolveConfusion(MotionVector vector)
         {
             RemoveConfusedVector(vector);
@@ -304,8 +266,6 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
         /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
         private bool NoMoveInStartNeighbors(MotionVector vector)
         {
             var sourceRoom = GetSourceRoom(vector);
@@ -316,97 +276,73 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
         /// </summary>
-        /// <param name="roomToExclude"></param>
-        /// <param name="referenceTime"></param>
-        /// <returns></returns>
         private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
         {
-            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._lastMotion.Time > referenceTime) || _lastMotion.Time > referenceTime;
+            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
         }
 
         /// <summary>
         /// Get room pointed by beginning of the <paramref name="motionVector"/>
         /// </summary>
-        /// <param name="motionVector"></param>
         private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
 
         private async Task MarkLeave(MotionVector vector)
         {
-            DecrementNumberOfPersons();
+            _roomStatistic.DecrementNumberOfPersons();
 
             _roomStatistic.LastLeaveVector = vector;
 
             // Only when we have one person room we can be sure that we can turn of light immediately
             if (AreaDescriptor.MaxPersonCapacity == 1)
             {
-                await SetProbability(Probability.Zero, vector.EndTime);
+                await SetProbability(Probability.Zero);
             }
             else
             {
                 var numberOfPeopleFactor = NumberOfPersons == 0 ? _motionConfiguration.DecreaseLeavingFactor : _motionConfiguration.DecreaseLeavingFactor / NumberOfPersons;
-                var visitTypeFactor = _turnOffTimeOut.VisitType.Value;
+                var visitTypeFactor = _roomStatistic.TurnOffTimeOut.VisitType.Value;
                 var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
-                Log(MoveType.Probability, "Probability => {probability}%", decreasePercent * 100);
+                _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "Probability => {probability}%", decreasePercent * 100);
 
-                await SetProbability(_presenceProbability.DecreaseByPercent(decreasePercent), vector.EndTime);
-            }
-        }
-
-        /// <summary>
-        /// If light is turned off too early area TurnOffTimeout is too low and we have to update it
-        /// </summary>
-        /// <param name="moveTime"></param>
-        private void TryTuneTurnOffTimeOut(DateTimeOffset moveTime)
-        {
-            if (_presenceProbability == Probability.Zero)
-            {
-                (bool result, TimeSpan before, TimeSpan after) = _turnOffTimeOut.TryIncreaseBaseTime(moveTime, _roomStatistic.LastAutoTurnOff);
-                if (result)
-                {
-                    Log(MoveType.Tuning, "Turn-off time out updated {before} -> {after}", before, after);
-                }
+                await SetProbability(_currentProbability.DecreaseByPercent(decreasePercent));
             }
         }
 
         /// <summary>
         /// Decrease probability of person in room after each time interval
         /// </summary>
-        /// <returns></returns>
         private async Task RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == _lastMotion.Time) return;
+            if (motionTime == _roomStatistic.LastMotion.Time) return;
 
-            var probabilityDelta = 1.0 / (_turnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
+            var probabilityDelta = 1.0 / (_roomStatistic.TurnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
 
-            await SetProbability(_presenceProbability.Decrease(probabilityDelta), motionTime);
+            await SetProbability(_currentProbability.Decrease(probabilityDelta));
         }
 
         /// <summary>
         /// Set probability of occurrence of the person in the room
         /// </summary>
-        /// <param name="probability"></param>
-        /// <returns></returns>
-        private async Task SetProbability(Probability probability, DateTimeOffset time)
+        private async Task SetProbability(Probability probability)
         {
-            if (probability == _presenceProbability) return;
+            if (probability == _currentProbability) return;
 
-            // When we change from zero to full
-            if (_presenceProbability == Probability.Zero && probability == Probability.Full)
-            {
-                _roomStatistic.FirstEnterTime = time;
-            }
+            _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, _roomStatistic.TurnOffTimeOut.Value);
 
-            Log(MoveType.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, _turnOffTimeOut.Value);
+            _currentProbability = probability;
 
-            _presenceProbability = probability;
+            await TryChangeLampState();
+        }
 
-            if (_presenceProbability.IsFullProbability)
+        private async Task TryChangeLampState()
+        {
+            if (_currentProbability.IsFullProbability)
             {
                 await TryTurnOnLamp();
             }
-            else if (_presenceProbability.IsNoProbability)
+            else if (_currentProbability.IsNoProbability)
             {
                 await TryTurnOffLamp();
 
@@ -414,33 +350,17 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        private void RegisterChangeStateSource()
-        {
-            //TODO
-            //_disposeContainer.Add(Lamp.PowerStateChange.Subscribe(PowerStateChangeHandler));
-        }
-
         private void PowerStateChangeHandler(PowerStateChangeEvent powerChangeEvent)
         {
             if (!powerChangeEvent.Value)
             {
-                ResetStatistics();
+                _roomStatistic.Reset();
             }
 
-            Log(MoveType.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
+            _logger.LogDeviceEvent(Uid, MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
         }
 
-        /// <summary>
-        /// When we don't detect motion vector previously but there is move in room and currently we have 0 person so we know that there is a least one
-        /// </summary>
-        private void CheckAutoIncrementForOnePerson(DateTimeOffset time)
-        {
-            if (NumberOfPersons == 0)
-            {
-                _roomStatistic.LastAutoIncrement = time;
-                NumberOfPersons++;
-            }
-        }
+        
 
         //TODO maybe do it differently
         private void CheckForTurnOnAutomationAgain()
@@ -451,25 +371,9 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        private void IncrementNumberOfPersons(DateTimeOffset moveTime)
-        {
-            if (!_roomStatistic.LastAutoIncrement.HasValue || moveTime.Between(_roomStatistic.LastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
-            {
-                NumberOfPersons++;
-            }
-        }
-
-        private void DecrementNumberOfPersons()
-        {
-            if (NumberOfPersons > 0)
-            {
-                NumberOfPersons--;
-            }
-        }
-
         private async Task TryTurnOnLamp()
         {
-            if (await CanTurnOnLamp())
+            if (await _turnOnConditionsValidator.Validate())
             {
                 _messageBroker.Send(new TurnOnCommand(), _lamp);
             }
@@ -477,27 +381,14 @@ namespace HomeCenter.Services.MotionService
 
         private async Task TryTurnOffLamp()
         {
-            if (await CanTurnOffLamp())
+            if (await _turnOffConditionsValidator.Validate())
             {
-                Log(MoveType.PowerState, "Turning OFF");
+                _logger.LogDeviceEvent(Uid, MoveEventId.PowerState, "Turning OFF");
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 
                 _roomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
         }
-
-        private void ResetStatistics()
-        {
-            NumberOfPersons = 0;
-            _turnOffTimeOut.Reset();
-        }
-
-        private async Task<bool> CanTurnOnLamp()
-        {
-            return await _turnOnConditionsValidator.Validate();
-        }
-
-        private Task<bool> CanTurnOffLamp() => _turnOffConditionsValidator.Validate();
     }
 }

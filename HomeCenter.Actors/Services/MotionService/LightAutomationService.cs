@@ -21,8 +21,7 @@ namespace HomeCenter.Services.MotionService
     {
         private readonly IConcurrencyProvider _concurrencyProvider;
         private readonly MotionConfiguration _motionConfiguration = new MotionConfiguration();
-
-        private RoomService _roomService = null!; // Initialized in OnStart
+        private RoomDictionary _roomDictionary = null!; // Initialized in OnStart
 
         protected LightAutomationService(IConcurrencyProvider concurrencyProvider)
         {
@@ -85,7 +84,7 @@ namespace HomeCenter.Services.MotionService
                                     _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
             }
 
-            _roomService = new RoomService(rooms, _motionConfiguration);
+            _roomDictionary = new RoomDictionary(rooms, _motionConfiguration);
         }
 
         private void CheckForMissingRooms()
@@ -106,6 +105,18 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
+        /// Checks periodically all rooms for current state - parallel to AnalyzeMove
+        /// </summary>
+        private void PeriodicCheck()
+        {
+            Observable.Interval(_motionConfiguration.PeriodicCheckTime, _concurrencyProvider.Scheduler)
+                      .Timestamp(_concurrencyProvider.Scheduler)
+                      .Select(time => time.Timestamp)
+                      .ObserveOn(_concurrencyProvider.Task)
+                      .Subscribe(PeriodicCheck, HandleError, Token, _concurrencyProvider.Task);
+        }
+
+        /// <summary>
         /// Query motion events from system and analyses move
         /// </summary>
         private void AnalyzeMove()
@@ -113,7 +124,7 @@ namespace HomeCenter.Services.MotionService
             var events = MessageBroker.Observe<MotionEvent>();
 
             var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler)
-                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomService));
+                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary));
 
             motionWindows.Subscribe(HandleMove, HandleError, Token, _concurrencyProvider.Task);
 
@@ -127,96 +138,51 @@ namespace HomeCenter.Services.MotionService
                          .Subscribe(HandleVectors, HandleError, Token, _concurrencyProvider.Task);
         }
 
-        /// <summary>
-        /// Handle move inside a room
-        /// </summary>
-        /// <param name="point"></param>
-        private Task HandleVectors(IList<MotionVector> vectors) => _roomService.HandleVectors(vectors);
+        private Task HandleVectors(IList<MotionVector> vectors) => _roomDictionary.HandleVectors(vectors);
 
-        /// <summary>
-        /// Handle move inside a room
-        /// </summary>
-        /// <param name="motion"></param>
-        private Task HandleMove(MotionWindow motion) => _roomService.MarkMotion(motion);
+        private Task HandleMove(MotionWindow motion) => _roomDictionary.MarkMotion(motion);
 
-        /// <summary>
-        /// Exception logger for all Rx queries
-        /// </summary>
-        /// <param name="ex"></param>
-        private void HandleError(Exception ex)
-        {
-            Logger.LogError(ex, "Exception in LightAutomationService");
-        }
+        private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
 
-        /// <summary>
-        /// Checks periodically all rooms for current state - parallel to move
-        /// </summary>
-        private void PeriodicCheck()
-        {
-            Observable.Interval(_motionConfiguration.PeriodicCheckTime, _concurrencyProvider.Scheduler)
-                      .Timestamp(_concurrencyProvider.Scheduler)
-                      .Select(time => time.Timestamp)
-                      .ObserveOn(_concurrencyProvider.Task)
-                      .Subscribe(PeriodicCheck, HandleError, Token, _concurrencyProvider.Task);
-        }
+        private async Task PeriodicCheck(DateTimeOffset currentTime) => await _roomDictionary.CheckRooms(currentTime);
 
-        /// <summary>
-        /// Check rooms state on given <paramref name="currentTime"/>
-        /// </summary>
-        /// <param name="currentTime">Time when we are checking</param>
-        /// <returns></returns>
-        private async Task PeriodicCheck(DateTimeOffset currentTime)
-        {
-            await _roomService.UpdateRooms(currentTime);
-        }
-
-        protected bool Handle(IsAliveQuery isAliveQuery)
-        {
-            return true;
-        }
+        protected bool Handle(IsAliveQuery isAliveQuery) => true;
 
         protected void Handle(DisableAutomationCommand command)
         {
             var roomId = command.AsString(MotionProperties.RoomId);
-            if (command.ContainsProperty(MessageProperties.TimeOut))
-            {
-                _roomService[roomId].DisableAutomation(command.AsTime(MessageProperties.TimeOut));
-            }
-            else
-            {
-                _roomService[roomId].DisableAutomation();
-            }
+            _roomDictionary[roomId].DisableAutomation(command.AsTime(MessageProperties.TimeOut, TimeSpan.Zero));
         }
 
         protected void Handle(EnableAutomationCommand command)
         {
             var roomId = command.AsString(MotionProperties.RoomId);
-            _roomService[roomId].EnableAutomation();
+            _roomDictionary[roomId].EnableAutomation();
         }
 
         protected bool Handle(AutomationStateQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return !_roomService[roomId].AutomationDisabled;
+            return !_roomDictionary[roomId].AutomationDisabled;
         }
 
         protected int Handle(NumberOfPeopleQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomService[roomId].NumberOfPersons;
+            return _roomDictionary[roomId].NumberOfPersons;
         }
 
         protected AreaDescriptor Handle(AreaDescriptorQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomService[roomId].AreaDescriptor.Clone();
+            return _roomDictionary[roomId].AreaDescriptor.Clone();
         }
 
         protected MotionStatus Handle(MotionServiceStatusQuery query)
         {
             return new MotionStatus
             {
-                NumberOfPersonsInHouse = _roomService.NumberOfPersons(),
+                NumberOfPersonsInHouse = _roomDictionary.NumberOfPersons(),
                 NumberOfConfusions = 0 //TODO
             };
         }

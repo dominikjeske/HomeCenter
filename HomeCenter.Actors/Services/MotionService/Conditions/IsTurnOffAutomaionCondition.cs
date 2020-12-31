@@ -5,16 +5,16 @@ namespace HomeCenter.Services.MotionService.Model
 {
     internal class IsTurnOffAutomaionCondition : Condition
     {
-        private readonly Room _motionDescriptor;
+        private readonly Room _room;
 
-        public IsTurnOffAutomaionCondition(Room motionDescriptor)
+        public IsTurnOffAutomaionCondition(Room room)
         {
-            _motionDescriptor = motionDescriptor;
+            _room = room;
         }
 
         public override Task<bool> Validate()
         {
-            return Task.FromResult(!_motionDescriptor.AreaDescriptor.TurnOffAutomationDisabled);
+            return Task.FromResult(!_room.AreaDescriptor.TurnOffAutomationDisabled);
         }
     }
 }

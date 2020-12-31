@@ -5,16 +5,16 @@ namespace HomeCenter.Services.MotionService.Model
 {
     internal class IsEnabledAutomationCondition : Condition
     {
-        private readonly Room _motionDescriptor;
+        private readonly Room _room;
 
-        public IsEnabledAutomationCondition(Room motionDescriptor)
+        public IsEnabledAutomationCondition(Room room)
         {
-            _motionDescriptor = motionDescriptor;
+            _room = room;
         }
 
         public override Task<bool> Validate()
         {
-            return Task.FromResult(!_motionDescriptor.AutomationDisabled);
+            return Task.FromResult(!_room.AutomationDisabled);
         }
     }
 }

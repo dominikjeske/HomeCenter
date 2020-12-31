@@ -3,7 +3,7 @@
 namespace HomeCenter.Services.MotionService
 {
     // TODO add unit test for unique number
-    public static class MoveType
+    public static class MoveEventId
     {
         public const int MessageBase = 100;
 

@@ -12,9 +12,9 @@ namespace HomeCenter.Services.MotionService.Model
 
         private readonly ConcurrentHashSet<MotionVector> _vectors = new ConcurrentHashSet<MotionVector>();
         private readonly ConcurrentHashSet<MotionVector> _vectorsHistory = new ConcurrentHashSet<MotionVector>();
-        private readonly RoomService _roomService;
+        private readonly RoomDictionary _roomService;
 
-        public MotionWindow(string place, DateTimeOffset time, RoomService roomService)
+        public MotionWindow(string place, DateTimeOffset time, RoomDictionary roomService)
         {
             Start = new MotionPoint(place, time);
             _roomService = roomService;

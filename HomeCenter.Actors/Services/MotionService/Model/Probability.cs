@@ -1,15 +1,13 @@
-﻿using System;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
+using System;
+using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Model
 {
     /// <summary>
     /// Represent a probability of person to be in room
     /// </summary>
-#pragma warning disable CS0618 // Type or member is obsolete
-
-    public class Probability : ValueObject<Probability>
-#pragma warning restore CS0618 // Type or member is obsolete
+    public class Probability : ValueObject
     {
         public static readonly Probability Zero = new Probability(0.0);
         public static readonly Probability Full = new Probability(1.0);
@@ -28,7 +26,12 @@ namespace HomeCenter.Services.MotionService.Model
 
         public override string ToString() => $"{Value}";
 
-        protected override bool EqualsCore(Probability other) => Math.Abs(other.Value - Value) < 0.01;
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Probability other) throw new ArgumentNullException();
+
+            return Math.Abs(other.Value - Value) < 0.01;
+        }
 
         public Probability Decrease(double delta) => new Probability(Value - delta);
 
@@ -36,7 +39,12 @@ namespace HomeCenter.Services.MotionService.Model
 
         public static Probability FromValue(double probability) => new Probability(probability);
 
-        protected override int GetHashCodeCore()
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return Value;
+        }
+
+        public override int GetHashCode()
         {
             unchecked
             {

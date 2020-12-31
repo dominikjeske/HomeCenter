@@ -1,5 +1,5 @@
 ﻿[*.cs]
- Instance fields are camelCase and start with _
+# Instance fields are camelCase and start with _
 dotnet_naming_rule.instance_fields_should_be_camel_case.severity = suggestion
 dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = instance_fields
 dotnet_naming_rule.instance_fields_should_be_camel_case.style = instance_field_style
@@ -9,7 +9,7 @@ dotnet_naming_symbols.instance_fields.applicable_kinds = field
 dotnet_naming_style.instance_field_style.capitalization = camel_case
 dotnet_naming_style.instance_field_style.required_prefix = _
 
-#Ident config
+# Ident config
 indent_style = space
 indent_size = 4
 
@@ -19,6 +19,9 @@ dotnet_sort_system_directives_first = false
 
 # RCS1090: Add call to 'ConfigureAwait' (or vice versa).
 dotnet_diagnostic.RCS1090.severity = none
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none
 
 [*.csproj]
 
