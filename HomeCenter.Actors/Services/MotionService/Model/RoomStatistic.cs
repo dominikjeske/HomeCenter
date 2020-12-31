@@ -8,20 +8,16 @@ namespace HomeCenter.Services.MotionService
 {
     internal class RoomStatistic
     {
-        public DateTimeOffset? AutomationEnableOn { get; set; }
+        private readonly ILogger _logger;
+        private readonly string _uid;
+
         public DateTimeOffset? LastAutoIncrement { get; set; }
         public DateTimeOffset? LastAutoTurnOff { get; set; }
         public DateTimeOffset? FirstEnterTime { get; set; }
-        public MotionStamp LastMotion { get; } = new MotionStamp();
-
         public MotionVector? LastLeaveVector { get; set; }
-
+        public MotionStamp LastMotion { get; } = new MotionStamp();
         public Timeout TurnOffTimeOut { get; }
-
         public int NumberOfPersons { get; private set; }
-
-        private readonly ILogger _logger;
-        private readonly string _uid;
 
         public RoomStatistic(ILogger logger, string uid, TimeSpan baseTime, MotionConfiguration motionConfiguration)
         {
@@ -93,6 +89,5 @@ namespace HomeCenter.Services.MotionService
             NumberOfPersons = 0;
             TurnOffTimeOut.Reset();
         }
-
     }
 }

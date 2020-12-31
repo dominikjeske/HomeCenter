@@ -28,7 +28,7 @@ namespace HomeCenter.Services.MotionService
         private readonly IMessageBroker _messageBroker;
         private readonly Lazy<IEnumerable<Room>> _neighboursFactory;
         private readonly string _lamp;
-
+        private DateTimeOffset? _scheduledAutomationTime;
         private readonly RoomStatistic _roomStatistic;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
         private Probability _currentProbability = Probability.Zero;
@@ -110,7 +110,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public async Task PeriodicUpdate(DateTimeOffset motionTime)
         {
-            CheckForTurnOnAutomationAgain();
+            CheckForScheduledAutomation(motionTime);
             await RecalculateProbability(motionTime);
         }
 
@@ -157,8 +157,10 @@ namespace HomeCenter.Services.MotionService
 
         public async Task HandleVectors(IList<MotionVector> motionVectors)
         {
-            if (motionVectors.Count == 0) return;
-
+            if (motionVectors.Count == 0)
+            {
+                return;
+            }
             // When we have one vector we know that there is no concurrent vectors to same room
             else if (motionVectors.Count == 1)
             {
@@ -195,7 +197,7 @@ namespace HomeCenter.Services.MotionService
 
             if (time != TimeSpan.Zero)
             {
-                _roomStatistic.AutomationEnableOn = _concurrencyProvider.Scheduler.Now + time;
+                _scheduledAutomationTime = _concurrencyProvider.Scheduler.Now + time;
             }
         }
 
@@ -360,12 +362,9 @@ namespace HomeCenter.Services.MotionService
             _logger.LogDeviceEvent(Uid, MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
         }
 
-        
-
-        //TODO maybe do it differently
-        private void CheckForTurnOnAutomationAgain()
+        private void CheckForScheduledAutomation(DateTimeOffset motionTime)
         {
-            if (AutomationDisabled && _concurrencyProvider.Scheduler.Now > _roomStatistic.AutomationEnableOn)
+            if (AutomationDisabled && motionTime > _scheduledAutomationTime)
             {
                 EnableAutomation();
             }
