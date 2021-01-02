@@ -11,7 +11,7 @@ namespace HomeCenter.Services.MotionService
     internal class RoomDictionary
     {
         private readonly IReadOnlyDictionary<string, Room> _rooms;
-        private readonly IReadOnlyDictionary<string, Room> _Neighbors;
+        private readonly IReadOnlyDictionary<string, IEnumerable<Room>> _neighbors;
 
         private readonly MotionConfiguration _motionConfiguration;
 
