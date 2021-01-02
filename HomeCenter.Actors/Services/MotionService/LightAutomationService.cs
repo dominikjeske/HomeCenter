@@ -76,12 +76,21 @@ namespace HomeCenter.Services.MotionService
 
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
-                var neighbours = new Lazy<IEnumerable<Room>>(() => from neighbor in motionDetector.AsList(MotionProperties.Neighbors)
-                                                                   join room in rooms on neighbor equals room.Uid
-                                                                   select room);
+                var areaDescriptor = areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default);
 
-                rooms.Add(new Room(motionDetector.AttachedActor, neighbours, motionDetector.AsString(MotionProperties.Lamp),
-                                    _concurrencyProvider, Logger, MessageBroker, areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default), _motionConfiguration));
+                rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsString(MotionProperties.Lamp),
+                                    _concurrencyProvider, Logger, MessageBroker, areaDescriptor, _motionConfiguration));
+            }
+
+            foreach (var motionDetector in ComponentsAttachedProperties)
+            {
+                var neighbours = from neighbor in motionDetector.AsList(MotionProperties.Neighbors)
+                                 join room in rooms on neighbor equals room.Uid
+                                 select room;
+
+                rooms.Single(x => x.Uid == motionDetector.AttachedActor)
+                     .Init(neighbours.ToDictionary(x => x.Uid, y => y).AsReadOnly());
+
             }
 
             _roomDictionary = new RoomDictionary(rooms, _motionConfiguration);

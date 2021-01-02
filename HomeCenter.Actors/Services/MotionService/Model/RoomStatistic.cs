@@ -10,6 +10,7 @@ namespace HomeCenter.Services.MotionService
     {
         private readonly ILogger _logger;
         private readonly string _uid;
+        private readonly MotionConfiguration _motionConfiguration;
 
         public DateTimeOffset? LastAutoIncrement { get; set; }
         public DateTimeOffset? LastAutoTurnOff { get; set; }
@@ -24,6 +25,12 @@ namespace HomeCenter.Services.MotionService
             TurnOffTimeOut = new Timeout(baseTime, motionConfiguration);
             _logger = logger;
             _uid = uid;
+            _motionConfiguration = motionConfiguration;
+        }
+
+        public double GetDeltaProbability()
+        {
+            return 1.0 / (TurnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
         }
 
         public void UpdateMotion(DateTimeOffset motionTime, Probability current, Probability proposed)

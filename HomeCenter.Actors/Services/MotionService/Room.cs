@@ -26,28 +26,12 @@ namespace HomeCenter.Services.MotionService
         private readonly IConcurrencyProvider _concurrencyProvider;
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
-        private readonly Lazy<IEnumerable<Room>> _neighboursFactory;
         private readonly string _lamp;
-        private DateTimeOffset? _scheduledAutomationTime;
         private readonly RoomStatistic _roomStatistic;
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
         private Probability _currentProbability = Probability.Zero;
-
         private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
-
-        private IReadOnlyDictionary<string, Room> NeighborsCache
-        {
-            get
-            {
-                if (_neighborsCache == ImmutableDictionary<string, Room>.Empty)
-                {
-                    _neighborsCache = _neighboursFactory.Value.ToDictionary(x => x.Uid, y => y).AsReadOnly();
-                }
-
-                return _neighborsCache;
-            }
-        }
-
+        private DateTimeOffset? _scheduledAutomationTime;
         public string Uid { get; }
         public bool AutomationDisabled { get; private set; }
         public int NumberOfPersons => _roomStatistic.NumberOfPersons;
@@ -55,11 +39,10 @@ namespace HomeCenter.Services.MotionService
 
         public override string ToString() => $"{Uid} [Last move: {_roomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
 
-        public Room(string uid, Lazy<IEnumerable<Room>> neighbours, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
+        public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
-            _neighboursFactory = neighbours ?? throw new ArgumentNullException(nameof(lamp));
             _lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
             _logger = logger;
             _motionConfiguration = motionConfiguration;
@@ -85,13 +68,18 @@ namespace HomeCenter.Services.MotionService
             RegisterChangeStateSource();
         }
 
+        public void Init(IReadOnlyDictionary<string, Room> neighborsCache)
+        {
+            _neighborsCache = neighborsCache;
+        }
+
         private void RegisterChangeStateSource()
         {
             //TODO
             //_disposeContainer.Add(Lamp.PowerStateChange.Subscribe(PowerStateChangeHandler));
         }
 
-        public bool IsNeighbor(string uid) => NeighborsCache.ContainsKey(uid);
+        public bool IsNeighbor(string uid) => _neighborsCache.ContainsKey(uid);
 
         /// <summary>
         /// Take action when there is a move in the room
@@ -242,11 +230,15 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
         {
-            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
+            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime)
+                                                          .LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
 
             // When all vectors are older then timeout we cannot resolve confusions
-            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime).LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut))) return Enumerable.Empty<MotionVector>();
-
+            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime)
+                                                                 .LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut)))
+            {
+                return Enumerable.Empty<MotionVector>();
+            }
             return confusedReadyToResolve;
         }
 
@@ -280,13 +272,13 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
         {
-            return NeighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
+            return _neighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
         }
 
         /// <summary>
         /// Get room pointed by beginning of the <paramref name="motionVector"/>
         /// </summary>
-        private Room GetSourceRoom(MotionVector motionVector) => NeighborsCache[motionVector.StartPoint];
+        private Room GetSourceRoom(MotionVector motionVector) => _neighborsCache[motionVector.StartPoint];
 
         private async Task MarkLeave(MotionVector vector)
         {
@@ -319,7 +311,7 @@ namespace HomeCenter.Services.MotionService
             // When we just have a move in room there is no need for recalculation
             if (motionTime == _roomStatistic.LastMotion.Time) return;
 
-            var probabilityDelta = 1.0 / (_roomStatistic.TurnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
+            var probabilityDelta = _roomStatistic.GetDeltaProbability();
 
             await SetProbability(_currentProbability.Decrease(probabilityDelta));
         }
@@ -388,6 +380,11 @@ namespace HomeCenter.Services.MotionService
 
                 _roomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
-        }
+        }  
+    }
+
+    internal class ConfusedVectors
+    {
+
     }
 }
