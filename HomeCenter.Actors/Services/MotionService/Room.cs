@@ -1,5 +1,4 @@
-﻿using ConcurrentCollections;
-using HomeCenter.Abstractions;
+﻿using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Extensions;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
@@ -27,8 +26,9 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
-        private readonly RoomStatistic _roomStatistic;
-        private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
+        internal readonly RoomStatistic _roomStatistic;
+        internal ConfusedVectors ConfusedVectors;
+
         private Probability _currentProbability = Probability.Zero;
         private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
         private DateTimeOffset? _scheduledAutomationTime;
@@ -64,6 +64,8 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
             _roomStatistic = new RoomStatistic(_logger, Uid, AreaDescriptor.TurnOffTimeout, _motionConfiguration);
+            ConfusedVectors = new ConfusedVectors(logger, Uid, motionConfiguration.ConfusionResolutionTime,
+               _motionConfiguration.ConfusionResolutionTimeOut, GetSourceRoom, (v) => MarkVector(v, true));
 
             RegisterChangeStateSource();
         }
@@ -102,47 +104,6 @@ namespace HomeCenter.Services.MotionService
             await RecalculateProbability(motionTime);
         }
 
-        /// <summary>
-        /// Try to resolve confusion in previously marked vectors
-        /// </summary>
-        public async Task EvaluateConfusions(DateTimeOffset currentTime)
-        {
-            await GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
-                                                             .Select(v => ResolveConfusion(v))
-                                                             .WhenAll();
-
-            await GetConfusedVecotrsCanceledByOthers(currentTime).Select(v => TryResolveAfterCancel(v))
-                                                                 .WhenAll();
-        }
-
-        /// <summary>
-        /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
-        /// </summary>
-        private Task TryResolveAfterCancel(MotionVector motionVector)
-        {
-            _logger.LogDeviceEvent(Uid, MoveEventId.VectorCancel, "{motionVector} [Cancel]", motionVector);
-
-            RemoveConfusedVector(motionVector);
-
-            var confused = _confusingVectors.Where(x => x.End == motionVector.End);
-            if (confused.Count() == 1)
-            {
-                return ResolveConfusion(confused.Single());
-            }
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
-        /// </summary>
-        private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers(DateTimeOffset currentTime)
-        {
-            //!!!!!!TODO
-            //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            return _confusingVectors.Where(v => GetSourceRoom(v)._roomStatistic.LastLeaveVector?.Start == v.Start);
-        }
-
         public async Task HandleVectors(IList<MotionVector> motionVectors)
         {
             if (motionVectors.Count == 0)
@@ -160,13 +121,13 @@ namespace HomeCenter.Services.MotionService
                 }
                 else
                 {
-                    MarkConfusion(vector);
+                    ConfusedVectors.MarkConfusion(vector);
                 }
             }
             // When we have at least two vectors we know that this vector is confused
             else
             {
-                motionVectors.ForEach(vector => MarkConfusion(vector));
+                motionVectors.ForEach(vector => ConfusedVectors.MarkConfusion(vector));
             }
         }
 
@@ -216,64 +177,16 @@ namespace HomeCenter.Services.MotionService
         private void MarkEnter(MotionVector vector) => _roomStatistic.IncrementNumberOfPersons(vector.EndTime);
 
         /// <summary>
-        /// Mark some motion that can be enter vector but we are not sure
-        /// </summary>
-        private void MarkConfusion(MotionVector vector)
-        {
-            _logger.LogDeviceEvent(Uid, MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
-
-            _confusingVectors.Add(vector);
-        }
-
-        /// <summary>
-        /// Get list of all confused vectors that should be resolved
-        /// </summary>
-        private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
-        {
-            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime)
-                                                          .LastedLongerThen(_motionConfiguration.ConfusionResolutionTime));
-
-            // When all vectors are older then timeout we cannot resolve confusions
-            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime)
-                                                                 .LastedLessThen(_motionConfiguration.ConfusionResolutionTimeOut)))
-            {
-                return Enumerable.Empty<MotionVector>();
-            }
-            return confusedReadyToResolve;
-        }
-
-        /// <summary>
-        /// Executed when after some time we can resolve confused vectors
-        /// </summary>
-        private async Task ResolveConfusion(MotionVector vector)
-        {
-            RemoveConfusedVector(vector);
-
-            await MarkVector(vector, true);
-        }
-
-        private void RemoveConfusedVector(MotionVector vector)
-        {
-            _confusingVectors.TryRemove(vector);
-        }
-
-        /// <summary>
-        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
-        /// </summary>
-        private bool NoMoveInStartNeighbors(MotionVector vector)
-        {
-            var sourceRoom = GetSourceRoom(vector);
-            var moveInStartNeighbors = sourceRoom.MoveInNeighborhood(this, vector.StartTime);
-            return !moveInStartNeighbors;
-        }
-
-        /// <summary>
         /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
         /// </summary>
-        private bool MoveInNeighborhood(Room roomToExclude, DateTimeOffset referenceTime)
+        internal bool MoveInNeighborhood(string roomToExclude, DateTimeOffset referenceTime)
         {
-            return _neighborsCache.Values.Where(r => r.Uid != roomToExclude.Uid).Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
+            return _neighborsCache.Values
+                                  .Where(r => r.Uid != roomToExclude)
+                                  .Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
         }
+
+        internal Task EvaluateConfusions(DateTimeOffset dateTimeOffset) => ConfusedVectors.EvaluateConfusions(dateTimeOffset);
 
         /// <summary>
         /// Get room pointed by beginning of the <paramref name="motionVector"/>
@@ -380,11 +293,6 @@ namespace HomeCenter.Services.MotionService
 
                 _roomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
-        }  
-    }
-
-    internal class ConfusedVectors
-    {
-
+        }
     }
 }

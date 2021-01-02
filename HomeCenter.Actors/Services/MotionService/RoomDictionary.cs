@@ -11,6 +11,8 @@ namespace HomeCenter.Services.MotionService
     internal class RoomDictionary
     {
         private readonly IReadOnlyDictionary<string, Room> _rooms;
+        private readonly IReadOnlyDictionary<string, Room> _Neighbors;
+
         private readonly MotionConfiguration _motionConfiguration;
 
         public Room this[string uid] => _rooms[uid];
@@ -64,5 +66,7 @@ namespace HomeCenter.Services.MotionService
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _rooms[p1.Uid].IsNeighbor(p2.Uid);
+
+
     }
 }
