@@ -9,7 +9,6 @@ using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -26,20 +25,20 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
-        internal readonly RoomStatistic _roomStatistic;
-        internal ConfusedVectors ConfusedVectors;
-
+        private readonly ConfusedVectors ConfusedVectors;
+        private readonly Lazy<RoomDictionary> _roomDictionary;
         private Probability _currentProbability = Probability.Zero;
-        private IReadOnlyDictionary<string, Room> _neighborsCache = ImmutableDictionary<string, Room>.Empty;
         private DateTimeOffset? _scheduledAutomationTime;
-        public string Uid { get; }
-        public bool AutomationDisabled { get; private set; }
-        public int NumberOfPersons => _roomStatistic.NumberOfPersons;
-        public AreaDescriptor AreaDescriptor { get; }
 
-        public override string ToString() => $"{Uid} [Last move: {_roomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
+        internal RoomStatistic RoomStatistic { get; }
+        internal string Uid { get; }
+        internal bool AutomationDisabled { get; private set; }
+        internal int NumberOfPersons => RoomStatistic.NumberOfPersons;
+        internal AreaDescriptor AreaDescriptor { get; }
 
-        public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger,
+        public override string ToString() => $"{Uid} [Last move: {RoomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
+
+        public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILogger logger, Lazy<RoomDictionary> roomDictionary,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor, MotionConfiguration motionConfiguration)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
@@ -48,6 +47,7 @@ namespace HomeCenter.Services.MotionService
             _motionConfiguration = motionConfiguration;
             _concurrencyProvider = concurrencyProvider;
             _messageBroker = messageBroker;
+            _roomDictionary = roomDictionary;
             AreaDescriptor = areaDescriptor;
 
             if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
@@ -63,16 +63,11 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            _roomStatistic = new RoomStatistic(_logger, Uid, AreaDescriptor.TurnOffTimeout, _motionConfiguration);
+            RoomStatistic = new RoomStatistic(_logger, Uid, AreaDescriptor.TurnOffTimeout, _motionConfiguration);
             ConfusedVectors = new ConfusedVectors(logger, Uid, motionConfiguration.ConfusionResolutionTime,
-               _motionConfiguration.ConfusionResolutionTimeOut, GetSourceRoom, (v) => MarkVector(v, true));
+               _motionConfiguration.ConfusionResolutionTimeOut, _roomDictionary, (v) => MarkVector(v, true));
 
             RegisterChangeStateSource();
-        }
-
-        public void Init(IReadOnlyDictionary<string, Room> neighborsCache)
-        {
-            _neighborsCache = neighborsCache;
         }
 
         private void RegisterChangeStateSource()
@@ -81,8 +76,6 @@ namespace HomeCenter.Services.MotionService
             //_disposeContainer.Add(Lamp.PowerStateChange.Subscribe(PowerStateChangeHandler));
         }
 
-        public bool IsNeighbor(string uid) => _neighborsCache.ContainsKey(uid);
-
         /// <summary>
         /// Take action when there is a move in the room
         /// </summary>
@@ -90,7 +83,7 @@ namespace HomeCenter.Services.MotionService
         {
             _logger.LogDeviceEvent(Uid, MoveEventId.Motion, "Motion at {motionTime}", motionTime);
 
-            _roomStatistic.UpdateMotion(motionTime, _currentProbability, Probability.Full);
+            RoomStatistic.UpdateMotion(motionTime, _currentProbability, Probability.Full);
 
             await SetProbability(Probability.Full);
         }
@@ -157,7 +150,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private bool IsTurnOnVector(MotionVector motionVector)
         {
-            return !_roomStatistic.FirstEnterTime.HasValue || _roomStatistic.FirstEnterTime == motionVector.EndTime;
+            return !RoomStatistic.FirstEnterTime.HasValue || RoomStatistic.FirstEnterTime == motionVector.EndTime;
         }
 
         /// <summary>
@@ -167,37 +160,22 @@ namespace HomeCenter.Services.MotionService
         {
             _logger.LogDeviceEvent(Uid, MoveEventId.MarkVector, "Vector {motionVector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
 
-            await GetSourceRoom(motionVector).MarkLeave(motionVector);
+            await _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
             MarkEnter(motionVector);
         }
 
         /// <summary>
         /// Marks entrance of last motion vector
         /// </summary>
-        private void MarkEnter(MotionVector vector) => _roomStatistic.IncrementNumberOfPersons(vector.EndTime);
-
-        /// <summary>
-        /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
-        /// </summary>
-        internal bool MoveInNeighborhood(string roomToExclude, DateTimeOffset referenceTime)
-        {
-            return _neighborsCache.Values
-                                  .Where(r => r.Uid != roomToExclude)
-                                  .Any(n => n._roomStatistic.LastMotion.Time > referenceTime) || _roomStatistic.LastMotion.Time > referenceTime;
-        }
+        private void MarkEnter(MotionVector vector) => RoomStatistic.IncrementNumberOfPersons(vector.EndTime);
 
         internal Task EvaluateConfusions(DateTimeOffset dateTimeOffset) => ConfusedVectors.EvaluateConfusions(dateTimeOffset);
 
-        /// <summary>
-        /// Get room pointed by beginning of the <paramref name="motionVector"/>
-        /// </summary>
-        private Room GetSourceRoom(MotionVector motionVector) => _neighborsCache[motionVector.StartPoint];
-
         private async Task MarkLeave(MotionVector vector)
         {
-            _roomStatistic.DecrementNumberOfPersons();
+            RoomStatistic.DecrementNumberOfPersons();
 
-            _roomStatistic.LastLeaveVector = vector;
+            RoomStatistic.LastLeaveVector = vector;
 
             // Only when we have one person room we can be sure that we can turn of light immediately
             if (AreaDescriptor.MaxPersonCapacity == 1)
@@ -207,7 +185,7 @@ namespace HomeCenter.Services.MotionService
             else
             {
                 var numberOfPeopleFactor = NumberOfPersons == 0 ? _motionConfiguration.DecreaseLeavingFactor : _motionConfiguration.DecreaseLeavingFactor / NumberOfPersons;
-                var visitTypeFactor = _roomStatistic.TurnOffTimeOut.VisitType.Value;
+                var visitTypeFactor = RoomStatistic.TurnOffTimeOut.VisitType.Value;
                 var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
                 _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "Probability => {probability}%", decreasePercent * 100);
@@ -222,9 +200,9 @@ namespace HomeCenter.Services.MotionService
         private async Task RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == _roomStatistic.LastMotion.Time) return;
+            if (motionTime == RoomStatistic.LastMotion.Time) return;
 
-            var probabilityDelta = _roomStatistic.GetDeltaProbability();
+            var probabilityDelta = RoomStatistic.GetDeltaProbability();
 
             await SetProbability(_currentProbability.Decrease(probabilityDelta));
         }
@@ -236,7 +214,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (probability == _currentProbability) return;
 
-            _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, _roomStatistic.TurnOffTimeOut.Value);
+            _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, RoomStatistic.TurnOffTimeOut.Value);
 
             _currentProbability = probability;
 
@@ -261,7 +239,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (!powerChangeEvent.Value)
             {
-                _roomStatistic.Reset();
+                RoomStatistic.Reset();
             }
 
             _logger.LogDeviceEvent(Uid, MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
@@ -291,7 +269,7 @@ namespace HomeCenter.Services.MotionService
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 
-                _roomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
+                RoomStatistic.LastAutoTurnOff = _concurrencyProvider.Scheduler.Now;
             }
         }
     }

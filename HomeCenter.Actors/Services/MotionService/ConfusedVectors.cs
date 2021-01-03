@@ -18,18 +18,18 @@ namespace HomeCenter.Services.MotionService
         private readonly string _uid;
         private readonly TimeSpan _confusionResolutionTime;
         private readonly TimeSpan _confusionResolutionTimeOut;
-        private readonly Func<MotionVector, Room> _sourceRoomResolver;
         private readonly Func<MotionVector, Task> _markRoom;
+        private readonly Lazy<RoomDictionary> _roomDictionary;
 
         public ConfusedVectors(ILogger logger, string uid, TimeSpan confusionResolutionTime, TimeSpan confusionResolutionTimeOut,
-            Func<MotionVector, Room> sourceRoomResolver, Func<MotionVector, Task> markRoom)
+            Lazy<RoomDictionary> roomDictionary, Func<MotionVector, Task> markRoom)
         {
             _logger = logger;
             _uid = uid;
             _confusionResolutionTime = confusionResolutionTime;
             _confusionResolutionTimeOut = confusionResolutionTimeOut;
-            _sourceRoomResolver = sourceRoomResolver;
             _markRoom = markRoom;
+            _roomDictionary = roomDictionary;
         }
 
         /// <summary>
@@ -50,8 +50,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private bool NoMoveInStartNeighbors(MotionVector vector)
         {
-            var sourceRoom = _sourceRoomResolver(vector);
-            var moveInStartNeighbors = sourceRoom.MoveInNeighborhood(_uid, vector.StartTime);
+            var moveInStartNeighbors = _roomDictionary.Value.MoveInNeighborhood(vector.StartPoint, _uid, vector.StartTime);
             return !moveInStartNeighbors;
         }
 
@@ -80,7 +79,7 @@ namespace HomeCenter.Services.MotionService
         {
             //!!!!!!TODO
             //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            return _confusingVectors.Where(v => _sourceRoomResolver(v)._roomStatistic.LastLeaveVector?.Start == v.Start);
+            return _confusingVectors.Where(v => _roomDictionary.Value[v.StartPoint].RoomStatistic.LastLeaveVector?.Start == v.Start);
         }
 
         /// <summary>

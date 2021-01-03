@@ -5,13 +5,14 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using HomeCenter.Extensions;
+using System.Collections.ObjectModel;
 
 namespace HomeCenter.Services.MotionService
 {
     internal class RoomDictionary
     {
         private readonly IReadOnlyDictionary<string, Room> _rooms;
-        private readonly IReadOnlyDictionary<string, IEnumerable<Room>> _neighbors;
+        private readonly IReadOnlyDictionary<string, ReadOnlyDictionary<string, Room>> _neighbors;
 
         private readonly MotionConfiguration _motionConfiguration;
 
@@ -21,10 +22,11 @@ namespace HomeCenter.Services.MotionService
 
         private Room this[MotionVector vector] => _rooms[vector.EndPoint];
 
-        public RoomDictionary(IEnumerable<Room> rooms, MotionConfiguration motionConfiguration)
+        public RoomDictionary(IEnumerable<Room> rooms, IReadOnlyDictionary<string, ReadOnlyDictionary<string, Room>> neighbors, MotionConfiguration motionConfiguration)
         {
             _rooms = rooms.ToDictionary(k => k.Uid, v => v).AsReadOnly();
             _motionConfiguration = motionConfiguration;
+            _neighbors = neighbors;
         }
 
         public int NumberOfPersons() => _rooms.Sum(md => md.Value.NumberOfPersons);
@@ -65,8 +67,17 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         /// <param name="p1"></param>
         /// <param name="p2"></param>
-        private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _rooms[p1.Uid].IsNeighbor(p2.Uid);
+        private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _neighbors[p1.Uid].ContainsKey(p2.Uid);
 
 
+        /// <summary>
+        /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
+        /// </summary>
+        public bool MoveInNeighborhood(string roomid, string roomToExclude, DateTimeOffset referenceTime)
+        {
+            return _neighbors[roomid].Values
+                                     .Where(r => r.Uid != roomToExclude)
+                                     .Any(n => n.RoomStatistic.LastMotion.Time > referenceTime) || _rooms[roomid].RoomStatistic.LastMotion.Time > referenceTime;
+        }
     }
 }

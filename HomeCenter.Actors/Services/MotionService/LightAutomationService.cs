@@ -79,21 +79,15 @@ namespace HomeCenter.Services.MotionService
                 var areaDescriptor = areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default);
 
                 rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsString(MotionProperties.Lamp),
-                                    _concurrencyProvider, Logger, MessageBroker, areaDescriptor, _motionConfiguration));
+                                    _concurrencyProvider, Logger, new Lazy<RoomDictionary>(() => _roomDictionary), MessageBroker, areaDescriptor, _motionConfiguration));
             }
 
-            foreach (var motionDetector in ComponentsAttachedProperties)
-            {
-                var neighbours = from neighbor in motionDetector.AsList(MotionProperties.Neighbors)
-                                 join room in rooms on neighbor equals room.Uid
-                                 select room;
+            var neighbours = ComponentsAttachedProperties.SelectMany(r => r.AsList(MotionProperties.Neighbors).Select(n => new { Uid = r.AttachedActor, Neighbor = n }))
+                                        .Join(rooms, o => o.Neighbor, i => i.Uid, (o, i) => new { o.Uid, Room = i })
+                                        .GroupBy(g => g.Uid)
+                                        .ToDictionary(x => x.Key, v => v.GroupBy(g => g.Room.Uid).ToDictionary(k => k.Key, v => v.Select(o => o.Room).FirstOrDefault()).AsReadOnly()).AsReadOnly();
 
-                rooms.Single(x => x.Uid == motionDetector.AttachedActor)
-                     .Init(neighbours.ToDictionary(x => x.Uid, y => y).AsReadOnly());
-
-            }
-
-            _roomDictionary = new RoomDictionary(rooms, _motionConfiguration);
+            _roomDictionary = new RoomDictionary(rooms, neighbours, _motionConfiguration);
         }
 
         private void CheckForMissingRooms()
