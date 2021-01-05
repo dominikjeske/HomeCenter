@@ -30,7 +30,17 @@ namespace HomeCenter.Services.MotionService
 
         public double GetDeltaProbability()
         {
+            // For TurnOffTimeOut = 30s and PeriodicCheckTime = 1s => 0.03 (30 seconds to full probability)
             return 1.0 / (TurnOffTimeOut.Value.Ticks / _motionConfiguration.PeriodicCheckTime.Ticks);
+        }
+
+        public double GetLeaveDeltaProbability()
+        {
+            var numberOfPeopleFactor = NumberOfPersons == 0 ? _motionConfiguration.DecreaseLeavingFactor : _motionConfiguration.DecreaseLeavingFactor / NumberOfPersons;
+            var visitTypeFactor = TurnOffTimeOut.VisitType.Value;
+            var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
+
+            return decreasePercent;
         }
 
         public void UpdateMotion(DateTimeOffset motionTime, Probability current, Probability proposed)

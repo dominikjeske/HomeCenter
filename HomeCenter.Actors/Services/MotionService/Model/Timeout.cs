@@ -27,7 +27,6 @@ namespace HomeCenter.Services.MotionService.Model
         /// Timeout constructor
         /// </summary>
         /// <param name="baseTime">Base time used to calculate final timeout</param>
-        /// <param name="incrementFactor">Factor used to increment <paramref name="baseTime"/></param>
         public Timeout(TimeSpan baseTime, MotionConfiguration motionConfiguration)
         {
             _baseTime = baseTime;

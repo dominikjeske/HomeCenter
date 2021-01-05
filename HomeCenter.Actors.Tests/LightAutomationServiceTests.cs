@@ -35,6 +35,9 @@ namespace HomeCenter.Services.MotionService.Tests
 
     public class LightAutomationServiceTests : ReactiveTest
     {
+        private readonly bool _useRavenDbLogs = true;
+        private readonly bool _cleanLogsBeforeRun = true;
+
         [Fact]
         public void WorkingTime_DuringDaylight_ShuldPowerOnDayLights()
         {
@@ -561,7 +564,7 @@ namespace HomeCenter.Services.MotionService.Tests
         //    IsTurnedOn(Detectors.hallwayDetectorToilet).Should().BeFalse();
         //}
 
-        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, true, true);
+        private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, _useRavenDbLogs, _cleanLogsBeforeRun);
 
         /// <summary>
         /// Get predefinied rooms configuration

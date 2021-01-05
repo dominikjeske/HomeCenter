@@ -2,7 +2,6 @@
 using HomeCenter.Abstractions.Extensions;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
-using HomeCenter.Extensions;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.MotionService.Model;
@@ -32,9 +31,10 @@ namespace HomeCenter.Services.MotionService
 
         internal RoomStatistic RoomStatistic { get; }
         internal string Uid { get; }
+        internal AreaDescriptor AreaDescriptor { get; }
         internal bool AutomationDisabled { get; private set; }
         internal int NumberOfPersons => RoomStatistic.NumberOfPersons;
-        internal AreaDescriptor AreaDescriptor { get; }
+
 
         public override string ToString() => $"{Uid} [Last move: {RoomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
 
@@ -97,14 +97,15 @@ namespace HomeCenter.Services.MotionService
             await RecalculateProbability(motionTime);
         }
 
+        /// <summary>
+        /// Handle vector candidates that occured in room
+        /// </summary>
         public async Task HandleVectors(IList<MotionVector> motionVectors)
         {
-            if (motionVectors.Count == 0)
-            {
-                return;
-            }
+            if (motionVectors.Count == 0) return;
+
             // When we have one vector we know that there is no concurrent vectors to same room
-            else if (motionVectors.Count == 1)
+            if (motionVectors.Count == 1)
             {
                 var vector = motionVectors.Single();
 
@@ -114,15 +115,17 @@ namespace HomeCenter.Services.MotionService
                 }
                 else
                 {
-                    ConfusedVectors.MarkConfusion(vector);
+                    ConfusedVectors.MarkConfusion(new MotionVector[] { vector });
                 }
             }
-            // When we have at least two vectors we know that this vector is confused
+            // When we have at least two vectors we know that we have confusion
             else
             {
-                motionVectors.ForEach(vector => ConfusedVectors.MarkConfusion(vector));
+                ConfusedVectors.MarkConfusion(motionVectors);
             }
         }
+
+        public Task EvaluateConfusions(DateTimeOffset dateTimeOffset) => ConfusedVectors.EvaluateConfusions(dateTimeOffset);
 
         public void EnableAutomation()
         {
@@ -148,10 +151,7 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Check if <paramref name="motionVector"/> is vector that turned on the light
         /// </summary>
-        private bool IsTurnOnVector(MotionVector motionVector)
-        {
-            return !RoomStatistic.FirstEnterTime.HasValue || RoomStatistic.FirstEnterTime == motionVector.EndTime;
-        }
+        private bool IsTurnOnVector(MotionVector motionVector) => !RoomStatistic.FirstEnterTime.HasValue || RoomStatistic.FirstEnterTime == motionVector.EndTime;
 
         /// <summary>
         /// Marks enter to target room and leave from source room
@@ -169,12 +169,9 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void MarkEnter(MotionVector vector) => RoomStatistic.IncrementNumberOfPersons(vector.EndTime);
 
-        internal Task EvaluateConfusions(DateTimeOffset dateTimeOffset) => ConfusedVectors.EvaluateConfusions(dateTimeOffset);
-
         private async Task MarkLeave(MotionVector vector)
         {
             RoomStatistic.DecrementNumberOfPersons();
-
             RoomStatistic.LastLeaveVector = vector;
 
             // Only when we have one person room we can be sure that we can turn of light immediately
@@ -184,9 +181,7 @@ namespace HomeCenter.Services.MotionService
             }
             else
             {
-                var numberOfPeopleFactor = NumberOfPersons == 0 ? _motionConfiguration.DecreaseLeavingFactor : _motionConfiguration.DecreaseLeavingFactor / NumberOfPersons;
-                var visitTypeFactor = RoomStatistic.TurnOffTimeOut.VisitType.Value;
-                var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
+                var decreasePercent = RoomStatistic.GetLeaveDeltaProbability();
 
                 _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "Probability => {probability}%", decreasePercent * 100);
 

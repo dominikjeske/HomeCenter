@@ -41,8 +41,8 @@ namespace HomeCenter.Services.MotionService
                                                              .Select(v => ResolveConfusion(v))
                                                              .WhenAll();
 
-            await GetConfusedVecotrsCanceledByOthers(currentTime).Select(v => TryResolveAfterCancel(v))
-                                                                 .WhenAll();
+            await GetConfusedVecotrsCanceledByOthers().Select(v => TryResolveAfterCancel(v))
+                                                      .WhenAll();
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
         /// </summary>
-        private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers(DateTimeOffset currentTime)
+        private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers()
         {
             //!!!!!!TODO
             //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
@@ -85,11 +85,14 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Mark some motion that can be enter vector but we are not sure
         /// </summary>
-        public void MarkConfusion(MotionVector vector)
+        public void MarkConfusion(IList<MotionVector> vectors)
         {
-            _logger.LogDeviceEvent(_uid, MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
+            foreach (var vector in vectors)
+            {
+                _logger.LogDeviceEvent(_uid, MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
 
-            _confusingVectors.Add(vector);
+                _confusingVectors.Add(vector);
+            }
         }
 
         /// <summary>
