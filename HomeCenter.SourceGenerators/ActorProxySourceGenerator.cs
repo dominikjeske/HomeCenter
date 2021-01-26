@@ -43,7 +43,7 @@ namespace HomeCenter.SourceGenerators
                 var result = TemplateGenerator.Execute(templateString, proxyModel);
 
                 context.TryLogSourceCode(proxy, result);
-                context.ApplyDesignTimeFix(result, proxyModel.ClassName);
+                //context.ApplyDesignTimeFix(result, proxyModel.ClassName);
 
                 return new GeneratedSource(result, proxyModel.ClassName);
             }

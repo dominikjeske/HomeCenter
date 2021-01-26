@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Reactive.Testing;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
@@ -12,14 +13,20 @@ namespace HomeCenter.Actors.Tests.Fakes
     public class FakeLogger<T> : ILogger<T>, IDisposable
     {
         private const string MESSAGE_TEMPLATE = "{OriginalFormat}";
-        private readonly IScheduler _scheduler;
+        private readonly IScheduler? _scheduler;
         private readonly bool _useRavenDB;
         private readonly object _locki = new object();
 
         private DocumentStore? _dbStore;
         private IDocumentSession? _dbSession;
 
-        public FakeLogger(IScheduler scheduler, bool useRavenDB, bool clearLogs)
+        public FakeLogger() : this(null, false, false)
+        {
+
+        }
+
+
+        public FakeLogger(IScheduler? scheduler, bool useRavenDB, bool clearLogs)
         {
             _scheduler = scheduler;
             _useRavenDB = useRavenDB;
@@ -65,6 +72,8 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            if (_scheduler is null) return;
+
             var message = formatter(state, exception);
             var time = $"{_scheduler.Now:ss:fff}";
 

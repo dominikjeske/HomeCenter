@@ -5,7 +5,7 @@ namespace HomeCenter.Services.MotionService
     /// <summary>
     /// Parameters that determinate how motion service is working
     /// </summary>
-    public class MotionConfiguration
+    public record MotionConfiguration
     {
         /// <summary>
         /// Time in which we analyze move to find potential motion vectors
@@ -40,6 +40,11 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Number by which we calculate decreasing probability when somebody leaves room
         /// </summary>
-        public double DecreaseLeavingFactor { get; set; } = 0.9;
+        public double DecreaseLeavingFactor { get; set; }
+
+        /// <summary>
+        /// Time after light will be turned on
+        /// </summary>
+        public TimeSpan TurnOffTimeout { get; set; }
     }
 }

@@ -27,9 +27,9 @@ namespace HomeCenter.Services.MotionService.Model
         /// Timeout constructor
         /// </summary>
         /// <param name="baseTime">Base time used to calculate final timeout</param>
-        public Timeout(TimeSpan baseTime, MotionConfiguration motionConfiguration)
+        public Timeout(MotionConfiguration motionConfiguration)
         {
-            _baseTime = baseTime;
+            _baseTime = motionConfiguration.TurnOffTimeout;
             _motionConfiguration = motionConfiguration;
 
             Reset();
@@ -45,7 +45,7 @@ namespace HomeCenter.Services.MotionService.Model
         }
 
         /// <summary>
-        /// Increment timeout on each move in the room
+        /// Increment can move timeout between VisitTypes time zones
         /// </summary>
         public void Increment(DateTimeOffset motionTime)
         {
@@ -66,6 +66,8 @@ namespace HomeCenter.Services.MotionService.Model
             {
                 VisitType = VisitType.LongerVisit;
             }
+
+            // egz. 10s * 1 | 2 | 3 
 
             Value = TimeSpan.FromTicks((int)(_baseTime.Ticks * VisitType.Value));
         }

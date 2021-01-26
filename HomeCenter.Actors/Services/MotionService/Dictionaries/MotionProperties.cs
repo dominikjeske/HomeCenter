@@ -9,7 +9,8 @@
         public const string PeriodicCheckTime = nameof(PeriodicCheckTime);
         public const string TurnOffTimeoutIncrementPercentage = nameof(TurnOffTimeoutIncrementPercentage);
         public const string TurnOffPresenceFactor = nameof(TurnOffPresenceFactor);
-
+        public const string DecreaseLeavingFactor = nameof(DecreaseLeavingFactor);
+        
         public const string Neighbors = nameof(Neighbors);
         public const string Lamp = nameof(Lamp);
         public const string WorkingTime = nameof(WorkingTime);

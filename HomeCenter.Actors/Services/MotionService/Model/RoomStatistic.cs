@@ -11,18 +11,19 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly string _uid;
         private readonly MotionConfiguration _motionConfiguration;
+        private Timeout TurnOffTimeOut { get; }
 
         public DateTimeOffset? LastAutoIncrement { get; set; }
         public DateTimeOffset? LastAutoTurnOff { get; set; }
         public DateTimeOffset? FirstEnterTime { get; set; }
         public MotionVector? LastLeaveVector { get; set; }
         public MotionStamp LastMotion { get; } = new MotionStamp();
-        public Timeout TurnOffTimeOut { get; }
         public int NumberOfPersons { get; private set; }
+        public TimeSpan Timeout => TurnOffTimeOut.Value;
 
-        public RoomStatistic(ILogger logger, string uid, TimeSpan baseTime, MotionConfiguration motionConfiguration)
+        public RoomStatistic(ILogger logger, string uid, MotionConfiguration motionConfiguration)
         {
-            TurnOffTimeOut = new Timeout(baseTime, motionConfiguration);
+            TurnOffTimeOut = new Timeout(motionConfiguration);
             _logger = logger;
             _uid = uid;
             _motionConfiguration = motionConfiguration;

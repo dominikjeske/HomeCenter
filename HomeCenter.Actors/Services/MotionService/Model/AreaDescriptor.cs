@@ -34,7 +34,7 @@ namespace HomeCenter.Services.MotionService.Model
         /// <summary>
         /// Time after which we turn off light without move
         /// </summary>
-        public TimeSpan TurnOffTimeout { get; set; }
+        public TimeSpan? TurnOffTimeout { get; set; }
 
         /// <summary>
         /// When we want only turn on light but not turn off by automation

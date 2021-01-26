@@ -41,12 +41,13 @@ namespace HomeCenter.Services.MotionService
 
         private void ReadConfigurationFromProperties()
         {
-            _motionConfiguration.MotionTimeWindow = this.AsTime(MotionProperties.MotionTimeWindow, TimeSpan.FromMilliseconds(3000));
-            _motionConfiguration.ConfusionResolutionTime = this.AsTime(MotionProperties.ConfusionResolutionTime, TimeSpan.FromMilliseconds(5000));
-            _motionConfiguration.ConfusionResolutionTimeOut = this.AsTime(MotionProperties.ConfusionResolutionTimeOut, TimeSpan.FromMilliseconds(10000));
-            _motionConfiguration.MotionMinDiff = this.AsTime(MotionProperties.MotionMinDiff, TimeSpan.FromMilliseconds(500));
-            _motionConfiguration.PeriodicCheckTime = this.AsTime(MotionProperties.PeriodicCheckTime, TimeSpan.FromMilliseconds(1000));
-            _motionConfiguration.TurnOffTimeoutExtenderFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, 50);
+            _motionConfiguration.MotionTimeWindow = this.AsTime(MotionProperties.MotionTimeWindow, MotionDefaults.MotionTimeWindow);
+            _motionConfiguration.ConfusionResolutionTime = this.AsTime(MotionProperties.ConfusionResolutionTime, MotionDefaults.ConfusionResolutionTime);
+            _motionConfiguration.ConfusionResolutionTimeOut = this.AsTime(MotionProperties.ConfusionResolutionTimeOut, MotionDefaults.ConfusionResolutionTimeOut);
+            _motionConfiguration.MotionMinDiff = this.AsTime(MotionProperties.MotionMinDiff, MotionDefaults.MotionMinDiff);
+            _motionConfiguration.PeriodicCheckTime = this.AsTime(MotionProperties.PeriodicCheckTime, MotionDefaults.PeriodicCheckTime);
+            _motionConfiguration.TurnOffTimeoutExtenderFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, MotionDefaults.TurnOffTimeoutExtenderFactor);
+            _motionConfiguration.DecreaseLeavingFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, MotionDefaults.DecreaseLeavingFactor);
         }
 
         private Dictionary<string, AreaDescriptor> ReadAreasFromAttachedProperties()
@@ -61,7 +62,7 @@ namespace HomeCenter.Services.MotionService
                     AreaType = area.AsString(MotionProperties.AreaType, AreaType.Room),
                     MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, TimeSpan.FromMilliseconds(2500)),
                     LightIntensityAtNight = area.ContainsProperty(MotionProperties.LightIntensityAtNight) ? (double?)area.AsDouble(MotionProperties.LightIntensityAtNight) : null,
-                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, TimeSpan.FromMilliseconds(10000)),
+                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, MotionDefaults.TurnOffTimeOut),
                     TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled, false)
                 });
             }

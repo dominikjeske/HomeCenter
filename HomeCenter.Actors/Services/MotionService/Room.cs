@@ -63,7 +63,12 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            RoomStatistic = new RoomStatistic(_logger, Uid, AreaDescriptor.TurnOffTimeout, _motionConfiguration);
+            if(AreaDescriptor.TurnOffTimeout.HasValue)
+            {
+                _motionConfiguration.TurnOffTimeout = AreaDescriptor.TurnOffTimeout.Value;
+            }
+
+            RoomStatistic = new RoomStatistic(_logger, Uid, _motionConfiguration);
             ConfusedVectors = new ConfusedVectors(logger, Uid, motionConfiguration.ConfusionResolutionTime,
                _motionConfiguration.ConfusionResolutionTimeOut, _roomDictionary, (v) => MarkVector(v, true));
 
@@ -209,7 +214,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (probability == _currentProbability) return;
 
-            _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, RoomStatistic.TurnOffTimeOut.Value);
+            _logger.LogDeviceEvent(Uid, MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, RoomStatistic.Timeout);
 
             _currentProbability = probability;
 
