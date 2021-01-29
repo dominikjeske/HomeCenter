@@ -9,18 +9,12 @@ namespace HomeCenter.Actors.Tests
     {
         public void Test()
         {
-            var roomStatistic = CreateRoomStatistic
-            (
-                CreateMotionConfigFromDefauls() with
-                {
-                    TurnOffTimeout = TimeSpan.FromSeconds(20)
-                }
-            );
+            var roomStatistic = CreateRoomStatistic(DefaultConfig() with {TurnOffTimeout = TimeSpan.FromSeconds(20)});
 
 
         }
 
-        private static MotionConfiguration CreateMotionConfigFromDefauls()
+        private static MotionConfiguration DefaultConfig()
         {
             return new MotionConfiguration
             {
@@ -32,7 +26,6 @@ namespace HomeCenter.Actors.Tests
                 PeriodicCheckTime = MotionDefaults.PeriodicCheckTime,
                 TurnOffTimeoutExtenderFactor = MotionDefaults.TurnOffTimeoutExtenderFactor,
                 TurnOffTimeout = MotionDefaults.TurnOffTimeOut
-
             };
         }
 
