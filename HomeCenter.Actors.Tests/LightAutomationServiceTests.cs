@@ -567,7 +567,7 @@ namespace HomeCenter.Services.MotionService.Tests
         private LightAutomationEnviromentBuilder GetLightAutomationEnviromentBuilder(ServiceDTO serviceConfig) => new LightAutomationEnviromentBuilder(serviceConfig, _useRavenDbLogs, _cleanLogsBeforeRun);
 
         /// <summary>
-        /// Get predefinied rooms configuration
+        /// Get predefined rooms configuration
         /// </summary>
         /// <returns></returns>
         private LightAutomationServiceBuilder GetLightAutomationServiceBuilder()
