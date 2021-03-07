@@ -306,9 +306,9 @@ namespace HomeCenter.Services.MotionService.Tests
             env.AdvanceJustAfterEnd();
 
             env.LampState(Detectors.kitchenDetector).Should().BeTrue();
-            env.AdvanceTo(area.TurnOffTimeout.GetValueOrDefault());
+            env.AdvanceTo(area.TurnOffTimeout);
             env.LampState(Detectors.kitchenDetector).Should().BeTrue();
-            env.AdvanceJustAfter(area.TurnOffTimeout.GetValueOrDefault());
+            env.AdvanceJustAfter(area.TurnOffTimeout);
             env.LampState(Detectors.kitchenDetector).Should().BeFalse();
         }
 

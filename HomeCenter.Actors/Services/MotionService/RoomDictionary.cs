@@ -39,27 +39,27 @@ namespace HomeCenter.Services.MotionService
             return AreNeighbors(start, potencialEnd) && potencialEnd.IsMovePhisicallyPosible(start, _motionConfiguration.MotionMinDiff);
         }
 
-        public async Task HandleVectors(IList<MotionVector> motionVectors)
+        public void HandleVectors(IList<MotionVector> motionVectors)
         {
             if (motionVectors.Count == 0) return;
 
             var targetRoom = this[motionVectors[0]];
-            await targetRoom.HandleVectors(motionVectors);
+            targetRoom.HandleVectors(motionVectors);
         }
 
-        public Task MarkMotion(MotionWindow point)
+        public void MarkMotion(MotionWindow point)
         {
-            return this[point].MarkMotion(point.Start.TimeStamp);
+            this[point].MarkMotion(point.Start.TimeStamp);
         }
 
         /// <summary>
         /// Evaluates each room state
         /// </summary>
-        public async Task CheckRooms(DateTimeOffset motionTime)
+        public void CheckRooms(DateTimeOffset motionTime)
         {
-            await _rooms.Values.Select(r => r.EvaluateConfusions(motionTime)).WhenAll();
+            _rooms.Values.ForEach(r => r.EvaluateConfusions(motionTime));
 
-            await _rooms.Values.Select(r => r.PeriodicUpdate(motionTime)).WhenAll();
+            _rooms.Values.ForEach(r => r.PeriodicUpdate(motionTime));
         }
 
         /// <summary>

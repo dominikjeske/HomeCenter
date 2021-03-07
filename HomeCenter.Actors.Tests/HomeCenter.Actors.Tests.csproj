@@ -7,9 +7,12 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.1.4" />
+    <PackageReference Include="RavenDB.Client" Version="5.1.5" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
+    <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
+    <PackageReference Include="Serilog.Exceptions" Version="6.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -21,6 +24,7 @@
     <ProjectReference Include="..\HomeCenter.Actors\HomeCenter.Actors.csproj" />
     <ProjectReference Include="..\HomeCenter.Configuration\HomeCenter.Configuration.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
+    <ProjectReference Include="..\HomeCenter.Storage.RavenDB\HomeCenter.Storage.RavenDB.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,7 @@
     <PackageReference Include="IsExternalInit" Version="1.0.0" PrivateAssets="all" />
     <!--Language extensions-->
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.14.3" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.14.5" />
     <!--Threading extensions-->
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.1.0" />
   </ItemGroup>

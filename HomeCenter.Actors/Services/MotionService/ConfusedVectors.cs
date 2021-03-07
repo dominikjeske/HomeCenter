@@ -1,5 +1,4 @@
 ﻿using ConcurrentCollections;
-using HomeCenter.Abstractions.Extensions;
 using HomeCenter.Extensions;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
@@ -7,22 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
     internal class ConfusedVectors
     {
-        private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new ConcurrentHashSet<MotionVector>();
+        private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new();
         private readonly ILogger _logger;
         private readonly string _uid;
         private readonly TimeSpan _confusionResolutionTime;
         private readonly TimeSpan _confusionResolutionTimeOut;
-        private readonly Func<MotionVector, Task> _markRoom;
+        private readonly Action<MotionVector> _markRoom;
         private readonly Lazy<RoomDictionary> _roomDictionary;
 
         public ConfusedVectors(ILogger logger, string uid, TimeSpan confusionResolutionTime, TimeSpan confusionResolutionTimeOut,
-            Lazy<RoomDictionary> roomDictionary, Func<MotionVector, Task> markRoom)
+            Lazy<RoomDictionary> roomDictionary, Action<MotionVector> markRoom)
         {
             _logger = logger;
             _uid = uid;
@@ -35,14 +33,12 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Try to resolve confusion in previously marked vectors
         /// </summary>
-        public async Task EvaluateConfusions(DateTimeOffset currentTime)
+        public void EvaluateConfusions(DateTimeOffset currentTime)
         {
-            await GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
-                                                             .Select(v => ResolveConfusion(v))
-                                                             .WhenAll();
+            GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
+                                                       .ForEach(v => ResolveConfusion(v));
 
-            await GetConfusedVecotrsCanceledByOthers().Select(v => TryResolveAfterCancel(v))
-                                                      .WhenAll();
+            GetConfusedVecotrsCanceledByOthers().ForEach(v => TryResolveAfterCancel(v));
         }
 
         /// <summary>
@@ -57,19 +53,17 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
         /// </summary>
-        private Task TryResolveAfterCancel(MotionVector motionVector)
+        private void TryResolveAfterCancel(MotionVector motionVector)
         {
-            _logger.LogDeviceEvent(_uid, MoveEventId.VectorCancel, "{motionVector} [Cancel]", motionVector);
+            _logger.LogDebug(MoveEventId.VectorCancel, "{vector} [Cancel]", motionVector);
 
             RemoveConfusedVector(motionVector);
 
             var confused = _confusingVectors.Where(x => x.End == motionVector.End);
             if (confused.Count() == 1)
             {
-                return ResolveConfusion(confused.Single());
+                ResolveConfusion(confused.Single());
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -89,7 +83,7 @@ namespace HomeCenter.Services.MotionService
         {
             foreach (var vector in vectors)
             {
-                _logger.LogDeviceEvent(_uid, MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
+                _logger.LogDebug(MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
 
                 _confusingVectors.Add(vector);
             }
@@ -120,11 +114,11 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Executed when after some time we can resolve confused vectors
         /// </summary>
-        private async Task ResolveConfusion(MotionVector vector)
+        private void ResolveConfusion(MotionVector vector)
         {
             RemoveConfusedVector(vector);
 
-            await _markRoom(vector);
+            _markRoom(vector);
         }
     }
 }

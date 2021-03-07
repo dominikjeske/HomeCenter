@@ -6,34 +6,22 @@ using System.Linq;
 
 namespace HomeCenter.Storage.RavenDB
 {
-    /// <summary>
-    /// Converts <see cref="LogEventProperty"/> values into simple scalars,
-    /// dictionaries and lists so that they can be persisted in RavenDB.
-    /// </summary>
     public static class RavenPropertyFormatter
     {
-        private static readonly HashSet<Type> RavenSpecialScalars = new HashSet<Type>
+        private static readonly HashSet<Type> RavenSpecialScalars = new()
         {
-            typeof(bool),
-            typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
-            typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal),
-            typeof(byte[])
+            typeof(bool), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), 
+            typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(byte[])
         };
 
-        /// <summary>
-        /// Simplify the object so as to make handling the serialized
-        /// representation easier.
-        /// </summary>
-        /// <param name="value">The value to simplify (possibly null).</param>
-        /// <returns>A simplified representation.</returns>
         public static object? Simplify(LogEventPropertyValue value)
         {
-            var scalar = value as ScalarValue;
-            if (scalar != null)
+            if (value is ScalarValue scalar)
+            {
                 return SimplifyScalar(scalar.Value);
+            }
 
-            var dict = value as DictionaryValue;
-            if (dict != null)
+            if(value is DictionaryValue dict)
             {
                 var result = new Dictionary<object, object?>();
                 foreach (var element in dict.Elements)
@@ -57,19 +45,18 @@ namespace HomeCenter.Storage.RavenDB
                 return result;
             }
 
-            var seq = value as SequenceValue;
-            if (seq != null)
+            if (value is SequenceValue seq)
             {
-                var aa = seq.Elements.Select(Simplify).ToArray();
-                return aa;
+                return seq.Elements.Select(Simplify).ToArray();
             }
 
-            var str = value as StructureValue;
-            if (str != null)
+            if (value is StructureValue str)
             {
                 var props = str.Properties.ToDictionary(p => p.Name, p => Simplify(p.Value));
                 if (str.TypeTag != null)
+                {
                     props["$typeTag"] = str.TypeTag;
+                }
                 return props;
             }
 
@@ -80,8 +67,7 @@ namespace HomeCenter.Storage.RavenDB
         {
             if (value == null) return null;
 
-            var valueType = value.GetType();
-            if (RavenSpecialScalars.Contains(valueType)) return value;
+            if (RavenSpecialScalars.Contains(value.GetType())) return value;
 
             return value.ToString();
         }

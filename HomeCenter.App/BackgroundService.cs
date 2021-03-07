@@ -121,3 +121,11 @@ namespace HomeCenter.App
 
 //    return docStore;
 //}
+
+//var batchingOptions = new PeriodicBatchingSinkOptions
+//{
+//    BatchSizeLimit = 100,
+//    Period = TimeSpan.FromMilliseconds(1),
+//    EagerlyEmitFirstEvent = true,
+//    QueueLimit = 10000
+//};

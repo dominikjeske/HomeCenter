@@ -16,5 +16,6 @@ namespace HomeCenter.Services.MotionService
         public static EventId Probability = new EventId(MessageBase + 6, nameof(Probability));
         public static EventId Tuning = new EventId(MessageBase + 7, nameof(Tuning));
         public static EventId PowerState = new EventId(MessageBase + 8, nameof(PowerState));
+        public static EventId MarkLeave= new EventId(MessageBase + 9, nameof(MarkLeave));
     }
 }

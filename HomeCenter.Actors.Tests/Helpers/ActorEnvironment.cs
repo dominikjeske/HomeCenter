@@ -2,7 +2,6 @@
 using HomeCenter.Actors.Tests.Fakes;
 using HomeCenter.Messages.Queries.Services;
 using HomeCenter.Services.MotionService;
-using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Proto;
 using System;
@@ -16,23 +15,22 @@ namespace HomeCenter.Actors.Tests.Helpers
         private readonly TestScheduler _scheduler;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
+        private readonly IDisposable? _externalResources;
         private readonly ActorSystem _system = new ActorSystem();
         private readonly RootContext _context;
         private readonly PID _pid;
         private readonly string _serviceProcessName;
-        private readonly ILoggerProvider _loggerProvider;
 
-        public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps,
-            ILoggerProvider loggerProvider, LightAutomationServiceProxy actor)
+        public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps, LightAutomationServiceProxy actor, IDisposable? externalResources)
         {
             _scheduler = Scheduler;
             _motionEvents = MotionEvents;
 
             _lamps = Lamps;
+            _externalResources = externalResources;
             _serviceProcessName = $"motionService_{Guid.NewGuid()}";
             _context = new RootContext(_system);
             _pid = _context.SpawnNamed(Props.FromProducer(() => actor), _serviceProcessName);
-            _loggerProvider = loggerProvider;
         }
 
         public void Send(Command actorMessage)
@@ -56,9 +54,8 @@ namespace HomeCenter.Actors.Tests.Helpers
 
         public void Dispose()
         {
-            _loggerProvider.Dispose();
-
             _context.StopAsync(_pid);
+            _externalResources?.Dispose();
         }
 
         public void AdvanceToEnd() => _scheduler.AdvanceToEnd(_motionEvents);

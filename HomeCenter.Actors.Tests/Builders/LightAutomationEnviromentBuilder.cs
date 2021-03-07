@@ -6,8 +6,9 @@ using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Reactive.Testing;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,6 @@ namespace HomeCenter.Actors.Tests.Builders
     {
         private readonly ServiceDTO _serviceConfig;
         private readonly TestScheduler _scheduler = new TestScheduler();
-        private readonly ServiceCollection _container = new ServiceCollection();
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
 
@@ -108,26 +108,39 @@ namespace HomeCenter.Actors.Tests.Builders
         {
             var lampDictionary = CreateFakeLamps();
             var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
+            RavenDbConfigurator? ravenDbConfigurator = null;
 
-            _container.AddLogging(lb => lb.AddProvider(new FakeLoggerProvider<LightAutomationServiceProxy>(_scheduler, _useRavenDbLogs, _clearRavenLogs)));
-            _container.AddSingleton<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
-            _container.AddSingleton<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
-            _container.AddSingleton<DeviceActorMapper>();
-            _container.AddSingleton<BaseObjectMapper>();
-            _container.AddSingleton<ClassActivator>();
-            _container.AddSingleton<ServiceMapper>();
+            var hostBuilder = new HostBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton<IConcurrencyProvider>(new TestConcurrencyProvider(_scheduler));
+                services.AddSingleton<IMessageBroker>(new FakeMessageBroker(motionEvents, lampDictionary));
+                services.AddSingleton<DeviceActorMapper>();
+                services.AddSingleton<BaseObjectMapper>();
+                services.AddSingleton<ClassActivator>();
+                services.AddSingleton<ServiceMapper>();
+            });
 
-            var serviceProvider = _container.BuildServiceProvider();
+            if (_useRavenDbLogs)
+            {
+                ravenDbConfigurator = new RavenDbConfigurator();
+                hostBuilder.UseSerilog((builder, configuration) => ravenDbConfigurator.Configure(builder, configuration, _scheduler));
 
-            var sm = serviceProvider.Get<ServiceMapper>();
+                if (_clearRavenLogs)
+                {
+                    ravenDbConfigurator.Clear();
+                }
+            }
+
+            var host = hostBuilder.Build();
+
+            var sm = host.Services.Get<ServiceMapper>();
 
             var actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
 
             if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 
-            var loggerProvider = serviceProvider.Get<ILoggerProvider>();
-            
-            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, loggerProvider, actor);
+            var actorContext = new ActorEnvironment(_scheduler, motionEvents, lampDictionary, actor, ravenDbConfigurator);
             actorContext.IsAlive();
 
             return actorContext;
