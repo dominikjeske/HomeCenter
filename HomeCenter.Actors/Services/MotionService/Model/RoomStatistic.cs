@@ -148,11 +148,11 @@ namespace HomeCenter.Services.MotionService
         public void RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == LastMotion.Time) return;
+            if (motionTime == LastMotion.Time || Probability.IsNoProbability) return;
 
             var probabilityDelta = GetDeltaProbability();
 
-            _logger.LogDebug(MoveEventId.Probability, "Recalculate with {delta}", probabilityDelta);
+            _logger.LogDebug(MoveEventId.Probability, "Recalculate with {delta} from {probability:00.00}%", probabilityDelta, Probability.Value * 100);
 
             SetProbability(Probability.Decrease(probabilityDelta));
         }

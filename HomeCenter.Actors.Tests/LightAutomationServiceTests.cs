@@ -224,10 +224,10 @@ namespace HomeCenter.Services.MotionService.Tests
 
             env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5));
 
-            //  env.LampState(Detectors.toiletDetector).Should().BeFalse();
+            env.LampState(Detectors.toiletDetector).Should().BeFalse();
             env.LampState(Detectors.hallwayDetectorLivingRoom).Should().BeFalse();
-            //env.LampState(Detectors.bathroomDetector).Should().BeTrue();
-            //env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
+            env.LampState(Detectors.bathroomDetector).Should().BeTrue();
+            env.LampState(Detectors.hallwayDetectorToilet).Should().BeTrue();
         }
 
         [Fact]
