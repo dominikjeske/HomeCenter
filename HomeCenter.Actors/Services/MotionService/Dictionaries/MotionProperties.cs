@@ -20,6 +20,9 @@
         public const string LightIntensityAtNight = nameof(LightIntensityAtNight);
         public const string TurnOffTimeout = nameof(TurnOffTimeout);
         public const string TurnOffAutomationDisabled = nameof(TurnOffAutomationDisabled);
+        public const string MotionTypeShortVisit = nameof(MotionTypeShortVisit);
+        public const string MotionTypePassThru = nameof(MotionTypePassThru);
+
 
         public const string RoomId = nameof(RoomId);
     }

@@ -36,7 +36,7 @@ namespace HomeCenter.Services.MotionService
         public void EvaluateConfusions(DateTimeOffset currentTime)
         {
             GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
-                                                       .ForEach(v => ResolveConfusion(v));
+                                                                 .ForEach(v => ResolveConfusion(v));
 
             GetConfusedVecotrsCanceledByOthers().ForEach(v => TryResolveAfterCancel(v));
         }
@@ -95,11 +95,11 @@ namespace HomeCenter.Services.MotionService
         private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
         {
             var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime)
-                                                          .LastedLongerThen(_confusionResolutionTime));
+                                                                               .LastedLongerThen(_confusionResolutionTime));
 
             // When all vectors are older then timeout we cannot resolve confusions
             if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime)
-                                                                 .LastedLessThen(_confusionResolutionTimeOut)))
+                                                                                    .LastedLessThen(_confusionResolutionTimeOut)))
             {
                 return Enumerable.Empty<MotionVector>();
             }

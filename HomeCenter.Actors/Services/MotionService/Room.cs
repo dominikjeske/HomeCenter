@@ -1,4 +1,5 @@
-﻿using HomeCenter.Abstractions;
+﻿using CSharpFunctionalExtensions;
+using HomeCenter.Abstractions;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
 using HomeCenter.Messages.Commands.Device;
@@ -71,7 +72,7 @@ namespace HomeCenter.Services.MotionService
 
         public async Task<Unit> ProbalityChange(Probability probability)
         {
-            await TryChangeLampState();
+            await TryChangeLampState(probability);
             return Unit.Default;
         }
 
@@ -86,7 +87,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public void MarkMotion(DateTimeOffset motionTime)
         {
-            RoomStatistic.UpdateMotion(motionTime);
+            RoomStatistic.MarkMotion(motionTime);
         }
 
         /// <summary>
@@ -168,21 +169,19 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Marks entrance of last motion vector
         /// </summary>
-        private void MarkEnter(MotionVector vector) => RoomStatistic.IncrementNumberOfPersons(vector.EndTime);
+        private void MarkEnter(MotionVector vector) => RoomStatistic.TryIncrementNumberOfPersons(vector.EndTime);
 
         private void MarkLeave(MotionVector vector) => RoomStatistic.MarkLeave(vector);
 
-        private async Task TryChangeLampState()
+        private async Task TryChangeLampState(Probability probability)
         {
-            if (RoomStatistic.Probability.IsFullProbability)
+            if (probability.IsFullProbability)
             {
                 await TryTurnOnLamp();
             }
-            else if (RoomStatistic.Probability.IsNoProbability)
+            else if (probability.IsNoProbability)
             {
                 await TryTurnOffLamp();
-
-                // await NeighborsCache.Select(n => n.Value.EvaluateConfusions()).WhenAll();
             }
         }
 
@@ -224,6 +223,8 @@ namespace HomeCenter.Services.MotionService
 
                 RoomStatistic.SetAutoTurnOffTime(_concurrencyProvider.Scheduler.Now);
             }
+
         }
     }
+
 }

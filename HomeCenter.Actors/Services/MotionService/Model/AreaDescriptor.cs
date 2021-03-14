@@ -2,7 +2,7 @@
 
 namespace HomeCenter.Services.MotionService.Model
 {
-    public class AreaDescriptor
+    public record AreaDescriptor
     {
         public static AreaDescriptor Default => new AreaDescriptor();
 
@@ -41,7 +41,7 @@ namespace HomeCenter.Services.MotionService.Model
         /// </summary>
         public bool TurnOffAutomationDisabled { get; init; }
 
-        public AreaDescriptor Clone() => (AreaDescriptor)MemberwiseClone();
+        public AreaDescriptor Copy() => (AreaDescriptor)MemberwiseClone();
 
         public MotionConfiguration Motion { get; init; }
     }

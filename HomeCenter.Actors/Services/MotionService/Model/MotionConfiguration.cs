@@ -46,5 +46,9 @@ namespace HomeCenter.Services.MotionService
         /// Time after light will be turned on
         /// </summary>
         public TimeSpan TurnOffTimeout { get; init; }
+
+        public TimeSpan MotionTypePassThru { get; init; }
+
+        public TimeSpan MotionTypeShortVisit { get; init; }
     }
 }

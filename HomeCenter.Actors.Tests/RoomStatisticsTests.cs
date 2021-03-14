@@ -1,14 +1,33 @@
-﻿using HomeCenter.Actors.Tests.Fakes;
+﻿using FluentAssertions;
 using HomeCenter.Services.MotionService;
 using HomeCenter.Services.MotionService.Model;
+using System;
+using Xunit;
 
 namespace HomeCenter.Actors.Tests
 {
     public class RoomStatisticsTests
     {
-        public void Test()
+        [Fact]
+        public void VisitTypeTest()
         {
-            //var roomStatistic = CreateRoomStatistic(DefaultConfig() with {TurnOffTimeout = TimeSpan.FromSeconds(20)});
+            var room = CreateRoomStatistic(DefaultConfig());
+            var now = new DateTimeOffset(0, TimeSpan.Zero);
+
+            room.MarkMotion(now);
+            room.Timeout.Should().Be(TimeSpan.FromSeconds(10));
+
+            room.MarkMotion(now.AddTicks((MotionDefaults.MotionTypePassThru - TimeSpan.FromSeconds(1)).Ticks));
+            room.Timeout.Should().Be(TimeSpan.FromSeconds(10));
+
+            room.MarkMotion(now.AddTicks((MotionDefaults.MotionTypePassThru + TimeSpan.FromSeconds(1)).Ticks));
+            room.Timeout.Should().Be(TimeSpan.FromSeconds(20));
+
+            room.MarkMotion(now.AddTicks((MotionDefaults.MotionTypeShortVisit - TimeSpan.FromSeconds(1)).Ticks));
+            room.Timeout.Should().Be(TimeSpan.FromSeconds(20));
+
+            room.MarkMotion(now.AddTicks((MotionDefaults.MotionTypeShortVisit + TimeSpan.FromSeconds(1)).Ticks));
+            room.Timeout.Should().Be(TimeSpan.FromSeconds(30));
         }
 
         private static AreaDescriptor DefaultConfig()
@@ -24,14 +43,14 @@ namespace HomeCenter.Actors.Tests
                     MotionTimeWindow = MotionDefaults.MotionTimeWindow,
                     PeriodicCheckTime = MotionDefaults.PeriodicCheckTime,
                     TurnOffTimeoutExtenderFactor = MotionDefaults.TurnOffTimeoutExtenderFactor,
-                    TurnOffTimeout = MotionDefaults.TurnOffTimeOut
-                }
+                    TurnOffTimeout = MotionDefaults.TurnOffTimeOut,
+                    MotionTypePassThru = MotionDefaults.MotionTypePassThru,
+                    MotionTypeShortVisit = MotionDefaults.MotionTypeShortVisit
+                },
+                TurnOffTimeout = MotionDefaults.TurnOffTimeOut
             };
         }
 
-        //private static RoomStatistic CreateRoomStatistic(AreaDescriptor ad)
-        //{
-        //    return new RoomStatistic(new FakeLogger<RoomStatisticsTests>(), "TestRoom", ad);
-        //}
+        private static RoomStatistic CreateRoomStatistic(AreaDescriptor ad) => new RoomStatistic(new FakeLogger(), ad);
     }
 }

@@ -52,7 +52,9 @@ namespace HomeCenter.Services.MotionService
                 PeriodicCheckTime = this.AsTime(MotionProperties.PeriodicCheckTime, MotionDefaults.PeriodicCheckTime),
                 TurnOffTimeoutExtenderFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, MotionDefaults.TurnOffTimeoutExtenderFactor),
                 DecreaseLeavingFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, MotionDefaults.DecreaseLeavingFactor),
-                TurnOffTimeout = this.AsTime(MotionProperties.TurnOffTimeout, MotionDefaults.TurnOffTimeOut)
+                TurnOffTimeout = this.AsTime(MotionProperties.TurnOffTimeout, MotionDefaults.TurnOffTimeOut),
+                MotionTypePassThru = this.AsTime(MotionProperties.MotionTypePassThru, MotionDefaults.MotionTypePassThru),
+                MotionTypeShortVisit = this.AsTime(MotionProperties.MotionTypeShortVisit, MotionDefaults.MotionTypeShortVisit)
             };
         }
 
@@ -64,9 +66,9 @@ namespace HomeCenter.Services.MotionService
                 areas.Add(area.AttachedActor, new AreaDescriptor()
                 {
                     WorkingTime = area.AsString(MotionProperties.WorkingTime, WorkingTime.AllDay),
-                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, 10),
+                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, MotionDefaults.MaxPersonCapacity),
                     AreaType = area.AsString(MotionProperties.AreaType, AreaType.Room),
-                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, TimeSpan.FromMilliseconds(2500)),
+                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, MotionDefaults.MotionDetectionAlarmTime),
                     LightIntensityAtNight = area.ContainsProperty(MotionProperties.LightIntensityAtNight) ? area.AsDouble(MotionProperties.LightIntensityAtNight) : null,
                     TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, _motionConfiguration?.TurnOffTimeout),
                     TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled, false),
@@ -186,7 +188,7 @@ namespace HomeCenter.Services.MotionService
         protected AreaDescriptor Handle(AreaDescriptorQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomDictionary[roomId].AreaDescriptor.Clone();
+            return _roomDictionary[roomId].AreaDescriptor.Copy();
         }
 
         protected MotionStatus Handle(MotionServiceStatusQuery query)
