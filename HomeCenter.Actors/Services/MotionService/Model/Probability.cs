@@ -24,7 +24,7 @@ namespace HomeCenter.Services.MotionService.Model
             Value = probability;
         }
 
-        public override string ToString() => $"{Value}";
+        public override string ToString() => $"{(Value*100.0):00.00}%";
 
         public override bool Equals(object? obj)
         {
@@ -33,7 +33,12 @@ namespace HomeCenter.Services.MotionService.Model
             return Math.Abs(other.Value - Value) < 0.01;
         }
 
-        public Probability Decrease(double delta) => new Probability(Value - delta);
+        public Probability Decrease(double delta)
+        {
+            var value = Math.Round(Value - delta, 10);
+
+            return new Probability(value);
+        }
 
         public Probability DecreaseByPercent(double percent) => new Probability(Value - (Value * percent));
 

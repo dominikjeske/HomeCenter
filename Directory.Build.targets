@@ -12,7 +12,6 @@
     <CompilerVisibleProperty Include="SourceGenerator_DetailedLog" />
     <CompilerVisibleProperty Include="SourceGenerator_EnableDebug" />
     <CompilerVisibleProperty Include="IntermediateOutputPath" />
-    <CompilerVisibleProperty Include="SourceGenerator_IntellisenseFix" />
   </ItemGroup>
   
   <!-- Include each nuget reference with property 'LocalSourceGenerators' into final-->

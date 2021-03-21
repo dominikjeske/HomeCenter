@@ -1,4 +1,5 @@
-﻿using HomeCenter.Storage.RavenDB;
+﻿using Destructurama;
+using HomeCenter.Storage.RavenDB;
 using Microsoft.Extensions.Hosting;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
@@ -49,6 +50,7 @@ namespace HomeCenter.Actors.Tests.Builders
             loggerConfiguration.Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithFilter(new ExceptionPropertyFilter()))
                                .Enrich.FromLogContext()
                                .Enrich.With(new RxTimeEnricher(scheduler))
+                               .Destructure.UsingAttributes()
                                .MinimumLevel.Verbose()
                                .WriteTo.Sink(_ravenLogEventSink);
         }

@@ -1,4 +1,7 @@
 ﻿using FluentAssertions;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Builders;
+using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
@@ -6,26 +9,38 @@ using Microsoft.Reactive.Testing;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCenter.Abstractions;
-using HomeCenter.Actors.Tests.Builders;
-using HomeCenter.Actors.Tests.Helpers;
 using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    //                                             STAIRCASE [S]<1+>
+    /* RavenDB query
+    from @all_docs as e
+    select
+    {
+        Source : e.SourceContext.substr(e.SourceContext.lastIndexOf('.') + 1, e.SourceContext.length - e.SourceContext.lastIndexOf('.')),
+        Message: e.mt
+        Time: e.RxTime,
+        Event: e.EventId.Name,
+        Probability: e.probability,
+        Timeout: e.timeout,
+        Vector: e.vector,
+        Resolved: e.resolved
+    }
+    */
+
+    //                                      STAIRCASE [O]<1+>
     //  ________________________________________<_    __________________________
     // |        |                |                       |                      |
-    // |        |                  [HL]<1+>  HALLWAY     |                      |
-    // |   B    |                |<            [H]<1+>   |<                     |
+    // |        |                  [HL]<1+>  HALLWAY     |<                     |
+    // |   B    |                |<            [H]<1+>                          |
     // |   A                     |___   ______           |       BADROOM        |
-    // |   L    |                |            |                    [D]<1+>      |
+    // |   L    |                |            |          |         [S]<1+>      |
     // |   C    |                |            |          |                      |
     // |   O    |                |            |          |______________________|
     // |   N    |   LIVINGROOM  >|            |          |<                     |
     // |   Y    |      [L]<1+>   |  BATHROOM  | [HT]<1+> |                      |
     // |        |                |   [B]<1+> >|___v  ____|                      |
-    // | [Y]<1+>|                |            |          |       KITCHEN        |
+    // | [W]<1+>|                |            |          |       KITCHEN        |
     // |        |                |            |  TOILET  |         [K]<1+>      |
     // |        |                |            |  [T]<1>  |                      |
     // |_______v|________________|____________|_____v____|______________________|
@@ -124,13 +139,30 @@ namespace HomeCenter.Services.MotionService.Tests
             }).Build();
 
             env.SendCommand(DisableAutomationCommand.Create(Detectors.toilet));
-            env.RunAfterFirstMove(_ => env.SendCommand(EnableAutomationCommand.Create(Detectors.toilet)));
+            env.SendAfterFirstMove(_ => env.SendCommand(EnableAutomationCommand.Create(Detectors.toilet)));
 
             env.LampState(Detectors.toilet).Should().BeFalse();
             env.AdvanceToEnd();
             env.LampState(Detectors.toilet).Should().BeTrue();
         }
 
+
+        // *[Confusion], ^[Resolved]                                                 
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                                                               |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |    1                            |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    0     |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
         [Fact]
         public void Leave_FromOnePeopleRoomWithNoConfusion_ShouldTurnOffLightImmediately()
         {
@@ -140,16 +172,31 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayToilet }
             }).Build();
 
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
 
             env.LampState(Detectors.toilet).Should().BeFalse();
         }
 
+        // *[Confusion], ^[Resolved]                                             
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                     3                                         |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |    2*       1,4^                |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    0     |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
         [Fact]
         public void Leave_FromOnePeopleRoomWithConfusion_ShouldTurnOffAfterResolvingConfusion()
         {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
             using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
@@ -159,17 +206,32 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 3000, Detectors.kitchen },
             }).Build();
 
-            env.AdvanceJustAfterRoundUp(confusionResolutionTime + env.GetMotionTime(2));
+            env.AdvanceToIndex(2, MotionDefaults.ConfusionResolutionTime, true);
 
             env.LampState(Detectors.toilet).Should().BeFalse();
             env.LampState(Detectors.kitchen).Should().BeTrue();
         }
 
+        // *[Confusion], ^[Resolved]                                             
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                   1                      0                    |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |    2     |                      |
+        // |        |                |            |                                 |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
         [Fact]
         public void Leave_FromSeparateRoomsIntoOne_ShouldTurnOffLightInBoth()
         {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
             using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.badroomDetector },
@@ -177,7 +239,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1500, Detectors.hallwayToilet }
             }).Build();
 
-            env.AdvanceJustAfterRoundUp(env.GetMotionTime(2) + confusionResolutionTime);
+            env.AdvanceToIndex(2, MotionDefaults.ConfusionResolutionTime, true);
 
             env.LampState(Detectors.badroomDetector).Should().BeFalse();
             env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse();
@@ -187,8 +249,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact]
         public void Leave_ToOtherRoom_ShouldSpeedUpResolutionInNeighbor()
         {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
+            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
             using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayLivingRoom },
@@ -197,7 +258,8 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1600, Detectors.bathroom }     // This move give us proper move to bathroom so other confusions can resolve faster because this decrease their probability
             }).Build();
 
-            env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime / 2); // We should resolve confusion 2x faster
+            
+            env.AdvanceToEnd((MotionDefaults.ConfusionResolutionTime / 2)); // We should resolve confusion 2x faster
 
             env.LampState(Detectors.toilet).Should().BeFalse();
             env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse();
@@ -205,30 +267,30 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayToilet).Should().BeTrue();
         }
 
-        [Fact]
-        public void Leave_ToOtherRoomAfterLongerBeeing_Should()
-        {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.hallwayLivingRoom },
-                { 2500, Detectors.hallwayLivingRoom },
-                { 4500, Detectors.hallwayLivingRoom },
-                { 7500, Detectors.hallwayLivingRoom },
-                { 10500, Detectors.hallwayLivingRoom },  // We were in this room longer so when leave there will be longer time out
-                { 11000, Detectors.toilet },
-                { 11500, Detectors.hallwayToilet },
-                { 11600, Detectors.bathroom }
-            }).Build();
+        //[Fact]
+        //public void Leave_ToOtherRoomAfterLongerBeeing_Should()
+        //{
+        //    var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
+        //    var servieConfig = GetLightAutomationServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
+        //    using var env = GetLightAutomationEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+        //    {
+        //        { 500, Detectors.hallwayLivingRoom },
+        //        { 2500, Detectors.hallwayLivingRoom },
+        //        { 4500, Detectors.hallwayLivingRoom },
+        //        { 7500, Detectors.hallwayLivingRoom },
+        //        { 10500, Detectors.hallwayLivingRoom },  // We were in this room longer so when leave there will be longer time out
+        //        { 11000, Detectors.toilet },
+        //        { 11500, Detectors.hallwayToilet },
+        //        { 11600, Detectors.bathroom }
+        //    }).Build();
 
-            env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5));
+        //    env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(5));
 
-            env.LampState(Detectors.toilet).Should().BeFalse();
-            env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse();
-            env.LampState(Detectors.bathroom).Should().BeTrue();
-            env.LampState(Detectors.hallwayToilet).Should().BeTrue();
-        }
+        //    env.LampState(Detectors.toilet).Should().BeFalse();
+        //    env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse();
+        //    env.LampState(Detectors.bathroom).Should().BeTrue();
+        //    env.LampState(Detectors.hallwayToilet).Should().BeTrue();
+        //}
 
         [Fact]
         public void Leave_AfterMoveAroundRoom()
@@ -245,7 +307,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 11500, Detectors.hallwayToilet },
             }).Build();
 
-            env.AdvanceJustAfterRoundUp(env.GetLastMotionTime() + confusionResolutionTime + TimeSpan.FromSeconds(15));
+            env.AdvanceToEnd(confusionResolutionTime + TimeSpan.FromSeconds(15));
         }
 
         [Fact]
@@ -262,14 +324,14 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 1600, Detectors.bathroom }
             }).Build();
 
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
 
             env.LampState(Detectors.kitchen).Should().BeTrue();
             env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue();
             env.LampState(Detectors.bathroom).Should().BeTrue();
             env.LampState(Detectors.hallwayToilet).Should().BeTrue();
 
-            env.AdvanceJustAfterRoundUp(confusionResolutionTime + env.GetMotionTime(4));
+            env.AdvanceToIndex(4, confusionResolutionTime, true);
 
             env.LampState(Detectors.kitchen).Should().BeFalse("Kitchen should be OFF after confusion resolution time");
             env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue();
@@ -303,12 +365,12 @@ namespace HomeCenter.Services.MotionService.Tests
             }).Build();
 
             var area = await env.Query<AreaDescriptor>(AreaDescriptorQuery.Create(Detectors.toilet));
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
 
             env.LampState(Detectors.kitchen).Should().BeTrue();
             env.AdvanceTo(area.TurnOffTimeout);
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceJustAfter(area.TurnOffTimeout);
+            env.AdvanceTo(area.TurnOffTimeout, true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -321,7 +383,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 12000, Detectors.kitchen },
             }).Build();
 
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
             var status = await env.Query<bool>(AutomationStateQuery.Create(Detectors.kitchen));
             status.Should().BeTrue();
         }
@@ -340,7 +402,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
             env.AdvanceJustBefore(moveTime + timeout);
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceJustAfter(moveTime + timeout);
+            env.AdvanceTo(moveTime + timeout, true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -358,7 +420,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
             env.AdvanceJustBefore(moveTime + 2 * timeout);
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceJustAfter(moveTime + 2 * timeout);
+            env.AdvanceTo(moveTime + 2 * timeout, true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -376,7 +438,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
             env.AdvanceJustBefore(moveTime + 3 * timeout);
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceJustAfter(moveTime + 3 * timeout);
+            env.AdvanceTo(moveTime + 3 * timeout, true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -399,7 +461,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 3000, Detectors.hallwayLivingRoom }
             }).Build();
 
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
 
             var status = await env.Query<MotionStatus>(MotionServiceStatusQuery.Create());
             status.NumberOfConfusions.Should().Be(0);
@@ -455,7 +517,7 @@ namespace HomeCenter.Services.MotionService.Tests
                 { 3001, Detectors.kitchen }
             }).Build();
 
-            env.AdvanceJustAfterEnd();
+            env.AdvanceToEnd();
 
             var status = await env.Query<MotionStatus>(MotionServiceStatusQuery.Create());
             var kitchen = await env.Query<int>(NumberOfPeopleQuery.Create(Detectors.kitchen));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 
 namespace HomeCenter.Services.MotionService.Model
 {
@@ -7,27 +8,26 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class MotionStamp
     {
-        public readonly static MotionStamp Empty = new MotionStamp();
+        public readonly static MotionStamp Empty = new();
 
         private MotionStamp _previous = Empty;
 
-        public DateTimeOffset? Time { get; private set; }
+        public DateTimeOffset? Value { get; private set; }
         public MotionStamp Previous => _previous ?? Empty;
-
-        public bool HasValue => Time.HasValue;
-
-        public override string ToString() => $"{(Time != null ? Time?.Second.ToString() : "?")}:{(Time != null ? Time?.Millisecond.ToString() : "?")}";
+        public bool HasValue => Value.HasValue;
 
         public void SetTime(DateTimeOffset time)
         {
-            if (Time.HasValue)
+            if (Value.HasValue)
             {
                 _previous = Clone();
             }
 
-            Time = time;
+            Value = time;
         }
 
         public MotionStamp Clone() => (MotionStamp)MemberwiseClone();
+
+        public override string ToString() => $"{Value:HH:mm:ss:ffff}[{Previous.Value:HH:mm:ss:ffff}]";
     }
 }

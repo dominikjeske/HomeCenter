@@ -1,49 +1,20 @@
-﻿using System;
-using System.Linq;
-using HomeCenter.Services.MotionService.Tests;
-using Microsoft.Reactive.Testing;
+﻿using Microsoft.Reactive.Testing;
+using System;
 
 namespace HomeCenter.Actors.Tests.Helpers
 {
     public static class TestExtensions
     {
-        private static int _deltaMiliseconds = 500;
-
-        public static void AdvanceToEnd<T>(this TestScheduler scheduler, ITestableObservable<T> events)
+        public static void AdvanceTo(this TestScheduler scheduler, TimeSpan time, long timeAfter = 0, bool roundUp = true)
         {
-            scheduler.AdvanceTo(events.Messages.Max(x => x.Time));
-        }
+            var motionEnd = time.Ticks + Time.Tics(timeAfter);
+            if (roundUp)
+            {
+                var round = TimeSpan.FromSeconds(Math.Ceiling(TimeSpan.FromTicks(motionEnd).TotalSeconds));
+                motionEnd = round.Ticks;
+            }
 
-        public static void AdvanceJustAfterEnd<T>(this TestScheduler scheduler, ITestableObservable<T> events, int timeAfter = 500)
-        {
-            scheduler.AdvanceTo(events.Messages.Max(x => x.Time) + Time.Tics(timeAfter));
+            scheduler.AdvanceTo(motionEnd);
         }
-
-        public static void AdvanceJustAfter(this TestScheduler scheduler, int time)
-        {
-            scheduler.AdvanceTo(TimeSpan.FromMilliseconds(time).JustAfter().Ticks);
-        }
-
-        public static void AdvanceJustAfter(this TestScheduler scheduler, TimeSpan time)
-        {
-            scheduler.AdvanceTo(time.JustAfter().Ticks);
-        }
-
-        public static void AdvanceJustBefore(this TestScheduler scheduler, TimeSpan time)
-        {
-            scheduler.AdvanceTo(time - TimeSpan.FromMilliseconds(_deltaMiliseconds));
-        }
-
-        public static void AdvanceTo(this TestScheduler scheduler, TimeSpan time)
-        {
-            scheduler.AdvanceTo(time.Ticks);
-        }
-
-        public static void AdvanceAfterElement<T>(this TestScheduler scheduler, ITestableObservable<T> events, int elementIndex, int timeAfter = 500)
-        {
-            scheduler.AdvanceTo(events.Messages.ElementAt(elementIndex).Time + Time.Tics(timeAfter));
-        }
-
-        public static TimeSpan JustAfter(this TimeSpan span, int timeAfter = 100) => span.Add(TimeSpan.FromMilliseconds(timeAfter));
     }
 }

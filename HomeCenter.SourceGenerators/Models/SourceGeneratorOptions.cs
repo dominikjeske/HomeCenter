@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,9 +8,8 @@ namespace HomeCenter.SourceGenerators
     {
         public bool EnableLogging { get; }
         public bool DetailedLogging { get; }
-        public bool EnableDebug { get;}
+        public bool EnableDebug { get; }
         public string LogPath { get; } = string.Empty;
-        public bool IntellisenseFix { get; }
         public string IntermediateOutputPath { get; } = string.Empty;
 
         public List<AdditionalFilesOptions> AdditionalFilesOptions { get; } = new List<AdditionalFilesOptions>();
@@ -50,11 +48,6 @@ namespace HomeCenter.SourceGenerators
                 && bool.TryParse(debugThisGenerator, out var debugThisGeneratorValue))
             {
                 EnableDebug = debugThisGeneratorValue;
-            }
-
-            if (TryReadGlobalOption(context, "SourceGenerator_IntellisenseFix", out var intellisenseFix) && bool.TryParse(intellisenseFix, out var intellisenseFixValue))
-            {
-                IntellisenseFix = intellisenseFixValue;
             }
 
             if (TryReadGlobalOption(context, "IntermediateOutputPath", out var intermediate))

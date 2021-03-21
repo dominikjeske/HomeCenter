@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
@@ -36,12 +37,19 @@ namespace HomeCenter.Services.MotionService
 
         public override string ToString() => $"{Uid} [Last move: {RoomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
 
-        public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILoggerFactory loggerFactory, Lazy<RoomDictionary> roomDictionary,
+        public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILogger<Room> logger, Lazy<RoomDictionary> roomDictionary,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor)
         {
             Uid = uid ?? throw new ArgumentNullException(nameof(uid));
             _lamp = lamp ?? throw new ArgumentNullException(nameof(lamp));
-            _logger = loggerFactory.CreateLogger($"HomeCenter.Services.MotionService.Room.{Uid}");
+            _logger = new ContextLogger(logger, () =>
+            {
+                return new Dictionary<string, object>
+                {
+                    ["@Statistics"] = RoomStatistic!,
+                    ["Room"] = Uid
+                };
+            });
 
             _concurrencyProvider = concurrencyProvider;
             _messageBroker = messageBroker;
@@ -63,17 +71,23 @@ namespace HomeCenter.Services.MotionService
 
             RoomStatistic = new RoomStatistic(_logger, AreaDescriptor);
             ConfusedVectors = new ConfusedVectors(_logger, Uid, AreaDescriptor.Motion.ConfusionResolutionTime,
-               AreaDescriptor.Motion.ConfusionResolutionTimeOut, _roomDictionary, (v) => MarkVector(v, true));
+               AreaDescriptor.Motion.ConfusionResolutionTimeOut, _roomDictionary);
 
             _disposeContainer.Add(RoomStatistic.ProbabilityChange.SelectMany(ProbalityChange).Subscribe());
+            _disposeContainer.Add(ConfusedVectors.Resolved.Subscribe(VectorResolved));
 
             RegisterChangeStateSource();
         }
 
-        public async Task<Unit> ProbalityChange(Probability probability)
+        private async Task<Unit> ProbalityChange(Probability probability)
         {
             await TryChangeLampState(probability);
             return Unit.Default;
+        }
+
+        private void VectorResolved(MotionVector vector)
+        {
+            MarkVector(vector, true);
         }
 
         private void RegisterChangeStateSource()
@@ -160,16 +174,23 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void MarkVector(MotionVector motionVector, bool resolved)
         {
-            _logger.LogDebug(MoveEventId.MarkVector, "Vector {vector} ({resolved})", motionVector, resolved ? " [Resolved]" : "[OK]");
-
             _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
             MarkEnter(motionVector);
+
+            if (resolved)
+            {
+                _logger.LogInformation(MoveEventId.MarkVector, "Vector {vector} {resolved} changed)", motionVector, true);
+            }
+            else
+            {
+                _logger.LogInformation(MoveEventId.MarkVector, "Vector {vector} changed", motionVector);
+            }
         }
 
         /// <summary>
         /// Marks entrance of last motion vector
         /// </summary>
-        private void MarkEnter(MotionVector vector) => RoomStatistic.TryIncrementNumberOfPersons(vector.EndTime);
+        private void MarkEnter(MotionVector vector) => RoomStatistic.MarkEnter(vector.EndTime);
 
         private void MarkLeave(MotionVector vector) => RoomStatistic.MarkLeave(vector);
 
@@ -223,8 +244,6 @@ namespace HomeCenter.Services.MotionService
 
                 RoomStatistic.SetAutoTurnOffTime(_concurrencyProvider.Scheduler.Now);
             }
-
         }
     }
-
 }

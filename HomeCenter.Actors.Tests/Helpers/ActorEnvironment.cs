@@ -6,20 +6,24 @@ using Microsoft.Reactive.Testing;
 using Proto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Actors.Tests.Helpers
 {
     internal class ActorEnvironment : IDisposable
     {
+        private const int JUST_TIME = 600;
         private readonly TestScheduler _scheduler;
         private readonly ITestableObservable<MotionEnvelope> _motionEvents;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
         private readonly IDisposable? _externalResources;
-        private readonly ActorSystem _system = new ActorSystem();
+        private readonly ActorSystem _system = new();
         private readonly RootContext _context;
         private readonly PID _pid;
         private readonly string _serviceProcessName;
+
+        public TestScheduler Scheduler => _scheduler;
 
         public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps, LightAutomationServiceProxy actor, IDisposable? externalResources)
         {
@@ -58,32 +62,30 @@ namespace HomeCenter.Actors.Tests.Helpers
             _externalResources?.Dispose();
         }
 
-        public void AdvanceToEnd() => _scheduler.AdvanceToEnd(_motionEvents);
+        public void AdvanceToEnd(TimeSpan? timeAfter = null)
+        {
+            var motionEnd = TimeSpan.FromTicks(_motionEvents.Messages.Max(x => x.Time));
+            long deleay = (long)(timeAfter.HasValue ? timeAfter.Value.TotalMilliseconds : 0);
 
-        public void AdvanceTo(TimeSpan time) => _scheduler.AdvanceTo(time);
+            Scheduler.AdvanceTo(motionEnd, deleay, true);
+        }
 
-        /// <summary>
-        /// We calculate next full second after given time and return just after this time (default 100ms)
-        /// </summary>
-        /// <param name="time"></param>
-        public void AdvanceJustAfterRoundUp(TimeSpan time) => _scheduler.AdvanceJustAfter(TimeSpan.FromSeconds(Math.Ceiling(time.TotalSeconds)));
+        public void AdvanceTo(TimeSpan time, bool justAfter = false) => Scheduler.AdvanceTo(time, justAfter ? JUST_TIME : 0, true);
 
-        public void AdvanceTo(long ticks) => _scheduler.AdvanceTo(ticks);
+        public void AdvanceToIndex(int index, TimeSpan delay, bool justAfter = false)
+        {
+            var timeAfter = justAfter ? delay + TimeSpan.FromMilliseconds(JUST_TIME) : delay;
+            Scheduler.AdvanceTo(GetMotionTime(index), (long)timeAfter.TotalMilliseconds, true);
+        }
 
-        public void AdvanceJustAfterEnd(int timeAfter = 500) => _scheduler.AdvanceJustAfterEnd(_motionEvents, timeAfter);
-
-        public void AdvanceJustAfter(TimeSpan time) => _scheduler.AdvanceJustAfter(time);
-
-        public void AdvanceJustBefore(TimeSpan time) => _scheduler.AdvanceJustBefore(time);
+        public void AdvanceJustBefore(TimeSpan time) => Scheduler.AdvanceTo(time - TimeSpan.FromMilliseconds(500));
 
         public bool LampState(string lamp) => _lamps[lamp].IsTurnedOn;
 
         public void SendCommand(Command command) => Send(command);
 
-        public void RunAfterFirstMove(Action<MotionEnvelope> action) => _motionEvents.Subscribe(action);
+        public void SendAfterFirstMove(Action<MotionEnvelope> action) => _motionEvents.Subscribe(action);
 
-        public TimeSpan GetMotionTime(int vectorIndex) => TimeSpan.FromTicks(_motionEvents.Messages[vectorIndex].Time);
-
-        public TimeSpan GetLastMotionTime() => TimeSpan.FromTicks(_motionEvents.Messages[_motionEvents.Messages.Count - 1].Time);
+        private TimeSpan GetMotionTime(int vectorIndex) => TimeSpan.FromTicks(_motionEvents.Messages[vectorIndex].Time);
     }
 }

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -16,17 +18,17 @@ namespace HomeCenter.Services.MotionService
         private readonly string _uid;
         private readonly TimeSpan _confusionResolutionTime;
         private readonly TimeSpan _confusionResolutionTimeOut;
-        private readonly Action<MotionVector> _markRoom;
         private readonly Lazy<RoomDictionary> _roomDictionary;
+        private readonly Subject<MotionVector> _resolvedObservable = new();
+        public IObservable<MotionVector> Resolved => _resolvedObservable;
 
         public ConfusedVectors(ILogger logger, string uid, TimeSpan confusionResolutionTime, TimeSpan confusionResolutionTimeOut,
-            Lazy<RoomDictionary> roomDictionary, Action<MotionVector> markRoom)
+            Lazy<RoomDictionary> roomDictionary)
         {
             _logger = logger;
             _uid = uid;
             _confusionResolutionTime = confusionResolutionTime;
             _confusionResolutionTimeOut = confusionResolutionTimeOut;
-            _markRoom = markRoom;
             _roomDictionary = roomDictionary;
         }
 
@@ -83,7 +85,7 @@ namespace HomeCenter.Services.MotionService
         {
             foreach (var vector in vectors)
             {
-                _logger.LogDebug(MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
+                _logger.LogInformation(MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
 
                 _confusingVectors.Add(vector);
             }
@@ -118,7 +120,7 @@ namespace HomeCenter.Services.MotionService
         {
             RemoveConfusedVector(vector);
 
-            _markRoom(vector);
+            _resolvedObservable.OnNext(vector);
         }
     }
 }

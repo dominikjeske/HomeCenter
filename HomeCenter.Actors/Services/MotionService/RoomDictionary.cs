@@ -77,7 +77,7 @@ namespace HomeCenter.Services.MotionService
         {
             return _neighbors[roomid].Values
                                      .Where(r => r.Uid != roomToExclude)
-                                     .Any(n => n.RoomStatistic.LastMotion.Time > referenceTime) || _rooms[roomid].RoomStatistic.LastMotion.Time > referenceTime;
+                                     .Any(n => n.RoomStatistic.LastMotion.Value > referenceTime) || _rooms[roomid].RoomStatistic.LastMotion.Value > referenceTime;
         }
     }
 }

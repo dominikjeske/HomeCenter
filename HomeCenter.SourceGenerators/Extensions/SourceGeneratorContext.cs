@@ -48,17 +48,6 @@ namespace HomeCenter.SourceGenerators
             return new GeneratedSource(templateString, classDeclaration.Identifier.Text);
         }
 
-        public void ApplyDesignTimeFix(string content, string? hintName)
-        {
-            if (hintName is null) throw new ArgumentNullException(nameof(hintName));
-
-            if (Options.IntellisenseFix)
-            {
-                var path = Path.Combine(Options.IntermediateOutputPath, hintName + ".generated.cs");
-                File.WriteAllText(path, content, Encoding.UTF8);
-            }
-        }
-
         /// <summary>
         /// Log source code when logging is enabled
         /// </summary>

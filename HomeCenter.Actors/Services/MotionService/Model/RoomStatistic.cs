@@ -1,4 +1,5 @@
-﻿using HomeCenter.Extensions;
+﻿using Destructurama.Attributed;
+using HomeCenter.Extensions;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,48 +12,50 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly AreaDescriptor _areaDescriptor;
         private readonly Subject<Probability> _probabilitySubject = new();
-
         private DateTimeOffset? _lastAutoIncrement;
         private DateTimeOffset? _lastAutoTurnOff;
-        private TimeSpan _baseTime;
-        private DateTimeOffset? _motionStart;
-        private Probability _probability = Probability.Zero;
 
+        public TimeSpan BaseTimeOut { get; private set; }
+        [LogAsScalar]
+        public VisitType VisitType { get; private set; } = VisitType.None;
+        [LogAsScalar]
+        public Probability Probability { get; private set; } = Probability.Zero;
         public DateTimeOffset? FirstEnterTime { get; private set; }
         public int NumberOfPersons { get; private set; }
-        public TimeSpan Timeout { get; private set; }
-        public VisitType VisitType { get; private set; } = VisitType.None;
+        [LogAsScalar]
         public MotionStamp LastMotion { get; } = new MotionStamp();
+        [LogAsScalar]
         public MotionVector? LastLeaveVector { get; private set; }
+        [NotLogged]
         public IObservable<Probability> ProbabilityChange => _probabilitySubject;
 
         public RoomStatistic(ILogger logger, AreaDescriptor areaDescriptor)
         {
             _logger = logger;
             _areaDescriptor = areaDescriptor;
-            _baseTime = _areaDescriptor.TurnOffTimeout;
+            BaseTimeOut = _areaDescriptor.TurnOffTimeout;
 
             Reset();
         }
 
         public void MarkMotion(DateTimeOffset motionTime)
         {
-            _logger.LogDebug(MoveEventId.Motion, "Motion");
+            _logger.LogInformation(MoveEventId.Motion, "Motion");
 
-            if (_probability == Probability.Zero)
+            if (Probability == Probability.Zero)
             {
                 FirstEnterTime = motionTime;
             }
+
+            TryTuneTurnOffTimeOut(motionTime, Probability);
 
             SetProbability(Probability.Full);
 
             LastMotion.SetTime(motionTime);
 
-            IncrementTimeout(motionTime);
+            UpdateVisitType(motionTime);
 
             TrySetAtLeastOnePerson(motionTime);
-
-            TryTuneTurnOffTimeOut(motionTime, _probability);
         }
 
         public void MarkLeave(MotionVector vector)
@@ -60,7 +63,7 @@ namespace HomeCenter.Services.MotionService
             DecrementNumberOfPersons();
             LastLeaveVector = vector;
 
-            _logger.LogDebug(MoveEventId.MarkLeave, "Leave");
+            _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
 
             // Only when we have one person room we can be sure that we can turn of light immediately
             if (_areaDescriptor.MaxPersonCapacity == 1)
@@ -71,9 +74,9 @@ namespace HomeCenter.Services.MotionService
             {
                 var decreasePercent = GetLeaveDeltaProbability();
 
-                _logger.LogDebug(MoveEventId.Probability, "Probability => {percent}%", decreasePercent * 100);
+                _logger.LogInformation(MoveEventId.Probability, "Probability => {percent}%", decreasePercent * 100);
 
-                SetProbability(_probability.DecreaseByPercent(decreasePercent));
+                SetProbability(Probability.DecreaseByPercent(decreasePercent));
             }
         }
 
@@ -83,19 +86,20 @@ namespace HomeCenter.Services.MotionService
         public void RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == LastMotion.Time || _probability.IsNoProbability) return;
+            if (motionTime == LastMotion.Value || Probability.IsNoProbability) return;
 
             var probabilityDelta = GetDeltaProbability();
 
-            _logger.LogDebug(MoveEventId.Probability, "Recalculate with {delta} from {probability:00.00}%", probabilityDelta, _probability.Value * 100);
+            _logger.LogDebug(MoveEventId.Probability, "Recalculate with {delta}", probabilityDelta);
 
-            SetProbability(_probability.Decrease(probabilityDelta));
+            SetProbability(Probability.Decrease(probabilityDelta));
         }
 
         public void SetAutoTurnOffTime(DateTimeOffset time) => _lastAutoTurnOff = time;
 
-        public void TryIncrementNumberOfPersons(DateTimeOffset moveTime)
+        public void MarkEnter(DateTimeOffset moveTime)
         {
+            // When we made auto increment we don't wont to do it twice
             if (!_lastAutoIncrement.HasValue || moveTime.Between(_lastAutoIncrement.Value).LastedLongerThen(TimeSpan.FromMilliseconds(100)))
             {
                 NumberOfPersons++;
@@ -104,27 +108,21 @@ namespace HomeCenter.Services.MotionService
 
         public void Reset()
         {
-            _motionStart = null;
-            Timeout = _baseTime;
             VisitType = VisitType.None;
             NumberOfPersons = 0;
+            FirstEnterTime = null;
         }
 
         /// <summary>
         /// Increment can move timeout between VisitTypes time zones
         /// </summary>
-        private void IncrementTimeout(DateTimeOffset motionTime)
+        private void UpdateVisitType(DateTimeOffset motionTime)
         {
-            if (!_motionStart.HasValue)
-            {
-                _motionStart = motionTime;
-            }
-
-            if (motionTime - _motionStart < _areaDescriptor.Motion.MotionTypePassThru)
+            if (motionTime - FirstEnterTime < _areaDescriptor.Motion.MotionTypePassThru)
             {
                 VisitType = VisitType.PassThru;
             }
-            else if (motionTime - _motionStart < _areaDescriptor.Motion.MotionTypeShortVisit)
+            else if (motionTime - FirstEnterTime < _areaDescriptor.Motion.MotionTypeShortVisit)
             {
                 VisitType = VisitType.ShortVisit;
             }
@@ -132,33 +130,20 @@ namespace HomeCenter.Services.MotionService
             {
                 VisitType = VisitType.LongerVisit;
             }
-
-            // egz. 10s * 1 | 2 | 3
-            Timeout = TimeSpan.FromTicks((int)(_baseTime.Ticks * VisitType.Value));
         }
 
         private double GetDeltaProbability()
         {
-            // For TurnOffTimeOut = 30s and PeriodicCheckTime = 1s => 0.03 (30 seconds to full probability)
-            return 1.0 / (Timeout.Ticks / _areaDescriptor.Motion.PeriodicCheckTime.Ticks);
-        }
-
-        private bool TryIncreaseBaseTime(DateTimeOffset moveTime, DateTimeOffset? lastTurnOffTime)
-        {
-            if (!lastTurnOffTime.HasValue || !moveTime.Between(lastTurnOffTime.Value).LastedLessThen(_areaDescriptor.Motion.MotionTimeWindow)) return false;
-
-            var before = _baseTime;
-            _baseTime = _baseTime.Increase(_areaDescriptor.Motion.TurnOffTimeoutExtenderFactor);
-
-            _logger.LogDebug(MoveEventId.Tuning, "Turn-off time out updated {before} -> {after}", before, _baseTime);
-
-            return true;
+            // egz. 10s * 1 | 2 | 3 => 10-30s
+            var timeout = TimeSpan.FromTicks((int)(BaseTimeOut.Ticks * VisitType.Id));
+            // egz. 0.1 - 0.033 (10% - 3%)
+            return 1.0 / (timeout.Ticks / _areaDescriptor.Motion.PeriodicCheckTime.Ticks);
         }
 
         private double GetLeaveDeltaProbability()
         {
             var numberOfPeopleFactor = NumberOfPersons == 0 ? _areaDescriptor.Motion.DecreaseLeavingFactor : _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
-            var visitTypeFactor = VisitType.Value;
+            var visitTypeFactor = VisitType.Id;
             var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
             return decreasePercent;
@@ -169,11 +154,13 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void SetProbability(Probability probability)
         {
-            if (probability == _probability) return;
+            if (probability == Probability) return;
 
-            _logger.LogDebug(MoveEventId.Probability, "{probability:00.00}% [{timeout}]", probability.Value * 100, Timeout);
+            var previous = Probability;
+            
+            Probability = probability;
 
-            _probability = probability;
+            _logger.LogDebug(MoveEventId.Probability, "{Previous}", previous);
 
             _probabilitySubject.OnNext(probability);
         }
@@ -191,9 +178,12 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void TryTuneTurnOffTimeOut(DateTimeOffset moveTime, Probability current)
         {
-            if (current.IsNoProbability)
+            if (current.IsNoProbability && _lastAutoTurnOff.HasValue && moveTime.Between(_lastAutoTurnOff.Value).LastedLessThen(_areaDescriptor.Motion.MotionTimeWindow))
             {
-                TryIncreaseBaseTime(moveTime, _lastAutoTurnOff);
+                var before = BaseTimeOut;
+                BaseTimeOut = BaseTimeOut.Increase(_areaDescriptor.Motion.TurnOffTimeoutExtenderFactor);
+
+                _logger.LogInformation(MoveEventId.Tuning, "Turn-off time out updated {before} -> {after}", before, BaseTimeOut);
             }
         }
 

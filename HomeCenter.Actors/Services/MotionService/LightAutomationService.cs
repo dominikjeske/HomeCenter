@@ -89,7 +89,7 @@ namespace HomeCenter.Services.MotionService
                 var areaDescriptor = areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default);
 
                 rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsString(MotionProperties.Lamp),
-                                    _concurrencyProvider, _loggerFactory, new Lazy<RoomDictionary>(() => _roomDictionary), MessageBroker, areaDescriptor));
+                                    _concurrencyProvider, _loggerFactory.CreateLogger<Room>(), new Lazy<RoomDictionary>(() => _roomDictionary), MessageBroker, areaDescriptor));
             }
 
             var neighbours = ComponentsAttachedProperties.SelectMany(r => r.AsList(MotionProperties.Neighbors).Select(n => new { Uid = r.AttachedActor, Neighbor = n }))

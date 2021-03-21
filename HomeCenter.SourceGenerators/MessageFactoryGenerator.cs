@@ -42,7 +42,6 @@ namespace HomeCenter.SourceGenerators
                 var result = TemplateGenerator.Execute(templateString, factoryModel);
 
                 context.TryLogSourceCode(proxy, result);
-                //context.ApplyDesignTimeFix(result, nameof(MessageFactoryGenerator));
 
                 return new GeneratedSource(result, nameof(MessageFactoryGenerator));
             }
