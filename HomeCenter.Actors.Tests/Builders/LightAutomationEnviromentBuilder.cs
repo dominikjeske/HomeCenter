@@ -74,7 +74,7 @@ namespace HomeCenter.Actors.Tests.Builders
         /// </summary>
         /// <param name="roomUid"></param>
         /// <param name="motionTime"></param>
-        /// <param name="waitTime">Deafault value is 3 seconds</param>
+        /// <param name="waitTime">Default value is 3 seconds</param>
         public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
         {
             var time = waitTime ?? TimeSpan.FromSeconds(3);

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
@@ -114,7 +113,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Handle vector candidates that occured in room
+        /// Handle vector candidates that occurred in room
         /// </summary>
         public void HandleVectors(IList<MotionVector> motionVectors)
         {
@@ -177,14 +176,7 @@ namespace HomeCenter.Services.MotionService
             _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
             MarkEnter(motionVector);
 
-            if (resolved)
-            {
-                _logger.LogInformation(MoveEventId.MarkVector, "Vector {vector} {resolved} changed)", motionVector, true);
-            }
-            else
-            {
-                _logger.LogInformation(MoveEventId.MarkVector, "Vector {vector} changed", motionVector);
-            }
+            _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");
         }
 
         /// <summary>

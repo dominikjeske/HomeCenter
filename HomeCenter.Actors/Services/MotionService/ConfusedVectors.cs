@@ -85,7 +85,7 @@ namespace HomeCenter.Services.MotionService
         {
             foreach (var vector in vectors)
             {
-                _logger.LogInformation(MoveEventId.ConfusedVector, "Confused vector {vector}", vector);
+                _logger.LogInformation(MoveEventId.ConfusedVector, "{vector} with {VectorStatus}", vector, "Confused");
 
                 _confusingVectors.Add(vector);
             }

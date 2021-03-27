@@ -63,8 +63,6 @@ namespace HomeCenter.Services.MotionService
             DecrementNumberOfPersons();
             LastLeaveVector = vector;
 
-            _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
-
             // Only when we have one person room we can be sure that we can turn of light immediately
             if (_areaDescriptor.MaxPersonCapacity == 1)
             {
@@ -74,10 +72,10 @@ namespace HomeCenter.Services.MotionService
             {
                 var decreasePercent = GetLeaveDeltaProbability();
 
-                _logger.LogInformation(MoveEventId.Probability, "Probability => {percent}%", decreasePercent * 100);
-
                 SetProbability(Probability.DecreaseByPercent(decreasePercent));
             }
+
+            _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
         }
 
         /// <summary>

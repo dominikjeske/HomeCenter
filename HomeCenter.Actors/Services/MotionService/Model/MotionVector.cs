@@ -47,7 +47,7 @@ namespace HomeCenter.Services.MotionService.Model
         public override string ToString()
         {
             var time = End.TimeStamp - Start.TimeStamp;
-            return $"[V] {Start} -> {End} [{time.TotalMilliseconds}ms]";
+            return $"{Start} -> {End} [{time.TotalMilliseconds}ms]";
         }
     }
 }

@@ -17,7 +17,7 @@ namespace HomeCenter.Services.MotionService.Model
         public int MaxPersonCapacity { get; init; }
 
         /// <summary>
-        /// Type of area - standard room, passage..
+        /// Type of area - standard, room, passage..
         /// </summary>
         public string AreaType { get; init; } = Model.AreaType.Room;
 

@@ -1,11 +1,10 @@
-﻿using HomeCenter.Services.MotionService.Model;
+﻿using HomeCenter.Extensions;
+using HomeCenter.Services.MotionService.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using HomeCenter.Extensions;
-using System.Collections.ObjectModel;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -28,8 +27,6 @@ namespace HomeCenter.Services.MotionService
             _motionConfiguration = motionConfiguration;
             _neighbors = neighbors;
         }
-
-        public int NumberOfPersons() => _rooms.Sum(md => md.Value.NumberOfPersons);
 
         /// <summary>
         /// Check if two point in time can physically be a proper vector
@@ -58,7 +55,6 @@ namespace HomeCenter.Services.MotionService
         public void CheckRooms(DateTimeOffset motionTime)
         {
             _rooms.Values.ForEach(r => r.EvaluateConfusions(motionTime));
-
             _rooms.Values.ForEach(r => r.PeriodicUpdate(motionTime));
         }
 
@@ -69,7 +65,6 @@ namespace HomeCenter.Services.MotionService
         /// <param name="p2"></param>
         private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _neighbors[p1.Uid].ContainsKey(p2.Uid);
 
-
         /// <summary>
         /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
         /// </summary>
@@ -79,5 +74,13 @@ namespace HomeCenter.Services.MotionService
                                      .Where(r => r.Uid != roomToExclude)
                                      .Any(n => n.RoomStatistic.LastMotion.Value > referenceTime) || _rooms[roomid].RoomStatistic.LastMotion.Value > referenceTime;
         }
+
+
+        public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 && 
+                                                                          r.RoomStatistic.VisitType.Id > VisitType.PassThru.Id &&
+                                                                          r.AreaDescriptor.AreaType != AreaType.Outdoor
+        );
+        
+
     }
 }
