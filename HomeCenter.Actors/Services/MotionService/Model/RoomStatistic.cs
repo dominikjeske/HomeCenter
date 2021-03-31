@@ -140,6 +140,7 @@ namespace HomeCenter.Services.MotionService
 
         private double GetLeaveDeltaProbability()
         {
+
             var numberOfPeopleFactor = NumberOfPersons == 0 ? _areaDescriptor.Motion.DecreaseLeavingFactor : _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
             var visitTypeFactor = VisitType.Id;
             var decreasePercent = numberOfPeopleFactor / visitTypeFactor;

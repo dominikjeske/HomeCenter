@@ -3,7 +3,6 @@ using HomeCenter.Storage.RavenDB;
 using Microsoft.Extensions.Hosting;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
-using Raven.Client.Documents.Session;
 using Raven.Client.Json.Serialization.NewtonsoftJson;
 using Raven.Client.ServerWide.Operations;
 using Serilog;
@@ -13,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Threading;
 
 namespace HomeCenter.Actors.Tests.Builders
 {

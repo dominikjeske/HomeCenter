@@ -174,23 +174,20 @@ namespace HomeCenter.Actors.Tests
 
         private static AreaDescriptor DefaultConfig()
         {
-            return new AreaDescriptor
+            return AreaDescriptor.Default(new MotionConfiguration
             {
-                Motion = new MotionConfiguration
-                {
-                    ConfusionResolutionTime = MotionDefaults.ConfusionResolutionTime,
-                    ConfusionResolutionTimeOut = MotionDefaults.ConfusionResolutionTimeOut,
-                    DecreaseLeavingFactor = MotionDefaults.DecreaseLeavingFactor,
-                    MotionMinDiff = MotionDefaults.MotionMinDiff,
-                    MotionTimeWindow = MotionDefaults.MotionTimeWindow,
-                    PeriodicCheckTime = MotionDefaults.PeriodicCheckTime,
-                    TurnOffTimeoutExtenderFactor = MotionDefaults.TurnOffTimeoutExtenderFactor,
-                    TurnOffTimeout = MotionDefaults.TurnOffTimeOut,
-                    MotionTypePassThru = MotionDefaults.MotionTypePassThru,
-                    MotionTypeShortVisit = MotionDefaults.MotionTypeShortVisit
-                },
-                TurnOffTimeout = MotionDefaults.TurnOffTimeOut
-            };
+                ConfusionResolutionTime = MotionDefaults.ConfusionResolutionTime,
+                ConfusionResolutionTimeOut = MotionDefaults.ConfusionResolutionTimeOut,
+                DecreaseLeavingFactor = MotionDefaults.DecreaseLeavingFactor,
+                MotionMinDiff = MotionDefaults.MotionMinDiff,
+                MotionTimeWindow = MotionDefaults.MotionTimeWindow,
+                PeriodicCheckTime = MotionDefaults.PeriodicCheckTime,
+                TurnOffTimeoutExtenderFactor = MotionDefaults.TurnOffTimeoutExtenderFactor,
+                TurnOffTimeout = MotionDefaults.TurnOffTimeOut,
+                MotionTypePassThru = MotionDefaults.MotionTypePassThru,
+                MotionTypeShortVisit = MotionDefaults.MotionTypeShortVisit
+            }, string.Empty);
+              
         }
 
         private static RoomStatistic CreateRoomStatistic(AreaDescriptor ad) => new(NullLogger.Instance, ad);

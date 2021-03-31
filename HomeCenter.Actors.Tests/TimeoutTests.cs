@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Services.MotionService.Commands;
-using HomeCenter.Services.MotionService.Model;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,40 +10,6 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     public class TimeoutTests : LightAutomationServiceTestsBase
     {
-        // *[Confusion], ^[Resolved]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |                                                               |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |                                 |
-        // |        |                |            |____  ____|                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |    0     |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Time out after one move")]
-        public async Task Timeout0()
-        {
-            using var env = GetEnviromentBuilder(GetServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.kitchen }
-            }).Build();
-
-            var area = await env.Query<AreaDescriptor>(AreaDescriptorQuery.Create(Detectors.toilet));
-            env.AdvanceToEnd();
-
-            env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceTo(area.TurnOffTimeout);
-            env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceTo(area.TurnOffTimeout, true);
-            env.LampState(Detectors.kitchen).Should().BeFalse();
-        }
-
         // *[Confusion], ^[Resolved], P[PassThru], S[ShortVisit], L[LongVisit]
         //  ___________________________________________   __________________________
         // |        |                |                       |                      |
@@ -55,7 +20,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |          |                      |
         // |        |                |            |          |______________________|
         // |        |                |            |          |                      |
-        // |        |                |            |             0S                  |
+        // |        |                |            |             0P                  |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
@@ -90,7 +55,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |          |                      |
         // |        |                |            |          |______________________|
         // |        |                |            |          |                      |
-        // |        |                |            |             0L                  |
+        // |        |                |            |             0S                  |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
@@ -125,7 +90,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |          |                      |
         // |        |                |            |          |______________________|
         // |        |                |            |          |                      |
-        // |        |                |            |             0L+                 |
+        // |        |                |            |             0L                  |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |

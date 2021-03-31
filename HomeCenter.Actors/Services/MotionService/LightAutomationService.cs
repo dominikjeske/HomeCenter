@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
-    //TODO Add time between rooms - people walks 6km/1h => 6000m/3600s => 1m = 600ms
     [Proxy]
     public class LightAutomationService : Service
     {
@@ -63,17 +62,18 @@ namespace HomeCenter.Services.MotionService
             var areas = new Dictionary<string, AreaDescriptor>();
             foreach (var area in AreasAttachedProperties)
             {
-                areas.Add(area.AttachedActor, new AreaDescriptor()
-                {
-                    WorkingTime = area.AsString(MotionProperties.WorkingTime, WorkingTime.AllDay),
-                    MaxPersonCapacity = area.AsInt(MotionProperties.MaxPersonCapacity, MotionDefaults.MaxPersonCapacity),
-                    AreaType = area.AsString(MotionProperties.AreaType, AreaType.Room),
-                    MotionDetectorAlarmTime = area.AsTime(MotionProperties.MotionDetectorAlarmTime, MotionDefaults.MotionDetectionAlarmTime),
-                    LightIntensityAtNight = area.ContainsProperty(MotionProperties.LightIntensityAtNight) ? area.AsDouble(MotionProperties.LightIntensityAtNight) : null,
-                    TurnOffTimeout = area.AsTime(MotionProperties.TurnOffTimeout, _motionConfiguration?.TurnOffTimeout),
-                    TurnOffAutomationDisabled = area.AsBool(MotionProperties.TurnOffAutomationDisabled, false),
-                    Motion = _motionConfiguration!
-                });
+                areas.Add(area.AttachedActor, new AreaDescriptor
+                (
+                    area.AsInt(MotionProperties.MaxPersonCapacity, MotionDefaults.MaxPersonCapacity),
+                    area.AsTime(MotionProperties.MotionDetectorAlarmTime, MotionDefaults.MotionDetectionAlarmTime),
+                    area.ContainsProperty(MotionProperties.LightIntensityAtNight) ? area.AsDouble(MotionProperties.LightIntensityAtNight) : null,
+                    area.AsTime(MotionProperties.TurnOffTimeout, _motionConfiguration?.TurnOffTimeout),
+                    area.AsBool(MotionProperties.TurnOffAutomationDisabled, false),
+                    _motionConfiguration!,
+                    area.AsString(MotionProperties.WorkingTime, WorkingTime.AllDay),
+                    area.AsString(MotionProperties.AreaType, AreaType.Room),
+                    area.AttachedActor
+                ));
             }
             return areas;
         }
@@ -86,7 +86,7 @@ namespace HomeCenter.Services.MotionService
 
             foreach (var motionDetector in ComponentsAttachedProperties)
             {
-                var areaDescriptor = areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default);
+                var areaDescriptor = areas.Get(motionDetector.AttachedArea, AreaDescriptor.Default(_motionConfiguration!, motionDetector.AttachedArea));
 
                 rooms.Add(new Room(motionDetector.AttachedActor, motionDetector.AsString(MotionProperties.Lamp),
                                     _concurrencyProvider, _loggerFactory.CreateLogger<Room>(), new Lazy<RoomDictionary>(() => _roomDictionary), MessageBroker, areaDescriptor));

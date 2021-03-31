@@ -4,8 +4,8 @@ namespace HomeCenter.Services.MotionService.Tests
 {
     public static class RavenConfig
     {
-        public static bool UseRavenDbLogs { get; }
-        public static bool CleanLogsBeforeRun { get; }
+        public static bool UseRavenDbLogs { get; } = true;
+        public static bool CleanLogsBeforeRun { get; } = true;
 
         static RavenConfig()
         {
