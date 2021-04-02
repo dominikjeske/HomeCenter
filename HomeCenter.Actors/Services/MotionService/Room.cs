@@ -24,17 +24,16 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
-        private readonly ConfusedVectors ConfusedVectors;
         private readonly Lazy<RoomDictionary> _roomDictionary;
         private DateTimeOffset? _scheduledAutomationTime;
 
-        internal RoomStatistic RoomStatistic { get; }
+        internal MotionEngine MotionEngine { get; }
         internal string Uid { get; }
         internal AreaDescriptor AreaDescriptor { get; }
         internal bool AutomationDisabled { get; private set; }
-        internal int NumberOfPersons => RoomStatistic.NumberOfPersons;
+        internal int NumberOfPersons => MotionEngine.NumberOfPersons;
 
-        public override string ToString() => $"{Uid} [Last move: {RoomStatistic.LastMotion}] [Persons: {NumberOfPersons}]";
+        public override string ToString() => $"{Uid} [Last move: {MotionEngine.LastMotion}] [Persons: {NumberOfPersons}]";
 
         public Room(string uid, string lamp, IConcurrencyProvider concurrencyProvider, ILogger<Room> logger, Lazy<RoomDictionary> roomDictionary,
                     IMessageBroker messageBroker, AreaDescriptor areaDescriptor)
@@ -45,7 +44,7 @@ namespace HomeCenter.Services.MotionService
             {
                 return new Dictionary<string, object>
                 {
-                    ["@Statistics"] = RoomStatistic!,
+                    ["@Statistics"] = MotionEngine!,
                     ["Room"] = Uid
                 };
             });
@@ -68,12 +67,9 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            RoomStatistic = new RoomStatistic(_logger, AreaDescriptor);
-            ConfusedVectors = new ConfusedVectors(_logger, Uid, AreaDescriptor.Motion.ConfusionResolutionTime,
-               AreaDescriptor.Motion.ConfusionResolutionTimeOut, _roomDictionary);
+            MotionEngine = new MotionEngine(_logger, AreaDescriptor, Uid, _roomDictionary);
 
-            _disposeContainer.Add(RoomStatistic.ProbabilityChange.SelectMany(ProbalityChange).Subscribe());
-            _disposeContainer.Add(ConfusedVectors.Resolved.Subscribe(VectorResolved));
+            _disposeContainer.Add(MotionEngine.ProbabilityChange.SelectMany(ProbalityChange).Subscribe());
 
             RegisterChangeStateSource();
         }
@@ -82,11 +78,6 @@ namespace HomeCenter.Services.MotionService
         {
             await TryChangeLampState(probability);
             return Unit.Default;
-        }
-
-        private void VectorResolved(MotionVector vector)
-        {
-            MarkVector(vector, true);
         }
 
         private void RegisterChangeStateSource()
@@ -98,10 +89,7 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Take action when there is a move in the room
         /// </summary>
-        public void MarkMotion(DateTimeOffset motionTime)
-        {
-            RoomStatistic.MarkMotion(motionTime);
-        }
+        public void MarkMotion(DateTimeOffset motionTime) => MotionEngine.MarkMotion(motionTime);
 
         /// <summary>
         /// Update room state on time intervals
@@ -109,38 +97,15 @@ namespace HomeCenter.Services.MotionService
         public void PeriodicUpdate(DateTimeOffset motionTime)
         {
             CheckForScheduledAutomation(motionTime);
-            RoomStatistic.RecalculateProbability(motionTime);
+            MotionEngine.RecalculateProbability(motionTime);
         }
 
         /// <summary>
         /// Handle vector candidates that occurred in room
         /// </summary>
-        public void HandleVectors(IList<MotionVector> motionVectors)
-        {
-            if (motionVectors.Count == 0) return;
+        public void HandleVectors(IList<MotionVector> motionVectors) => MotionEngine.HandleVectors(motionVectors);
 
-            // When we have one vector we know that there is no concurrent vectors to same room
-            if (motionVectors.Count == 1)
-            {
-                var vector = motionVectors.Single();
-
-                if (IsTurnOnVector(vector))
-                {
-                    MarkVector(vector, false);
-                }
-                else
-                {
-                    ConfusedVectors.MarkConfusion(new MotionVector[] { vector });
-                }
-            }
-            // When we have at least two vectors we know that we have confusion
-            else
-            {
-                ConfusedVectors.MarkConfusion(motionVectors);
-            }
-        }
-
-        public void EvaluateConfusions(DateTimeOffset dateTimeOffset) => ConfusedVectors.EvaluateConfusions(dateTimeOffset);
+        public void EvaluateConfusions(DateTimeOffset dateTimeOffset) => MotionEngine.EvaluateConfusions(dateTimeOffset);
 
         public void EnableAutomation()
         {
@@ -163,28 +128,7 @@ namespace HomeCenter.Services.MotionService
 
         public void Dispose() => _disposeContainer.Dispose();
 
-        /// <summary>
-        /// Check if <paramref name="motionVector"/> is vector that turned on the light
-        /// </summary>
-        private bool IsTurnOnVector(MotionVector motionVector) => !RoomStatistic.FirstEnterTime.HasValue || RoomStatistic.FirstEnterTime == motionVector.EndTime;
-
-        /// <summary>
-        /// Marks enter to target room and leave from source room
-        /// </summary>
-        private void MarkVector(MotionVector motionVector, bool resolved)
-        {
-            _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
-            MarkEnter(motionVector);
-
-            _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");
-        }
-
-        /// <summary>
-        /// Marks entrance of last motion vector
-        /// </summary>
-        private void MarkEnter(MotionVector vector) => RoomStatistic.MarkEnter(vector.EndTime);
-
-        private void MarkLeave(MotionVector vector) => RoomStatistic.MarkLeave(vector);
+        public void MarkLeave(MotionVector vector) => MotionEngine.MarkLeave(vector);
 
         private async Task TryChangeLampState(Probability probability)
         {
@@ -202,7 +146,7 @@ namespace HomeCenter.Services.MotionService
         {
             if (!powerChangeEvent.Value)
             {
-                RoomStatistic.Reset();
+                MotionEngine.Reset();
             }
 
             _logger.LogDebug(MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
@@ -234,7 +178,7 @@ namespace HomeCenter.Services.MotionService
 
                 _messageBroker.Send(new TurnOffCommand(), _lamp);
 
-                RoomStatistic.SetAutoTurnOffTime(_concurrencyProvider.Scheduler.Now);
+                MotionEngine.SetAutoTurnOffTime(_concurrencyProvider.Scheduler.Now);
             }
         }
     }

@@ -72,12 +72,12 @@ namespace HomeCenter.Services.MotionService
         {
             return _neighbors[roomid].Values
                                      .Where(r => r.Uid != roomToExclude)
-                                     .Any(n => n.RoomStatistic.LastMotion.Value > referenceTime) || _rooms[roomid].RoomStatistic.LastMotion.Value > referenceTime;
+                                     .Any(n => n.MotionEngine.LastMotion.Value > referenceTime) || _rooms[roomid].MotionEngine.LastMotion.Value > referenceTime;
         }
 
 
         public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 && 
-                                                                          r.RoomStatistic.VisitType.Id > VisitType.PassThru.Id &&
+                                                                          r.MotionEngine.VisitType.Id > VisitType.PassThru.Id &&
                                                                           r.AreaDescriptor.AreaType != AreaType.Outdoor
         );
         

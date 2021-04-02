@@ -3,19 +3,24 @@ using HomeCenter.Extensions;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Subjects;
 
 namespace HomeCenter.Services.MotionService
 {
-    internal class RoomStatistic
+    internal class MotionEngine
     {
         private readonly ILogger _logger;
         private readonly AreaDescriptor _areaDescriptor;
+        private readonly Lazy<RoomDictionary> _roomDictionary;
         private readonly Subject<Probability> _probabilitySubject = new();
         private DateTimeOffset? _lastAutoIncrement;
         private DateTimeOffset? _lastAutoTurnOff;
+        private ConfusedVectors _confusedVectors;
 
         public TimeSpan BaseTimeOut { get; private set; }
+
         [LogAsScalar]
         public VisitType VisitType { get; private set; } = VisitType.None;
         [LogAsScalar]
@@ -29,11 +34,13 @@ namespace HomeCenter.Services.MotionService
         [NotLogged]
         public IObservable<Probability> ProbabilityChange => _probabilitySubject;
 
-        public RoomStatistic(ILogger logger, AreaDescriptor areaDescriptor)
+        public MotionEngine(ILogger logger, AreaDescriptor areaDescriptor, string Uid, Lazy<RoomDictionary> roomDictionary)
         {
             _logger = logger;
             _areaDescriptor = areaDescriptor;
+            _roomDictionary = roomDictionary;
             BaseTimeOut = _areaDescriptor.TurnOffTimeout;
+            _confusedVectors = new ConfusedVectors(_logger, Uid, areaDescriptor.Motion.ConfusionResolutionTime, areaDescriptor.Motion.ConfusionResolutionTimeOut, roomDictionary);
 
             Reset();
         }
@@ -71,11 +78,56 @@ namespace HomeCenter.Services.MotionService
             else
             {
                 var decreasePercent = GetLeaveDeltaProbability();
-
                 SetProbability(Probability.DecreaseByPercent(decreasePercent));
             }
 
             _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
+        }
+
+        public void MarkConfusion(IList<MotionVector> vectors)
+        {
+            _confusedVectors.MarkConfusion(vectors);
+        }
+
+        public void EvaluateConfusions(DateTimeOffset currentTime)
+        {
+            var vector = _confusedVectors.EvaluateConfusions(currentTime);
+            foreach(var resolve in vector)
+            {
+                MarkVector(resolve, true);
+            }
+        }
+
+        public void MarkVector(MotionVector motionVector) => MarkVector(motionVector, false);
+
+        /// <summary>
+        /// Marks enter to target room and leave from source room
+        /// </summary>
+        private void MarkVector(MotionVector motionVector, bool resolved)
+        {
+            _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
+            MarkEnter(motionVector.EndTime);
+
+            _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");
+        }
+
+
+        private double GetLeaveDeltaProbability()
+        {
+            double numberOfPeopleFactor;
+            if (NumberOfPersons == 0)
+            {
+                numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor;
+            }
+            else
+            {
+                numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
+            }
+
+            var visitTypeFactor = VisitType.Id;
+            var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
+
+            return decreasePercent;
         }
 
         /// <summary>
@@ -111,6 +163,31 @@ namespace HomeCenter.Services.MotionService
             FirstEnterTime = null;
         }
 
+        public void HandleVectors(IList<MotionVector> motionVectors)
+        {
+            if (motionVectors.Count == 0) return;
+
+            // When we have one vector we know that there is no concurrent vectors to same room
+            if (motionVectors.Count == 1)
+            {
+                var vector = motionVectors.Single();
+
+                if (IsTurnOnVector(vector))
+                {
+                    MarkVector(vector);
+                }
+                else
+                {
+                    MarkConfusion(new MotionVector[] { vector });
+                }
+            }
+            // When we have at least two vectors we know that we have confusion
+            else
+            {
+                MarkConfusion(motionVectors);
+            }
+        }
+
         /// <summary>
         /// Increment can move timeout between VisitTypes time zones
         /// </summary>
@@ -130,22 +207,17 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
+        /// <summary>
+        /// Check if <paramref name="motionVector"/> is vector that turned on the light
+        /// </summary>
+        private bool IsTurnOnVector(MotionVector motionVector) => !FirstEnterTime.HasValue || FirstEnterTime == motionVector.EndTime;
+
         private double GetDeltaProbability()
         {
             // egz. 10s * 1 | 2 | 3 => 10-30s
             var timeout = TimeSpan.FromTicks((int)(BaseTimeOut.Ticks * VisitType.Id));
             // egz. 0.1 - 0.033 (10% - 3%)
             return 1.0 / (timeout.Ticks / _areaDescriptor.Motion.PeriodicCheckTime.Ticks);
-        }
-
-        private double GetLeaveDeltaProbability()
-        {
-
-            var numberOfPeopleFactor = NumberOfPersons == 0 ? _areaDescriptor.Motion.DecreaseLeavingFactor : _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
-            var visitTypeFactor = VisitType.Id;
-            var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
-
-            return decreasePercent;
         }
 
         /// <summary>
@@ -156,7 +228,7 @@ namespace HomeCenter.Services.MotionService
             if (probability == Probability) return;
 
             var previous = Probability;
-            
+
             Probability = probability;
 
             _logger.LogDebug(MoveEventId.Probability, "{Previous}", previous);

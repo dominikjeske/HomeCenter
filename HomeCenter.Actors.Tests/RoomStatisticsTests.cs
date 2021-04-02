@@ -190,6 +190,6 @@ namespace HomeCenter.Actors.Tests
               
         }
 
-        private static RoomStatistic CreateRoomStatistic(AreaDescriptor ad) => new(NullLogger.Instance, ad);
+        private static MotionEngine CreateRoomStatistic(AreaDescriptor ad) => new(NullLogger.Instance, ad, string.Empty, null);
     }
 }

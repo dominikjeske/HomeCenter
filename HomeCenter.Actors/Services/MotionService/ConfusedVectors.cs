@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -19,8 +17,6 @@ namespace HomeCenter.Services.MotionService
         private readonly TimeSpan _confusionResolutionTime;
         private readonly TimeSpan _confusionResolutionTimeOut;
         private readonly Lazy<RoomDictionary> _roomDictionary;
-        private readonly Subject<MotionVector> _resolvedObservable = new();
-        public IObservable<MotionVector> Resolved => _resolvedObservable;
 
         public ConfusedVectors(ILogger logger, string uid, TimeSpan confusionResolutionTime, TimeSpan confusionResolutionTimeOut,
             Lazy<RoomDictionary> roomDictionary)
@@ -35,12 +31,23 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Try to resolve confusion in previously marked vectors
         /// </summary>
-        public void EvaluateConfusions(DateTimeOffset currentTime)
+        public IEnumerable<MotionVector> EvaluateConfusions(DateTimeOffset currentTime)
         {
-            GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector))
-                                                                 .ForEach(v => ResolveConfusion(v));
+            var timeOuted = ResolveAfterTimeout(currentTime);
 
-            GetConfusedVecotrsCanceledByOthers().ForEach(v => TryResolveAfterCancel(v));
+            var canceled = ResolveAfterCancel();
+
+            return timeOuted.Union(canceled);
+        }
+
+        private IEnumerable<MotionVector> ResolveAfterTimeout(DateTimeOffset currentTime)
+        {
+            var resolved = GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector)).ToList();
+            foreach (var vector in resolved)
+            {
+                _confusingVectors.TryRemove(vector);
+            }
+            return resolved;
         }
 
         /// <summary>
@@ -55,27 +62,38 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
         /// </summary>
-        private void TryResolveAfterCancel(MotionVector motionVector)
+        private bool TryResolveAfterCancel(MotionVector motionVector, out MotionVector resolved)
         {
             _logger.LogDebug(MoveEventId.VectorCancel, "{vector} [Cancel]", motionVector);
 
-            RemoveConfusedVector(motionVector);
+            _confusingVectors.TryRemove(motionVector);
 
             var confused = _confusingVectors.Where(x => x.End == motionVector.End);
             if (confused.Count() == 1)
             {
-                ResolveConfusion(confused.Single());
+                resolved = confused.Single();
+                return true;
             }
+
+            resolved = MotionVector.Empty;
+            return false;
         }
 
         /// <summary>
         /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
         /// </summary>
-        private IEnumerable<MotionVector> GetConfusedVecotrsCanceledByOthers()
+        private IEnumerable<MotionVector> ResolveAfterCancel()
         {
             //!!!!!!TODO
             //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            return _confusingVectors.Where(v => _roomDictionary.Value[v.StartPoint].RoomStatistic.LastLeaveVector?.Start == v.Start);
+            var canceled = _confusingVectors.Where(v => _roomDictionary.Value[v.StartPoint].MotionEngine.LastLeaveVector?.Start == v.Start);
+            foreach (var vector in canceled)
+            {
+                if (TryResolveAfterCancel(vector, out var resolved))
+                {
+                    yield return resolved;
+                }
+            }
         }
 
         /// <summary>
@@ -106,21 +124,6 @@ namespace HomeCenter.Services.MotionService
                 return Enumerable.Empty<MotionVector>();
             }
             return confusedReadyToResolve;
-        }
-
-        private void RemoveConfusedVector(MotionVector vector)
-        {
-            _confusingVectors.TryRemove(vector);
-        }
-
-        /// <summary>
-        /// Executed when after some time we can resolve confused vectors
-        /// </summary>
-        private void ResolveConfusion(MotionVector vector)
-        {
-            RemoveConfusedVector(vector);
-
-            _resolvedObservable.OnNext(vector);
         }
     }
 }

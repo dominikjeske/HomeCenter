@@ -9,6 +9,8 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
+        public readonly static MotionVector Empty = new(MotionPoint.Empty, MotionPoint.Empty); 
+
         public DateTimeOffset StartTime => Start.TimeStamp;
         public DateTimeOffset EndTime => End.TimeStamp;
 
