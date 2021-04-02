@@ -23,14 +23,19 @@ namespace HomeCenter.Services.MotionService
 
         [LogAsScalar]
         public VisitType VisitType { get; private set; } = VisitType.None;
+
         [LogAsScalar]
         public Probability Probability { get; private set; } = Probability.Zero;
+
         public DateTimeOffset? FirstEnterTime { get; private set; }
         public int NumberOfPersons { get; private set; }
+
         [LogAsScalar]
         public MotionStamp LastMotion { get; } = new MotionStamp();
+
         [LogAsScalar]
         public MotionVector? LastLeaveVector { get; private set; }
+
         [NotLogged]
         public IObservable<Probability> ProbabilityChange => _probabilitySubject;
 
@@ -84,34 +89,6 @@ namespace HomeCenter.Services.MotionService
             _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
         }
 
-        public void MarkConfusion(IList<MotionVector> vectors)
-        {
-            _confusedVectors.MarkConfusion(vectors);
-        }
-
-        public void EvaluateConfusions(DateTimeOffset currentTime)
-        {
-            var vector = _confusedVectors.EvaluateConfusions(currentTime);
-            foreach(var resolve in vector)
-            {
-                MarkVector(resolve, true);
-            }
-        }
-
-        public void MarkVector(MotionVector motionVector) => MarkVector(motionVector, false);
-
-        /// <summary>
-        /// Marks enter to target room and leave from source room
-        /// </summary>
-        private void MarkVector(MotionVector motionVector, bool resolved)
-        {
-            _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
-            MarkEnter(motionVector.EndTime);
-
-            _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");
-        }
-
-
         private double GetLeaveDeltaProbability()
         {
             double numberOfPeopleFactor;
@@ -128,6 +105,33 @@ namespace HomeCenter.Services.MotionService
             var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
 
             return decreasePercent;
+        }
+
+        private void MarkConfusion(IList<MotionVector> vectors)
+        {
+            _confusedVectors.MarkConfusion(vectors);
+        }
+
+        public void EvaluateConfusions(DateTimeOffset currentTime)
+        {
+            var vector = _confusedVectors.EvaluateConfusions(currentTime);
+            foreach (var resolve in vector)
+            {
+                MarkVector(resolve, true);
+            }
+        }
+
+        public void MarkVector(MotionVector motionVector) => MarkVector(motionVector, false);
+
+        /// <summary>
+        /// Marks enter to target room and leave from source room
+        /// </summary>
+        private void MarkVector(MotionVector motionVector, bool resolved)
+        {
+            _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
+            MarkEnter(motionVector.EndTime);
+
+            _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");
         }
 
         /// <summary>
