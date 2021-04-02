@@ -24,7 +24,6 @@ namespace HomeCenter.Services.MotionService
         private readonly ILogger _logger;
         private readonly IMessageBroker _messageBroker;
         private readonly string _lamp;
-        private readonly Lazy<RoomDictionary> _roomDictionary;
         private DateTimeOffset? _scheduledAutomationTime;
 
         internal MotionEngine MotionEngine { get; }
@@ -51,7 +50,6 @@ namespace HomeCenter.Services.MotionService
 
             _concurrencyProvider = concurrencyProvider;
             _messageBroker = messageBroker;
-            _roomDictionary = roomDictionary;
             AreaDescriptor = areaDescriptor;
 
             if (areaDescriptor.WorkingTime == WorkingTime.DayLight)
@@ -67,7 +65,7 @@ namespace HomeCenter.Services.MotionService
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
 
-            MotionEngine = new MotionEngine(_logger, AreaDescriptor, Uid, _roomDictionary);
+            MotionEngine = new MotionEngine(_logger, AreaDescriptor, Uid, roomDictionary);
 
             _disposeContainer.Add(MotionEngine.ProbabilityChange.SelectMany(ProbalityChange).Subscribe());
 

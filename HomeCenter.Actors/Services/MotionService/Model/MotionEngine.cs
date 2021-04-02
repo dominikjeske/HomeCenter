@@ -128,7 +128,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private void MarkVector(MotionVector motionVector, bool resolved)
         {
-            _roomDictionary.Value[motionVector.StartPoint].MarkLeave(motionVector);
+            _roomDictionary.Value.MarkLeave(motionVector);
             MarkEnter(motionVector.EndTime);
 
             _logger.LogInformation(MoveEventId.MarkVector, "{vector} changed with {VectorStatus}", motionVector, resolved ? "Resolved" : "Normal");

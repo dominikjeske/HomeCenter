@@ -86,7 +86,7 @@ namespace HomeCenter.Services.MotionService
         {
             //!!!!!!TODO
             //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            var canceled = _confusingVectors.Where(v => _roomDictionary.Value[v.StartPoint].MotionEngine.LastLeaveVector?.Start == v.Start);
+            var canceled = _confusingVectors.Where(v => _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start);
             foreach (var vector in canceled)
             {
                 if (TryResolveAfterCancel(vector, out var resolved))

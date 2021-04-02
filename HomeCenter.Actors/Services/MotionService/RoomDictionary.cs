@@ -81,6 +81,15 @@ namespace HomeCenter.Services.MotionService
                                                                           r.AreaDescriptor.AreaType != AreaType.Outdoor
         );
         
+        public void MarkLeave(MotionVector motionVector)
+        {
+            this[motionVector.StartPoint].MarkLeave(motionVector);
+        }
+
+        public MotionVector? GetLastLeaveVector(MotionVector motionVector)
+        {
+            return this[motionVector.StartPoint].MotionEngine.LastLeaveVector;
+        }
 
     }
 }
