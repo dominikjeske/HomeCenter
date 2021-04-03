@@ -31,10 +31,10 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Leave1()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                                                            .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1500, Detectors.hallwayToilet }
+                { "500", Detectors.toilet },
+                { "1500", Detectors.hallwayToilet }
             }).Build();
 
             env.AdvanceToEnd();
@@ -62,12 +62,12 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Leave7()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                                                            .WithMotions(new Dictionary<int, string>
+                                                            .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.livingRoom },
-                { 2500, Detectors.hallwayLivingRoom },
-                { 4500, Detectors.hallwayToilet },
-                { 7500, Detectors.kitchen }
+                { "500", Detectors.livingRoom },
+                { "2500", Detectors.hallwayLivingRoom },
+                { "4500", Detectors.hallwayToilet },
+                { "7500", Detectors.kitchen }
             }).Build();
 
             env.AdvanceToIndex(1, justAfter: true);
@@ -104,14 +104,14 @@ namespace HomeCenter.Services.MotionService.Tests
             using var env = 
                 EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                       .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.hallwayLivingRoom },
-                { 2500, Detectors.hallwayLivingRoom },
-                { 4500, Detectors.hallwayLivingRoom },
-                { 7500, Detectors.hallwayLivingRoom },
-                { 10500, Detectors.hallwayLivingRoom },
-                { 11500, Detectors.hallwayToilet },
+                { "500", Detectors.hallwayLivingRoom },
+                { "2500", Detectors.hallwayLivingRoom },
+                { "4500", Detectors.hallwayLivingRoom },
+                { "7500", Detectors.hallwayLivingRoom },
+                { "10500", Detectors.hallwayLivingRoom },
+                { "11500", Detectors.hallwayToilet },
             }).Build();
 
             env.AdvanceToEnd(MotionDefaults.ConfusionResolutionTime + TimeSpan.FromSeconds(15));
@@ -137,13 +137,13 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Leave2()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1000, Detectors.kitchen },
-                { 1500, Detectors.hallwayToilet },
-                { 2000, Detectors.hallwayLivingRoom },
-                { 3000, Detectors.kitchen },
+                { "500", Detectors.toilet },
+                { "1000", Detectors.kitchen },
+                { "1500", Detectors.hallwayToilet },
+                { "2000", Detectors.hallwayLivingRoom },
+                { "3000", Detectors.kitchen },
             }).Build();
 
             env.AdvanceToIndex(2, MotionDefaults.ConfusionResolutionTime, true);
@@ -173,11 +173,11 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                               .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.badroomDetector },
-                { 1000, Detectors.hallwayLivingRoom },
-                { 1500, Detectors.hallwayToilet }
+                { "500", Detectors.badroomDetector },
+                { "1000", Detectors.hallwayLivingRoom },
+                { "1500", Detectors.hallwayToilet }
             }).Build();
 
             env.AdvanceToIndex(2, MotionDefaults.ConfusionResolutionTime, true);
@@ -209,12 +209,12 @@ namespace HomeCenter.Services.MotionService.Tests
             using var env = 
                 EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                       .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.hallwayLivingRoom },
-                { 1000, Detectors.toilet },
-                { 1500, Detectors.hallwayToilet },
-                { 1600, Detectors.bathroom }     // This move give us proper move to bathroom so other confusions can resolve faster because this decrease their probability
+                { "500", Detectors.hallwayLivingRoom },
+                { "1000", Detectors.toilet },
+                { "1500", Detectors.hallwayToilet },
+                { "1600", Detectors.bathroom }     // This move give us proper move to bathroom so other confusions can resolve faster because this decrease their probability
             }).Build();
 
             env.AdvanceToEnd((MotionDefaults.ConfusionResolutionTime / 2)); // We should resolve confusion 2x faster

@@ -17,9 +17,8 @@ using System.Reactive;
 
 namespace HomeCenter.Actors.Tests.Builders
 {
-    internal class EnviromentBuilder
+    internal sealed class EnviromentBuilder
     {
-
         private readonly TestScheduler _scheduler = new TestScheduler();
         private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new();
         private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new();
@@ -27,7 +26,7 @@ namespace HomeCenter.Actors.Tests.Builders
         private TimeSpan? _periodicCheckTime;
         private ServiceDTO? _serviceConfig;
 
-        private EnviromentBuilder() { }
+        private EnviromentBuilder() {}
 
         public static EnviromentBuilder Create(Action<LightServiceBuilder> action)
         {
@@ -43,53 +42,65 @@ namespace HomeCenter.Actors.Tests.Builders
             return this;
         }
 
-        public EnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
+        public EnviromentBuilder WithMotions(Dictionary<string, string> motions)
         {
-            _motionEvents.AddRange(messages);
+            foreach (var motion in motions)
+            {
+                var key = motion.Key;
+
+                int timeIndex = key.IndexOf("/");
+
+                if (timeIndex > -1)
+                {
+                    var motionStart = TimeSpan.FromMilliseconds(int.Parse(key[0..timeIndex]));
+                    var motionLenght = TimeSpan.FromSeconds(int.Parse(key[(timeIndex + 1)..^0]));
+
+                    CreateRepeatedMotions(motion.Value, motionLenght, motionStart);
+                }
+                else if (key.All(char.IsDigit))
+                {
+                    _motionEvents.Add(CreateMotionRecord(int.Parse(key), motion.Value));
+                }
+            }
+
             return this;
         }
 
-        public EnviromentBuilder WithMotions(Dictionary<int, string> motions)
+        private Recorded<Notification<MotionEnvelope>> CreateMotionRecord(long miliseconds, string room)
         {
-            _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Key), Notification.CreateOnNext(new MotionEnvelope(x.Value)))));
-
-            return this;
+            return new(Time.Tics(miliseconds),
+                Notification.CreateOnNext(new MotionEnvelope(room)));
         }
 
-        public EnviromentBuilder WithMotions(List<Tuple<int, string>> motions)
+        private EnviromentBuilder CreateRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime, TimeSpan startTime)
         {
-            _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Item1), Notification.CreateOnNext(new MotionEnvelope(x.Item2)))));
+            var time = (long)startTime.TotalMilliseconds;
 
-            return this;
-        }
-
-        public EnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
-        {
-            long ticks = 0;
+            _motionEvents.Add(CreateMotionRecord(time, roomUid));
 
             for (int i = 0; i < numberOfMotions; i++)
             {
-                ticks += Time.Tics((int)waitTime.TotalMilliseconds);
+                time += (long)waitTime.TotalMilliseconds;
 
-                _motionEvents.Add(new Recorded<Notification<MotionEnvelope>>(ticks, Notification.CreateOnNext(new MotionEnvelope(roomUid))));
+                _motionEvents.Add(CreateMotionRecord(time, roomUid));
             }
 
             return this;
         }
 
         /// <summary>
-        /// Add repeat motion to <paramref name="roomUid"/> that takes <paramref name="motionTime"/> and waits between moves <paramref name="waitTime"/>
+        /// Add repeat motion to <paramref name="roomUid"/> that takes <paramref name="motionLength"/> and waits between moves <paramref name="waitTime"/>
         /// </summary>
         /// <param name="roomUid"></param>
-        /// <param name="motionTime"></param>
+        /// <param name="motionLength"></param>
         /// <param name="waitTime">Default value is 3 seconds</param>
-        public EnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
+        private EnviromentBuilder CreateRepeatedMotions(string roomUid, TimeSpan motionLength, TimeSpan motionStart, TimeSpan? waitTime = null)
         {
             var time = waitTime ?? TimeSpan.FromSeconds(3);
 
-            int num = (int)(motionTime.TotalMilliseconds / time.TotalMilliseconds);
+            var num = (int)(motionLength.TotalMilliseconds / time.TotalMilliseconds);
 
-            WithRepeatedMotions(roomUid, num, time);
+            CreateRepeatedMotions(roomUid, num, time, motionStart);
 
             return this;
         }

@@ -36,7 +36,10 @@ namespace HomeCenter.Services.MotionService.Tests
       
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                                  .WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
-                .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
+                .WithMotions(new Dictionary<string, string>
+                {
+                    { "1/9", Detectors.kitchen }
+                }).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
@@ -68,15 +71,17 @@ namespace HomeCenter.Services.MotionService.Tests
             var timeout = TimeSpan.FromSeconds(5);
             var moveTime = TimeSpan.FromSeconds(15);
 
-
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
-                .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
+                .WithMotions(new Dictionary<string, string>
+                {
+                    { "100/15", Detectors.kitchen }
+                }).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
-            env.AdvanceJustBefore(moveTime + 2 * timeout);
+            env.AdvanceJustBefore(moveTime + (2 * timeout));
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceTo(moveTime + 2 * timeout, true);
+            env.AdvanceTo(moveTime + (2 * timeout), true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -103,13 +108,16 @@ namespace HomeCenter.Services.MotionService.Tests
             var moveTime = TimeSpan.FromSeconds(75);
 
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
-                .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
+                .WithMotions(new Dictionary<string, string>
+                {
+                    { "100/75", Detectors.kitchen }
+                }).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.kitchen).Should().BeTrue("After move we start counting and light should be on");
-            env.AdvanceJustBefore(moveTime + 3 * timeout);
+            env.AdvanceJustBefore(moveTime + (3 * timeout));
             env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.AdvanceTo(moveTime + 3 * timeout, true);
+            env.AdvanceTo(moveTime + (3 * timeout), true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
 
@@ -133,10 +141,10 @@ namespace HomeCenter.Services.MotionService.Tests
         public async Task Timeout4()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.kitchen },
-                { 12000, Detectors.kitchen },
+                { "500", Detectors.kitchen },
+                { "12000", Detectors.kitchen },
             }).Build();
 
             env.AdvanceToEnd();

@@ -31,15 +31,15 @@ namespace HomeCenter.Services.MotionService.Tests
         public async Task Confusion()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
                  // First path
-                { 500, Detectors.toilet },
-                { 1500, Detectors.hallwayToilet },
-                { 2000, Detectors.kitchen },
+                { "500", Detectors.toilet },
+                { "1500", Detectors.hallwayToilet },
+                { "2000", Detectors.kitchen },
                 // Second path
-                { 2500, Detectors.livingRoom },
-                { 3000, Detectors.hallwayLivingRoom }
+                { "2500", Detectors.livingRoom },
+                { "3000", Detectors.hallwayLivingRoom }
             }).Build();
 
             env.AdvanceToEnd();

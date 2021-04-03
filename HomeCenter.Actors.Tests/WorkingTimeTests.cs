@@ -17,11 +17,11 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                                                .WithWorkingTime(WorkingTime.DayLight))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1500, Detectors.kitchen },
-                { 2000, Detectors.livingRoom }
+                { "500", Detectors.toilet },
+                { "1500", Detectors.kitchen },
+                { "2000", Detectors.livingRoom }
             }).Build();
 
             SystemTime.Set(TimeSpan.FromHours(12));
@@ -38,11 +38,11 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                                                .WithWorkingTime(WorkingTime.DayLight))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1500, Detectors.kitchen },
-                { 2000, Detectors.livingRoom }
+                { "500", Detectors.toilet },
+                { "1500", Detectors.kitchen },
+                { "2000", Detectors.livingRoom }
             }).Build();
 
             SystemTime.Set(TimeSpan.FromHours(21));
@@ -58,11 +58,11 @@ namespace HomeCenter.Services.MotionService.Tests
         public void WorkingTime_DuringDaylight_ShuldNotPowerOnNightLight()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithWorkingTime(WorkingTime.AfterDusk))
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1500, Detectors.kitchen },
-                { 2000, Detectors.livingRoom }
+                { "500", Detectors.toilet },
+                { "1500", Detectors.kitchen },
+                { "2000", Detectors.livingRoom }
             }).Build();
 
             SystemTime.Set(TimeSpan.FromHours(12));

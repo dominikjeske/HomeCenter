@@ -29,11 +29,11 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Move1()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<int, string>
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 1500, Detectors.kitchen },
-                { 2000, Detectors.livingRoom }
+                { "500", Detectors.toilet },
+                { "1500", Detectors.kitchen },
+                { "2000", Detectors.livingRoom }
             }).Build();
 
             env.AdvanceToEnd();

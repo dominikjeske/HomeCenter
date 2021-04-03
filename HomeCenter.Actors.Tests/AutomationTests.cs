@@ -14,9 +14,10 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "When disabled should not turn on lights")]
         public async Task Automation1()
         {
-            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet }
+                { "500", Detectors.toilet }
             }).Build();
 
             env.SendCommand(DisableAutomationCommand.Create(Detectors.toilet));
@@ -30,10 +31,11 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "When re-enabled should turn on lights")]
         public void Automation2()
         {
-            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<string, string>
             {
-                { 500, Detectors.toilet },
-                { 2500, Detectors.toilet }
+                { "500", Detectors.toilet },
+                { "2500", Detectors.toilet }
             }).Build();
 
             env.SendCommand(DisableAutomationCommand.Create(Detectors.toilet));

@@ -34,12 +34,12 @@ namespace HomeCenter.Services.MotionService.Tests
         public async Task Count()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithRepeatedMotions(Detectors.livingRoom, TimeSpan.FromSeconds(15))
-                .WithRepeatedMotions(Detectors.toilet, TimeSpan.FromSeconds(15))
-                .WithMotions(new Dictionary<int, string> //Short moves should not be included
+                .WithMotions(new Dictionary<string, string> //Short moves should not be included
                 {
-                    { 500, Detectors.kitchen },
-                    { 1500, Detectors.hallwayToilet }
+                    { "100/15", Detectors.livingRoom },
+                    { "101/15", Detectors.toilet },
+                    { "500", Detectors.kitchen },
+                    { "1500", Detectors.hallwayToilet }
                 })
                 .Build();
 
