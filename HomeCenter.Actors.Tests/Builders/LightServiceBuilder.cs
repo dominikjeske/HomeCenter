@@ -1,4 +1,5 @@
-﻿using HomeCenter.Services.Configuration.DTO;
+﻿using HomeCenter.Actors.Tests.Helpers;
+using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text.Json;
 
 namespace HomeCenter.Actors.Tests.Builders
 {
-    internal class LightAutomationServiceBuilder
+    internal class LightServiceBuilder
     {
         private TimeSpan? _confusionResolutionTime;
         private string _workingTime = string.Empty;
@@ -20,19 +21,40 @@ namespace HomeCenter.Actors.Tests.Builders
             get { return _rooms[room]; }
         }
 
-        public LightAutomationServiceBuilder WithConfusionResolutionTime(TimeSpan confusionResolutionTime)
+        public LightServiceBuilder WithDefaultRooms()
+        {
+            WithRoom(new RoomBuilder(Rooms.Hallway).WithDetector(Detectors.hallwayToilet, new List<string> { Detectors.hallwayLivingRoom, Detectors.kitchen, Detectors.staircaseDetector, Detectors.toilet, Detectors.badroomDetector })
+                                                           .WithDetector(Detectors.hallwayLivingRoom, new List<string> { Detectors.livingRoom, Detectors.bathroom, Detectors.hallwayToilet }));
+            WithRoom(new RoomBuilder(Rooms.Badroom).WithDetector(Detectors.badroomDetector, new List<string> { Detectors.hallwayToilet }));
+            WithRoom(new RoomBuilder(Rooms.Balcony).WithDetector(Detectors.balconyDetector, new List<string> { Detectors.livingRoom }));
+            WithRoom(new RoomBuilder(Rooms.Bathroom).WithDetector(Detectors.bathroom, new List<string> { Detectors.hallwayLivingRoom }));
+            WithRoom(new RoomBuilder(Rooms.Kitchen).WithDetector(Detectors.kitchen, new List<string> { Detectors.hallwayToilet }));
+            WithRoom(new RoomBuilder(Rooms.Livingroom).WithDetector(Detectors.livingRoom, new List<string> { Detectors.balconyDetector, Detectors.hallwayLivingRoom }));
+            WithRoom(new RoomBuilder(Rooms.Staircase).WithDetector(Detectors.staircaseDetector, new List<string> { Detectors.hallwayToilet }));
+            WithRoom(new RoomBuilder(Rooms.Toilet).WithDetector(Detectors.toilet, new List<string> { Detectors.hallwayToilet }).WithProperty(MotionProperties.MaxPersonCapacity, 1));
+
+            return this;
+        }
+
+        public LightServiceBuilder WithConfusionResolutionTime(TimeSpan confusionResolutionTime)
         {
             _confusionResolutionTime = confusionResolutionTime;
             return this;
         }
 
-        public LightAutomationServiceBuilder WithWorkingTime(string wortkingTime)
+        public LightServiceBuilder WithWorkingTime(string wortkingTime)
         {
             _workingTime = wortkingTime;
             return this;
         }
 
-        public LightAutomationServiceBuilder WithRoom(RoomBuilder room)
+        public LightServiceBuilder WithRoomConfig(string roomId, Action<RoomBuilder> roomAction)
+        {
+            roomAction(_rooms[roomId]);
+            return this;
+        }
+
+        public LightServiceBuilder WithRoom(RoomBuilder room)
         {
             _rooms.Add(room.Name, room);
             return this;

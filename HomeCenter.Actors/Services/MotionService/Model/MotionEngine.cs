@@ -72,7 +72,6 @@ namespace HomeCenter.Services.MotionService
 
         public void MarkLeave(MotionVector vector)
         {
-            DecrementNumberOfPersons();
             LastLeaveVector = vector;
 
             // Only when we have one person room we can be sure that we can turn of light immediately
@@ -86,23 +85,19 @@ namespace HomeCenter.Services.MotionService
                 SetProbability(Probability.DecreaseByPercent(decreasePercent));
             }
 
+            DecrementNumberOfPersons();
+
             _logger.LogInformation(MoveEventId.MarkLeave, "Leave");
         }
 
         private double GetLeaveDeltaProbability()
         {
-            double numberOfPeopleFactor;
-            if (NumberOfPersons == 0)
-            {
-                numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor;
-            }
-            else
-            {
-                numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
-            }
+            //TODO - maybe give some minimum because motion sensors have 2-3s inertia
+            // So when recalculation time is 1s we should calculate probability delta for each recalculation
+            // and multiply by 3 - this will be minimum time to have a chance to get next data from sensor 
 
-            var visitTypeFactor = VisitType.Id;
-            var decreasePercent = numberOfPeopleFactor / visitTypeFactor;
+            double numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
+            var decreasePercent = numberOfPeopleFactor / VisitType.Id;
 
             return decreasePercent;
         }
@@ -142,11 +137,21 @@ namespace HomeCenter.Services.MotionService
             // When we just have a move in room there is no need for recalculation
             if (motionTime == LastMotion.Value || Probability.IsNoProbability) return;
 
-            var probabilityDelta = GetDeltaProbability();
+            // egz. 10s * 1 | 2 | 3 => 10-30s
+            var timeout = TimeSpan.FromTicks((int)(BaseTimeOut.Ticks * VisitType.Id));
+
+            var probabilityDelta = GetDeltaProbability(timeout);
 
             _logger.LogDebug(MoveEventId.Probability, "Recalculate with {delta}", probabilityDelta);
 
             SetProbability(Probability.Decrease(probabilityDelta));
+        }
+
+        private double GetDeltaProbability(TimeSpan timeout)
+        {
+            // egz. 0.1 - 0.033 (10% - 3%)
+            var divider = timeout.Ticks / _areaDescriptor.Motion.PeriodicCheckTime.Ticks;
+            return 1.0 / divider;
         }
 
         public void SetAutoTurnOffTime(DateTimeOffset time) => _lastAutoTurnOff = time;
@@ -216,13 +221,7 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         private bool IsTurnOnVector(MotionVector motionVector) => !FirstEnterTime.HasValue || FirstEnterTime == motionVector.EndTime;
 
-        private double GetDeltaProbability()
-        {
-            // egz. 10s * 1 | 2 | 3 => 10-30s
-            var timeout = TimeSpan.FromTicks((int)(BaseTimeOut.Ticks * VisitType.Id));
-            // egz. 0.1 - 0.033 (10% - 3%)
-            return 1.0 / (timeout.Ticks / _areaDescriptor.Motion.PeriodicCheckTime.Ticks);
-        }
+
 
         /// <summary>
         /// Set probability of occurrence of the person in the room

@@ -72,9 +72,10 @@ namespace HomeCenter.Actors.Tests.Helpers
 
         public void AdvanceTo(TimeSpan time, bool justAfter = false) => Scheduler.AdvanceTo(time, justAfter ? JUST_TIME : 0, true);
 
-        public void AdvanceToIndex(int index, TimeSpan delay, bool justAfter = false)
+        public void AdvanceToIndex(int index, TimeSpan? delay = null, bool justAfter = false)
         {
-            var timeAfter = justAfter ? delay + TimeSpan.FromMilliseconds(JUST_TIME) : delay;
+            TimeSpan delayTime = delay ?? TimeSpan.Zero;
+            var timeAfter = justAfter ? delayTime + TimeSpan.FromMilliseconds(JUST_TIME) : delayTime;
             Scheduler.AdvanceTo(GetMotionTime(index), (long)timeAfter.TotalMilliseconds, true);
         }
 

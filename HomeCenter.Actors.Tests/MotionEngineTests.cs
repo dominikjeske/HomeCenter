@@ -7,7 +7,7 @@ using Xunit;
 
 namespace HomeCenter.Actors.Tests
 {
-    public class RoomStatisticsTests
+    public class MotionEngineTests
     {
         [Fact(DisplayName = "Visit type should change when visit is longer")]
         public void Fact1()
@@ -187,9 +187,9 @@ namespace HomeCenter.Actors.Tests
                 MotionTypePassThru = MotionDefaults.MotionTypePassThru,
                 MotionTypeShortVisit = MotionDefaults.MotionTypeShortVisit
             }, string.Empty);
-              
         }
 
-        private static MotionEngine CreateRoomStatistic(AreaDescriptor ad) => new(NullLogger.Instance, ad, string.Empty, null);
+        private static MotionEngine CreateRoomStatistic(AreaDescriptor ad) => 
+            new(NullLogger.Instance, ad, string.Empty, null);
     }
 }

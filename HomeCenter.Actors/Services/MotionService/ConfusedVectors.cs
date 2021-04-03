@@ -29,74 +29,6 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Try to resolve confusion in previously marked vectors
-        /// </summary>
-        public IEnumerable<MotionVector> EvaluateConfusions(DateTimeOffset currentTime)
-        {
-            var timeOuted = ResolveAfterTimeout(currentTime);
-
-            var canceled = ResolveAfterCancel();
-
-            return timeOuted.Union(canceled);
-        }
-
-        private IEnumerable<MotionVector> ResolveAfterTimeout(DateTimeOffset currentTime)
-        {
-            var resolved = GetConfusedVectorsAfterTimeout(currentTime).Where(vector => NoMoveInStartNeighbors(vector)).ToList();
-            foreach (var vector in resolved)
-            {
-                _confusingVectors.TryRemove(vector);
-            }
-            return resolved;
-        }
-
-        /// <summary>
-        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
-        /// </summary>
-        private bool NoMoveInStartNeighbors(MotionVector vector)
-        {
-            var moveInStartNeighbors = _roomDictionary.Value.MoveInNeighborhood(vector.StartPoint, _uid, vector.StartTime);
-            return !moveInStartNeighbors;
-        }
-
-        /// <summary>
-        /// After we remove canceled vector we check if there is other vector in same time that was in confusion. When there is only one we can resolve it because there is no confusion anymore
-        /// </summary>
-        private bool TryResolveAfterCancel(MotionVector motionVector, out MotionVector resolved)
-        {
-            _logger.LogDebug(MoveEventId.VectorCancel, "{vector} [Cancel]", motionVector);
-
-            _confusingVectors.TryRemove(motionVector);
-
-            var confused = _confusingVectors.Where(x => x.End == motionVector.End);
-            if (confused.Count() == 1)
-            {
-                resolved = confused.Single();
-                return true;
-            }
-
-            resolved = MotionVector.Empty;
-            return false;
-        }
-
-        /// <summary>
-        /// When there is approved leave vector from one of the source rooms we have confused vectors in same time we can assume that our vector is not real and we can remove it in shorter time
-        /// </summary>
-        private IEnumerable<MotionVector> ResolveAfterCancel()
-        {
-            //!!!!!!TODO
-            //&& currentTime.Between(v.EndTime).LastedLongerThen(_motionConfiguration.ConfusionResolutionTime / 2)
-            var canceled = _confusingVectors.Where(v => _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start);
-            foreach (var vector in canceled)
-            {
-                if (TryResolveAfterCancel(vector, out var resolved))
-                {
-                    yield return resolved;
-                }
-            }
-        }
-
-        /// <summary>
         /// Mark some motion that can be enter vector but we are not sure
         /// </summary>
         public void MarkConfusion(IList<MotionVector> vectors)
@@ -108,6 +40,30 @@ namespace HomeCenter.Services.MotionService
                 _confusingVectors.Add(vector);
             }
         }
+
+        /// <summary>
+        /// Try to resolve confusion in previously marked vectors
+        /// </summary>
+        public IEnumerable<MotionVector> EvaluateConfusions(DateTimeOffset currentTime)
+        {
+            var timeOuted = ResolveAfterTimeout(currentTime);
+
+            var canceled = ResolveAfterCancel();
+          
+            return timeOuted.Union(canceled);
+        }
+
+        private IEnumerable<MotionVector> ResolveAfterTimeout(DateTimeOffset currentTime)
+        {
+            var resolved = GetConfusedVectorsAfterTimeout(currentTime)
+                .Where(vector => NoMoveInStartNeighbors(vector)).ToList();
+            foreach (var vector in resolved)
+            {
+                _confusingVectors.TryRemove(vector);
+            }
+            return resolved;
+        }
+
 
         /// <summary>
         /// Get list of all confused vectors that should be resolved
@@ -125,5 +81,55 @@ namespace HomeCenter.Services.MotionService
             }
             return confusedReadyToResolve;
         }
+
+        /// <summary>
+        /// Check if there were any moves in neighbors of starting point of <paramref name="vector"/>. This indicates that <paramref name="vector"/> is not confused.
+        /// </summary>
+        private bool NoMoveInStartNeighbors(MotionVector vector)
+        {
+            var moveInStartNeighbors = _roomDictionary.Value.MoveInNeighborhood(vector.StartPoint, _uid, vector.StartTime);
+            return !moveInStartNeighbors;
+        }
+
+        /// <summary>
+        /// When there is approved leave vector from one of the source rooms we have confused vectors in same time
+        /// we can assume that our vector is not real and we can remove it in shorter time
+        /// </summary>
+        private IEnumerable<MotionVector> ResolveAfterCancel()
+        {
+            foreach (var vector in _confusingVectors.Where(v => LeaveVectorsWithSameStart(v)))
+            {
+                _logger.LogDebug(MoveEventId.VectorCancel, "{vector} [Cancel]", vector);
+                _confusingVectors.TryRemove(vector);
+
+                if (TryResolveAfterCancel(vector, out var resolved))
+                {
+                    yield return resolved;
+                }
+            }
+        }
+
+        private bool LeaveVectorsWithSameStart(MotionVector v)
+        {
+            return _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start;
+        }
+
+        /// <summary>
+        /// After we remove canceled vector we check if there is other vector in same time that was in confusion. 
+        /// When there is only one we can resolve it because there is no confusion anymore
+        /// </summary>
+        private bool TryResolveAfterCancel(MotionVector motionVector, out MotionVector resolved)
+        {
+            var confused = _confusingVectors.Where(x => x.End == motionVector.End);
+            if (confused.Count() == 1)
+            {
+                resolved = confused.Single();
+                return true;
+            }
+
+            resolved = MotionVector.Empty;
+            return false;
+        }
+
     }
 }

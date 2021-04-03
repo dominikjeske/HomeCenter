@@ -1,20 +1,23 @@
 ﻿using FluentAssertions;
 using HomeCenter.Abstractions;
+using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Services.MotionService.Model;
+using Microsoft.Reactive.Testing;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    public class WorkingTimeTests : LightAutomationServiceTestsBase
+    public class WorkingTimeTests : ReactiveTest
     {
         [Fact(DisplayName = "During daylight should power on day lights")]
         public void WorkiTime()
         {
-            var servieConfig = GetServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                                                               .WithWorkingTime(WorkingTime.DayLight))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1500, Detectors.kitchen },
@@ -33,8 +36,9 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "After dusk should not power on day light")]
         public void WorkingTime_AfterDusk_ShouldNotPowerOnDayLight()
         {
-            var servieConfig = GetServiceBuilder().WithWorkingTime(WorkingTime.DayLight).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                                                               .WithWorkingTime(WorkingTime.DayLight))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1500, Detectors.kitchen },
@@ -53,8 +57,8 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "During day light should not power on night light")]
         public void WorkingTime_DuringDaylight_ShuldNotPowerOnNightLight()
         {
-            var servieConfig = GetServiceBuilder().WithWorkingTime(WorkingTime.AfterDusk).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithWorkingTime(WorkingTime.AfterDusk))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1500, Detectors.kitchen },

@@ -1,13 +1,15 @@
 ﻿using FluentAssertions;
+using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Services.MotionService.Model;
+using Microsoft.Reactive.Testing;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    public class LeaveTests : LightAutomationServiceTestsBase
+    public class LeaveTests : ReactiveTest
     {
         // *[Confusion], ^[Resolved]
         //  ___________________________________________   __________________________
@@ -28,7 +30,8 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave from one people room with no confusion should turn off light immediately")]
         public void Leave1()
         {
-            using var env = GetEnviromentBuilder(GetServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                                                            .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1500, Detectors.hallwayToilet }
@@ -37,6 +40,81 @@ namespace HomeCenter.Services.MotionService.Tests
             env.AdvanceToEnd();
 
             env.LampState(Detectors.toilet).Should().BeFalse();
+        }
+
+        // *[Confusion], ^[Resolved]
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |             0    1                                            |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |    2                            |
+        // |        |                |            |____  ____|   3                  |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
+        [Fact(DisplayName = "When pass across the rooms light should turn off quickly")]
+        public void Leave7()
+        {
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                                                            .WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.livingRoom },
+                { 2500, Detectors.hallwayLivingRoom },
+                { 4500, Detectors.hallwayToilet },
+                { 7500, Detectors.kitchen }
+            }).Build();
+
+            env.AdvanceToIndex(1, justAfter: true);
+            env.LampState(Detectors.livingRoom).Should().BeFalse();
+
+            env.AdvanceToIndex(2, justAfter: true);
+            env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse();
+
+            env.AdvanceToIndex(3, justAfter: true);
+            env.LampState(Detectors.hallwayToilet).Should().BeFalse();
+        }
+
+
+
+        // *[Confusion], ^[Resolved]
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                  1,2,3,4,5                                    |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    6     |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |                                 |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
+        [Fact(DisplayName = "Leave after move around room")]
+        public void Leave5()
+        {
+            using var env = 
+                EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                                      .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
+                .WithMotions(new Dictionary<int, string>
+            {
+                { 500, Detectors.hallwayLivingRoom },
+                { 2500, Detectors.hallwayLivingRoom },
+                { 4500, Detectors.hallwayLivingRoom },
+                { 7500, Detectors.hallwayLivingRoom },
+                { 10500, Detectors.hallwayLivingRoom },
+                { 11500, Detectors.hallwayToilet },
+            }).Build();
+
+            env.AdvanceToEnd(MotionDefaults.ConfusionResolutionTime + TimeSpan.FromSeconds(15));
         }
 
         // *[Confusion], ^[Resolved]
@@ -58,8 +136,8 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave from one people room with confusion should turn off after resolving confusion")]
         public void Leave2()
         {
-            var servieConfig = GetServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1000, Detectors.kitchen },
@@ -93,8 +171,9 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave from separate rooms into one should turn off light in both")]
         public void Leave3()
         {
-            var servieConfig = GetServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                              .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.badroomDetector },
                 { 1000, Detectors.hallwayLivingRoom },
@@ -127,8 +206,10 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave to other room should speed up resolution in neighbor")]
         public void Leave4()
         {
-            var servieConfig = GetServiceBuilder().WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
+            using var env = 
+                EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                                      .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.hallwayLivingRoom },
                 { 1000, Detectors.toilet },
@@ -145,117 +226,5 @@ namespace HomeCenter.Services.MotionService.Tests
         }
 
         
-
-        // *[Confusion], ^[Resolved]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |                     2                                         |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |    1       |          |                      |
-        // |        |                |    5       |          |                      |
-        // |        |                |            |          |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |     4      3                    |
-        // |        |                |            |____  ____|                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Leave confused from room should not resolve other confusions")]
-        public void Leave6()
-        {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
-            {
-                { 300, Detectors.bathroom },             // We have move in bathroom at start so future enter to bathroom is not sure and cannot cancel other confusions
-                { 500, Detectors.hallwayLivingRoom },
-                { 1000, Detectors.kitchen },
-                { 1500, Detectors.hallwayToilet },
-                { 1600, Detectors.bathroom }
-            }).Build();
-
-            env.AdvanceToEnd();
-
-            env.LampState(Detectors.kitchen).Should().BeTrue();
-            env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue();
-            env.LampState(Detectors.bathroom).Should().BeTrue();
-            env.LampState(Detectors.hallwayToilet).Should().BeTrue();
-
-            env.AdvanceToIndex(4, confusionResolutionTime, true);
-
-            env.LampState(Detectors.kitchen).Should().BeFalse("Kitchen should be OFF after confusion resolution time");
-            env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue();
-            env.LampState(Detectors.bathroom).Should().BeTrue();
-            env.LampState(Detectors.hallwayToilet).Should().BeTrue();
-        }
-
-        // *[Confusion], ^[Resolved]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |             0    1                                            |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |    2                            |
-        // |        |                |            |____  ____|   3                  |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "When pass across the room light should turn off quickly")]
-        public void Leave7()
-        {
-            var servieConfig = GetServiceBuilder().Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.livingRoom },
-                { 2500, Detectors.hallwayLivingRoom },
-                { 4500, Detectors.hallwayToilet },
-                { 7500, Detectors.kitchen }
-            }).Build();
-
-            env.AdvanceToEnd();
-        }
-
-
-
-        // *[Confusion], ^[Resolved]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |                  1,2,3,4,5                                    |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |    6     |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |                                 |
-        // |        |                |            |____  ____|                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Leave after move around room")]
-        public void Leave5()
-        {
-            var confusionResolutionTime = TimeSpan.FromMilliseconds(5000);
-            var servieConfig = GetServiceBuilder().WithConfusionResolutionTime(confusionResolutionTime).Build();
-            using var env = GetEnviromentBuilder(servieConfig).WithMotions(new Dictionary<int, string>
-            {
-                { 500, Detectors.hallwayLivingRoom },
-                { 2500, Detectors.hallwayLivingRoom },
-                { 4500, Detectors.hallwayLivingRoom },
-                { 7500, Detectors.hallwayLivingRoom },
-                { 10500, Detectors.hallwayLivingRoom },
-                { 11500, Detectors.hallwayToilet },
-            }).Build();
-
-            env.AdvanceToEnd(confusionResolutionTime + TimeSpan.FromSeconds(15));
-        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using FluentAssertions;
+using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
+using Microsoft.Reactive.Testing;
 using System.Collections.Generic;
 using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    public class MoveTests : LightAutomationServiceTestsBase
+    public class MoveTests : ReactiveTest
     {
         // *[Confusion], ^[Resolved]
         //  ___________________________________________   __________________________
@@ -26,7 +28,8 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Move on separate rooms should turn on light")]
         public void Move1()
         {
-            using var env = GetEnviromentBuilder(GetServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.toilet },
                 { 1500, Detectors.kitchen },

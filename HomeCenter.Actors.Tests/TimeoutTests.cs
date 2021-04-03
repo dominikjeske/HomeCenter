@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.Services.MotionService.Commands;
+using Microsoft.Reactive.Testing;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,7 +10,7 @@ using Xunit;
 
 namespace HomeCenter.Services.MotionService.Tests
 {
-    public class TimeoutTests : LightAutomationServiceTestsBase
+    public class TimeoutTests : ReactiveTest
     {
         // *[Confusion], ^[Resolved], P[PassThru], S[ShortVisit], L[LongVisit]
         //  ___________________________________________   __________________________
@@ -31,10 +33,9 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var timeout = TimeSpan.FromSeconds(5);
             var moveTime = TimeSpan.FromSeconds(9);
-            var serviceConfig = GetServiceBuilder();
-            serviceConfig[Detectors.kitchen].WithTimeout(timeout);
-
-            using var env = GetEnviromentBuilder(serviceConfig.Build())
+      
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms()
+                                                                                 .WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
                 .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
 
             env.AdvanceToEnd();
@@ -66,10 +67,9 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var timeout = TimeSpan.FromSeconds(5);
             var moveTime = TimeSpan.FromSeconds(15);
-            var serviceConfig = GetServiceBuilder();
-            serviceConfig[Detectors.kitchen].WithTimeout(timeout);
 
-            using var env = GetEnviromentBuilder(serviceConfig.Build())
+
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
                 .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
 
             env.AdvanceToEnd();
@@ -101,10 +101,8 @@ namespace HomeCenter.Services.MotionService.Tests
         {
             var timeout = TimeSpan.FromSeconds(5);
             var moveTime = TimeSpan.FromSeconds(75);
-            var serviceConfig = GetServiceBuilder();
-            serviceConfig[Detectors.kitchen].WithTimeout(timeout);
 
-            using var env = GetEnviromentBuilder(serviceConfig.Build())
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms().WithRoomConfig(Detectors.kitchen, r => r.WithTimeout(timeout)))
                 .WithRepeatedMotions(Detectors.kitchen, moveTime).Build();
 
             env.AdvanceToEnd();
@@ -134,7 +132,8 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Move turn on after turn off should increase timeout")]
         public async Task Timeout4()
         {
-            using var env = GetEnviromentBuilder(GetServiceBuilder().Build()).WithMotions(new Dictionary<int, string>
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<int, string>
             {
                 { 500, Detectors.kitchen },
                 { 12000, Detectors.kitchen },

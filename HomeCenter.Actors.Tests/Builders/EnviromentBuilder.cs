@@ -5,6 +5,7 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.Actors;
 using HomeCenter.Services.Configuration.DTO;
 using HomeCenter.Services.MotionService;
+using HomeCenter.Services.MotionService.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Reactive.Testing;
@@ -16,46 +17,53 @@ using System.Reactive;
 
 namespace HomeCenter.Actors.Tests.Builders
 {
-    internal class LightAutomationEnviromentBuilder
+    internal class EnviromentBuilder
     {
-        private readonly ServiceDTO _serviceConfig;
-        private readonly TestScheduler _scheduler = new TestScheduler();
-        private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new List<Recorded<Notification<MotionEnvelope>>>();
-        private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new List<Recorded<Notification<PowerStateChangeEvent>>>();
 
+        private readonly TestScheduler _scheduler = new TestScheduler();
+        private readonly List<Recorded<Notification<MotionEnvelope>>> _motionEvents = new();
+        private readonly List<Recorded<Notification<PowerStateChangeEvent>>> _lampEvents = new();
         private int? _timeDuration;
         private TimeSpan? _periodicCheckTime;
-        private readonly bool _useRavenDbLogs;
-        private readonly bool _clearRavenLogs;
+        private ServiceDTO? _serviceConfig;
 
-        public LightAutomationEnviromentBuilder(ServiceDTO serviceConfig, bool useRavenDbLogs, bool clearRavenLogs)
+        private EnviromentBuilder() { }
+
+        public static EnviromentBuilder Create(Action<LightServiceBuilder> action)
         {
-            _serviceConfig = serviceConfig;
-            _useRavenDbLogs = useRavenDbLogs;
-            _clearRavenLogs = clearRavenLogs;
+            var builder = new EnviromentBuilder();
+            return builder.WithService(action);
         }
 
-        public LightAutomationEnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
+        public EnviromentBuilder WithService(Action<LightServiceBuilder> action)
+        {
+            LightServiceBuilder builder = new();
+            action(builder);
+            _serviceConfig = builder.Build();
+            return this;
+        }
+
+        public EnviromentBuilder WithMotion(params Recorded<Notification<MotionEnvelope>>[] messages)
         {
             _motionEvents.AddRange(messages);
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithMotions(Dictionary<int, string> motions)
+        public EnviromentBuilder WithMotions(Dictionary<int, string> motions)
         {
             _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Key), Notification.CreateOnNext(new MotionEnvelope(x.Value)))));
 
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithMotions(List<Tuple<int, string>> motions)
+        public EnviromentBuilder WithMotions(List<Tuple<int, string>> motions)
         {
             _motionEvents.AddRange(motions.Select(x => new Recorded<Notification<MotionEnvelope>>(Time.Tics(x.Item1), Notification.CreateOnNext(new MotionEnvelope(x.Item2)))));
 
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
+        public EnviromentBuilder WithRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime)
         {
             long ticks = 0;
 
@@ -75,7 +83,7 @@ namespace HomeCenter.Actors.Tests.Builders
         /// <param name="roomUid"></param>
         /// <param name="motionTime"></param>
         /// <param name="waitTime">Default value is 3 seconds</param>
-        public LightAutomationEnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
+        public EnviromentBuilder WithRepeatedMotions(string roomUid, TimeSpan motionTime, TimeSpan? waitTime = null)
         {
             var time = waitTime ?? TimeSpan.FromSeconds(3);
 
@@ -86,19 +94,19 @@ namespace HomeCenter.Actors.Tests.Builders
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithLampEvents(params Recorded<Notification<PowerStateChangeEvent>>[] messages)
+        public EnviromentBuilder WithLampEvents(params Recorded<Notification<PowerStateChangeEvent>>[] messages)
         {
             _lampEvents.AddRange(messages);
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithPeriodicCheckTime(TimeSpan periodicCheckTimw)
+        public EnviromentBuilder WithPeriodicCheckTime(TimeSpan periodicCheckTimw)
         {
             _periodicCheckTime = periodicCheckTimw;
             return this;
         }
 
-        public LightAutomationEnviromentBuilder WithTimeDuration(int timeDuration)
+        public EnviromentBuilder WithTimeDuration(int timeDuration)
         {
             _timeDuration = timeDuration;
             return this;
@@ -121,12 +129,12 @@ namespace HomeCenter.Actors.Tests.Builders
                 services.AddSingleton<ServiceMapper>();
             });
 
-            if (_useRavenDbLogs)
+            if (RavenConfig.UseRavenDbLogs)
             {
                 ravenDbConfigurator = new RavenDbConfigurator();
                 hostBuilder.UseSerilog((builder, configuration) => ravenDbConfigurator.Configure(builder, configuration, _scheduler));
 
-                if (_clearRavenLogs)
+                if (RavenConfig.CleanLogsBeforeRun)
                 {
                     ravenDbConfigurator.Clear();
                 }
@@ -136,7 +144,7 @@ namespace HomeCenter.Actors.Tests.Builders
 
             var sm = host.Services.Get<ServiceMapper>();
 
-            var actor = sm.Map(_serviceConfig, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
+            var actor = sm.Map(_serviceConfig!, typeof(LightAutomationServiceProxy)) as LightAutomationServiceProxy;
 
             if (actor is null) throw new NullReferenceException($"Type not mapped to {nameof(LightAutomationServiceProxy)}");
 
@@ -150,7 +158,7 @@ namespace HomeCenter.Actors.Tests.Builders
         {
             var lampDictionary = new Dictionary<string, FakeMotionLamp>();
 
-            foreach (var detector in _serviceConfig.ComponentsAttachedProperties)
+            foreach (var detector in _serviceConfig!.ComponentsAttachedProperties)
             {
                 var detectorName = detector.Properties[MotionProperties.Lamp]?.ToString();
                 if (detectorName is not null)
