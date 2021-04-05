@@ -39,6 +39,39 @@ namespace HomeCenter.Services.MotionService.Tests
 
             env.AdvanceToEnd();
 
+            env.AdvanceTo(TimeSpan.FromMilliseconds(3000));
+
+            env.LampState(Detectors.toilet).Should().BeFalse();
+        }
+
+        // *[Confusion], ^[Resolved], L[Long stay]
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                                                               |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |    1                            |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    0L    |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
+        [Fact(DisplayName = "Leave from one people room after long stay should turn off light immediately")]
+        public void Leave11()
+        {
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<string, string>
+            {
+                { "0/21", Detectors.toilet },
+                { "22000", Detectors.hallwayToilet }
+            }).Build();
+
+            env.AdvanceToEnd();
+
             env.LampState(Detectors.toilet).Should().BeFalse();
         }
 
@@ -62,13 +95,16 @@ namespace HomeCenter.Services.MotionService.Tests
         public void Leave7()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                                                            .WithMotions(new Dictionary<string, string>
+                                                           .WithMotions(new Dictionary<string, string>
             {
                 { "500", Detectors.livingRoom },
                 { "2500", Detectors.hallwayLivingRoom },
                 { "4500", Detectors.hallwayToilet },
                 { "7500", Detectors.kitchen }
             }).Build();
+
+            env.AdvanceToIndex(1);
+            env.LampState(Detectors.livingRoom).Should().BeTrue("Move to other room don't turn off light immediately");
 
             env.AdvanceToIndex(1, justAfter: true);
             env.LampState(Detectors.livingRoom).Should().BeFalse();
@@ -80,12 +116,10 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayToilet).Should().BeFalse();
         }
 
-
-
         // *[Confusion], ^[Resolved]
         //  ___________________________________________   __________________________
         // |        |                |                       |                      |
-        // |        |                  1,2,3,4,5                                    |
+        // |        |                  0L                                           |
         // |        |                |                       |                      |
         // |                         |___   ______           |                      |
         // |        |                |            |          |                      |
@@ -101,20 +135,19 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave after move around room")]
         public void Leave5()
         {
-            using var env = 
+            using var env =
                 EnviromentBuilder.Create(s => s.WithDefaultRooms()
-                                                                      .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
+                                                                     .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
                 .WithMotions(new Dictionary<string, string>
             {
-                { "500", Detectors.hallwayLivingRoom },
-                { "2500", Detectors.hallwayLivingRoom },
-                { "4500", Detectors.hallwayLivingRoom },
-                { "7500", Detectors.hallwayLivingRoom },
-                { "10500", Detectors.hallwayLivingRoom },
-                { "11500", Detectors.hallwayToilet },
+                { "500/20", Detectors.hallwayLivingRoom },
+                { "21500", Detectors.hallwayToilet },
             }).Build();
 
-            env.AdvanceToEnd(MotionDefaults.ConfusionResolutionTime + TimeSpan.FromSeconds(15));
+            env.AdvanceToEnd();
+            env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue("Move to other room don't turn off light immediately");
+
+            env.AdvanceTo(TimeSpan.FromSeconds(40));
         }
 
         // *[Confusion], ^[Resolved]
@@ -206,7 +239,7 @@ namespace HomeCenter.Services.MotionService.Tests
         [Fact(DisplayName = "Leave to other room should speed up resolution in neighbor")]
         public void Leave4()
         {
-            using var env = 
+            using var env =
                 EnviromentBuilder.Create(s => s.WithDefaultRooms()
                                                                       .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
                 .WithMotions(new Dictionary<string, string>
@@ -224,7 +257,5 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.bathroom).Should().BeTrue();
             env.LampState(Detectors.hallwayToilet).Should().BeTrue();
         }
-
-        
     }
 }

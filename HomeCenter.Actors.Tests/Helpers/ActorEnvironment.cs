@@ -65,7 +65,7 @@ namespace HomeCenter.Actors.Tests.Helpers
         public void AdvanceToEnd(TimeSpan? timeAfter = null)
         {
             var motionEnd = TimeSpan.FromTicks(_motionEvents.Messages.Max(x => x.Time));
-            long deleay = (long)(timeAfter.HasValue ? timeAfter.Value.TotalMilliseconds : 0);
+            long deleay = (long)(timeAfter.HasValue ? timeAfter.Value.TotalMilliseconds : 100);
 
             Scheduler.AdvanceTo(motionEnd, deleay, true);
         }

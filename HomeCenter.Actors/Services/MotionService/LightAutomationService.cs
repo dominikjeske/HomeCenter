@@ -136,18 +136,21 @@ namespace HomeCenter.Services.MotionService
         {
             var events = MessageBroker.Observe<MotionEvent>();
 
-            var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler)
-                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary));
+            var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler) //Add TimeStamp to each event
+                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary)); //Create new event that contains name, TimeStamp and service for vector validation
 
             motionWindows.Subscribe(HandleMove, HandleError, Token);
 
-            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler))
-                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start))
-                         .SelectMany(motion => motion.ToVectors()))
-                         .GroupBy(room => room.EndPoint)
-                         .SelectMany(r => r.Buffer(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler)
-                                          .Where(b => b.Count > 0)
-                                    )
+            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) //For each event we start time windows for next events that can potentially create vector
+
+                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start)) //We scan windows for getting proper vectors
+                         .SelectMany(window => window.ToVectors())) // Convert found vector to list
+                         .GroupBy(room => room.EndPoint) // Group by vectors from ALL time windows by destination room
+                         .SelectMany(r =>
+                                     r.Window(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler)
+                                      .SelectMany(x => x.Scan((v, c) => v.Accumulate(c))
+                                      .Select(v => v.GetAccumulated())
+                                      ))
                          .Subscribe(HandleVectors, HandleError, Token);
         }
 

@@ -72,7 +72,7 @@ namespace HomeCenter.Actors.Tests.Builders
                 Notification.CreateOnNext(new MotionEnvelope(room)));
         }
 
-        private EnviromentBuilder CreateRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime, TimeSpan startTime)
+        private EnviromentBuilder CreateRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime, TimeSpan startTime, TimeSpan endTime)
         {
             var time = (long)startTime.TotalMilliseconds;
 
@@ -100,7 +100,7 @@ namespace HomeCenter.Actors.Tests.Builders
 
             var num = (int)(motionLength.TotalMilliseconds / time.TotalMilliseconds);
 
-            CreateRepeatedMotions(roomUid, num, time, motionStart);
+            CreateRepeatedMotions(roomUid, num, time, motionStart, motionStart + motionLength);
 
             return this;
         }

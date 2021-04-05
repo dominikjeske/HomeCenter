@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 
 namespace HomeCenter.Services.MotionService
 {
-    internal class RoomDictionary
+    internal class RoomDictionary : IRoomDictionary
     {
         private readonly IReadOnlyDictionary<string, Room> _rooms;
         private readonly IReadOnlyDictionary<string, ReadOnlyDictionary<string, Room>> _neighbors;
@@ -76,11 +76,11 @@ namespace HomeCenter.Services.MotionService
         }
 
 
-        public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 && 
+        public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 &&
                                                                           r.MotionEngine.VisitType.Id > VisitType.PassThru.Id &&
                                                                           r.AreaDescriptor.AreaType != AreaType.Outdoor
         );
-        
+
         public void MarkLeave(MotionVector motionVector)
         {
             this[motionVector.StartPoint].MarkLeave(motionVector);
