@@ -8,7 +8,7 @@ namespace HomeCenter.Services.MotionService
     {
         Room this[string uid] { get; }
 
-        void CheckRooms(DateTimeOffset motionTime);
+        void EvaluateRooms(DateTimeOffset motionTime);
         MotionVector? GetLastLeaveVector(MotionVector motionVector);
         void HandleVectors(IList<MotionVector> motionVectors);
         bool IsProperVector(MotionPoint start, MotionPoint potencialEnd);

@@ -27,7 +27,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |    0     |                      |
         // |        |                |            |          |                      |
         // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Leave from one people room with no confusion should turn off light immediately")]
+        [Fact(DisplayName = "Clean leave from one people room with no confusion should turn off light immediately")]
         public void Leave1()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
@@ -35,39 +35,6 @@ namespace HomeCenter.Services.MotionService.Tests
             {
                 { "500", Detectors.toilet },
                 { "1500", Detectors.hallwayToilet }
-            }).Build();
-
-            env.AdvanceToEnd();
-
-            env.AdvanceTo(TimeSpan.FromMilliseconds(3000));
-
-            env.LampState(Detectors.toilet).Should().BeFalse();
-        }
-
-        // *[Confusion], ^[Resolved], L[Long stay]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |                                                               |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |    1                            |
-        // |        |                |            |____  ____|                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |    0L    |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Leave from one people room after long stay should turn off light immediately")]
-        public void Leave11()
-        {
-            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<string, string>
-            {
-                { "0/21", Detectors.toilet },
-                { "22000", Detectors.hallwayToilet }
             }).Build();
 
             env.AdvanceToEnd();
@@ -116,15 +83,46 @@ namespace HomeCenter.Services.MotionService.Tests
             env.LampState(Detectors.hallwayToilet).Should().BeFalse();
         }
 
-        // *[Confusion], ^[Resolved]
+        // *[Confusion], ^[Resolved], L[Long stay]
         //  ___________________________________________   __________________________
         // |        |                |                       |                      |
-        // |        |                  0L                                           |
+        // |        |                                                               |
         // |        |                |                       |                      |
         // |                         |___   ______           |                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
-        // |        |                |            |    6     |______________________|
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |    1                            |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    0L    |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
+        [Fact(DisplayName = "Clean leave from one people room after long stay should turn off light immediately")]
+        public void Leave11()
+        {
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<string, string>
+            {
+                { "0/63", Detectors.toilet },
+                { "64000", Detectors.hallwayToilet }
+            }).Build();
+
+            env.AdvanceToEnd();
+
+            env.LampState(Detectors.toilet).Should().BeFalse();
+        }
+
+        // *[Confusion], ^[Resolved]
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |                  0S                                           |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |    1     |______________________|
         // |        |                |            |          |                      |
         // |        |                |            |                                 |
         // |        |                |            |____  ____|                      |
@@ -132,7 +130,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
         // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Leave after move around room")]
+        [Fact(DisplayName = "Clean leave after short visit")]
         public void Leave5()
         {
             using var env =
@@ -140,14 +138,15 @@ namespace HomeCenter.Services.MotionService.Tests
                                                                      .WithConfusionResolutionTime(MotionDefaults.ConfusionResolutionTime))
                 .WithMotions(new Dictionary<string, string>
             {
-                { "500/20", Detectors.hallwayLivingRoom },
-                { "21500", Detectors.hallwayToilet },
+                { "0/21", Detectors.hallwayLivingRoom },
+                { "22500", Detectors.hallwayToilet },
             }).Build();
 
             env.AdvanceToEnd();
             env.LampState(Detectors.hallwayLivingRoom).Should().BeTrue("Move to other room don't turn off light immediately");
 
-            env.AdvanceTo(TimeSpan.FromSeconds(40));
+            env.AdvanceToEnd(TimeSpan.FromSeconds(2));
+            env.LampState(Detectors.hallwayLivingRoom).Should().BeFalse("Clean Leave should turn off quick because 90% probability change");
         }
 
         // *[Confusion], ^[Resolved]

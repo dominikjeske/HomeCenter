@@ -16,6 +16,5 @@ namespace HomeCenter.Services.MotionService.Model
         public static readonly int MaxPersonCapacity = 999;
         public static readonly TimeSpan MotionTypePassThru = TimeSpan.FromSeconds(10);
         public static readonly TimeSpan MotionTypeShortVisit = TimeSpan.FromSeconds(60);
-
     }
 }

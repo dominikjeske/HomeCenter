@@ -28,6 +28,8 @@ namespace HomeCenter.Services.MotionService
             _roomDictionary = roomDictionary;
         }
 
+        public bool HasEntryConfusions => _confusingVectors.Count > 0;
+
         /// <summary>
         /// Mark some motion that can be enter vector but we are not sure
         /// </summary>

@@ -35,7 +35,7 @@ namespace HomeCenter.Actors.Tests
     {
         public Room this[string uid] => throw new NotImplementedException();
 
-        public void CheckRooms(DateTimeOffset motionTime)
+        public void EvaluateRooms(DateTimeOffset motionTime)
         {
             throw new NotImplementedException();
         }

@@ -96,6 +96,11 @@ namespace HomeCenter.Services.MotionService
             // So when recalculation time is 1s we should calculate probability delta for each recalculation
             // and multiply by 3 - this will be minimum time to have a chance to get next data from sensor 
 
+            if(!_confusedVectors.HasEntryConfusions && NumberOfPersons == 1)
+            {
+                return _areaDescriptor.Motion.DecreaseLeavingFactor;
+            }
+
             double numberOfPeopleFactor = _areaDescriptor.Motion.DecreaseLeavingFactor / NumberOfPersons;
             var decreasePercent = numberOfPeopleFactor / VisitType.Id;
 

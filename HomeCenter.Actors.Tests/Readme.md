@@ -3,6 +3,7 @@
          from @all_docs as e
           where e.lvl = "Information"
             and e.SourceContext = "HomeCenter.Services.MotionService.Room"
+       order by e.RxTime
         select {
              Source : e.Room,
              Message: e.mt,

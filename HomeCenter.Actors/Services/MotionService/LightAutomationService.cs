@@ -147,9 +147,9 @@ namespace HomeCenter.Services.MotionService
                          .SelectMany(window => window.ToVectors())) // Convert found vector to list
                          .GroupBy(room => room.EndPoint) // Group by vectors from ALL time windows by destination room
                          .SelectMany(r =>
-                                     r.Window(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler)
-                                      .SelectMany(x => x.Scan((v, c) => v.Accumulate(c))
-                                      .Select(v => v.GetAccumulated())
+                                     r.Window(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler) //We take small time window to have one group
+                                      .SelectMany(x => x.Scan((v, c) => v.Accumulate(c))//We accumulate vectors from the group
+                                      .Select(v => v.GetAccumulated()) // and extract list
                                       ))
                          .Subscribe(HandleVectors, HandleError, Token);
         }
@@ -160,7 +160,7 @@ namespace HomeCenter.Services.MotionService
 
         private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
 
-        private void PeriodicCheck(DateTimeOffset currentTime) => _roomDictionary.CheckRooms(currentTime);
+        private void PeriodicCheck(DateTimeOffset currentTime) => _roomDictionary.EvaluateRooms(currentTime);
 
         protected bool Handle(IsAliveQuery isAliveQuery) => true;
 

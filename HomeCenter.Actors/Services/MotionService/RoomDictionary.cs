@@ -52,7 +52,7 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Evaluates each room state
         /// </summary>
-        public void CheckRooms(DateTimeOffset motionTime)
+        public void EvaluateRooms(DateTimeOffset motionTime)
         {
             _rooms.Values.ForEach(r => r.EvaluateConfusions(motionTime));
             _rooms.Values.ForEach(r => r.PeriodicUpdate(motionTime));
@@ -90,6 +90,8 @@ namespace HomeCenter.Services.MotionService
         {
             return this[motionVector.StartPoint].MotionEngine.LastLeaveVector;
         }
+
+        
 
     }
 }
