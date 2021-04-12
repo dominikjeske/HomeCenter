@@ -70,9 +70,9 @@ namespace HomeCenter.Services.MotionService
             //2. Cancel confused by real vector from same starting point
             canceled.AddRange(CancelAfterStartPoint());
             //3. Cancel vectors by previously resolved
-            canceled.AddRange(ResolveByEndPoint(resolved));
+            canceled.AddRange(ResolveByEndPoint(resolved, canceled));
             //4. Resolve vectors by previously canceled
-            resolved.AddRange(ResolveByEndPoint(canceled));
+            resolved.AddRange(ResolveByEndPoint(canceled, resolved));
 
             foreach (var vector in resolved)
             {
@@ -89,13 +89,13 @@ namespace HomeCenter.Services.MotionService
             return resolved.Select(v => v.Vector);
         }
 
-        private List<VectorResolution> ResolveByEndPoint(IEnumerable<VectorResolution> resolved)
+        private List<VectorResolution> ResolveByEndPoint(IEnumerable<VectorResolution> vectors, IEnumerable<VectorResolution> skip)
         {
             List<VectorResolution> autoResolved = new();
 
-            foreach (var vector in resolved)
+            foreach (var vector in vectors)
             {
-                if (FindByEndPoint(vector.Vector, out var newResolved))
+                if (FindByEndPoint(vector.Vector, skip, out var newResolved))
                 {
                     autoResolved.Add(newResolved);
                 }
@@ -154,9 +154,9 @@ namespace HomeCenter.Services.MotionService
         }
 
 
-        private bool FindByEndPoint(MotionVector resolvedVecotr, out VectorResolution newResolved)
+        private bool FindByEndPoint(MotionVector resolvedVecotr, IEnumerable<VectorResolution> skip, out VectorResolution newResolved)
         {
-            var confused = _confusingVectors.Where(vector => vector.End == resolvedVecotr.End && vector != resolvedVecotr);
+            var confused = _confusingVectors.Where(vector => vector.End == resolvedVecotr.End && vector != resolvedVecotr && !skip.Any(s => s.Vector == vector));
             if (confused.Count() == 1)
             {
                 newResolved = new VectorResolution(confused.Single(), $"Auto resolved by '{resolvedVecotr}'");

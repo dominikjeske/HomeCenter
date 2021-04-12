@@ -88,6 +88,8 @@ namespace HomeCenter.Services.MotionService.Tests
             (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0, "After resolving confusion have 0 persons");
             (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
             (await env.HasConfusions(Detectors.hallwayToilet)).Should().Be(false);
+
+            env.AdvanceTo(TimeSpan.FromMilliseconds(9100) + MotionDefaults.ConfusionResolutionTime, true);
         }
 
         // TODO - Count should not decrease  when there is no exit from house
