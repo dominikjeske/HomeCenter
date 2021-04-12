@@ -2,6 +2,7 @@
 using HomeCenter.Actors.Tests.Fakes;
 using HomeCenter.Messages.Queries.Services;
 using HomeCenter.Services.MotionService;
+using HomeCenter.Services.MotionService.Commands;
 using Microsoft.Reactive.Testing;
 using Proto;
 using System;
@@ -46,6 +47,16 @@ namespace HomeCenter.Actors.Tests.Helpers
         public Task<R> Query<R>(Query actorMessage)
         {
             return _context.RequestAsync<R>(_pid, actorMessage);
+        }
+
+        public async Task<int> GetNumberOfPersosns(string uid)
+        {
+            return (await this.Query<RoomState>(RoomStateQuery.Create(uid))).NumberOfPersosn;
+        }
+
+        public async Task<bool> HasConfusions(string uid)
+        {
+            return (await this.Query<RoomState>(RoomStateQuery.Create(uid))).HasConfusions;
         }
 
         /// <summary>

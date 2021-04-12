@@ -7,12 +7,14 @@ namespace HomeCenter.Actors.Tests.Helpers
     {
         public static void AdvanceTo(this TestScheduler scheduler, TimeSpan time, long timeAfter = 0, bool roundUp = true)
         {
-            var motionEnd = time.Ticks + Time.Tics(timeAfter);
+            var motionEnd = time.Ticks;
             if (roundUp)
             {
                 var round = TimeSpan.FromSeconds(Math.Ceiling(TimeSpan.FromTicks(motionEnd).TotalSeconds));
                 motionEnd = round.Ticks;
             }
+
+            motionEnd += Time.Tics(timeAfter);
 
             scheduler.AdvanceTo(motionEnd);
         }

@@ -120,36 +120,5 @@ namespace HomeCenter.Services.MotionService.Tests
             env.AdvanceTo(moveTime + (3 * timeout), true);
             env.LampState(Detectors.kitchen).Should().BeFalse();
         }
-
-        // *[Confusion], ^[Resolved]
-        //  ___________________________________________   __________________________
-        // |        |                |                       |                      |
-        // |        |                                                               |
-        // |        |                |                       |                      |
-        // |                         |___   ______           |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |______________________|
-        // |        |                |            |          |                      |
-        // |        |                |            |            0,1                  |
-        // |        |                |            |____  ____|                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |        |                |            |          |                      |
-        // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "Move turn on after turn off should increase timeout")]
-        public async Task Timeout4()
-        {
-            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<string, string>
-            {
-                { "500", Detectors.kitchen },
-                { "12000", Detectors.kitchen },
-            }).Build();
-
-            env.AdvanceToEnd();
-            var status = await env.Query<bool>(AutomationStateQuery.Create(Detectors.kitchen));
-            status.Should().BeTrue();
-        }
     }
 }

@@ -1,14 +1,18 @@
 ﻿using HomeCenter.Abstractions;
+using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Tests.Helpers;
 using HomeCenter.EventAggregator;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
+using HomeCenter.Model.Triggers;
 using Microsoft.Reactive.Testing;
 using Proto;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +22,8 @@ namespace HomeCenter.Actors.Tests.Fakes
     {
         private readonly ITestableObservable<MotionEnvelope> _motionData;
         private readonly Dictionary<string, FakeMotionLamp> _lamps;
+        private readonly Subject<IMessageEnvelope<PowerStateChangeEvent>> _powerStateSubject = new Subject<IMessageEnvelope<PowerStateChangeEvent>>();
+
 
         public FakeMessageBroker(ITestableObservable<MotionEnvelope> motionData, Dictionary<string, FakeMotionLamp> lamps)
         {
@@ -35,6 +41,10 @@ namespace HomeCenter.Actors.Tests.Fakes
             if (typeof(T) == typeof(MotionEvent))
             {
                 return (IObservable<IMessageEnvelope<T>>)_motionData;
+            }
+            else if (typeof(T) == typeof(PowerStateChangeEvent))
+            {
+                return (IObservable<IMessageEnvelope<T>>)_powerStateSubject.Where(x => x.Message.MessageSource == routingFilter?.RoutingKey).AsObservable();
             }
             throw new NotImplementedException();
         }
@@ -100,13 +110,17 @@ namespace HomeCenter.Actors.Tests.Fakes
 
         public void Send(object message, string uid, [AllowNull] string address = null)
         {
-            if (message is TurnOnCommand)
+            if (message is TurnOnCommand turnOnCommand)
             {
                 _lamps[uid].SetState(true);
+
+                _powerStateSubject.OnNext(new MessageEnvelope<PowerStateChangeEvent>(PowerStateChangeEvent.Create(true, uid, turnOnCommand.AsString(MessageProperties.EventTriggerType, EventTriggerType.Manual))));
             }
-            else if (message is TurnOffCommand)
+            else if (message is TurnOffCommand turnOffCommand)
             {
                 _lamps[uid].SetState(false);
+
+                _powerStateSubject.OnNext(new MessageEnvelope<PowerStateChangeEvent>(PowerStateChangeEvent.Create(true, uid, turnOffCommand.AsString(MessageProperties.EventTriggerType, EventTriggerType.Manual))));
             }
             else
             {

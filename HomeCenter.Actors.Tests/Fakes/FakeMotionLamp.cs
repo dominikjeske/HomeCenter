@@ -1,7 +1,11 @@
-﻿namespace HomeCenter.Actors.Tests.Fakes
+﻿using HomeCenter.Abstractions;
+using HomeCenter.Messages.Events.Device;
+
+namespace HomeCenter.Actors.Tests.Fakes
 {
     public class FakeMotionLamp
     {
+       
         public bool IsTurnedOn { get; private set; }
 
         public FakeMotionLamp(string id)
@@ -16,7 +20,6 @@
 
         public string Id { get; }
 
-        // public void SetPowerStateSource(IObservable<PowerStateChangeEvent> source) => PowerStateChange = source;
         public override string ToString() => $"{Id} : {IsTurnedOn}";
     }
 }

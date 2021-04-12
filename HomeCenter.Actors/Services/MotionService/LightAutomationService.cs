@@ -142,15 +142,13 @@ namespace HomeCenter.Services.MotionService
             motionWindows.Subscribe(HandleMove, HandleError, Token);
 
             motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) //For each event we start time windows for next events that can potentially create vector
-
                          .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start)) //We scan windows for getting proper vectors
                          .SelectMany(window => window.ToVectors())) // Convert found vector to list
                          .GroupBy(room => room.EndPoint) // Group by vectors from ALL time windows by destination room
-                         .SelectMany(r =>
-                                     r.Window(TimeSpan.FromMilliseconds(100), _concurrencyProvider.Scheduler) //We take small time window to have one group
-                                      .SelectMany(x => x.Scan((v, c) => v.Accumulate(c))//We accumulate vectors from the group
-                                      .Select(v => v.GetAccumulated()) // and extract list
-                                      ))
+                         .SelectMany(
+                           r => r.Buffer(TimeSpan.FromMilliseconds(1), _concurrencyProvider.Scheduler) //We take small time window to have one group
+                                                                        .Where(b => b.Count > 0)
+                                    )
                          .Subscribe(HandleVectors, HandleError, Token);
         }
 
@@ -176,31 +174,20 @@ namespace HomeCenter.Services.MotionService
             _roomDictionary[roomId].EnableAutomation();
         }
 
-        protected bool Handle(AutomationStateQuery query)
+        protected RoomState Handle(RoomStateQuery query)
         {
             var roomId = query.AsString(MotionProperties.RoomId);
-            return !_roomDictionary[roomId].AutomationDisabled;
-        }
 
-        protected int Handle(NumberOfPeopleQuery query)
-        {
-            var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomDictionary[roomId].NumberOfPersons;
-        }
-
-        protected AreaDescriptor Handle(AreaDescriptorQuery query)
-        {
-            var roomId = query.AsString(MotionProperties.RoomId);
-            return _roomDictionary[roomId].AreaDescriptor.Copy();
-        }
-
-        protected MotionStatus Handle(MotionServiceStatusQuery query)
-        {
-            return new MotionStatus
+            var state = new RoomState
             {
-                NumberOfPersonsInHouse = _roomDictionary.NumberOfPersons(),
-                NumberOfConfusions = 0 //TODO
+                NumberOfPersosn = _roomDictionary[roomId].NumberOfPersons,
+                AutomationEnabled = !_roomDictionary[roomId].AutomationDisabled,
+                HasConfusions = _roomDictionary[roomId].MotionEngine.HasEntryConfusions
             };
+
+            return state;
         }
+
+       
     }
 }

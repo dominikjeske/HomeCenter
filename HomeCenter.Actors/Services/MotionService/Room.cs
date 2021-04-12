@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using HomeCenter.Abstractions;
+using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Conditions;
 using HomeCenter.Conditions.Specific;
+using HomeCenter.EventAggregator;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.MotionService.Model;
@@ -31,6 +33,7 @@ namespace HomeCenter.Services.MotionService
         internal AreaDescriptor AreaDescriptor { get; }
         internal bool AutomationDisabled { get; private set; }
         internal int NumberOfPersons => MotionEngine.NumberOfPersons;
+        internal bool LampState { get; private set; }
 
         public override string ToString() => $"{Uid} [Last move: {MotionEngine.LastMotion}] [Persons: {NumberOfPersons}]";
 
@@ -62,14 +65,17 @@ namespace HomeCenter.Services.MotionService
             }
 
             _turnOnConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
+            _turnOnConditionsValidator.WithCondition(new IsLampOffCondition(this));
+
             _turnOffConditionsValidator.WithCondition(new IsEnabledAutomationCondition(this));
             _turnOffConditionsValidator.WithCondition(new IsTurnOffAutomaionCondition(this));
+            _turnOffConditionsValidator.WithCondition(new IsLampOnCondition(this));
+
 
             MotionEngine = new MotionEngine(_logger, AreaDescriptor, Uid, roomDictionary);
 
             _disposeContainer.Add(MotionEngine.ProbabilityChange.SelectMany(ProbalityChange).Subscribe());
-
-            RegisterChangeStateSource();
+            _disposeContainer.Add(_messageBroker.Observe<PowerStateChangeEvent>(Uid).Select(x => x.Message).Subscribe(PowerStateChange));
         }
 
         private async Task<Unit> ProbalityChange(Probability probability)
@@ -78,10 +84,16 @@ namespace HomeCenter.Services.MotionService
             return Unit.Default;
         }
 
-        private void RegisterChangeStateSource()
+        private void PowerStateChange(PowerStateChangeEvent powerChangeEvent)
         {
-            //TODO
-            //_disposeContainer.Add(Lamp.PowerStateChange.Subscribe(PowerStateChangeHandler));
+            LampState = powerChangeEvent.Value;
+
+            if (!powerChangeEvent.Value && powerChangeEvent.EventTrigger == EventTriggerType.Manual)
+            {
+                MotionEngine.Reset();
+            }
+
+            _logger.LogDebug(MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTrigger);
         }
 
         /// <summary>
@@ -140,16 +152,6 @@ namespace HomeCenter.Services.MotionService
             }
         }
 
-        private void PowerStateChangeHandler(PowerStateChangeEvent powerChangeEvent)
-        {
-            if (!powerChangeEvent.Value)
-            {
-                MotionEngine.Reset();
-            }
-
-            _logger.LogDebug(MoveEventId.PowerState, "{newState} | Source: {source}", powerChangeEvent.Value, powerChangeEvent.EventTriggerSource);
-        }
-
         private void CheckForScheduledAutomation(DateTimeOffset motionTime)
         {
             if (AutomationDisabled && motionTime > _scheduledAutomationTime)
@@ -164,7 +166,7 @@ namespace HomeCenter.Services.MotionService
             {
                 _logger.LogInformation(MoveEventId.PowerState, "Turning ON");
 
-                _messageBroker.Send(new TurnOnCommand(), _lamp);
+                _messageBroker.Send(new TurnOnCommand().SetProperty(MessageProperties.EventTriggerType, EventTriggerType.Auto), _lamp);
             }
         }
 
@@ -174,7 +176,7 @@ namespace HomeCenter.Services.MotionService
             {
                 _logger.LogInformation(MoveEventId.PowerState, "Turning OFF");
 
-                _messageBroker.Send(new TurnOffCommand(), _lamp);
+                _messageBroker.Send(new TurnOffCommand().SetProperty(MessageProperties.EventTriggerType, EventTriggerType.Auto), _lamp);
 
                 MotionEngine.SetAutoTurnOffTime(_concurrencyProvider.Scheduler.Now);
             }

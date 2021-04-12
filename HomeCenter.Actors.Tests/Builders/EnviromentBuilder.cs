@@ -26,7 +26,9 @@ namespace HomeCenter.Actors.Tests.Builders
         private TimeSpan? _periodicCheckTime;
         private ServiceDTO? _serviceConfig;
 
-        private EnviromentBuilder() {}
+        private EnviromentBuilder()
+        {
+        }
 
         public static EnviromentBuilder Create(Action<LightServiceBuilder> action)
         {
@@ -59,30 +61,36 @@ namespace HomeCenter.Actors.Tests.Builders
                 }
                 else if (key.All(char.IsDigit))
                 {
-                    _motionEvents.Add(CreateMotionRecord(int.Parse(key), motion.Value));
+                    CreateMotionRecord(int.Parse(key), motion.Value);
                 }
             }
 
             return this;
         }
 
-        private Recorded<Notification<MotionEnvelope>> CreateMotionRecord(long miliseconds, string room)
+        
+
+        private void CreateMotionRecord(long miliseconds, string room)
         {
-            return new(Time.Tics(miliseconds),
-                Notification.CreateOnNext(new MotionEnvelope(room)));
+            var time = Time.Tics(miliseconds);
+            Recorded < Notification < MotionEnvelope >> record = new(time,  Notification.CreateOnNext(new MotionEnvelope(room)));
+
+            if (_motionEvents.Any(x => x.Time == time)) throw new InvalidOperationException($"Cannot add more then one event at {miliseconds}ms");
+
+            _motionEvents.Add(record);
         }
 
         private EnviromentBuilder CreateRepeatedMotions(string roomUid, int numberOfMotions, TimeSpan waitTime, TimeSpan startTime, TimeSpan endTime)
         {
             var time = (long)startTime.TotalMilliseconds;
 
-            _motionEvents.Add(CreateMotionRecord(time, roomUid));
+            CreateMotionRecord(time, roomUid);
 
             for (int i = 0; i < numberOfMotions; i++)
             {
                 time += (long)waitTime.TotalMilliseconds;
 
-                _motionEvents.Add(CreateMotionRecord(time, roomUid));
+                CreateMotionRecord(time, roomUid);
             }
 
             return this;
@@ -126,7 +134,7 @@ namespace HomeCenter.Actors.Tests.Builders
         public ActorEnvironment Build()
         {
             var lampDictionary = CreateFakeLamps();
-            var motionEvents = _scheduler.CreateColdObservable(_motionEvents.ToArray());
+            var motionEvents = _scheduler.CreateColdObservable(_motionEvents.OrderBy(x => x.Time).ToArray());
             RavenDbConfigurator? ravenDbConfigurator = null;
 
             var hostBuilder = new HostBuilder()

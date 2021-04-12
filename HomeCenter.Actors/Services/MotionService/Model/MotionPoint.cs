@@ -25,7 +25,7 @@ namespace HomeCenter.Services.MotionService.Model
 
         public bool Equals(MotionPoint other) => base.Equals(other);
 
-        public override string ToString() => $"{Uid}: {TimeStamp:ss:fff}";
+        public override string ToString() => $"{Uid}: {TimeStamp:ss:ffff}";
 
         public bool IsMovePhisicallyPosible(MotionPoint previous, TimeSpan motionMinDiff) => TimeStamp.Between(previous.TimeStamp).IsPossible(motionMinDiff);
 

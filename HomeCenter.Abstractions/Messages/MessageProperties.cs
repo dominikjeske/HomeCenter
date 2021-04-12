@@ -36,7 +36,7 @@
         public const string NewValue = nameof(NewValue);
         public const string EventTime = nameof(EventTime);
         public const string CommandCode = nameof(CommandCode);
-        public const string EventTriggerSource = nameof(EventTriggerSource);
+        public const string EventTriggerType = nameof(EventTriggerType);
 
         //Adapter
         public const string Address = nameof(Address);

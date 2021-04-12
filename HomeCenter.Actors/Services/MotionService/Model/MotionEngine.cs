@@ -39,6 +39,8 @@ namespace HomeCenter.Services.MotionService
         [NotLogged]
         public IObservable<Probability> ProbabilityChange => _probabilitySubject;
 
+        public bool HasEntryConfusions => _confusedVectors.HasEntryConfusions;
+
         public MotionEngine(ILogger logger, AreaDescriptor areaDescriptor, string Uid, Lazy<RoomDictionary> roomDictionary)
         {
             _logger = logger;
@@ -277,5 +279,6 @@ namespace HomeCenter.Services.MotionService
                 NumberOfPersons++;
             }
         }
+
     }
 }

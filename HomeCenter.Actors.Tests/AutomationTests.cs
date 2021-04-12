@@ -24,7 +24,7 @@ namespace HomeCenter.Services.MotionService.Tests
             env.AdvanceToEnd();
 
             env.LampState(Detectors.toilet).Should().BeFalse();
-            var automationState = await env.Query<bool>(AutomationStateQuery.Create(Detectors.toilet));
+            var automationState = (await env.Query<RoomState>(RoomStateQuery.Create(Detectors.toilet))).AutomationEnabled;
             automationState.Should().BeFalse();
         }
 

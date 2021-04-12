@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Proto.Actor" Version="0.15.0" />
     <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
-    <PackageReference Include="System.Text.Json" Version="5.0.1" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

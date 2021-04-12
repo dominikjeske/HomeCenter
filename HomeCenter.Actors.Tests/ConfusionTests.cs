@@ -44,8 +44,8 @@ namespace HomeCenter.Services.MotionService.Tests
 
             env.AdvanceToEnd();
 
-            var status = await env.Query<MotionStatus>(MotionServiceStatusQuery.Create());
-            status.NumberOfConfusions.Should().Be(0);
+            //var status = await env.Query<MotionStatus>(MotionServiceStatusQuery.Create());
+            //status.NumberOfConfusions.Should().Be(0);
         }
     }
 }

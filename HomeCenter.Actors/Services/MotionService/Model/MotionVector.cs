@@ -9,18 +9,6 @@ namespace HomeCenter.Services.MotionService.Model
     /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
-        private readonly List<MotionVector> _accumulated = new();
-        public MotionVector Accumulate(MotionVector vector)
-        {
-            _accumulated.Add(vector);
-            return this;
-        }
-        public IList<MotionVector> GetAccumulated()
-        {
-            _accumulated.Add(this);
-            return _accumulated;
-        }
-
         public readonly static MotionVector Empty = new(MotionPoint.Empty, MotionPoint.Empty); 
 
         public DateTimeOffset StartTime => Start.TimeStamp;

@@ -11,6 +11,20 @@ namespace HomeCenter.Services.MotionService
 {
     internal class ConfusedVectors
     {
+        internal class VectorResolution
+        {
+            public static readonly VectorResolution Empty = new(MotionVector.Empty, string.Empty);
+
+            public VectorResolution(MotionVector vector, string Reason)
+            {
+                Vector = vector;
+                this.Reason = Reason;
+            }
+
+            public MotionVector Vector { get; }
+            public string Reason { get; }
+        }
+
         private readonly ConcurrentHashSet<MotionVector> _confusingVectors = new();
         private readonly ILogger _logger;
         private readonly string _uid;
@@ -48,22 +62,53 @@ namespace HomeCenter.Services.MotionService
         /// </summary>
         public IEnumerable<MotionVector> EvaluateConfusions(DateTimeOffset currentTime)
         {
-            var timeOuted = ResolveAfterTimeout(currentTime);
+            List<VectorResolution> resolved = new();
+            List<VectorResolution> canceled = new();
 
-            var canceled = ResolveAfterCancel();
-          
-            return timeOuted.Union(canceled);
-        }
+            //1. Resolve vectors that have time out
+            resolved.AddRange(ResolveAfterTimeout(currentTime));
+            //2. Cancel confused by real vector from same starting point
+            canceled.AddRange(CancelAfterStartPoint());
+            //3. Cancel vectors by previously resolved
+            canceled.AddRange(ResolveByEndPoint(resolved));
+            //4. Resolve vectors by previously canceled
+            resolved.AddRange(ResolveByEndPoint(canceled));
 
-        private IEnumerable<MotionVector> ResolveAfterTimeout(DateTimeOffset currentTime)
-        {
-            var resolved = GetConfusedVectorsAfterTimeout(currentTime)
-                .Where(vector => NoMoveInStartNeighbors(vector)).ToList();
             foreach (var vector in resolved)
             {
-                _confusingVectors.TryRemove(vector);
+                _logger.LogInformation(MoveEventId.Resolution, "{vector} resolved by {VectorStatus}", vector.Vector, vector.Reason);
+                _confusingVectors.TryRemove(vector.Vector);
             }
-            return resolved;
+
+            foreach (var vector in canceled)
+            {
+                _logger.LogInformation(MoveEventId.VectorCancel, "{vector} canceled by {VectorStatus}", vector.Vector, vector.Reason);
+                _confusingVectors.TryRemove(vector.Vector);
+            }
+
+            return resolved.Select(v => v.Vector);
+        }
+
+        private List<VectorResolution> ResolveByEndPoint(IEnumerable<VectorResolution> resolved)
+        {
+            List<VectorResolution> autoResolved = new();
+
+            foreach (var vector in resolved)
+            {
+                if (FindByEndPoint(vector.Vector, out var newResolved))
+                {
+                    autoResolved.Add(newResolved);
+                }
+            }
+
+            return autoResolved;
+        }
+
+        private IEnumerable<VectorResolution> ResolveAfterTimeout(DateTimeOffset currentTime)
+        {
+            return GetConfusedVectorsAfterTimeout(currentTime)
+                  .Where(vector => NoMoveInStartNeighbors(vector))
+                  .Select(v => new VectorResolution(v, "Timeout"));
         }
 
 
@@ -97,18 +142,10 @@ namespace HomeCenter.Services.MotionService
         /// When there is approved leave vector from one of the source rooms we have confused vectors in same time
         /// we can assume that our vector is not real and we can remove it in shorter time
         /// </summary>
-        private IEnumerable<MotionVector> ResolveAfterCancel()
+        private IEnumerable<VectorResolution> CancelAfterStartPoint()
         {
-            foreach (var vector in _confusingVectors.Where(v => LeaveVectorsWithSameStart(v)))
-            {
-                _logger.LogDebug(MoveEventId.VectorCancel, "{vector} [Cancel]", vector);
-                _confusingVectors.TryRemove(vector);
-
-                if (TryResolveAfterCancel(vector, out var resolved))
-                {
-                    yield return resolved;
-                }
-            }
+            return _confusingVectors.Where(v => LeaveVectorsWithSameStart(v))
+                                    .Select(v => new VectorResolution(v, $"Cancel by source leave '{v}'"));
         }
 
         private bool LeaveVectorsWithSameStart(MotionVector v)
@@ -116,22 +153,21 @@ namespace HomeCenter.Services.MotionService
             return _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start;
         }
 
-        /// <summary>
-        /// After we remove canceled vector we check if there is other vector in same time that was in confusion. 
-        /// When there is only one we can resolve it because there is no confusion anymore
-        /// </summary>
-        private bool TryResolveAfterCancel(MotionVector motionVector, out MotionVector resolved)
+
+        private bool FindByEndPoint(MotionVector resolvedVecotr, out VectorResolution newResolved)
         {
-            var confused = _confusingVectors.Where(x => x.End == motionVector.End);
+            var confused = _confusingVectors.Where(vector => vector.End == resolvedVecotr.End && vector != resolvedVecotr);
             if (confused.Count() == 1)
             {
-                resolved = confused.Single();
+                newResolved = new VectorResolution(confused.Single(), $"Auto resolved by '{resolvedVecotr}'");
                 return true;
             }
 
-            resolved = MotionVector.Empty;
+            newResolved = VectorResolution.Empty;
             return false;
         }
 
     }
+
+   
 }
