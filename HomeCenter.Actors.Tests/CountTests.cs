@@ -82,14 +82,19 @@ namespace HomeCenter.Services.MotionService.Tests
             (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(1);
             (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
             (await env.HasConfusions(Detectors.hallwayToilet)).Should().Be(true);
-
+            // Confusion resolution for 2->3
             env.AdvanceTo(TimeSpan.FromMilliseconds(7100) + MotionDefaults.ConfusionResolutionTime, true);
             (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(1);
             (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0, "After resolving confusion have 0 persons");
             (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
             (await env.HasConfusions(Detectors.hallwayToilet)).Should().Be(false);
-
+            // Confusion resolution for 3->0S
             env.AdvanceTo(TimeSpan.FromMilliseconds(9100) + MotionDefaults.ConfusionResolutionTime, true);
+            (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(2, "After resolving confusion have 2 persons");
+            (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0);
+            (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(0);
+            (await env.HasConfusions(Detectors.hallwayToilet)).Should().Be(false);
+            (await env.HasConfusions(Detectors.kitchen)).Should().Be(false);
         }
 
         // TODO - Count should not decrease  when there is no exit from house

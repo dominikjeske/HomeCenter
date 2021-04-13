@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.1.5" />
+    <PackageReference Include="RavenDB.Client" Version="5.1.6" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
     <PackageReference Include="Serilog.Exceptions" Version="6.1.0" />
