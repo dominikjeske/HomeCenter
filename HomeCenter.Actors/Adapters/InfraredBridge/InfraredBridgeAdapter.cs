@@ -1,4 +1,7 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
@@ -7,9 +10,6 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Proto;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.InfraredBridge
 {
@@ -17,21 +17,20 @@ namespace HomeCenter.Adapters.InfraredBridge
     public class InfraredBridgeAdapter : Adapter
     {
         private const int DEAFULT_REPEAT = 3;
-        private int _I2cAddress;
+        private int _i2cAddress;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context);
 
-            _I2cAddress = this.AsInt(MessageProperties.Address);
+            _i2cAddress = this.AsInt(MessageProperties.Address);
 
             var registration = new RegisterSerialCommand(Self, 3, new Format[]
                {
                 new Format(1, typeof(byte), "System"),
                 new Format(2, typeof(uint), "Code"),
-                new Format(3, typeof(byte), "Bits")
-               }
-            );
+                new Format(3, typeof(byte), "Bits"),
+               });
             await MessageBroker.SendToService(registration);
         }
 
@@ -60,12 +59,12 @@ namespace HomeCenter.Adapters.InfraredBridge
                 3,
                 (byte)repeat,
                 (byte)system,
-                (byte)bits
+                (byte)bits,
             };
             package.AddRange(BitConverter.GetBytes(commandCode));
             var code = package.ToArray();
 
-            var cmd = I2cCommand.Create(_I2cAddress, package.ToArray());
+            var cmd = I2cCommand.Create(_i2cAddress, package.ToArray());
             return MessageBroker.SendToService(cmd);
         }
     }

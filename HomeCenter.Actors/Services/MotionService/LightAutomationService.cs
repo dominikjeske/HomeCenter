@@ -1,4 +1,9 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Extensions;
 using HomeCenter.Messages.Events.Device;
@@ -7,11 +12,6 @@ using HomeCenter.Model.Extensions;
 using HomeCenter.Services.MotionService.Commands;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -53,7 +53,7 @@ namespace HomeCenter.Services.MotionService
                 DecreaseLeavingFactor = this.AsDouble(MotionProperties.TurnOffTimeoutIncrementPercentage, MotionDefaults.DecreaseLeavingFactor),
                 TurnOffTimeout = this.AsTime(MotionProperties.TurnOffTimeout, MotionDefaults.TurnOffTimeOut),
                 MotionTypePassThru = this.AsTime(MotionProperties.MotionTypePassThru, MotionDefaults.MotionTypePassThru),
-                MotionTypeShortVisit = this.AsTime(MotionProperties.MotionTypeShortVisit, MotionDefaults.MotionTypeShortVisit)
+                MotionTypeShortVisit = this.AsTime(MotionProperties.MotionTypeShortVisit, MotionDefaults.MotionTypeShortVisit),
             };
         }
 
@@ -72,9 +72,9 @@ namespace HomeCenter.Services.MotionService
                     _motionConfiguration!,
                     area.AsString(MotionProperties.WorkingTime, WorkingTime.AllDay),
                     area.AsString(MotionProperties.AreaType, AreaType.Room),
-                    area.AttachedActor
-                ));
+                    area.AttachedActor));
             }
+
             return areas;
         }
 
@@ -108,7 +108,10 @@ namespace HomeCenter.Services.MotionService
                                     .Except(ComponentsAttachedProperties.Select(r => r.AttachedActor))
                                     .ToList();
 
-            if (missingRooms.Count > 0) throw new ConfigurationException($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
+            if (missingRooms.Count > 0)
+            {
+                throw new ConfigurationException($"Following neighbors have not registered rooms: {string.Join(", ", missingRooms)}");
+            }
         }
 
         private void StartWatchForEvents()
@@ -118,7 +121,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Checks periodically all rooms for current state - parallel to AnalyzeMove
+        /// Checks periodically all rooms for current state - parallel to AnalyzeMove.
         /// </summary>
         private void PeriodicCheck()
         {
@@ -130,25 +133,24 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Query motion events from system and analyses move
+        /// Query motion events from system and analyses move.
         /// </summary>
         private void AnalyzeMove()
         {
             var events = MessageBroker.Observe<MotionEvent>();
 
-            var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler) //Add TimeStamp to each event
-                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary)); //Create new event that contains name, TimeStamp and service for vector validation
+            var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler) // Add TimeStamp to each event
+                                      .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary)); // Create new event that contains name, TimeStamp and service for vector validation
 
             motionWindows.Subscribe(HandleMove, HandleError, Token);
 
-            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) //For each event we start time windows for next events that can potentially create vector
-                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start)) //We scan windows for getting proper vectors
+            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) // For each event we start time windows for next events that can potentially create vector
+                         .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start)) // We scan windows for getting proper vectors
                          .SelectMany(window => window.ToVectors())) // Convert found vector to list
                          .GroupBy(room => room.EndPoint) // Group by vectors from ALL time windows by destination room
                          .SelectMany(
-                           r => r.Buffer(TimeSpan.FromMilliseconds(1), _concurrencyProvider.Scheduler) //We take small time window to have one group
-                                                                        .Where(b => b.Count > 0)
-                                    )
+                           r => r.Buffer(TimeSpan.FromMilliseconds(1), _concurrencyProvider.Scheduler) // We take small time window to have one group
+                                                                        .Where(b => b.Count > 0))
                          .Subscribe(HandleVectors, HandleError, Token);
         }
 
@@ -182,7 +184,7 @@ namespace HomeCenter.Services.MotionService
             {
                 NumberOfPersosn = _roomDictionary[roomId].NumberOfPersons,
                 AutomationEnabled = !_roomDictionary[roomId].AutomationDisabled,
-                HasConfusions = _roomDictionary[roomId].MotionEngine.HasEntryConfusions
+                HasConfusions = _roomDictionary[roomId].MotionEngine.HasEntryConfusions,
             };
 
             return state;

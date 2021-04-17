@@ -1,4 +1,7 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Adapters.Sony.Messages;
 using HomeCenter.Capabilities;
@@ -6,9 +9,6 @@ using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Sony
 {
@@ -33,7 +33,7 @@ namespace HomeCenter.Adapters.Sony
             { "HDMI1", "AAAAAgAAABoAAABaAw==" },
             { "HDMI2", "AAAAAgAAABoAAABbAw==" },
             { "HDMI3", "AAAAAgAAABoAAABcAw==" },
-            { "HDMI4", "AAAAAgAAABoAAABdAw==" }
+            { "HDMI4", "AAAAAgAAABoAAABdAw==" },
         };
 
         protected override async Task OnStarted(IContext context)
@@ -51,19 +51,25 @@ namespace HomeCenter.Adapters.Sony
 
         private SonyControlQuery GetControlCommand(string code)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             return new SonyControlQuery
             {
                 Address = _hostname,
                 AuthorisationKey = _authorisationKey,
-                Code = code
+                Code = code,
             };
         }
 
         private SonyJsonQuery GetJsonCommand(string path, string method, object? parameters = null)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             return new SonyJsonQuery
             {
@@ -71,7 +77,7 @@ namespace HomeCenter.Adapters.Sony
                 AuthorisationKey = _authorisationKey,
                 Path = path,
                 Method = method,
-                Params = parameters
+                Params = parameters,
             };
         }
 
@@ -80,13 +86,15 @@ namespace HomeCenter.Adapters.Sony
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
                                                                new MuteState(),
-                                                               new InputSourceState()
-                                          );
+                                                               new InputSourceState());
         }
 
         protected async Task<string> Handle(SonyRegisterQuery sonyRegisterQuery)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             sonyRegisterQuery.Address = _hostname;
             sonyRegisterQuery.ClientID = _clientId;
@@ -103,17 +111,20 @@ namespace HomeCenter.Adapters.Sony
             cmd = GetJsonCommand("audio", "getVolumeInformation");
             var audio = await MessageBroker.QueryJsonService<SonyJsonQuery, SonyAudioResult>(cmd);
 
-            //TODO save audio and power state
-            //_powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
+            // TODO save audio and power state
+            // _powerState = await UpdateState<BooleanValue>(PowerState.StateName, _powerState, power);
         }
 
         protected async Task Handle(TurnOnCommand message)
         {
-            if (_mac is null) throw new InvalidOperationException();
+            if (_mac is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var command = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(command);
-            //var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
+            // var cmd = GetControlCommand("AAAAAQAAAAEAAAAuAw==");
 
             _powerState = await UpdateState(PowerState.StateName, _powerState, true);
         }
@@ -171,7 +182,10 @@ namespace HomeCenter.Adapters.Sony
         protected async Task Handle(InputSetCommand message)
         {
             var inputName = message.AsString(MessageProperties.InputSource);
-            if (!_inputSourceMap.ContainsKey(inputName)) throw new ArgumentException($"Input {inputName} was not found on available device input sources");
+            if (!_inputSourceMap.ContainsKey(inputName))
+            {
+                throw new ArgumentException($"Input {inputName} was not found on available device input sources");
+            }
 
             var code = _inputSourceMap[inputName];
 

@@ -1,24 +1,28 @@
-﻿using HomeCenter.Adapters.Kodi.Messages.JsonModels;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using HomeCenter.Abstractions;
+using HomeCenter.Adapters.Kodi.Messages.JsonModels;
 using HomeCenter.Messages.Queries.Services;
 using Light.GuardClauses;
-using System;
 
 namespace HomeCenter.Adapters.Kodi.Messages
 {
-    //https://github.com/FabienLavocat/kodi-remote/tree/master/src/KodiRemote.Core
-    //https://github.com/akshay2000/XBMCRemoteRT/blob/master/XBMCRemoteRT/XBMCRemoteRT.Shared/RPCWrappers/Player.cs
-    //http://kodi.wiki/view/JSON-RPC_API/Examples
-    //http://kodi.wiki/view/JSON-RPC_API/v8#Notifications_2
+    // https://github.com/FabienLavocat/kodi-remote/tree/master/src/KodiRemote.Core
+    // https://github.com/akshay2000/XBMCRemoteRT/blob/master/XBMCRemoteRT/XBMCRemoteRT.Shared/RPCWrappers/Player.cs
+    // http://kodi.wiki/view/JSON-RPC_API/Examples
+    // http://kodi.wiki/view/JSON-RPC_API/v8#Notifications_2
 
     public class KodiCommand : HttpPostQuery, IFormatableMessage<KodiCommand>
     {
         public string? UserName { get; set; }
+
         public string? Password { get; set; }
+
         public string? Method { get; set; }
+
         public int Port { get; set; }
+
         public object? Parameters { get; set; }
 
         public KodiCommand()
@@ -38,7 +42,7 @@ namespace HomeCenter.Adapters.Kodi.Messages
             var jsonRpcRequest = new JsonRpcRequest
             {
                 Method = Method,
-                Parameters = Parameters
+                Parameters = Parameters,
             };
 
             Body = JsonSerializer.Serialize(jsonRpcRequest);
@@ -52,7 +56,10 @@ namespace HomeCenter.Adapters.Kodi.Messages
 
             var result = JsonSerializer.Deserialize<JsonRpcResponse>(rawHttpResult);
 
-            if (result is null) throw new InvalidOperationException();
+            if (result is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             return result;
         }

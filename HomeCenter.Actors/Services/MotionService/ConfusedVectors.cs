@@ -1,11 +1,11 @@
-﻿using ConcurrentCollections;
-using HomeCenter.Extensions;
-using HomeCenter.Services.MotionService.Model;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using ConcurrentCollections;
+using HomeCenter.Extensions;
+using HomeCenter.Services.MotionService.Model;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -22,6 +22,7 @@ namespace HomeCenter.Services.MotionService
             }
 
             public MotionVector Vector { get; }
+
             public string Reason { get; }
         }
 
@@ -45,7 +46,7 @@ namespace HomeCenter.Services.MotionService
         public bool HasEntryConfusions => _confusingVectors.Count > 0;
 
         /// <summary>
-        /// Mark some motion that can be enter vector but we are not sure
+        /// Mark some motion that can be enter vector but we are not sure.
         /// </summary>
         public void MarkConfusion(IList<MotionVector> vectors)
         {
@@ -58,20 +59,20 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Try to resolve confusion in previously marked vectors
+        /// Try to resolve confusion in previously marked vectors.
         /// </summary>
         public IEnumerable<MotionVector> EvaluateConfusions(DateTimeOffset currentTime)
         {
             List<VectorResolution> resolved = new();
             List<VectorResolution> canceled = new();
 
-            //1. Resolve vectors that have time out
+            // 1. Resolve vectors that have time out
             resolved.AddRange(ResolveAfterTimeout(currentTime));
-            //2. Cancel confused by real vector from same starting point
+            // 2. Cancel confused by real vector from same starting point
             canceled.AddRange(CancelAfterStartPoint());
-            //3. Cancel vectors by previously resolved
+            // 3. Cancel vectors by previously resolved
             canceled.AddRange(ResolveByEndPoint(resolved, canceled));
-            //4. Resolve vectors by previously canceled
+            // 4. Resolve vectors by previously canceled
             resolved.AddRange(ResolveByEndPoint(canceled, resolved));
 
             foreach (var vector in resolved)
@@ -111,9 +112,8 @@ namespace HomeCenter.Services.MotionService
                   .Select(v => new VectorResolution(v, "Timeout"));
         }
 
-
         /// <summary>
-        /// Get list of all confused vectors that should be resolved
+        /// Get list of all confused vectors that should be resolved.
         /// </summary>
         private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
         {
@@ -126,6 +126,7 @@ namespace HomeCenter.Services.MotionService
             {
                 return Enumerable.Empty<MotionVector>();
             }
+
             return confusedReadyToResolve;
         }
 
@@ -140,7 +141,7 @@ namespace HomeCenter.Services.MotionService
 
         /// <summary>
         /// When there is approved leave vector from one of the source rooms we have confused vectors in same time
-        /// we can assume that our vector is not real and we can remove it in shorter time
+        /// we can assume that our vector is not real and we can remove it in shorter time.
         /// </summary>
         private IEnumerable<VectorResolution> CancelAfterStartPoint()
         {
@@ -150,9 +151,10 @@ namespace HomeCenter.Services.MotionService
 
         private bool LeaveVectorsWithSameStart(MotionVector v)
         {
+
+
             return _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start;
         }
-
 
         private bool FindByEndPoint(MotionVector resolvedVecotr, IEnumerable<VectorResolution> skip, out VectorResolution newResolved)
         {
@@ -166,8 +168,5 @@ namespace HomeCenter.Services.MotionService
             newResolved = VectorResolution.Empty;
             return false;
         }
-
     }
-
-   
 }

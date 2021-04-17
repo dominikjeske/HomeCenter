@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Adapters.Denon.Messages;
 using HomeCenter.Capabilities;
@@ -6,8 +8,6 @@ using HomeCenter.Extensions;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
-using System;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Denon
 {
@@ -48,8 +48,7 @@ namespace HomeCenter.Adapters.Denon
                                                                new MuteState(),
                                                                new InputSourceState(),
                                                                new SurroundSoundState(),
-                                                               new DescriptionState()
-                                          );
+                                                               new DescriptionState());
         }
 
         protected async Task Handle(RefreshCommand message)
@@ -70,7 +69,7 @@ namespace HomeCenter.Adapters.Denon
             var statusQuery = new DenonStatusLightQuery
             {
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             var state = await MessageBroker.QueryService<DenonStatusLightQuery, DenonStatus>(statusQuery);
@@ -89,7 +88,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppPower",
                 ReturnNode = "Power",
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "ON"))
@@ -106,7 +105,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppPower",
                 ReturnNode = "Power",
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "OFF"))
@@ -130,7 +129,7 @@ namespace HomeCenter.Adapters.Denon
                     Api = "formiPhoneAppVolume",
                     ReturnNode = "MasterVolume",
                     Address = _hostName,
-                    Zone = _zone.ToString()
+                    Zone = _zone.ToString(),
                 };
 
                 // Results are unpredictable so we ignore them
@@ -153,7 +152,7 @@ namespace HomeCenter.Adapters.Denon
                     Api = "formiPhoneAppVolume",
                     ReturnNode = "MasterVolume",
                     Address = _hostName,
-                    Zone = _zone.ToString()
+                    Zone = _zone.ToString(),
                 };
 
                 // Results are unpredictable so we ignore them
@@ -173,7 +172,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppVolume",
                 ReturnNode = "MasterVolume",
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             await MessageBroker.QueryService<DenonControlQuery, string>(control);
@@ -182,8 +181,15 @@ namespace HomeCenter.Adapters.Denon
 
         private string NormalizeVolume(double volume)
         {
-            if (volume < 0) volume = 0;
-            if (volume > 100) volume = 100;
+            if (volume < 0)
+            {
+                volume = 0;
+            }
+
+            if (volume > 100)
+            {
+                volume = 100;
+            }
 
             return (volume - 80).ToFloatString();
         }
@@ -196,7 +202,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppMute",
                 ReturnNode = "Mute",
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "on"))
@@ -213,7 +219,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppMute",
                 ReturnNode = "Mute",
                 Address = _hostName,
-                Zone = _zone.ToString()
+                Zone = _zone.ToString(),
             };
 
             if (await MessageBroker.QueryServiceWithVerify<DenonControlQuery, string, object>(control, "off"))
@@ -224,10 +230,17 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task SetInput(InputSetCommand message)
         {
-            if (_fullState == null) throw new ArgumentException("Cannot change input source on Denon device because device info was not downloaded from device");
+            if (_fullState == null)
+            {
+                throw new ArgumentException("Cannot change input source on Denon device because device info was not downloaded from device");
+            }
+
             var inputName = message.AsString(MessageProperties.InputSource);
             var input = _fullState.TranslateInputName(inputName, _zone.ToString());
-            if (input?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on available device input sources");
+            if (input?.Length == 0)
+            {
+                throw new ArgumentException($"Input {inputName} was not found on available device input sources");
+            }
 
             var control = new DenonControlQuery
             {
@@ -235,7 +248,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppDirect",
                 ReturnNode = "",
                 Zone = "",
-                Address = _hostName
+                Address = _hostName,
             };
 
             await MessageBroker.QueryService<DenonControlQuery, string>(control);
@@ -245,11 +258,18 @@ namespace HomeCenter.Adapters.Denon
 
         protected async Task Handle(ModeSetCommand message)
         {
-            //Surround support only in main zone
-            if (_zone != 1) return;
+            // Surround support only in main zone
+            if (_zone != 1)
+            {
+                return;
+            }
+
             var surroundMode = message.AsString(MessageProperties.SurroundMode);
             var mode = DenonSurroundModes.MapApiCommand(surroundMode);
-            if (mode?.Length == 0) throw new ArgumentException($"Surroundmode {mode} was not found on available surround modes");
+            if (mode?.Length == 0)
+            {
+                throw new ArgumentException($"Surroundmode {mode} was not found on available surround modes");
+            }
 
             var control = new DenonControlQuery
             {
@@ -257,7 +277,7 @@ namespace HomeCenter.Adapters.Denon
                 Api = "formiPhoneAppDirect",
                 ReturnNode = "",
                 Zone = "",
-                Address = _hostName
+                Address = _hostName,
             };
 
             await MessageBroker.QueryService<DenonControlQuery, string>(control);

@@ -1,9 +1,9 @@
+using System;
 using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace HomeCenter.Services.Networking
 {
@@ -71,9 +71,20 @@ namespace HomeCenter.Services.Networking
 
         private void CheckAddress(int value)
         {
-            if (value < 0 || value > 127) throw new ArgumentOutOfRangeException(nameof(value), "I2C address is invalid.");
-            if (value >= 0x00 && value <= 0x07) throw new ArgumentOutOfRangeException(nameof(value), "I2C address " + value + " is reserved.");
-            if (value >= 0x78 && value <= 0x7f) throw new ArgumentOutOfRangeException(nameof(value), "I2C address " + value + " is reserved.");
+            if (value < 0 || value > 127)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "I2C address is invalid.");
+            }
+
+            if (value >= 0x00 && value <= 0x07)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "I2C address " + value + " is reserved.");
+            }
+
+            if (value >= 0x78 && value <= 0x7f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "I2C address " + value + " is reserved.");
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Adapters.PC.Messages;
 using HomeCenter.Adapters.PC.Model;
@@ -7,8 +9,6 @@ using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Commands.Service;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
-using System;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
 {
@@ -44,25 +44,34 @@ namespace HomeCenter.Adapters.PC
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
                                                                new VolumeState(),
                                                                new MuteState(),
-                                                               new InputSourceState()
-                                          );
+                                                               new InputSourceState());
         }
 
         protected async Task Handle(RefreshCommand message)
         {
-            if (!IsEnabled) return;
-            if (_hostname is null) throw new InvalidOperationException();
-            
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
+
             var cmd = new ComputerQuery
             {
                 Address = _hostname,
                 Port = _port,
-                Service = "Status"
+                Service = "Status",
             };
 
             var state = await MessageBroker.QueryJsonService<ComputerQuery, ComputerStatus>(cmd);
 
-            if (state.MasterVolume is null) throw new InvalidOperationException();
+            if (state.MasterVolume is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             _input = await UpdateState(InputSourceState.StateName, _input, state.ActiveInput);
             _volume = await UpdateState(VolumeState.StateName, _volume, state.MasterVolume.Value);
@@ -72,24 +81,30 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(TurnOnCommand message)
         {
-            if (_mac is null) throw new InvalidOperationException();
+            if (_mac is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var cmd = WakeOnLanCommand.Create(_mac);
             await MessageBroker.SendToService(cmd);
 
-            //TODO check state before update the state
+            // TODO check state before update the state
             _powerState = await UpdateState(PowerState.StateName, _powerState, true);
         }
 
         protected async Task Handle(TurnOffCommand message)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Power",
-                Message = new PowerPost { State = 0 } //Hibernate
+                Message = new PowerPost { State = 0 }, // Hibernate
             };
             await MessageBroker.SendToService(cmd);
             _powerState = await UpdateState(PowerState.StateName, _powerState, false);
@@ -97,14 +112,17 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeUpCommand command)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var volume = _volume + command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Volume",
-                Message = new VolumePost { Volume = volume }
+                Message = new VolumePost { Volume = volume },
             };
             await MessageBroker.SendToService(cmd);
             _volume = await UpdateState(VolumeState.StateName, _volume, volume);
@@ -112,14 +130,17 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeDownCommand command)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var volume = _volume - command.AsDouble(MessageProperties.ChangeFactor);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Volume",
-                Message = new VolumePost { Volume = volume }
+                Message = new VolumePost { Volume = volume },
             };
             await MessageBroker.SendToService(cmd);
 
@@ -128,14 +149,17 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(VolumeSetCommand command)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var volume = command.AsDouble(MessageProperties.Value);
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Volume",
-                Message = new VolumePost { Volume = volume }
+                Message = new VolumePost { Volume = volume },
             };
             await MessageBroker.SendToService(cmd);
 
@@ -144,13 +168,16 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(MuteCommand message)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Mute",
-                Message = new MutePost { Mute = true }
+                Message = new MutePost { Mute = true },
             };
             await MessageBroker.SendToService(cmd);
 
@@ -159,13 +186,16 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(UnmuteCommand message)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var cmd = new ComputerCommand
             {
                 Address = _hostname,
                 Service = "Mute",
-                Message = new MutePost { Mute = false }
+                Message = new MutePost { Mute = false },
             };
             await MessageBroker.SendToService(cmd);
 
@@ -174,7 +204,10 @@ namespace HomeCenter.Adapters.PC
 
         protected async Task Handle(InputSetCommand message)
         {
-            if (_hostname is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var inputName = message.AsString(MessageProperties.InputSource);
 
@@ -182,7 +215,7 @@ namespace HomeCenter.Adapters.PC
             {
                 Address = _hostname,
                 Service = "InputSource",
-                Message = new InputSourcePost { Input = inputName }
+                Message = new InputSourcePost { Input = inputName },
             };
             await MessageBroker.SendToService(cmd);
 

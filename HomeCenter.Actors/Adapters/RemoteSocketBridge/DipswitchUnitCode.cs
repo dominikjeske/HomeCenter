@@ -5,7 +5,7 @@
         A,
         B,
         C,
-        D
-        //E -- is not used (taken from official documentation)
+        D,
+        // E -- is not used (taken from official documentation)
     }
 }

@@ -5,8 +5,11 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
     public class DipswitchCode : IEquatable<DipswitchCode>
     {
         public DipswitchSystemCode System { get; }
+
         public DipswitchUnitCode Unit { get; }
+
         public RemoteSocketCommand Command { get; }
+
         private uint _code;
 
         public DipswitchCode(DipswitchSystemCode system, DipswitchUnitCode unit, RemoteSocketCommand command)
@@ -23,16 +26,21 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
         public static DipswitchCode ParseCode(string system, string unit, string command) =>
                      new DipswitchCode((DipswitchSystemCode)Enum.Parse(typeof(DipswitchSystemCode), system),
                                        (DipswitchUnitCode)Enum.Parse(typeof(DipswitchUnitCode), unit),
-                                       (RemoteSocketCommand)Enum.Parse(typeof(RemoteSocketCommand), command)
-                                      );
+                                       (RemoteSocketCommand)Enum.Parse(typeof(RemoteSocketCommand), command));
 
         public static DipswitchCode? ParseCode(uint code)
         {
             var command = ParseCommand(code);
-            if (!command.HasValue) return null;
+            if (!command.HasValue)
+            {
+                return null;
+            }
 
             var unit = ParseUnit(code);
-            if (!unit.HasValue) return null;
+            if (!unit.HasValue)
+            {
+                return null;
+            }
 
             var system = ParseSystem(code);
 
@@ -242,7 +250,10 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
         {
             var other = obj as DipswitchCode;
 
-            if (other is null) return false;
+            if (other is null)
+            {
+                return false;
+            }
 
             return AreEqual(this, other);
         }
@@ -255,7 +266,9 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
         public bool AreEqual(DipswitchCode a, DipswitchCode b)
         {
             if (a.System == b.System && a.Command == b.Command && a.Unit == b.Unit)
+            {
                 return true;
+            }
 
             return false;
         }
@@ -263,30 +276,30 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
 
     // Examples:
     // System Code = 11111
-    //00000000|00000000000|0010101|010001 = 1361 A ON
-    //00000000|00000000000|0010101|010100 = 1364 A OFF
-    //00000000|00000000000|1000101|010001 = 4433 B ON
-    //00000000|00000000000|1000101|010100 = 4436 B OFF
-    //00000000|00000000000|1010001|010001 = 5201 C ON
-    //00000000|00000000000|1010001|010100 = 5204 C OFF
-    //00000000|00000000000|1010100|010001 = 5393 D ON
-    //00000000|00000000000|1010100|010100 = 5396 D OFF
+    // 00000000|00000000000|0010101|010001 = 1361 A ON
+    // 00000000|00000000000|0010101|010100 = 1364 A OFF
+    // 00000000|00000000000|1000101|010001 = 4433 B ON
+    // 00000000|00000000000|1000101|010100 = 4436 B OFF
+    // 00000000|00000000000|1010001|010001 = 5201 C ON
+    // 00000000|00000000000|1010001|010100 = 5204 C OFF
+    // 00000000|00000000000|1010100|010001 = 5393 D ON
+    // 00000000|00000000000|1010100|010100 = 5396 D OFF
     // System Code = 00000
-    //00000000|01010101010|0010101|010001 = 5588305 A ON
-    //00000000|01010101010|0010101|010100 = 5588308 A OFF
-    //00000000|01010101010|1000101|010001 = 5591377 B ON
-    //00000000|01010101010|1000101|010100 = 5591380 B OFF
-    //00000000|01010101010|1010001|010001 = 5592145 C ON
-    //00000000|01010101010|1010001|010100 = 5592148 C OFF
-    //00000000|01010101010|1010100|010001 = 5592337 D ON
-    //00000000|01010101010|1010100|010100 = 5592340 D OFF
+    // 00000000|01010101010|0010101|010001 = 5588305 A ON
+    // 00000000|01010101010|0010101|010100 = 5588308 A OFF
+    // 00000000|01010101010|1000101|010001 = 5591377 B ON
+    // 00000000|01010101010|1000101|010100 = 5591380 B OFF
+    // 00000000|01010101010|1010001|010001 = 5592145 C ON
+    // 00000000|01010101010|1010001|010100 = 5592148 C OFF
+    // 00000000|01010101010|1010100|010001 = 5592337 D ON
+    // 00000000|01010101010|1010100|010100 = 5592340 D OFF
     // System Code = 10101
-    //00000000|00010001000|0010101|010001 = 1115473 A ON
-    //00000000|00010001000|0010101|010100 = 1115476 A OFF
-    //00000000|00010001000|1000101|010001 = 1118545 B ON
-    //00000000|00010001000|1000101|010100 = 1118548 B OFF
-    //00000000|00010001000|1010001|010001 = 1119313 C ON
-    //00000000|00010001000|1010001|010100 = 1119316 C OFF
-    //00000000|00010001000|1010100|010001 = 1119505 D ON
-    //00000000|00010001000|1010100|010100 = 1119508 D OFF
+    // 00000000|00010001000|0010101|010001 = 1115473 A ON
+    // 00000000|00010001000|0010101|010100 = 1115476 A OFF
+    // 00000000|00010001000|1000101|010001 = 1118545 B ON
+    // 00000000|00010001000|1000101|010100 = 1118548 B OFF
+    // 00000000|00010001000|1010001|010001 = 1119313 C ON
+    // 00000000|00010001000|1010001|010100 = 1119316 C OFF
+    // 00000000|00010001000|1010100|010001 = 1119505 D ON
+    // 00000000|00010001000|1010100|010100 = 1119508 D OFF
 }

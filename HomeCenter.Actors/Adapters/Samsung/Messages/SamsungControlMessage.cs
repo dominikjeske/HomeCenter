@@ -9,6 +9,7 @@ namespace HomeCenter.Adapters.Samsung.Messages
     public class SamsungControlCommand : TcpCommand, IFormatableMessage<SamsungControlCommand>
     {
         public string? Code { get; set; }
+
         public int Port { get; set; } = 55000;
 
         private readonly string _nullValue = char.ToString((char)0x00);
@@ -59,7 +60,10 @@ namespace HomeCenter.Adapters.Samsung.Messages
 
         private byte[] Serialize()
         {
-            if (Code is null) throw new InvalidOperationException();
+            if (Code is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var identifier = CreateIdentifier();
             var secondParameter = CreateSecondParameter();

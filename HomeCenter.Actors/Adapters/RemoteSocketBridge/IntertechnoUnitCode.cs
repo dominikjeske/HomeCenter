@@ -4,6 +4,6 @@
     {
         Unit1,
         Unit2,
-        Unit3
+        Unit3,
     }
 }

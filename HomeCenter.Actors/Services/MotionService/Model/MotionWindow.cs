@@ -39,7 +39,11 @@ namespace HomeCenter.Services.MotionService.Model
 
         public IReadOnlyCollection<MotionVector> ToVectors()
         {
-            if (_vectors.Count == 0) return Default;
+            if (_vectors.Count == 0)
+            {
+                return Default;
+            }
+
             var list = _vectors.ToList();
             _vectors.Clear();
             return list.AsReadOnly();

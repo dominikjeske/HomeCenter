@@ -6,13 +6,14 @@ using HomeCenter.Extensions;
 namespace HomeCenter.Services.MotionService.Model
 {
     /// <summary>
-    /// Represent place and time of movement
+    /// Represent place and time of movement.
     /// </summary>
     public class MotionPoint : ValueObject, IEquatable<MotionPoint>
     {
         public static readonly MotionPoint Empty = new MotionPoint(string.Empty, DateTimeOffset.MinValue);
 
         public string Uid { get; }
+
         public DateTimeOffset TimeStamp { get; }
 
         public MotionPoint(string place, DateTimeOffset time)

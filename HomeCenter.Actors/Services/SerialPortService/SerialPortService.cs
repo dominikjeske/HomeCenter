@@ -1,15 +1,15 @@
-﻿using HomeCenter.Abstractions;
-using HomeCenter.Actors.Core;
-using HomeCenter.Messages.Commands.Service;
-using HomeCenter.Messages.Events.Device;
-using HomeCenter.Messages.Queries.Service;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Messages.Commands.Service;
+using HomeCenter.Messages.Events.Device;
+using HomeCenter.Messages.Queries.Service;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.Networking
 {
@@ -29,15 +29,18 @@ namespace HomeCenter.Services.Networking
         {
             await base.OnStarted(context);
 
-            //TODO DNF
-            //_disposeContainer.Add(_serialDevice.Subscribe(System.Reflection.Metadata.Handle));
+            // TODO DNF
+            // _disposeContainer.Add(_serialDevice.Subscribe(System.Reflection.Metadata.Handle));
             _disposeContainer.Add(_serialDevice);
         }
 
         [Subscribe]
         protected Task Handle(RegisterSerialCommand registration)
         {
-            if (registration.MessageType is null) throw new ArgumentNullException();
+            if (registration.MessageType is null)
+            {
+                throw new ArgumentNullException();
+            }
 
             if (_messageHandlers.ContainsKey(registration.MessageType.Value))
             {
@@ -72,14 +75,21 @@ namespace HomeCenter.Services.Networking
 
                 if (!_messageHandlers.TryGetValue(messageType, out RegisterSerialCommand registration))
                 {
-                    //throw new ArgumentException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
+                    // throw new ArgumentException($"Message type {messageType} is not supported by {nameof(SerialPortService)}");
                     Logger.LogError("Message type {messageType} is not supported by {service}", messageType, nameof(SerialPortService));
                     return;
                 }
 
-                if (registration?.ResultFormat == null || registration?.Actor == null) throw new InvalidOperationException();
+                if (registration?.ResultFormat == null || registration?.Actor == null)
+                {
+                    throw new InvalidOperationException();
+                }
 
-                if (messageBodySize != registration.MessageSize) throw new ArgumentException($"Message type {messageType} have wrong size");
+                if (messageBodySize != registration.MessageSize)
+                {
+                    throw new ArgumentException($"Message type {messageType} have wrong size");
+                }
+
                 var result = ReadData(registration.ResultFormat, reader);
 
                 MessageBroker.Send(result, registration.Actor);

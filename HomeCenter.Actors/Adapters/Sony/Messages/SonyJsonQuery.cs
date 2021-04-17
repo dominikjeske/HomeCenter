@@ -17,10 +17,15 @@ namespace HomeCenter.Adapters.Sony.Messages
     public class SonyJsonQuery : HttpPostQuery, IFormatableMessage<SonyJsonQuery>
     {
         public string? Path { get; set; }
+
         public string? Method { get; set; }
+
         public object? Params { get; set; }
+
         public int Id { get; set; } = 1;
+
         public string? Version { get; set; } = "1.0";
+
         public string? AuthorisationKey { get; set; }
 
         public SonyJsonQuery FormatMessage()
@@ -39,17 +44,17 @@ namespace HomeCenter.Adapters.Sony.Messages
             return this;
         }
 
-        //public object ParseResult(string responseData, Type responseType = null)
-        //{
+        // public object ParseResult(string responseData, Type responseType = null)
+        // {
         //    var response = (JObject)JsonConvert.DeserializeObject(responseData);
 
-        //    var error = response.GetValue("error");
+        // var error = response.GetValue("error");
         //    if (error != null)
         //    {
         //        throw new BraviaApiException((int)error[0], (string)error[1]);
         //    }
 
-        //    var results = response.GetValue("results");
+        // var results = response.GetValue("results");
         //    if (results != null)
         //    {
         //        return results.ToObject(responseType);
@@ -74,9 +79,9 @@ namespace HomeCenter.Adapters.Sony.Messages
         //        //{
         //        //}
 
-        //        //return response.GetValue("result").First.ToObject(responseType);
+        // //return response.GetValue("result").First.ToObject(responseType);
         //        //}
         //    }
-        //}
+        // }
     }
 }

@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Service;
@@ -6,8 +8,6 @@ using HomeCenter.Messages.Events.Device;
 using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Proto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.CurrentBridge
 {
@@ -32,7 +32,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             var registration = new RegisterSerialCommand(Self, I2C_ACTION_DIMMER, new Format[]
             {
                 new Format(1, typeof(byte), MessageProperties.PinNumber),
-                new Format(2, typeof(float), MessageProperties.Value)
+                new Format(2, typeof(float), MessageProperties.Value),
             });
 
             await MessageBroker.SendToService(registration);

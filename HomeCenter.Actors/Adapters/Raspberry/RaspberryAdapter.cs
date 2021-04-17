@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
@@ -8,8 +10,6 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using HomeCenter.Model.Extensions;
 using Proto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.PC
 {
@@ -32,7 +32,7 @@ namespace HomeCenter.Adapters.PC
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullUp);
             }
 
-            //TODO Enumerable.Empty<string>() not working in .NET 3.0
+            // TODO Enumerable.Empty<string>() not working in .NET 3.0
             foreach (var pin in this.AsList(MessageProperties.PinChangeWithPullDown, new List<string>()))
             {
                 _gpioDevice.RegisterPinChanged(int.Parse(pin), PinModes.InputPullDown);
@@ -44,9 +44,7 @@ namespace HomeCenter.Adapters.PC
         protected DiscoveryResponse Discover(DiscoverQuery message)
         {
             return new DiscoveryResponse(RequierdProperties(), new PowerState(),
-                                                               new VolumeState()
-
-                                          );
+                                                               new VolumeState());
         }
 
         protected void Handle(TurnOnCommand command)
@@ -80,17 +78,17 @@ namespace HomeCenter.Adapters.PC
 
         protected void Handle(VolumeUpCommand command)
         {
-            //TODO
+            // TODO
         }
 
         protected void Handle(VolumeDownCommand command)
         {
-            //TODO
+            // TODO
         }
 
         protected void Handle(VolumeSetCommand command)
         {
-            //TODO
+            // TODO
         }
     }
 }

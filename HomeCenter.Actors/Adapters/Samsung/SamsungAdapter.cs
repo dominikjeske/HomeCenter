@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Adapters.Samsung.Messages;
@@ -6,8 +8,6 @@ using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Queries.Device;
 using Proto;
-using System;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Samsung
 {
@@ -37,28 +37,41 @@ namespace HomeCenter.Adapters.Samsung
             return new DiscoveryResponse(RequierdProperties(), new PowerState(ReadWriteMode.Write),
                                                                new VolumeState(ReadWriteMode.Write),
                                                                new MuteState(ReadWriteMode.Write),
-                                                               new InputSourceState(ReadWriteMode.Write)
-                                          );
+                                                               new InputSourceState(ReadWriteMode.Write));
         }
 
         private SamsungControlCommand GetCommand(string code)
         {
-            if (_hostname is null) throw new InvalidOperationException();
-            if (_mac is null) throw new InvalidOperationException();
-            if (_appKey is null) throw new InvalidOperationException();
+            if (_hostname is null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (_mac is null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (_appKey is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             return new SamsungControlCommand
             {
                 Address = _hostname,
                 Code = code,
                 MAC = _mac,
-                AppKey = _appKey
+                AppKey = _appKey,
             };
         }
 
         protected Task Handle(TurnOnCommand message)
         {
-            if (_infraredAdaperName is null) throw new InvalidOperationException();
+            if (_infraredAdaperName is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             MessageBroker.Send(SendCodeCommand.Create(TURN_ON_IR_CODE), _infraredAdaperName);
             return Task.CompletedTask;
@@ -112,8 +125,15 @@ namespace HomeCenter.Adapters.Samsung
                 source = "KEY_TV";
             }
 
-            if (source?.Length == 0) throw new ArgumentException($"Input {inputName} was not found on Samsung available device input sources");
-            if (source is null) throw new InvalidOperationException();
+            if (source?.Length == 0)
+            {
+                throw new ArgumentException($"Input {inputName} was not found on Samsung available device input sources");
+            }
+
+            if (source is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             var cmd = GetCommand(source);
             await MessageBroker.SendToService(cmd);

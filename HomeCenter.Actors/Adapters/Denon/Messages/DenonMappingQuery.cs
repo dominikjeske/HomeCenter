@@ -21,7 +21,7 @@ namespace HomeCenter.Adapters.Denon.Messages
             return new DenonDeviceInfo
             {
                 FriendlyName = xml.Descendants("FriendlyName").FirstOrDefault()?.Value?.Trim(),
-                InputMap = xml.Descendants("VideoSelectLists").Descendants("value").ToDictionary(y => y.Attribute("table").Value, x => x.Attribute("index").Value)
+                InputMap = xml.Descendants("VideoSelectLists").Descendants("value").ToDictionary(y => y.Attribute("table").Value, x => x.Attribute("index").Value),
             };
         }
     }

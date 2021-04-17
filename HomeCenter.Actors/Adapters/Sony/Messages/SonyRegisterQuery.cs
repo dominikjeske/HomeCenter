@@ -12,7 +12,9 @@ namespace HomeCenter.Adapters.Sony.Messages
     public class SonyRegisterQuery : HttpPostQuery, IFormatableMessage<SonyRegisterQuery>
     {
         public string? ClientID { get; set; } = "";
+
         public string? ApplicationID { get; set; } = "HomeCenter";
+
         public string? PIN { get; set; }
 
         private Uri? _cookieAddress;
@@ -51,7 +53,10 @@ namespace HomeCenter.Adapters.Sony.Messages
 
         public string ReadAuthKey()
         {
-            if (Cookies is null) throw new InvalidOperationException();
+            if (Cookies is null)
+            {
+                throw new InvalidOperationException();
+            }
 
             return Cookies.GetCookies(_cookieAddress)
                           .OfType<Cookie>()

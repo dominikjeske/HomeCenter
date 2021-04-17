@@ -4,7 +4,7 @@ using System.Xml.Linq;
 namespace HomeCenter.Services.MotionService.Model
 {
     /// <summary>
-    /// Represent motion time in room
+    /// Represent motion time in room.
     /// </summary>
     public class MotionStamp
     {
@@ -13,7 +13,9 @@ namespace HomeCenter.Services.MotionService.Model
         private MotionStamp _previous = Empty;
 
         public DateTimeOffset? Value { get; private set; }
+
         public MotionStamp Previous => _previous ?? Empty;
+
         public bool HasValue => Value.HasValue;
 
         public void SetTime(DateTimeOffset time)

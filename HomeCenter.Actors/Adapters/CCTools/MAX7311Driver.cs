@@ -11,7 +11,7 @@ namespace HomeCenter.Adapters.Common
     /// Register 2-3=Output
     /// Register 4-5=Inversion
     /// Register 6-7=Configuration
-    /// Register 8=Timeout
+    /// Register 8=Timeout.
     /// </summary>
     public class MAX7311Driver
     {
@@ -20,31 +20,38 @@ namespace HomeCenter.Adapters.Common
         private const int StateSize = 2;
 
         /// <summary>
-        /// Prepare configuration for MAX7311 device
+        /// Prepare configuration for MAX7311 device.
         /// </summary>
-        /// <param name="firstPortWriteMode">When set to True first port will be used in write mode, when False it will be used for reading</param>
-        /// <param name="secondPortWriteMode">When set to True second port will be used in write mode, when False it will be used for reading</param>
-        /// <returns>Configuration bytes</returns>
+        /// <param name="firstPortWriteMode">When set to True first port will be used in write mode, when False it will be used for reading.</param>
+        /// <param name="secondPortWriteMode">When set to True second port will be used in write mode, when False it will be used for reading.</param>
+        /// <returns>Configuration bytes.</returns>
         public byte[] Configure(bool firstPortWriteMode, bool secondPortWriteMode)
         {
             return new byte[]
             {
                 0x06, // Configuration mode
                 (byte)(firstPortWriteMode ? 0x00 : 0xFF),
-                (byte)(secondPortWriteMode ? 0x00 : 0xFF)
+                (byte)(secondPortWriteMode ? 0x00 : 0xFF),
             };
         }
 
         private byte[] GetWriteTable(byte[] state)
         {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-            if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
+            if (state == null)
+            {
+                throw new ArgumentNullException(nameof(state));
+            }
+
+            if (state.Length != StateSize)
+            {
+                throw new ArgumentException("Length is invalid.", nameof(state));
+            }
 
             return new byte[]
             {
                 0x02,      // Output register
                 state[0],  // The state of ports 0-7
-                state[1]   // The state of ports 8-15
+                state[1],   // The state of ports 8-15
             };
         }
 
@@ -54,7 +61,7 @@ namespace HomeCenter.Adapters.Common
         {
             return new byte[]
             {
-                0x00      // Input register
+                0x00,      // Input register
             };
         }
 

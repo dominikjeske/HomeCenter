@@ -9,8 +9,11 @@ namespace HomeCenter.Adapters.Denon.Messages
     internal class DenonControlQuery : HttpGetQuery, IFormatableMessage<DenonControlQuery>, IMessageResult<string, object>
     {
         public string? Command { get; init; }
+
         public string? Api { get; init; }
+
         public string? ReturnNode { get; init; }
+
         public string? Zone { get; init; }
 
         public bool Verify(string? input, object expectedResult) => (string)expectedResult == input;
@@ -19,7 +22,10 @@ namespace HomeCenter.Adapters.Denon.Messages
         {
             using (var reader = new StringReader(rawHttpResult))
             {
-                if (rawHttpResult?.Length == 0 && ReturnNode?.Length == 0) return "";
+                if (rawHttpResult?.Length == 0 && ReturnNode?.Length == 0)
+                {
+                    return "";
+                }
 
                 var xml = XDocument.Load(reader);
                 var returnNode = xml.Descendants(ReturnNode).FirstOrDefault();

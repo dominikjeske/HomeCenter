@@ -1,4 +1,7 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Adapters.RemoteSocketBridge.Codes;
 using HomeCenter.Capabilities;
@@ -9,9 +12,6 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Service;
 using Microsoft.Extensions.Logging;
 using Proto;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.RemoteSocketBridge
 {
@@ -20,7 +20,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
     {
         private const int DEFAULT_REPEAT = 3;
         private int _pinNumber;
-        private int _I2cAddress;
+        private int _i2cAddress;
 
         private readonly Dictionary<string, bool> _state = new Dictionary<string, bool>();
 
@@ -28,14 +28,14 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         {
             await base.OnStarted(context);
 
-            _I2cAddress = this.AsInt(MessageProperties.Address);
+            _i2cAddress = this.AsInt(MessageProperties.Address);
             _pinNumber = this.AsInt(MessageProperties.PinNumber);
 
             var registration = new RegisterSerialCommand(Self, 2, new Format[]
              {
                     new Format(1, typeof(uint), "Code"),
                     new Format(2, typeof(byte), "Bits"),
-                    new Format(3, typeof(byte), "Protocol")
+                    new Format(3, typeof(byte), "Protocol"),
              });
             await MessageBroker.SendToService(registration);
         }
@@ -60,7 +60,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
 
             Logger.LogInformation("Sending code {code}", dipswitchCode.Code);
 
-            var cmd = I2cCommand.Create(_I2cAddress, package);
+            var cmd = I2cCommand.Create(_i2cAddress, package);
             await MessageBroker.SendToService(cmd);
             await UpdateState(dipswitchCode);
         }
@@ -68,7 +68,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
         protected async Task TurnOff(TurnOffCommand message)
         {
             byte[] package = PreparePackage(message, nameof(RemoteSocketCommand.TurnOff), out var dipswitchCode);
-            var cmd = I2cCommand.Create(_I2cAddress, package);
+            var cmd = I2cCommand.Create(_i2cAddress, package);
             await MessageBroker.SendToService(cmd);
             await UpdateState(dipswitchCode);
         }
@@ -100,6 +100,7 @@ namespace HomeCenter.Adapters.RemoteSocketBridge
             {
                 oldValue = _state[codeShortValue];
             }
+
             var newValue = code.Command == RemoteSocketCommand.TurnOn;
 
             _state[code.ToShortCode()] = await UpdateState(PowerState.StateName, oldValue, newValue);

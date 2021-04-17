@@ -25,7 +25,7 @@ namespace HomeCenter.Adapters.Denon.Messages
             {
                 InputSources = input.Zip(renamed, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v),
                 Surround = xml.Descendants("SurrMode").FirstOrDefault()?.Value?.Trim(),
-                Model = xml.Descendants("Model").FirstOrDefault()?.Value?.Trim()
+                Model = xml.Descendants("Model").FirstOrDefault()?.Value?.Trim(),
             };
         }
     }

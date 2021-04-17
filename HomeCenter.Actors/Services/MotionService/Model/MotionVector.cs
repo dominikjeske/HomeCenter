@@ -5,19 +5,22 @@ using CSharpFunctionalExtensions;
 namespace HomeCenter.Services.MotionService.Model
 {
     /// <summary>
-    /// Represent move from one room to other
+    /// Represent move from one room to other.
     /// </summary>
     public class MotionVector : ValueObject, IEquatable<MotionVector>
     {
         public readonly static MotionVector Empty = new(MotionPoint.Empty, MotionPoint.Empty); 
 
         public DateTimeOffset StartTime => Start.TimeStamp;
+
         public DateTimeOffset EndTime => End.TimeStamp;
 
         public MotionPoint Start { get; }
+
         public MotionPoint End { get; }
 
         public string StartPoint => Start.Uid;
+
         public string EndPoint => End.Uid;
 
         public MotionVector(MotionPoint startPoint, MotionPoint endPoint)

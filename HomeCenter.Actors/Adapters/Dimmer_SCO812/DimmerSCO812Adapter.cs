@@ -1,4 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
 using HomeCenter.Messages.Commands.Device;
@@ -7,8 +9,6 @@ using HomeCenter.Messages.Events.Service;
 using HomeCenter.Messages.Queries.Device;
 using Microsoft.Extensions.Logging;
 using Proto;
-using System;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.CurrentBridge
 {
@@ -19,32 +19,32 @@ namespace HomeCenter.Adapters.CurrentBridge
         private const int SWITCH_CHANGE_DIRECTION = 400;
         private const int WAIT_AFTER_CHANGE = 500;
 
-        private string? _PowerAdapterUid;
-        private int _PowerAdapterPin;
-        private string? _PowerLevelAdapterUid;
-        private int _PowerLevelAdapterPin;
-        private double? _Minimum;
-        private double? _Maximum;
+        private string? _powerAdapterUid;
+        private int _powerAdapterPin;
+        private string? _powerLevelAdapterUid;
+        private int _powerLevelAdapterPin;
+        private double? _minimum;
+        private double? _maximum;
 
-        private double? _Range;
-        private double? _PowerLevel;
-        private double? _CurrentValue;
-        private double? _PreviousCurrentValue;
+        private double? _range;
+        private double? _powerLevel;
+        private double? _currentValue;
+        private double? _previousCurrentValue;
 
         protected override async Task OnStarted(IContext context)
         {
             await base.OnStarted(context);
 
-            _PowerAdapterUid = this.AsString("PowerAdapter");
-            _PowerAdapterPin = this.AsInt("PowerAdapterPin");
-            _PowerLevelAdapterUid = this.AsString("PowerLevelAdapterUid");
-            _PowerLevelAdapterPin = this.AsInt("PowerLevelAdapterPin");
-            _Minimum = this.AsNullableDouble("Minimum");
-            _Maximum = this.AsNullableDouble("Maximum");
+            _powerAdapterUid = this.AsString("PowerAdapter");
+            _powerAdapterPin = this.AsInt("PowerAdapterPin");
+            _powerLevelAdapterUid = this.AsString("PowerLevelAdapterUid");
+            _powerLevelAdapterPin = this.AsInt("PowerLevelAdapterPin");
+            _minimum = this.AsNullableDouble("Minimum");
+            _maximum = this.AsNullableDouble("Maximum");
 
-            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _PowerLevelAdapterPin), _PowerLevelAdapterUid);
+            await MessageBroker.Request<DiscoverQuery, DiscoveryResponse>((DiscoverQuery)DiscoverQuery.Default.SetProperty(MessageProperties.PinNumber, _powerLevelAdapterPin), _powerLevelAdapterUid);
 
-            ProtectResource(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, false, _PowerLevelAdapterUid));
+            ProtectResource(MessageBroker.SubscribeForMessage<PropertyChangedEvent>(Self, false, _powerLevelAdapterUid));
         }
 
         protected override async Task OnSystemStarted(SystemStartedEvent systemStartedEvent)
@@ -63,7 +63,7 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             if (context.Message is PropertyChangedEvent property)
             {
-                _CurrentValue = property.AsDouble(MessageProperties.NewValue);
+                _currentValue = property.AsDouble(MessageProperties.NewValue);
                 Become(CalibrationSecondStateCheck);
                 await ChangePowerState();
             }
@@ -80,7 +80,7 @@ namespace HomeCenter.Adapters.CurrentBridge
                 var newValue = property.AsDouble(MessageProperties.NewValue);
 
                 // I we changed OFF => ON we have to turn off before start
-                if (newValue > _CurrentValue)
+                if (newValue > _currentValue)
                 {
                     Logger.LogInformation("[{Uid}] Calibration detected ON state. Dimmer will be turned off", Uid);
                     await ChangePowerState();
@@ -111,7 +111,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 // Resend stop message to cancel scheduled message
                 await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MAX")), TimeSpan.FromMilliseconds(1500), true);
-                _Maximum = maximumState.AsDouble(MessageProperties.NewValue);
+                _maximum = maximumState.AsDouble(MessageProperties.NewValue);
             }
             else
             {
@@ -137,7 +137,7 @@ namespace HomeCenter.Adapters.CurrentBridge
 
                 TryCalculateSpectrum();
 
-                Logger.LogInformation("[{Uid}] Calibration finished with MIN: {Minimum}, MAX: {Maximum}, RANGE: {Range}", Uid, _Minimum, _Maximum, _Range);
+                Logger.LogInformation("[{Uid}] Calibration finished with MIN: {Minimum}, MAX: {Maximum}, RANGE: {Range}", Uid, _minimum, _maximum, _range);
 
                 await Task.Delay(WAIT_AFTER_CHANGE);
 
@@ -146,7 +146,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             else if (context.Message is PropertyChangedEvent minimumState)
             {
                 await MessageBroker.SendAfterDelay(ActorMessageContext.Create(Self, StopCommand.Create("MIN")), TimeSpan.FromMilliseconds(1500));
-                _Minimum = minimumState.AsDouble(MessageProperties.NewValue);
+                _minimum = minimumState.AsDouble(MessageProperties.NewValue);
             }
             else
             {
@@ -156,29 +156,32 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         private void ResetStateValues()
         {
-            _CurrentValue = 0;
-            _PreviousCurrentValue = 0;
-            _PowerLevel = 0;
+            _currentValue = 0;
+            _previousCurrentValue = 0;
+            _powerLevel = 0;
         }
 
         protected async Task Handle(PropertyChangedEvent propertyChangedEvent)
         {
-            if (!_Minimum.HasValue || !_Range.HasValue) return;
+            if (!_minimum.HasValue || !_range.HasValue)
+            {
+                return;
+            }
 
             var value = propertyChangedEvent.AsDouble(MessageProperties.NewValue);
-            if (value < _Minimum)
+            if (value < _minimum)
             {
                 value = 0;
             }
 
-            _PreviousCurrentValue = _CurrentValue;
-            _CurrentValue = value;
+            _previousCurrentValue = _currentValue;
+            _currentValue = value;
 
             var newLevel = GetPowerLevel(value);
 
-            Logger.LogInformation("NEW: {newLevel}, MAX: {Maximum}, MIN: {Minimum}", newLevel, _Maximum, _Minimum);
+            Logger.LogInformation("NEW: {newLevel}, MAX: {Maximum}, MIN: {Minimum}", newLevel, _maximum, _minimum);
 
-            _PowerLevel = await UpdateState(PowerLevelState.StateName, _PowerLevel, newLevel);
+            _powerLevel = await UpdateState(PowerLevelState.StateName, _powerLevel, newLevel);
         }
 
         protected DiscoveryResponse Discover(DiscoverQuery message)
@@ -192,7 +195,10 @@ namespace HomeCenter.Adapters.CurrentBridge
             {
                 // When we don't get state time and we already turned on we ignore this
                 // When state time is set by the sender we always allow to pass threw
-                if (_PowerLevel > 0) return;
+                if (_powerLevel > 0)
+                {
+                    return;
+                }
 
                 turnOnCommand.SetProperty(MessageProperties.StateTime, CHANGE_POWER_STATE_TIME);
             }
@@ -202,7 +208,10 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         protected async Task Handle(TurnOffCommand turnOnCommand)
         {
-            if (_PowerLevel == 0) return;
+            if (_powerLevel == 0)
+            {
+                return;
+            }
 
             await ChangePowerState();
         }
@@ -211,16 +220,22 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             var destinationLevel = powerLevel.PowerLevel;
 
-            if (!_PowerLevel.HasValue) return Task.CompletedTask;
+            if (!_powerLevel.HasValue)
+            {
+                return Task.CompletedTask;
+            }
 
             return ControlDimmer(destinationLevel);
         }
 
         protected async Task Handle(AdjustPowerLevelCommand powerLevel)
         {
-            if (!_PowerLevel.HasValue) return;
+            if (!_powerLevel.HasValue)
+            {
+                return;
+            }
 
-            var destinationLevel = _PowerLevel.Value + powerLevel.Delta;
+            var destinationLevel = _powerLevel.Value + powerLevel.Delta;
 
             if (destinationLevel > 100)
             {
@@ -242,12 +257,12 @@ namespace HomeCenter.Adapters.CurrentBridge
         {
             int powerOnTime = 0;
             var dest = TimeForPercentage(destinationLevel);
-            var current = TimeForPercentage(_PowerLevel.GetValueOrDefault());
+            var current = TimeForPercentage(_powerLevel.GetValueOrDefault());
 
-            if (destinationLevel > _PowerLevel)
+            if (destinationLevel > _powerLevel)
             {
                 // If last time dimmer was increasing its value we have to change direction by short time power on
-                if (_CurrentValue > _PreviousCurrentValue && _CurrentValue > 0)
+                if (_currentValue > _previousCurrentValue && _currentValue > 0)
                 {
                     // We add time that we consume on direction change
                     powerOnTime += await ChangeDimmerDirection();
@@ -260,7 +275,7 @@ namespace HomeCenter.Adapters.CurrentBridge
             else
             {
                 // If last time dimmer was decreasing its value we have to change direction by short time power on
-                if (_PreviousCurrentValue > _CurrentValue && _CurrentValue > 0)
+                if (_previousCurrentValue > _currentValue && _currentValue > 0)
                 {
                     powerOnTime += await ChangeDimmerDirection();
                 }
@@ -280,22 +295,28 @@ namespace HomeCenter.Adapters.CurrentBridge
         }
 
         /// <summary>
-        /// Characteristic of dimmer read by measurements give equation of Time = 0.23 * percentage^2 + 500
+        /// Characteristic of dimmer read by measurements give equation of Time = 0.23 * percentage^2 + 500.
         /// </summary>
         /// <param name="percentage"></param>
         /// <returns></returns>
         private double TimeForPercentage(double percentage)
         {
-            if (percentage == 0) return 0;
+            if (percentage == 0)
+            {
+                return 0;
+            }
 
             return (0.23 * percentage * percentage) + 500;
         }
 
         private double GetPowerLevel(double currentValue)
         {
-            if (currentValue < _Minimum.GetValueOrDefault()) return 0;
+            if (currentValue < _minimum.GetValueOrDefault())
+            {
+                return 0;
+            }
 
-            return ((currentValue - _Minimum.GetValueOrDefault()) / _Range.GetValueOrDefault()) * 100.0;
+            return ((currentValue - _minimum.GetValueOrDefault()) / _range.GetValueOrDefault()) * 100.0;
         }
 
         private async Task ChangePowerState()
@@ -306,20 +327,24 @@ namespace HomeCenter.Adapters.CurrentBridge
 
         private void ForwardToPowerAdapter(Command command)
         {
-            if (_PowerAdapterUid is null) throw new InvalidOperationException();
+            if (_powerAdapterUid is null)
+            {
+                throw new InvalidOperationException();
+            }
 
-            command.SetProperty(MessageProperties.PinNumber, _PowerAdapterPin);
+            command.SetProperty(MessageProperties.PinNumber, _powerAdapterPin);
 
-            MessageBroker.Send(command, _PowerAdapterUid);
+            MessageBroker.Send(command, _powerAdapterUid);
         }
 
         private bool TryCalculateSpectrum()
         {
-            if (_Minimum.HasValue && _Maximum.HasValue)
+            if (_minimum.HasValue && _maximum.HasValue)
             {
-                _Range = _Maximum.Value - _Minimum.Value;
+                _range = _maximum.Value - _minimum.Value;
                 return true;
             }
+
             return false;
         }
     }

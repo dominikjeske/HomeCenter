@@ -1,4 +1,9 @@
-﻿using HomeCenter.Abstractions;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Actors.Core;
 using HomeCenter.Capabilities;
@@ -11,11 +16,6 @@ using HomeCenter.Messages.Queries.Device;
 using HomeCenter.Messages.Queries.Services;
 using Microsoft.Extensions.Logging;
 using Proto;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Adapters.Common
 {
@@ -49,7 +49,7 @@ namespace HomeCenter.Adapters.Common
                 Subscribe<PinValueChangedEvent>(false, new RoutingFilter(new Dictionary<string, object>()
                 {
                     [MessageProperties.MessageSource] = this.AsString(MessageProperties.InterruptSource),
-                    [MessageProperties.PinNumber] = this.AsString(MessageProperties.InterruptPin)
+                    [MessageProperties.PinNumber] = this.AsString(MessageProperties.InterruptPin),
                 }));
             }
 
@@ -63,6 +63,7 @@ namespace HomeCenter.Adapters.Common
                     await SetPortState(i, false);
                 }
             }
+
             if (_secondPortWriteMode)
             {
                 for (int i = 8; i < 15; i++)
@@ -126,7 +127,11 @@ namespace HomeCenter.Adapters.Common
         private int ValidatePin(Command message)
         {
             var pinNumber = message.AsInt(MessageProperties.PinNumber);
-            if (pinNumber < 0 || pinNumber > 15) throw new ArgumentOutOfRangeException(nameof(pinNumber));
+            if (pinNumber < 0 || pinNumber > 15)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pinNumber));
+            }
+
             var isPinInFirstPortRange = pinNumber < 8;
 
             if ((isPinInFirstPortRange && !_firstPortWriteMode) || (!isPinInFirstPortRange && !_secondPortWriteMode))
@@ -163,7 +168,10 @@ namespace HomeCenter.Adapters.Common
 
             stopwatch.Stop();
 
-            if (!_driver.TrySaveState(newState, out var oldState)) return;
+            if (!_driver.TrySaveState(newState, out var oldState))
+            {
+                return;
+            }
 
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
@@ -177,11 +185,14 @@ namespace HomeCenter.Adapters.Common
                 bool pinInWriteMode = IsPinInWriteMode(pinNumber);
 
                 // When state is the same or change is in port that are set to WRITE we skip event generation
-                if (oldPinState == newPinState || pinInWriteMode) continue;
+                if (oldPinState == newPinState || pinInWriteMode)
+                {
+                    continue;
+                }
 
                 var properyChangeEvent = PropertyChangedEvent.Create(Uid, PowerState.StateName, oldPinState, newPinState, new Dictionary<string, string>()
                 {
-                    [MessageProperties.PinNumber] = pinNumber.ToString()
+                    [MessageProperties.PinNumber] = pinNumber.ToString(),
                 });
 
                 await MessageBroker.Publish(properyChangeEvent, Uid);

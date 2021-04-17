@@ -1,4 +1,10 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using HomeCenter.Abstractions;
 using HomeCenter.Abstractions.Defaults;
 using HomeCenter.Conditions;
@@ -8,12 +14,6 @@ using HomeCenter.Messages.Commands.Device;
 using HomeCenter.Messages.Events.Device;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -29,10 +29,15 @@ namespace HomeCenter.Services.MotionService
         private DateTimeOffset? _scheduledAutomationTime;
 
         internal MotionEngine MotionEngine { get; }
+
         internal string Uid { get; }
+
         internal AreaDescriptor AreaDescriptor { get; }
+
         internal bool AutomationDisabled { get; private set; }
+
         internal int NumberOfPersons => MotionEngine.NumberOfPersons;
+
         internal bool LampState { get; private set; }
 
         public override string ToString() => $"{Uid} [Last move: {MotionEngine.LastMotion}] [Persons: {NumberOfPersons}]";
@@ -47,7 +52,7 @@ namespace HomeCenter.Services.MotionService
                 return new Dictionary<string, object>
                 {
                     ["@Statistics"] = MotionEngine!,
-                    ["Room"] = Uid
+                    ["Room"] = Uid,
                 };
             });
 
@@ -97,12 +102,12 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Take action when there is a move in the room
+        /// Take action when there is a move in the room.
         /// </summary>
         public void MarkMotion(DateTimeOffset motionTime) => MotionEngine.MarkMotion(motionTime);
 
         /// <summary>
-        /// Update room state on time intervals
+        /// Update room state on time intervals.
         /// </summary>
         public void PeriodicUpdate(DateTimeOffset motionTime)
         {
@@ -111,7 +116,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Handle vector candidates that occurred in room
+        /// Handle vector candidates that occurred in room.
         /// </summary>
         public void HandleVectors(IList<MotionVector> motionVectors) => MotionEngine.HandleVectors(motionVectors);
 

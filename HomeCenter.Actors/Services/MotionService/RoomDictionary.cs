@@ -1,10 +1,10 @@
-﻿using HomeCenter.Extensions;
-using HomeCenter.Services.MotionService.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using HomeCenter.Extensions;
+using HomeCenter.Services.MotionService.Model;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -29,7 +29,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Check if two point in time can physically be a proper vector
+        /// Check if two point in time can physically be a proper vector.
         /// </summary>
         public bool IsProperVector(MotionPoint start, MotionPoint potencialEnd)
         {
@@ -38,7 +38,10 @@ namespace HomeCenter.Services.MotionService
 
         public void HandleVectors(IList<MotionVector> motionVectors)
         {
-            if (motionVectors.Count == 0) return;
+            if (motionVectors.Count == 0)
+            {
+                return;
+            }
 
             var targetRoom = this[motionVectors[0]];
             targetRoom.HandleVectors(motionVectors);
@@ -50,7 +53,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Evaluates each room state
+        /// Evaluates each room state.
         /// </summary>
         public void EvaluateRooms(DateTimeOffset motionTime)
         {
@@ -59,14 +62,14 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Check if two points are neighbors
+        /// Check if two points are neighbors.
         /// </summary>
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         private bool AreNeighbors(MotionPoint p1, MotionPoint p2) => _neighbors[p1.Uid].ContainsKey(p2.Uid);
 
         /// <summary>
-        /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>
+        /// Checks if there was any move in current room and all neighbors excluding <paramref name="roomToExclude"/> after <paramref name="referenceTime"/>.
         /// </summary>
         public bool MoveInNeighborhood(string roomid, string roomToExclude, DateTimeOffset referenceTime)
         {
@@ -78,8 +81,7 @@ namespace HomeCenter.Services.MotionService
 
         public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 &&
                                                                           r.MotionEngine.VisitType.Id > VisitType.PassThru.Id &&
-                                                                          r.AreaDescriptor.AreaType != AreaType.Outdoor
-        );
+                                                                          r.AreaDescriptor.AreaType != AreaType.Outdoor);
 
         public void MarkLeave(MotionVector motionVector)
         {

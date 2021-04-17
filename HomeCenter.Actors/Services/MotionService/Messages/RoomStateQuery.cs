@@ -1,6 +1,6 @@
-﻿using HomeCenter.Abstractions;
+﻿using System.Collections.Generic;
+using HomeCenter.Abstractions;
 using HomeCenter.Services.MotionService.Model;
-using System.Collections.Generic;
 
 namespace HomeCenter.Services.MotionService.Commands
 {
@@ -18,7 +18,9 @@ namespace HomeCenter.Services.MotionService.Commands
     public class RoomState
     {
         public int NumberOfPersosn { get; set; }
+
         public bool AutomationEnabled { get; set; }
+
         public bool HasConfusions { get; set; }
     }
 }

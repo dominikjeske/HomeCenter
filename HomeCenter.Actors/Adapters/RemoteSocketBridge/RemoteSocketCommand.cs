@@ -4,6 +4,6 @@
     {
         TurnOn,
 
-        TurnOff
+        TurnOff,
     }
 }

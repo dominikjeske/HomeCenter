@@ -1,11 +1,11 @@
-﻿using Destructurama.Attributed;
-using HomeCenter.Extensions;
-using HomeCenter.Services.MotionService.Model;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
+using Destructurama.Attributed;
+using HomeCenter.Extensions;
+using HomeCenter.Services.MotionService.Model;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -28,6 +28,7 @@ namespace HomeCenter.Services.MotionService
         public Probability Probability { get; private set; } = Probability.Zero;
 
         public DateTimeOffset? FirstEnterTime { get; private set; }
+
         public int NumberOfPersons { get; private set; }
 
         [LogAsScalar]
@@ -94,7 +95,7 @@ namespace HomeCenter.Services.MotionService
 
         private double GetLeaveDeltaProbability()
         {
-            //TODO - maybe give some minimum because motion sensors have 2-3s inertia
+            // TODO - maybe give some minimum because motion sensors have 2-3s inertia
             // So when recalculation time is 1s we should calculate probability delta for each recalculation
             // and multiply by 3 - this will be minimum time to have a chance to get next data from sensor 
 
@@ -126,7 +127,7 @@ namespace HomeCenter.Services.MotionService
         public void MarkVector(MotionVector motionVector) => MarkVector(motionVector, false);
 
         /// <summary>
-        /// Marks enter to target room and leave from source room
+        /// Marks enter to target room and leave from source room.
         /// </summary>
         private void MarkVector(MotionVector motionVector, bool resolved)
         {
@@ -137,12 +138,15 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Decrease probability of person in room after each time interval
+        /// Decrease probability of person in room after each time interval.
         /// </summary>
         public void RecalculateProbability(DateTimeOffset motionTime)
         {
             // When we just have a move in room there is no need for recalculation
-            if (motionTime == LastMotion.Value || Probability.IsNoProbability) return;
+            if (motionTime == LastMotion.Value || Probability.IsNoProbability)
+            {
+                return;
+            }
 
             // egz. 10s * 1 | 2 | 3 => 10-30s
             var timeout = TimeSpan.FromTicks((int)(BaseTimeOut.Ticks * VisitType.Id));
@@ -181,7 +185,10 @@ namespace HomeCenter.Services.MotionService
 
         public void HandleVectors(IList<MotionVector> motionVectors)
         {
-            if (motionVectors.Count == 0) return;
+            if (motionVectors.Count == 0)
+            {
+                return;
+            }
 
             // When we have one vector we know that there is no concurrent vectors to same room
             if (motionVectors.Count == 1)
@@ -197,6 +204,7 @@ namespace HomeCenter.Services.MotionService
                     MarkConfusion(new MotionVector[] { vector });
                 }
             }
+
             // When we have at least two vectors we know that we have confusion
             else
             {
@@ -205,7 +213,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Increment can move timeout between VisitTypes time zones
+        /// Increment can move timeout between VisitTypes time zones.
         /// </summary>
         private void UpdateVisitType(DateTimeOffset motionTime)
         {
@@ -224,18 +232,21 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// Check if <paramref name="motionVector"/> is vector that turned on the light
+        /// Check if <paramref name="motionVector"/> is vector that turned on the light.
         /// </summary>
         private bool IsTurnOnVector(MotionVector motionVector) => !FirstEnterTime.HasValue || FirstEnterTime == motionVector.EndTime;
 
 
 
         /// <summary>
-        /// Set probability of occurrence of the person in the room
+        /// Set probability of occurrence of the person in the room.
         /// </summary>
         private void SetProbability(Probability probability)
         {
-            if (probability == Probability) return;
+            if (probability == Probability)
+            {
+                return;
+            }
 
             var previous = Probability;
 
@@ -255,7 +266,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// If light was turned off too early area TurnOffTimeout is too low and we have to update it
+        /// If light was turned off too early area TurnOffTimeout is too low and we have to update it.
         /// </summary>
         private void TryTuneTurnOffTimeOut(DateTimeOffset moveTime, Probability current)
         {
@@ -269,7 +280,7 @@ namespace HomeCenter.Services.MotionService
         }
 
         /// <summary>
-        /// When we don't detect motion vector previously but there is move in room and currently we have 0 person so we know that there is a least one
+        /// When we don't detect motion vector previously but there is move in room and currently we have 0 person so we know that there is a least one.
         /// </summary>
         private void TrySetAtLeastOnePerson(DateTimeOffset time)
         {

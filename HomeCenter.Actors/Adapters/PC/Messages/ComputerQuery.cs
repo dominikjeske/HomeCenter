@@ -7,7 +7,9 @@ namespace HomeCenter.Adapters.PC.Messages
     public class ComputerQuery : HttpPostQuery, IFormatableMessage<ComputerQuery>
     {
         public int Port { get; set; } = 5000;
+
         public string? Service { get; set; }
+
         public object? Message { get; set; }
 
         public ComputerQuery()

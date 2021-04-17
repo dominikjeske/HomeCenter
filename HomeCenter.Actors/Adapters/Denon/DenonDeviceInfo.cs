@@ -2,17 +2,21 @@
 
 namespace HomeCenter.Adapters.Denon
 {
-    //[Adapter]
-    //public partial class xxx : IMapper<Source, Destination>
-    //{
-    //}
+    // [Adapter]
+    // public partial class xxx : IMapper<Source, Destination>
+    // {
+    // }
 
     public class DenonDeviceInfo
     {
         public string? Surround { get; set; }
+
         public string? Model { get; set; }
+
         public string? FriendlyName { get; set; }
+
         public Dictionary<string, string> InputMap { get; set; } = new Dictionary<string, string>();
+
         public Dictionary<string, string> InputSources { get; set; } = new Dictionary<string, string>();
 
         public string TranslateInputName(string inputName, string zone)
@@ -24,11 +28,13 @@ namespace HomeCenter.Adapters.Denon
             {
                 inputName = InputSources[inputName];
             }
+
             // Search for mapping
             if (InputMap.ContainsKey(inputName))
             {
                 input = InputMap[inputName];
             }
+
             // If there is no mapping maybe value is already mapped value
             if (InputMap.ContainsValue(inputName))
             {

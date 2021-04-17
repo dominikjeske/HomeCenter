@@ -1,12 +1,12 @@
-﻿using HomeCenter.Abstractions;
-using HomeCenter.Actors.Core;
-using HomeCenter.Extensions;
-using HomeCenter.Messages.Queries.Services;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using HomeCenter.Abstractions;
+using HomeCenter.Actors.Core;
+using HomeCenter.Extensions;
+using HomeCenter.Messages.Queries.Services;
 
 namespace HomeCenter.Services.Networking
 {
@@ -28,7 +28,7 @@ namespace HomeCenter.Services.Networking
         [Subscribe(true)]
         protected async Task<object> SendPostRequest(HttpPostQuery httpMessage)
         {
-            //TODO Assert messages required properties
+            // TODO Assert messages required properties
 
             var httpClientHandler = new HttpClientHandler();
             if (httpMessage.Cookies != null)
@@ -52,6 +52,7 @@ namespace HomeCenter.Services.Networking
                         httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                     }
                 }
+
                 if (httpMessage.ContainsProperty(MessageProperties.AuthorisationHeader))
                 {
                     var header = httpMessage.AuthorisationHeader.First();
@@ -63,6 +64,7 @@ namespace HomeCenter.Services.Networking
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(httpMessage.ContentType);
                 }
+
                 var response = await httpClient.PostAsync(httpMessage.Address, content);
 
                 if (!httpMessage.IgnoreReturnStatus)

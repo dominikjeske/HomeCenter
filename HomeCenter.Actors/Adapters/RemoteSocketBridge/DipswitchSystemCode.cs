@@ -11,6 +11,6 @@ namespace HomeCenter.Adapters.RemoteSocketBridge.Codes
         Switch3 = 4,
         Switch4 = 8,
         Switch5 = 16,
-        AllOn = Switch1 | Switch2 | Switch3 | Switch4 | Switch5
+        AllOn = Switch1 | Switch2 | Switch3 | Switch4 | Switch5,
     }
 }
