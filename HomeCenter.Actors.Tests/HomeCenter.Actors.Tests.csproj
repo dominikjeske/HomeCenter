@@ -15,9 +15,9 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0-release-20210330-02" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.1.6" />
+    <PackageReference Include="RavenDB.Client" Version="5.1.7" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
     <PackageReference Include="Serilog.Exceptions" Version="6.1.0" />

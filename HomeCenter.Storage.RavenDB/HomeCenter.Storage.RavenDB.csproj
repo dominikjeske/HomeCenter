@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.1.6" />
+    <PackageReference Include="RavenDB.Client" Version="5.1.7" />
     <PackageReference Include="Serilog.Exceptions" Version="6.1.0" />
   </ItemGroup>
 </Project>
