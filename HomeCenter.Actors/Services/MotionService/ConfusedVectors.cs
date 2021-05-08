@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using ConcurrentCollections;
+﻿using ConcurrentCollections;
 using HomeCenter.Extensions;
 using HomeCenter.Services.MotionService.Model;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -107,7 +107,7 @@ namespace HomeCenter.Services.MotionService
 
         private IEnumerable<VectorResolution> ResolveAfterTimeout(DateTimeOffset currentTime)
         {
-            return GetConfusedVectorsAfterTimeout(currentTime)
+            return GetVectorsReadyToResolve(currentTime)
                   .Where(vector => NoMoveInStartNeighbors(vector))
                   .Select(v => new VectorResolution(v, "Timeout"));
         }
@@ -115,19 +115,10 @@ namespace HomeCenter.Services.MotionService
         /// <summary>
         /// Get list of all confused vectors that should be resolved.
         /// </summary>
-        private IEnumerable<MotionVector> GetConfusedVectorsAfterTimeout(DateTimeOffset currentTime)
+        private IEnumerable<MotionVector> GetVectorsReadyToResolve(DateTimeOffset currentTime)
         {
-            var confusedReadyToResolve = _confusingVectors.Where(t => currentTime.Between(t.EndTime)
-                                                                               .LastedLongerThen(_confusionResolutionTime));
-
-            // When all vectors are older then timeout we cannot resolve confusions
-            if (!confusedReadyToResolve.Any(vector => currentTime.Between(vector.EndTime)
-                                                                                    .LastedLessThen(_confusionResolutionTimeOut)))
-            {
-                return Enumerable.Empty<MotionVector>();
-            }
-
-            return confusedReadyToResolve;
+            return _confusingVectors.Where(vector => currentTime.Between(vector.EndTime).LastedLongerThen(_confusionResolutionTime) &&
+                                                                        currentTime.Between(vector.EndTime).LastedLessThen(_confusionResolutionTimeOut));
         }
 
         /// <summary>
@@ -151,8 +142,6 @@ namespace HomeCenter.Services.MotionService
 
         private bool LeaveVectorsWithSameStart(MotionVector v)
         {
-
-
             return _roomDictionary.Value.GetLastLeaveVector(v)?.Start == v.Start;
         }
 
