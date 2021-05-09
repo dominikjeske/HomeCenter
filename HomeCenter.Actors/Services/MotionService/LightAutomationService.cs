@@ -139,12 +139,12 @@ namespace HomeCenter.Services.MotionService
         {
             var events = MessageBroker.Observe<MotionEvent>();
 
-            var motionWindows = events.Timestamp(_concurrencyProvider.Scheduler) // Add TimeStamp to each event
+            var motions = events.Timestamp(_concurrencyProvider.Scheduler) // Add TimeStamp to each event
                                       .Select(move => new MotionWindow(move.Value.Message.MessageSource, move.Timestamp, _roomDictionary)); // Create new event that contains name, TimeStamp and service for vector validation
 
-            motionWindows.Subscribe(HandleMove, HandleError, Token);
+            motions.Subscribe(HandleMove, HandleError, Token);
 
-            motionWindows.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) // For each event we start time windows for next events that can potentially create vector
+            motions.Window(events, _ => Observable.Timer(_motionConfiguration!.MotionTimeWindow, _concurrencyProvider.Scheduler)) // For each event we start time windows for next events that can potentially create vector
                          .SelectMany(x => x.Scan((vectors, currentPoint) => vectors.AccumulateVector(currentPoint.Start)) // We scan windows for getting proper vectors
                          .SelectMany(window => window.ToVectors())) // Convert found vector to list
                          .GroupBy(room => room.EndPoint) // Group by vectors from ALL time windows by destination room
@@ -152,11 +152,28 @@ namespace HomeCenter.Services.MotionService
                            r => r.Buffer(TimeSpan.FromMilliseconds(1), _concurrencyProvider.Scheduler) // We take small time window to have one group
                                                                         .Where(b => b.Count > 0))
                          .Subscribe(HandleVectors, HandleError, Token);
+ 
+            // events
+            //     .GroupBy(e => e.Message.MessageSource)
+            //     .SelectMany(group => group.Buffer(TimeSpan.FromSeconds(10), _concurrencyProvider.Scheduler))
+            //     .Where(ev => ev.Count() > 2)
+            //     .Buffer(TimeSpan.FromSeconds(10), _concurrencyProvider.Scheduler)
+            //     .Where(x => x.Any())
+            //     .Subscribe(list =>
+            //     {
+            //         
+            //     });                                                
+
         }
 
         private void HandleVectors(IList<MotionVector> vectors) => _roomDictionary.HandleVectors(vectors);
 
         private void HandleMove(MotionWindow motion) => _roomDictionary.MarkMotion(motion);
+
+        private void HandleCount(int count)
+        {
+            _loggerFactory.CreateLogger("HomeCenter.Services.MotionService.Room").LogInformation("Count change to {Status}", count);
+        }
 
         private void HandleError(Exception ex) => Logger.LogError(ex, "Exception in LightAutomationService");
 

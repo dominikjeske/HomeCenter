@@ -32,19 +32,60 @@ namespace HomeCenter.Services.MotionService.Tests
         public async Task Count1()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<string, string>
-                {
-                    { "100", Detectors.livingRoom },
-                    { "500", Detectors.kitchen },
-                    { "1500", Detectors.badroomDetector }
-                })
-                .Build();
+            .WithMotions(new Dictionary<string, string>
+            {
+                { "100", Detectors.livingRoom },
+                { "500", Detectors.kitchen },
+                { "1500", Detectors.badroomDetector }
+            })
+            .Build();
 
             env.AdvanceToEnd();
 
             (await env.GetNumberOfPersosns(Detectors.livingRoom)).Should().Be(1);
             (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(1);
             (await env.GetNumberOfPersosns(Detectors.badroomDetector)).Should().Be(1);
+        }
+
+        // *[Confusion], ^[Resolved], P[PassThru], S[ShortVisit], L[LongVisit]
+        //  ___________________________________________   __________________________
+        // |        |                |                       |                      |
+        // |        |           1          2                                        |
+        // |        |                |                       |                      |
+        // |                         |___   ______           |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |______________________|
+        // |        |                |            |          |                      |
+        // |        |                |            |     3       4                   |
+        // |        |                |            |____  ____|                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |        |                |            |          |                      |
+        // |________|________________|____________|__________|______________________|
+        [Fact(DisplayName = "Move pass rooms without confusion")]
+        public async Task Count3()
+        {
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+            .WithMotions(new Dictionary<string, string>
+            {
+                { "100", Detectors.livingRoom },
+                { "1500", Detectors.hallwayLivingRoom },
+                { "3500", Detectors.hallwayToilet },
+                { "4500", Detectors.kitchen }
+            })
+            .Build();
+
+            env.AdvanceTo(TimeSpan.FromMilliseconds(1500));
+            (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(1);
+
+            env.AdvanceTo(TimeSpan.FromMilliseconds(4000));
+            (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0, "When no confusion we are sure quickly");
+            (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
+
+            env.AdvanceTo(TimeSpan.FromMilliseconds(5000));
+            (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(0, "When no confusion we are sure quickly");
+            (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(1);
         }
 
         // *[Confusion], ^[Resolved], P[PassThru], S[ShortVisit], L[LongVisit]
@@ -57,7 +98,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |          |                      |
         // |        |                |            |          |______________________|
         // |        |                |            |          |                      |
-        // |        |                |            |    3*       0S                  |
+        // |        |                |            |    3*       0L                  |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
@@ -88,7 +129,7 @@ namespace HomeCenter.Services.MotionService.Tests
             (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0, "After resolving confusion have 0 persons");
             (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
             (await env.HasConfusions(Detectors.hallwayToilet)).Should().Be(false);
-            // Confusion resolution for 3->0S
+            // Confusion resolution for 3->0
             env.AdvanceTo(TimeSpan.FromMilliseconds(9100) + MotionDefaults.ConfusionResolutionTime, true);
             (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(2, "After resolving confusion have 2 persons");
             (await env.GetNumberOfPersosns(Detectors.hallwayLivingRoom)).Should().Be(0);
@@ -97,41 +138,53 @@ namespace HomeCenter.Services.MotionService.Tests
             (await env.HasConfusions(Detectors.kitchen)).Should().Be(false);
         }
 
-        // TODO - Count should not decrease  when there is no exit from house
+
         // *[Confusion], ^[Resolved], P[PassThru], S[ShortVisit], L[LongVisit]
         //  ___________________________________________   __________________________
         // |        |                |                       |                      |
-        // |        |           1S                                                  |
+        // |        |                                                               |
         // |        |                |                       |                      |
         // |                         |___   ______           |                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |                      |
         // |        |                |            |          |______________________|
         // |        |                |            |          |                      |
-        // |        |                |            |    4        3                   |
+        // |        |                |            |     1        0L                 |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
-        // |        |                |            |    2S    |                      |
+        // |        |                |            |          |                      |
         // |        |                |            |          |                      |
         // |________|________________|____________|__________|______________________|
-        [Fact(DisplayName = "When moving around we should have count without short moves")]
-        public async Task Count()
+        [Fact(DisplayName = "Exit from room after long stay")]
+        public async Task Count4()
         {
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<string, string> //Short moves should not be included
+                .WithMotions(new Dictionary<string, string>
                 {
-                    { "100/15", Detectors.livingRoom },
-                    { "101/15", Detectors.toilet },
-                    { "500", Detectors.kitchen },
-                    { "1500", Detectors.hallwayToilet }
+                    { "1/21", Detectors.kitchen },
+                    { "22000", Detectors.hallwayToilet },
                 })
                 .Build();
 
-            env.AdvanceToEnd();
+            env.AdvanceTo(TimeSpan.FromMilliseconds(24000), justAfter: true);
+            (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(0, "Event when we have long move when no confusion we are sure");
+            (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
+        }
 
-            //var status = await env.Query<MotionStatus>(MotionServiceStatusQuery.Create());
 
-            // status.NumberOfPersonsInHouse.Should().Be(2);
+
+        [Fact(DisplayName = "xxxxxxxxxx")]
+        public async Task Count5()
+        {
+            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
+                .WithMotions(new Dictionary<string, string>
+                {
+                    { "1/21", Detectors.kitchen },
+                    { "2/21", Detectors.toilet }
+                })
+                .Build();
+
+            env.AdvanceTo(TimeSpan.FromMilliseconds(54000));
         }
     }
 }
