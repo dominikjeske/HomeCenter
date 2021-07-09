@@ -1,7 +1,5 @@
-﻿using FluentAssertions;
-using HomeCenter.Actors.Tests.Builders;
+﻿using HomeCenter.Actors.Tests.Builders;
 using HomeCenter.Actors.Tests.Helpers;
-using HomeCenter.Services.MotionService.Commands;
 using Microsoft.Reactive.Testing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +22,7 @@ namespace HomeCenter.Services.MotionService.Tests
         // |        |                |            |    2        3                   |
         // |        |                |            |____  ____|                      |
         // |        |                |            |          |                      |
-        // |        |                |            |     1    |                      |
+        // |        |                |            |    1     |                      |
         // |        |                |            |          |                      |
         // |________|________________|____________|__________|______________________|
         [Fact(DisplayName = "First not confused moving path should not be source of confusion for next path")]
@@ -33,7 +31,7 @@ namespace HomeCenter.Services.MotionService.Tests
             using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
                 .WithMotions(new Dictionary<string, string>
             {
-                 // First path
+                // First path
                 { "500", Detectors.toilet },
                 { "1500", Detectors.hallwayToilet },
                 { "2000", Detectors.kitchen },

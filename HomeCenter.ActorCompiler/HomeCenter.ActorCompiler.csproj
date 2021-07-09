@@ -9,13 +9,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0-1.final" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Actors.Core\HomeCenter.Actors.Core.csproj" />
     <ProjectReference Include="..\HomeCenter.Extensions.Assemblies\HomeCenter.Extensions.Assemblies.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="CSharpFunctionalExtensions" Version="2.17.0" />
   </ItemGroup>
 
 </Project>

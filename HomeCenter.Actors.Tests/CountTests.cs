@@ -170,21 +170,5 @@ namespace HomeCenter.Services.MotionService.Tests
             (await env.GetNumberOfPersosns(Detectors.kitchen)).Should().Be(0, "Event when we have long move when no confusion we are sure");
             (await env.GetNumberOfPersosns(Detectors.hallwayToilet)).Should().Be(1);
         }
-
-
-
-        [Fact(DisplayName = "xxxxxxxxxx")]
-        public async Task Count5()
-        {
-            using var env = EnviromentBuilder.Create(s => s.WithDefaultRooms())
-                .WithMotions(new Dictionary<string, string>
-                {
-                    { "1/21", Detectors.kitchen },
-                    { "2/21", Detectors.toilet }
-                })
-                .Build();
-
-            env.AdvanceTo(TimeSpan.FromMilliseconds(54000));
-        }
     }
 }

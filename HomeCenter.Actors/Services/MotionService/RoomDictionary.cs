@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HomeCenter.Extensions;
+using HomeCenter.Services.MotionService.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using HomeCenter.Extensions;
-using HomeCenter.Services.MotionService.Model;
 
 namespace HomeCenter.Services.MotionService
 {
@@ -78,7 +78,6 @@ namespace HomeCenter.Services.MotionService
                                      .Any(n => n.MotionEngine.LastMotion.Value > referenceTime) || _rooms[roomid].MotionEngine.LastMotion.Value > referenceTime;
         }
 
-
         public int NumberOfPersons() => _rooms.Values.Count(r => r.NumberOfPersons > 0 &&
                                                                           r.MotionEngine.VisitType.Id > VisitType.PassThru.Id &&
                                                                           r.AreaDescriptor.AreaType != AreaType.Outdoor);
@@ -92,8 +91,5 @@ namespace HomeCenter.Services.MotionService
         {
             return this[motionVector.StartPoint].MotionEngine.LastLeaveVector;
         }
-
-        
-
     }
 }

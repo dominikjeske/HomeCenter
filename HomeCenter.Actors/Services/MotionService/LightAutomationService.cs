@@ -152,17 +152,6 @@ namespace HomeCenter.Services.MotionService
                            r => r.Buffer(TimeSpan.FromMilliseconds(1), _concurrencyProvider.Scheduler) // We take small time window to have one group
                                                                         .Where(b => b.Count > 0))
                          .Subscribe(HandleVectors, HandleError, Token);
- 
-            // events
-            //     .GroupBy(e => e.Message.MessageSource)
-            //     .SelectMany(group => group.Buffer(TimeSpan.FromSeconds(10), _concurrencyProvider.Scheduler))
-            //     .Where(ev => ev.Count() > 2)
-            //     .Buffer(TimeSpan.FromSeconds(10), _concurrencyProvider.Scheduler)
-            //     .Where(x => x.Any())
-            //     .Subscribe(list =>
-            //     {
-            //         
-            //     });                                                
 
         }
 

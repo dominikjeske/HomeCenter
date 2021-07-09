@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ConcurrentHashSet" Version="1.1.0" />
+    <PackageReference Include="ConcurrentHashSet" Version="1.2.0" />
     <PackageReference Include="Destructurama.Attributed" Version="3.0.0-dev-00060" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
   </ItemGroup>
@@ -16,6 +16,10 @@
     <ProjectReference Include="..\HomeCenter.Capabilities\HomeCenter.Capabilities.csproj" />
     <ProjectReference Include="..\HomeCenter.Conditions\HomeCenter.Conditions.csproj" />
     <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="CSharpFunctionalExtensions" Version="2.17.0" />
   </ItemGroup>
 
 </Project>
