@@ -26,7 +26,8 @@ namespace HomeCenter.Actors.Tests.Helpers
 
         public TestScheduler Scheduler => _scheduler;
 
-        public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps, LightAutomationServiceProxy actor, IDisposable? externalResources)
+        public ActorEnvironment(TestScheduler Scheduler, ITestableObservable<MotionEnvelope> MotionEvents, Dictionary<string, FakeMotionLamp> Lamps, LightAutomationService
+            actor, IDisposable? externalResources)
         {
             _scheduler = Scheduler;
             _motionEvents = MotionEvents;

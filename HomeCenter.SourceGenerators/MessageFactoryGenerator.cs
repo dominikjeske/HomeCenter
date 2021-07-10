@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Dnf.SourceGenerators;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -37,7 +38,7 @@ namespace HomeCenter.SourceGenerators
             {
                 var factoryModel = GetModel(proxy, context.GeneratorExecutionContext.Compilation, context.GeneratorExecutionContext.CancellationToken);
 
-                var templateString = ResourceReader.GetResource("MessageFactory.scriban");
+                var templateString = ResourceReader.GetResource("MessageFactory.scriban", typeof(ActorProxySourceGenerator));
 
                 var result = TemplateGenerator.Execute(templateString, factoryModel);
 

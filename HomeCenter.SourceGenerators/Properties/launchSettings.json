@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HomeCenter.SourceGenerators": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\HomeCenter.Actors\\HomeCenter.Actors.csproj"
+    }
+  }
+}

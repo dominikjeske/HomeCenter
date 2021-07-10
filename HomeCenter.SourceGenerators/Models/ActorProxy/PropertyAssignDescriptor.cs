@@ -1,4 +1,6 @@
-﻿namespace HomeCenter.SourceGenerators
+﻿using Dnf.SourceGenerators;
+
+namespace HomeCenter.SourceGenerators
 {
     internal class PropertyAssignDescriptor
     {
