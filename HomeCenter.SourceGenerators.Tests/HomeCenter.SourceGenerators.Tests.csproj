@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="CSharpFunctionalExtensions" Version="2.17.0" />
-    <PackageReference Include="Dnf.SourceGenerators.Testing" Version="1.0.0" />
+    <PackageReference Include="Dnf.SourceGenerators.Testing" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

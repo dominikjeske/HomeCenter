@@ -5,6 +5,6 @@
     <PackageReference Include="IsExternalInit" Version="1.0.1" PrivateAssets="all" />
     <!--Language extensions-->
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.16.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.18.0" />
   </ItemGroup>
 </Project>
