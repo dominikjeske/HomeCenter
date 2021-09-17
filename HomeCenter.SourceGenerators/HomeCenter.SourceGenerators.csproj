@@ -8,7 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Dnf.SourceGenerators" Version="1.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.0-3.final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="CSharpFunctionalExtensions" Version="2.20.1" />
   </ItemGroup>
 
   <PropertyGroup>
