@@ -13,8 +13,5 @@
     <ProjectReference Include="..\HomeCenter.Utils\HomeCenter.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="CSharpFunctionalExtensions" Version="2.20.1" />
-  </ItemGroup>
   
 </Project>

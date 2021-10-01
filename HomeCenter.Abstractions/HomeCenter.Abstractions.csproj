@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Proto.Actor" Version="0.22.1-alpha.0.24" />
+    <PackageReference Include="Proto.Actor" Version="0.24.0" />
     <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.0-rc.1.21451.13" />
   </ItemGroup>
@@ -14,10 +14,5 @@
     <ProjectReference Include="..\HomeCenter.EventAggregator.Abstractions\HomeCenter.EventAggregator.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Extensions\HomeCenter.Extensions.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="CSharpFunctionalExtensions" Version="2.20.1" />
-  </ItemGroup>
-
 
 </Project>

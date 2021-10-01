@@ -25,9 +25,4 @@
     <ProjectReference Include="..\HomeCenter.SourceGenerators\HomeCenter.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="CSharpFunctionalExtensions" Version="2.20.1" />
-  </ItemGroup>
-
-
 </Project>
