@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
+    <PackageReference Include="System.Reactive.Interfaces" />
+    <PackageReference Include="Light.GuardClauses" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.EventAggregator.Abstractions\HomeCenter.EventAggregator.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.Extensions\HomeCenter.Extensions.csproj" />
   </ItemGroup>
-
 </Project>

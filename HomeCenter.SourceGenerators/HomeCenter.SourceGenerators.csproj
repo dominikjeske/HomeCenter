@@ -1,24 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Dnf.SourceGenerators" Version="1.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.0-3.final" />
+    <PackageReference Include="Dnf.SourceGenerators" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
   </ItemGroup>
-
   <PropertyGroup>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
   </PropertyGroup>
-
   <Target Name="GetDependencyTargetPaths">
     <ItemGroup>
       <TargetPathWithTargetPlatformMoniker Include="$(PKGDnf_SourceGenerators)\lib\netstandard2.0\Dnf.SourceGenerators.dll" IncludeRuntimeDependency="false" />
     </ItemGroup>
   </Target>
-
 </Project>

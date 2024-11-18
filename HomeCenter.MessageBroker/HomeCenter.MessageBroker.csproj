@@ -1,21 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
+    <PackageReference Include="ConcurrentHashSet" />
   </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\HomeCenter.Abstractions\HomeCenter.Abstractions.csproj" />
     <ProjectReference Include="..\HomeCenter.EventAggregator\HomeCenter.EventAggregator.csproj" />
     <ProjectReference Include="..\HomeCenter.Messages\HomeCenter.Messages.csproj" />
   </ItemGroup>
-  
 </Project>
