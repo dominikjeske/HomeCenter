@@ -1,5 +1,4 @@
-﻿using HomeCenter.Abstractions;
-using HomeCenter.Runner.ConsoleExtentions;
+﻿using HomeCenter.Runner.ConsoleExtentions;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ namespace HomeCenter.Runner
     {
         protected string[] _tasks;
         protected Container Container;
-        protected IMessageBroker MessageBroker;
 
         internal Runner(string uid)
         {
@@ -28,7 +26,6 @@ namespace HomeCenter.Runner
         public void SetContainer(Container container)
         {
             Container = container;
-            //MessageBroker = container.GetInstance<IMessageBroker>();
         }
 
         public virtual async Task Run()

@@ -49,23 +49,25 @@ namespace HomeCenter.Runner.ConsoleExtentions
 
         public static int ReadNumber(bool emptyAsZero = true)
         {
-            while (true)
-            {
-                if (ReadLine(out string selected))
-                {
-                    if (string.IsNullOrWhiteSpace(selected) && emptyAsZero)
-                    {
-                        selected = "0";
-                    }
+            var x = Convert.ToInt32(Console.ReadLine());
+            return x;
+            //while (true)
+            //{
+            //    if (ReadLine(out string selected))
+            //    {
+            //        if (string.IsNullOrWhiteSpace(selected) && emptyAsZero)
+            //        {
+            //            selected = "0";
+            //        }
 
-                    if (int.TryParse(selected, out int number))
-                    {
-                        return number;
-                    }
-                    WriteError($"{selected} is not a number");
-                }
-                return -2;
-            }
+            //        if (int.TryParse(selected, out int number))
+            //        {
+            //            return number;
+            //        }
+            //        WriteError($"{selected} is not a number");
+            //    }
+            //    return -2;
+            //}
         }
 
         public static bool ReadLine(out string value)

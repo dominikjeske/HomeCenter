@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var runner = new HomeCenterRunner();
+            await runner.Run();
         }
     }
 }

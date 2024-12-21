@@ -19,6 +19,10 @@ namespace HomeCenter.Services.Configuration.DTO
         {
             Uid = uid;
             Type = type;
+            if(properties == null)
+            {
+                properties = new Dictionary<string, object>();
+            }
             Properties = new Dictionary<string, object>(properties);
         }
 

@@ -1,0 +1,176 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using HomeCenter.Extensions;
+using Microsoft.Extensions.Logging;
+
+namespace HomeCenter
+{
+    public class CCToolsAdapter
+    {
+        private readonly MAX7311Driver _driver = new MAX7311Driver();
+        private readonly ILogger _logger;
+        private readonly I2CService _i2CService;
+        private int _poolDurationWarning;
+        private int _i2cAddress;
+        private bool _firstPortWriteMode;
+        private bool _secondPortWriteMode;
+
+        public CCToolsAdapter(ILogger logger, I2CService i2CService, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
+        {
+            _logger = logger;
+            _i2CService = i2CService;
+            _poolDurationWarning = poolDurationWarning;
+            _i2cAddress = i2cAddress;
+            _firstPortWriteMode = firstPortWriteMode;
+            _secondPortWriteMode = secondPortWriteMode;
+
+            ConfigureDriver();
+            FetchState();
+
+            if (_firstPortWriteMode)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    SetPortState(i, false);
+                }
+            }
+
+            if (_secondPortWriteMode)
+            {
+                for (int i = 8; i < 15; i++)
+                {
+                    SetPortState(i, false);
+                }
+            }
+        }
+
+        private void ConfigureDriver()
+        {
+            _i2CService.Send(_i2cAddress, _driver.Configure(_firstPortWriteMode, _secondPortWriteMode));
+        }
+
+        public async Task TurnOn(int pinNumber, TimeSpan? autoTurnOffAfter)
+        {
+            pinNumber = ValidatePin(pinNumber);
+
+            SetPortState(pinNumber, true);
+
+            if (autoTurnOffAfter.HasValue)
+            {
+                await Task.Delay(autoTurnOffAfter.Value);
+                SetPortState(pinNumber, false);
+            }
+        }
+
+        public void TurnOff(int pinNumber)
+        {
+            pinNumber = ValidatePin(pinNumber);
+            SetPortState(pinNumber, false);
+        }
+
+        public void Switch(int pinNumber)
+        {
+            pinNumber = ValidatePin(pinNumber);
+            var currentState = _driver.GetState(pinNumber);
+
+            SetPortState(pinNumber, !currentState);
+        }
+
+        public bool GetState(int pinNumber)
+        {
+            var state =  _driver.GetState(pinNumber);
+            _logger.LogInformation($"Pin '{pinNumber}' state: {state}");
+
+            return state;
+        }
+
+        private int ValidatePin(int pinNumber)
+        {
+            if (pinNumber < 0 || pinNumber > 15)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pinNumber));
+            }
+
+            var isPinInFirstPortRange = pinNumber < 8;
+
+            if ((isPinInFirstPortRange && !_firstPortWriteMode) || (!isPinInFirstPortRange && !_secondPortWriteMode))
+            {
+                throw new ArgumentException($"Pin {pinNumber} is configured for INPUT");
+            }
+
+            return pinNumber;
+        }
+
+        private void SetPortState(int pinNumber, bool state)
+        {
+            var newState = _driver.GenerateNewState(pinNumber, state);
+
+            try
+            {
+                _i2CService.Send(_i2cAddress, newState);
+                _driver.AcceptNewState();
+            }
+            catch (Exception)
+            {
+                _driver.RevertNewState();
+                throw;
+            }
+
+            _logger.LogInformation("Board committed state '{state}'", _driver.GetState().ToBinaryString());
+        }
+
+        public void FetchState()
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            var newState = ReadFromBus();
+
+            stopwatch.Stop();
+
+            if (!_driver.TrySaveState(newState, out var oldState))
+            {
+                return ;
+            }
+
+            var oldStateBits = new BitArray(oldState);
+            var newStateBits = new BitArray(newState);
+
+            _logger.LogTrace("fetched different state [{oldState}->{newState}]", oldState.ToBinaryString(), newState.ToBinaryString());
+
+            for (int pinNumber = 0; pinNumber < oldStateBits.Length; pinNumber++)
+            {
+                var oldPinState = oldStateBits.Get(pinNumber);
+                var newPinState = newStateBits.Get(pinNumber);
+                bool pinInWriteMode = IsPinInWriteMode(pinNumber);
+
+                // When state is the same or change is in port that are set to WRITE we skip event generation
+                if (oldPinState == newPinState || pinInWriteMode)
+                {
+                    continue;
+                }
+
+                _logger.LogTrace("Pin [{pinNumber}] state changed {oldPinState}->{newPinState}", pinNumber, oldPinState, newPinState);
+            }
+
+            if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
+            {
+                _logger.LogWarning("Polling device took {elapsed}ms.", stopwatch.ElapsedMilliseconds);
+            }
+        }
+
+        private bool IsPinInWriteMode(int pinNumber)
+        {
+            var isPinInFirstPortRange = pinNumber < 8;
+            var pinInWriteMode = (isPinInFirstPortRange && _firstPortWriteMode) || (!isPinInFirstPortRange && _secondPortWriteMode);
+            return pinInWriteMode;
+        }
+
+        private byte[] ReadFromBus()
+        {
+            return _i2CService.Get(_i2cAddress, _driver.BufferSize, _driver.GetReadTable());
+        }
+    }
+}
