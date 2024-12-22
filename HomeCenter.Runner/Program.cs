@@ -1,14 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace HomeCenter.Runner
 {
-    internal class Program
+    public static class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var runner = new HomeCenterRunner();
-            await runner.Run();
+            CreateHostBuilder(args).Build().Run();
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddHostedService<ConsoleHostedService>();
+                });
     }
 }

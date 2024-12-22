@@ -1,7 +1,5 @@
 ﻿using HomeCenter.Utils.LogProviders;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,10 +18,10 @@ namespace HomeCenter.Runner
             {
                 new MqqtRunner("MQQT"),
                 new CCToolsLampRunner("HSRel8_1", new CCToolsAdapter(loggerProvider.CreateLogger("HSRel8_1"), i2cService, 24, true, false)),
-                new CCToolsLampRunner("HSRel8_2", new CCToolsAdapter(loggerProvider.CreateLogger("HSRel8_2"), i2cService, 32, true, false)),
+                //new CCToolsLampRunner("HSRel8_2", new CCToolsAdapter(loggerProvider.CreateLogger("HSRel8_2"), i2cService, 32, true, false)),
 
-                new CCToolsLampRunner("HSPE16InputOnly_1", new CCToolsAdapter(loggerProvider.CreateLogger("HSPE16InputOnly_1"), i2cService, 16, false, false)),
-                new CCToolsLampRunner("HSPE16InputOnly_2", new CCToolsAdapter(loggerProvider.CreateLogger("HSPE16InputOnly_2"), i2cService, 88, false, false)),
+                //new CCToolsLampRunner("HSPE16InputOnly_1", new CCToolsAdapter(loggerProvider.CreateLogger("HSPE16InputOnly_1"), i2cService, 16, false, false)),
+                //new CCToolsLampRunner("HSPE16InputOnly_2", new CCToolsAdapter(loggerProvider.CreateLogger("HSPE16InputOnly_2"), i2cService, 88, false, false)),
                 //new DimmerRunner("DimmerComponent")
             };
 

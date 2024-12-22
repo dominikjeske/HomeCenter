@@ -23,10 +23,6 @@ namespace HomeCenter.Runner
         {
         }
 
-        public void SetContainer(Container container)
-        {
-            Container = container;
-        }
 
         public virtual async Task Run()
         {
