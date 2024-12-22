@@ -1,30 +1,41 @@
 ﻿using System;
 using System.Collections;
+using System.Device.I2c;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using HomeCenter.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace HomeCenter
 {
-    public class CCToolsAdapter
+    public class CCToolsAdapter : IDisposable
     {
         private readonly MAX7311Driver _driver = new MAX7311Driver();
         private readonly ILogger _logger;
-        private readonly I2CService _i2CService;
         private int _poolDurationWarning;
         private int _i2cAddress;
         private bool _firstPortWriteMode;
         private bool _secondPortWriteMode;
+        private I2cBus _bus;
+        private I2cDevice _i2cDevice;
+        private bool _disposedValue;
 
-        public CCToolsAdapter(ILogger logger, I2CService i2CService, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
+        public CCToolsAdapter(ILogger logger, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
         {
             _logger = logger;
-            _i2CService = i2CService;
             _poolDurationWarning = poolDurationWarning;
             _i2cAddress = i2cAddress;
             _firstPortWriteMode = firstPortWriteMode;
             _secondPortWriteMode = secondPortWriteMode;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+            {
+                return; 
+            }
+
+            _bus = I2cBus.Create(1);
+            _i2cDevice = _bus.CreateDevice(i2cAddress);
 
             ConfigureDriver();
             FetchState();
@@ -48,7 +59,7 @@ namespace HomeCenter
 
         private void ConfigureDriver()
         {
-            _i2CService.Send(_i2cAddress, _driver.Configure(_firstPortWriteMode, _secondPortWriteMode));
+            _i2cDevice.Write(_driver.Configure(_firstPortWriteMode, _secondPortWriteMode));
         }
 
         public async Task TurnOn(int pinNumber, TimeSpan? autoTurnOffAfter)
@@ -109,7 +120,7 @@ namespace HomeCenter
 
             try
             {
-                _i2CService.Send(_i2cAddress, newState);
+                _i2cDevice.Write(newState);
                 _driver.AcceptNewState();
             }
             catch (Exception)
@@ -169,7 +180,32 @@ namespace HomeCenter
 
         private byte[] ReadFromBus()
         {
-            return _i2CService.Get(_i2cAddress, _driver.BufferSize, _driver.GetReadTable());
+            _i2cDevice.Write(_driver.GetReadTable());
+            var result = new byte[_driver.BufferSize];
+            _i2cDevice.Read(result);
+
+            return result;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _i2cDevice?.Dispose();
+                    _bus?.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

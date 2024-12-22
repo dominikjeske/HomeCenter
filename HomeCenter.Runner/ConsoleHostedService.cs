@@ -5,18 +5,11 @@ using System.Threading.Tasks;
 
 namespace HomeCenter.Runner
 {
-    public sealed class ConsoleHostedService : IHostedService
+    public sealed class ConsoleHostedService(ILoggerFactory loggerFactory) : IHostedService
     {
-        private readonly ILogger _logger;
-
-        public ConsoleHostedService(ILogger<ConsoleHostedService> logger)
-        {
-            _logger = logger;
-        }
-
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            var runner = new HomeCenterRunner();
+            var runner = new HomeCenterRunner(loggerFactory);
             await runner.Run();
         }
 
