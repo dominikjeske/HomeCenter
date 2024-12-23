@@ -14,6 +14,8 @@ namespace HomeCenter.Runner
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddSingleton<HomeCenter>();
+                    //services.AddHostedService<HomeWorkerHostedService>();
                     services.AddHostedService<ConsoleHostedService>();
                 });
     }

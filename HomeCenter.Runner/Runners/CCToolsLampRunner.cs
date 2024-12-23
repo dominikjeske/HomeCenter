@@ -7,7 +7,7 @@ namespace HomeCenter.Runner
     {
         private readonly CCToolsAdapter _cCToolsAdapter;
 
-        public CCToolsLampRunner(string uid, CCToolsAdapter cCToolsAdapter) : base(uid)
+        public CCToolsLampRunner(CCToolsAdapter cCToolsAdapter) : base(cCToolsAdapter.Name)
         {
             _tasks = new string[] { "TurnOn", "TurnOff", "Switch", "GetState", "FetchState" };
             _cCToolsAdapter = cCToolsAdapter;
@@ -37,6 +37,10 @@ namespace HomeCenter.Runner
                         _cCToolsAdapter.GetState(pinNumber); break;
                     }
                 case 4:
+                    {
+                        _cCToolsAdapter.FetchState(); break;
+                    }
+                case 5:
                     {
                         _cCToolsAdapter.FetchState(); break;
                     }

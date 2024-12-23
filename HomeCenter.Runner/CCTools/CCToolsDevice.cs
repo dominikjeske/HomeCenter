@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Device.I2c;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -21,9 +23,12 @@ namespace HomeCenter
         private I2cDevice _i2cDevice;
         private bool _disposedValue;
 
-        public CCToolsAdapter(ILogger logger, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
+        public string Name { get; }
+
+        public CCToolsAdapter(ILoggerFactory logger, string name, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
         {
-            _logger = logger;
+            _logger = logger.CreateLogger(name);
+            Name = name;
             _poolDurationWarning = poolDurationWarning;
             _i2cAddress = i2cAddress;
             _firstPortWriteMode = firstPortWriteMode;
@@ -132,19 +137,17 @@ namespace HomeCenter
             _logger.LogInformation("Board committed state '{state}'", _driver.GetState().ToBinaryString());
         }
 
-        public void FetchState()
+        public IDictionary<int, bool> FetchState()
         {
             var stopwatch = Stopwatch.StartNew();
-
             var newState = ReadFromBus();
-
             stopwatch.Stop();
 
             if (!_driver.TrySaveState(newState, out var oldState))
             {
-                return ;
+                return ImmutableDictionary<int, bool>.Empty;
             }
-
+            var dictionary = new Dictionary<int, bool>();
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
@@ -162,6 +165,7 @@ namespace HomeCenter
                     continue;
                 }
 
+                dictionary.Add(pinNumber, newPinState);
                 _logger.LogTrace("Pin [{pinNumber}] state changed {oldPinState}->{newPinState}", pinNumber, oldPinState, newPinState);
             }
 
@@ -169,6 +173,8 @@ namespace HomeCenter
             {
                 _logger.LogWarning("Polling device took {elapsed}ms.", stopwatch.ElapsedMilliseconds);
             }
+
+            return dictionary;
         }
 
         private bool IsPinInWriteMode(int pinNumber)
@@ -203,7 +209,6 @@ namespace HomeCenter
 
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

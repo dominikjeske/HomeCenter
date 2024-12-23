@@ -100,7 +100,7 @@ namespace HomeCenter
                 return false;
             }
 
-            oldState = _committedState.ToArray();
+            oldState = [.. _committedState];
 
             Buffer.BlockCopy(newState, 0, _state, 0, newState.Length);
             Buffer.BlockCopy(newState, 0, _committedState, 0, newState.Length);
