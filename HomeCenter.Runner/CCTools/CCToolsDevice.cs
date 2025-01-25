@@ -19,13 +19,13 @@ namespace HomeCenter
         private int _i2cAddress;
         private bool _firstPortWriteMode;
         private bool _secondPortWriteMode;
-        private I2cBus _bus;
+        //private I2cBus _bus;
         private I2cDevice _i2cDevice;
         private bool _disposedValue;
 
         public string Name { get; }
 
-        public CCToolsAdapter(ILoggerFactory logger, string name, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
+        public CCToolsAdapter(ILoggerFactory logger, string name, int busId, int i2cAddress, bool firstPortWriteMode, bool secondPortWriteMode, int poolDurationWarning = 2000)
         {
             _logger = logger.CreateLogger(name);
             Name = name;
@@ -39,8 +39,10 @@ namespace HomeCenter
                 return; 
             }
 
-            _bus = I2cBus.Create(1);
-            _i2cDevice = _bus.CreateDevice(i2cAddress);
+            //_bus = I2cBus.Create(1);
+
+           _i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId, i2cAddress));
+            //_i2cDevice = _bus.CreateDevice(i2cAddress);
 
             ConfigureDriver();
             FetchState();
@@ -70,7 +72,6 @@ namespace HomeCenter
         public async Task TurnOn(int pinNumber, TimeSpan? autoTurnOffAfter)
         {
             pinNumber = ValidatePin(pinNumber);
-
             SetPortState(pinNumber, true);
 
             if (autoTurnOffAfter.HasValue)
@@ -151,7 +152,7 @@ namespace HomeCenter
             var oldStateBits = new BitArray(oldState);
             var newStateBits = new BitArray(newState);
 
-            _logger.LogTrace("fetched different state [{oldState}->{newState}]", oldState.ToBinaryString(), newState.ToBinaryString());
+            _logger.LogInformation("fetched different state [{oldState}->{newState}]", oldState.ToBinaryString(), newState.ToBinaryString());
 
             for (int pinNumber = 0; pinNumber < oldStateBits.Length; pinNumber++)
             {
@@ -166,7 +167,7 @@ namespace HomeCenter
                 }
 
                 dictionary.Add(pinNumber, newPinState);
-                _logger.LogTrace("Pin [{pinNumber}] state changed {oldPinState}->{newPinState}", pinNumber, oldPinState, newPinState);
+                _logger.LogInformation("Pin [{pinNumber}] state changed {oldPinState}->{newPinState}", pinNumber, oldPinState, newPinState);
             }
 
             if (stopwatch.ElapsedMilliseconds > _poolDurationWarning)
@@ -200,7 +201,7 @@ namespace HomeCenter
                 if (disposing)
                 {
                     _i2cDevice?.Dispose();
-                    _bus?.Dispose();
+                    //_bus?.Dispose();
                 }
 
                 _disposedValue = true;

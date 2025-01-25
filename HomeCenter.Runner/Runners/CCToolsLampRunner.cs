@@ -15,32 +15,33 @@ namespace HomeCenter.Runner
 
         public override async Task RunTask(int taskId)
         {
-            ConsoleEx.WriteOK("Pin number:");
-            var pinNumber = ConsoleEx.ReadNumber();
-
             switch (taskId)
             {
                 case 0:
                     {
+                        ConsoleEx.WriteOK("Pin number:");
+                        var pinNumber = ConsoleEx.ReadNumber();
                         await _cCToolsAdapter.TurnOn(pinNumber, null); break;
                     }
                 case 1:
                     {
+                        ConsoleEx.WriteOK("Pin number:");
+                        var pinNumber = ConsoleEx.ReadNumber();
                         _cCToolsAdapter.TurnOff(pinNumber); break;
                     }
                 case 2:
                     {
+                        ConsoleEx.WriteOK("Pin number:");
+                        var pinNumber = ConsoleEx.ReadNumber();
                         _cCToolsAdapter.Switch(pinNumber); break;
                     }
                 case 3:
                     {
+                        ConsoleEx.WriteOK("Pin number:");
+                        var pinNumber = ConsoleEx.ReadNumber();
                         _cCToolsAdapter.GetState(pinNumber); break;
                     }
                 case 4:
-                    {
-                        _cCToolsAdapter.FetchState(); break;
-                    }
-                case 5:
                     {
                         _cCToolsAdapter.FetchState(); break;
                     }

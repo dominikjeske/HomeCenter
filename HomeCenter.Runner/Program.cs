@@ -15,7 +15,7 @@ namespace HomeCenter.Runner
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<HomeCenter>();
-                    //services.AddHostedService<HomeWorkerHostedService>();
+                    services.AddHostedService<HomeWorkerHostedService>();
                     services.AddHostedService<ConsoleHostedService>();
                 });
     }
