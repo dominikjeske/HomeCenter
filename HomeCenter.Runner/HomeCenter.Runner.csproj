@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="MQTTnet" />
     <PackageReference Include="System.Device.Gpio" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 
 </Project>

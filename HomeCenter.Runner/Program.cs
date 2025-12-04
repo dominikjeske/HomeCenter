@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCenter.Runner
 {
@@ -12,8 +13,16 @@ namespace HomeCenter.Runner
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddLogging(opt =>
+                    {
+                        opt.AddSimpleConsole(c =>
+                        {
+                            c.TimestampFormat = "[HH:mm:ss.ffff]";
+                        });
+                    });
                     services.AddSingleton<HomeCenter>();
                     services.AddHostedService<HomeWorkerHostedService>();
                     services.AddHostedService<ConsoleHostedService>();

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using HomeCenter.Extensions;
 using System.Runtime.InteropServices;
+using System.Reactive.Linq;
 
 namespace HomeCenter.Runner
 {
@@ -30,7 +31,21 @@ namespace HomeCenter.Runner
 
             _controller = new GpioController(PinNumberingScheme.Logical, new RaspberryPi3Driver());
             _interruptPin = _controller.OpenPin(PIN_NUMBER, PinMode.InputPullDown);
-            _interruptPin.ValueChanged += _interruptPin_ValueChanged;
+            //_interruptPin.ValueChanged += _interruptPin_ValueChanged;
+
+            var observable = Observable.FromEventPattern<PinChangeEventHandler, EventArgs>(
+            handler => _interruptPin.ValueChanged += handler,
+            handler => _interruptPin.ValueChanged -= handler
+            );
+
+            var windowedStream = observable
+            .Window(TimeSpan.FromMilliseconds(100)) // Tworzenie nowych okien czasowych co 300 ms
+            .SelectMany(window => window.Take(1)); // Przetwarzanie tylko pierwszego zdarzenia z każdego okna
+
+            windowedStream.Subscribe(ticks =>
+            {
+                _logger.LogInformation($"Pin changed");
+            });
         }
 
         private void _interruptPin_ValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
